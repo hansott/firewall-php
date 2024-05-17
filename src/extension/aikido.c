@@ -8,8 +8,15 @@
 #include "ext/standard/info.h"
 #include "php_aikido.h"
 #include <unordered_map>
+#include <set>
+#include <string>
+#include <curl/curl.h>
+
+using namespace std;
 
 ZEND_NAMED_FUNCTION(handle_file_get_contents);
+ZEND_NAMED_FUNCTION(handle_curl_init);
+ZEND_NAMED_FUNCTION(handle_curl_setopt);
 
 struct FUNCTION_HANDLERS {
 	zif_handler aikido_handler;
@@ -18,9 +25,14 @@ struct FUNCTION_HANDLERS {
 
 #define AIKIDO_REGISTER_HANDLER(function_name) { #function_name, { handle_##function_name, nullptr } }
 
-std::unordered_map<const char*, FUNCTION_HANDLERS> HOOKED_FUNCTIONS = {
-	AIKIDO_REGISTER_HANDLER(file_get_contents)
+unordered_map<const char*, FUNCTION_HANDLERS> HOOKED_FUNCTIONS = {
+	AIKIDO_REGISTER_HANDLER(file_get_contents),
+	AIKIDO_REGISTER_HANDLER(curl_init),
+	AIKIDO_REGISTER_HANDLER(curl_setopt)
 };
+
+unordered_map<void*, string> curlHandlers;
+set<string> outgoingHostnames;
 
 #define AIKIDO_HANDLER_START(function_name) php_printf("[AIKIDO] Handler called for \"" #function_name "\"!\n");
 #define AIKIDO_HANDLER_END(function_name) HOOKED_FUNCTIONS[#function_name].original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
@@ -28,6 +40,51 @@ std::unordered_map<const char*, FUNCTION_HANDLERS> HOOKED_FUNCTIONS = {
 ZEND_NAMED_FUNCTION(handle_file_get_contents) {
 	AIKIDO_HANDLER_START(file_get_contents);
 	AIKIDO_HANDLER_END(file_get_contents);
+}
+
+ZEND_NAMED_FUNCTION(handle_curl_init) {
+	AIKIDO_HANDLER_START(curl_init);
+
+	zend_string *url = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(0,1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_STR_OR_NULL(url)
+	ZEND_PARSE_PARAMETERS_END();
+
+	AIKIDO_HANDLER_END(curl_init);
+	
+	if (Z_TYPE_P(return_value) != IS_FALSE) {
+		// Z_OBJ_P(return_value)
+		if (url) {
+			outgoingHostnames.insert(ZSTR_VAL(url));
+		}
+	}
+}
+
+ZEND_NAMED_FUNCTION(handle_curl_setopt) {
+	AIKIDO_HANDLER_START(curl_setopt);
+
+	zval *curlHandle = NULL;
+	zend_long options = 0;
+	zval *zvalue = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJECT(curlHandle)
+		Z_PARAM_LONG(options)
+		Z_PARAM_ZVAL(zvalue)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (options == CURLOPT_URL) {
+		zend_string *tmp_str;
+		zend_string *url = zval_get_tmp_string(zvalue, &tmp_str);
+	
+		outgoingHostnames.insert(ZSTR_VAL(url));
+	
+		zend_tmp_string_release(tmp_str);
+	}
+
+	AIKIDO_HANDLER_END(curl_setopt);
 }
 
 /* For compatibility with older PHP versions */
@@ -40,28 +97,27 @@ ZEND_NAMED_FUNCTION(handle_file_get_contents) {
 PHP_MINIT_FUNCTION(aikido)
 {
 #if defined(COMPILE_DL_MY_EXTENSION) && defined(ZTS)
-    ZEND_TSRMLS_CACHE_UPDATE();
+	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
 	for ( auto& it : HOOKED_FUNCTIONS ) {
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first, strlen(it.first));
 		if (function_data != NULL) {
-        	it.second.original_handler = function_data->internal_function.handler;
-        	function_data->internal_function.handler = it.second.aikido_handler;
+			it.second.original_handler = function_data->internal_function.handler;
+			function_data->internal_function.handler = it.second.aikido_handler;
 			php_printf("[AIKIDO] Hooked function \"%s\" using aikido handler %p (original handler %p)!\n", it.first, it.second.aikido_handler, it.second.original_handler);
-    	}
+		}
 	}
 
 	return SUCCESS;
 }
 
-PHP_MSHUTDOWN_FUNCTION(my_extension)
+PHP_MSHUTDOWN_FUNCTION(aikido)
 {
-    return SUCCESS;
-}
-
-PHP_RINIT_FUNCTION(aikido)
-{
+	php_printf("[AIKIDO] List of outgoing hostnames:\n");
+	for (auto hostname: outgoingHostnames) {
+		php_printf("[AIKIDO] - %s\n", hostname.c_str());
+	}
 	return SUCCESS;
 }
 
@@ -79,10 +135,10 @@ static const zend_function_entry ext_functions[] = {
 zend_module_entry aikido_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"aikido",					/* Extension name */
-	ext_functions,			    /* zend_function_entry */
+	ext_functions,				/* zend_function_entry */
 	PHP_MINIT(aikido),			/* PHP_MINIT - Module initialization */
-	NULL,						/* PHP_MSHUTDOWN - Module shutdown */
-	PHP_RINIT(aikido),			/* PHP_RINIT - Request initialization */
+	PHP_MSHUTDOWN(aikido),		/* PHP_MSHUTDOWN - Module shutdown */
+	NULL,						/* PHP_RINIT - Request initialization */
 	NULL,						/* PHP_RSHUTDOWN - Request shutdown */
 	PHP_MINFO(aikido),			/* PHP_MINFO - Module info */
 	PHP_AIKIDO_VERSION,			/* Version */
