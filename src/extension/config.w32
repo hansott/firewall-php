@@ -1,0 +1,7 @@
+ARG_ENABLE('aikido', 'aikido support', 'no');
+
+if (PHP_AIKIDO != 'no') {
+	AC_DEFINE('HAVE_AIKIDO', 1, 'aikido support enabled');
+
+	EXTENSION('aikido', 'aikido.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
