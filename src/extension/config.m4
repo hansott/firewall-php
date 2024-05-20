@@ -90,5 +90,5 @@ if test "$PHP_AIKIDO" != "no"; then
   dnl In case of no dependencies
   AC_DEFINE(HAVE_AIKIDO, 1, [ Have aikido support ])
 
-  PHP_NEW_EXTENSION(aikido, aikido.c, $ext_shared)
+  PHP_NEW_EXTENSION(aikido, aikido.cpp, $ext_shared)
 fi
