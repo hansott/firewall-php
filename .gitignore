@@ -1,1 +1,3 @@
-build/*
+build
+src/extension/build
+src/extension/autom4te.cache
