@@ -11,6 +11,9 @@
 #include <set>
 #include <string>
 #include <curl/curl.h>
+#include "libaikido_go.h"
+
+#include "GoWrappers.h"
 
 using namespace std;
 
@@ -57,7 +60,8 @@ ZEND_NAMED_FUNCTION(handle_curl_init) {
 	if (Z_TYPE_P(return_value) != IS_FALSE) {
 		// Z_OBJ_P(return_value)
 		if (url) {
-			outgoingHostnames.insert(ZSTR_VAL(url));
+			std::string urlString(ZSTR_VAL(url));
+			outgoingHostnames.insert(GetHostname(urlString));
 		}
 	}
 }
@@ -78,8 +82,10 @@ ZEND_NAMED_FUNCTION(handle_curl_setopt) {
 	if (options == CURLOPT_URL) {
 		zend_string *tmp_str;
 		zend_string *url = zval_get_tmp_string(zvalue, &tmp_str);
+
+		std::string urlString(ZSTR_VAL(url));
 	
-		outgoingHostnames.insert(ZSTR_VAL(url));
+		outgoingHostnames.insert(GetHostname(urlString));
 	
 		zend_tmp_string_release(tmp_str);
 	}
