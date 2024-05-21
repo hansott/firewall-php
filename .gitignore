@@ -1,3 +1,10 @@
 build
 src/extension/build
 src/extension/autom4te.cache
+src/extension/config.h.in~
+src/extension/aikido_arginfo.h
+src/extension/config.nice
+src/extension/config.status
+src/extension/configure~
+src/extension/configure
+src/extension/run-tests.php
