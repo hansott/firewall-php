@@ -3,7 +3,7 @@ name: Build PHP Extension
 on:
   push:
     branches:
-      - go-library-initial-support
+      - github-initial-workflow
   pull_request:
     branches:
       - main
