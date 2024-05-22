@@ -3,9 +3,12 @@
 #include "libaikido_go.h"
 
 #include <string>
+#include "3rdparty/json.hpp"
 
-std::string CreateCString(GoString g);
+using json = nlohmann::json;
 
-GoString CreateGoString(std::string& s);
+std::string CppCreateString(GoString g);
 
-std::string GetHostname(std::string& url);
+GoString GoCreateString(std::string& s);
+
+json GoOnEvent(json& event);

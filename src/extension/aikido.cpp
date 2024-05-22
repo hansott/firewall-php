@@ -12,10 +12,11 @@
 #include <string>
 #include <curl/curl.h>
 #include "libaikido_go.h"
-
 #include "GoWrappers.h"
+#include "3rdparty/json.hpp"
 
 using namespace std;
+using json = nlohmann::json;
 
 ZEND_NAMED_FUNCTION(handle_file_get_contents);
 ZEND_NAMED_FUNCTION(handle_curl_init);
@@ -34,10 +35,7 @@ unordered_map<const char*, FUNCTION_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_HANDLER(curl_setopt)
 };
 
-unordered_map<void*, string> curlHandlers;
-set<string> outgoingHostnames;
-
-#define AIKIDO_HANDLER_START(function_name) php_printf("[AIKIDO] Handler called for \"" #function_name "\"!\n");
+#define AIKIDO_HANDLER_START(function_name) php_printf("[AIKIDO-C++] Handler called for \"" #function_name "\"!\n");
 #define AIKIDO_HANDLER_END(function_name) HOOKED_FUNCTIONS[#function_name].original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
 ZEND_NAMED_FUNCTION(handle_file_get_contents) {
@@ -59,10 +57,18 @@ ZEND_NAMED_FUNCTION(handle_curl_init) {
 	
 	if (Z_TYPE_P(return_value) != IS_FALSE) {
 		// Z_OBJ_P(return_value)
+		json curl_init_event = {
+			{ "event", "function_hooked" },
+			{ "data", {
+				{ "function_name", "curl_init" },
+				{ "parameters", {} }
+			} }
+		};
 		if (url) {
 			std::string urlString(ZSTR_VAL(url));
-			outgoingHostnames.insert(GetHostname(urlString));
+			curl_init_event["data"]["parameters"]["url"] = urlString;
 		}
+		GoOnEvent(curl_init_event);
 	}
 }
 
@@ -85,8 +91,18 @@ ZEND_NAMED_FUNCTION(handle_curl_setopt) {
 
 		std::string urlString(ZSTR_VAL(url));
 	
-		outgoingHostnames.insert(GetHostname(urlString));
-	
+		json curl_setopt_event = {
+			{ "event", "function_hooked" },
+			{ "data", {
+				{ "function_name", "curl_setopt" },
+				{ "parameters", {
+					"url", urlString
+				} }
+			} }
+		};
+
+		GoOnEvent(curl_setopt_event);
+
 		zend_tmp_string_release(tmp_str);
 	}
 
@@ -111,7 +127,7 @@ PHP_MINIT_FUNCTION(aikido)
 		if (function_data != NULL) {
 			it.second.original_handler = function_data->internal_function.handler;
 			function_data->internal_function.handler = it.second.aikido_handler;
-			php_printf("[AIKIDO] Hooked function \"%s\" using aikido handler %p (original handler %p)!\n", it.first, it.second.aikido_handler, it.second.original_handler);
+			php_printf("[AIKIDO-C++] Hooked function \"%s\" using aikido handler %p (original handler %p)!\n", it.first, it.second.aikido_handler, it.second.original_handler);
 		}
 	}
 
@@ -120,10 +136,6 @@ PHP_MINIT_FUNCTION(aikido)
 
 PHP_MSHUTDOWN_FUNCTION(aikido)
 {
-	php_printf("[AIKIDO] List of outgoing hostnames:\n");
-	for (auto hostname: outgoingHostnames) {
-		php_printf("[AIKIDO] - %s\n", hostname.c_str());
-	}
 	return SUCCESS;
 }
 
