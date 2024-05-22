@@ -55,7 +55,7 @@ jobs:
         phpize
         cd ../../build
         go build -buildmode=c-archive -o libaikido_go.a ../src/lib/aikido_lib.go
-        CXX=g++ CXXFLAGS="-fPIC" LDFLAGS="-L./ -laikido_go" ../src/extension/configure --with-php-config=$HOME/php/bin/php-config
+        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure --with-php-config=$HOME/php/bin/php-config
         make
         make install
 
