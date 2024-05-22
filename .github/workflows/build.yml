@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -60,7 +60,7 @@ jobs:
         make install
 
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4t
       with:
-        name: php-extension-build
+        name: aikido-php-runtime-extension
         path: ${{ github.workspace }}/build/modules/aikido.so
