@@ -3,7 +3,7 @@ name: Build PHP Extension
 on:
   push:
     branches:
-      - github-initial-workflow
+      - main
   pull_request:
     branches:
       - main
