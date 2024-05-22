@@ -1,0 +1,66 @@
+name: Build PHP Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      php_version:
+        description: 'PHP version to build against'
+        required: true
+        default: 'PHP-8.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ github.event.inputs.php_version }}
+
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+
+    - name: Clone PHP source
+      run: |
+        git clone https://github.com/php/php-src.git
+        cd php-src
+        git checkout ${{ github.event.inputs.php_version }}
+
+    - name: Build PHP
+      run: |
+        cd php-src
+        ./buildconf
+        ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
+        make -j$(nproc)
+        make install
+
+    - name: Build PHP extension
+      run: |
+        cd ${{ github.workspace }}
+        rm -rf build
+        mkdir build
+        cd src/extension
+        phpize
+        cd ../../build
+        go build -buildmode=c-archive -o libaikido_go.a ../src/lib/aikido_lib.go
+        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure --with-php-config=$HOME/php/bin/php-config
+        make
+        make install
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: aikido-php-runtime-extension
+        path: ${{ github.workspace }}/build/modules/aikido.so
