@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <curl/curl.h>
-
+#include <functional>
 
 #include "ext/standard/info.h"
 #include "libaikido_go.h"
@@ -36,4 +36,26 @@ struct PHP_HANDLERS {
 };
 
 extern unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS;
-extern unordered_map<std::string, PHP_HANDLERS> HOOKED_METHODS;
+
+class AIKIDO_METHOD_KEY {
+public:
+    std::string class_name;
+    std::string method_name;
+
+    // Constructor
+    AIKIDO_METHOD_KEY(const std::string& class_name, const std::string& method_name) : class_name(class_name), method_name(method_name) {}
+
+    // Equality operator
+    bool operator==(const AIKIDO_METHOD_KEY& other) const {
+        return class_name == other.class_name && method_name == other.method_name;
+    }
+};
+
+class AIKIDO_METHOD_KEY_HASH {
+public:
+    std::size_t operator()(const AIKIDO_METHOD_KEY& k) const {
+        return std::hash<std::string>()(k.class_name) ^ (std::hash<std::string>()(k.method_name) << 1);
+    }
+};
+
+extern unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HOOKED_METHODS;

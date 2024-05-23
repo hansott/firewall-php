@@ -17,6 +17,18 @@ PHP_MINIT_FUNCTION(aikido)
 		}
 	}
 
+	for ( auto& it : HOOKED_METHODS ) {
+		zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
+		if (class_entry != NULL) {
+			zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
+			if (method != NULL) {
+				it.second.original_handler = method->internal_function.handler;
+				method->internal_function.handler = it.second.aikido_handler;
+				php_printf("[AIKIDO-C++] Hooked method \"%s->%s\" using aikido handler %p (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.aikido_handler, it.second.original_handler);
+			}
+   		}
+	}
+
 	return SUCCESS;
 }
 

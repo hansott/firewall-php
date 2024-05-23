@@ -2,7 +2,7 @@
 #include "Utils.h"
 
 ZEND_NAMED_FUNCTION(handle_shell_execution) {
-	AIKIDO_HANDLER_START();
+	AIKIDO_FUNCTION_HANDLER_START();
 
 	zend_string *cmd = NULL;
 
@@ -27,5 +27,5 @@ ZEND_NAMED_FUNCTION(handle_shell_execution) {
 
 	GoOnEvent(shell_execution_event);
 
-	AIKIDO_HANDLER_END();
+	AIKIDO_FUNCTION_HANDLER_END();
 }

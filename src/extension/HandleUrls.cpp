@@ -2,7 +2,7 @@
 #include "Utils.h"
 
 ZEND_NAMED_FUNCTION(handle_curl_init) {
-	AIKIDO_HANDLER_START();
+	AIKIDO_FUNCTION_HANDLER_START();
 
 	zend_string *url = NULL;
 
@@ -11,7 +11,7 @@ ZEND_NAMED_FUNCTION(handle_curl_init) {
 		Z_PARAM_STR_OR_NULL(url)
 	ZEND_PARSE_PARAMETERS_END();
 
-	AIKIDO_HANDLER_END();
+	AIKIDO_FUNCTION_HANDLER_END();
 	
 	if (Z_TYPE_P(return_value) != IS_FALSE) {
 		// Z_OBJ_P(return_value)
@@ -31,7 +31,7 @@ ZEND_NAMED_FUNCTION(handle_curl_init) {
 }
 
 ZEND_NAMED_FUNCTION(handle_curl_setopt) {
-	AIKIDO_HANDLER_START();
+	AIKIDO_FUNCTION_HANDLER_START();
 
 	zval *curlHandle = NULL;
 	zend_long options = 0;
@@ -64,5 +64,5 @@ ZEND_NAMED_FUNCTION(handle_curl_setopt) {
 		zend_tmp_string_release(tmp_str);
 	}
 
-	AIKIDO_HANDLER_END();
+	AIKIDO_FUNCTION_HANDLER_END();
 }
