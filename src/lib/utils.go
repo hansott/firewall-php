@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/url"
 )
 
-func ExitIfKeyDoesNotExistInMap[K comparable, V any](m map[K]V, key K) {
+func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
 	if _, exists := m[key]; !exists {
-		log.Fatalf("Key %s does not exist in map!", key)
+		panic(fmt.Sprintf("Key %s does not exist in map!", key))
 	}
 }
 
@@ -26,7 +26,7 @@ func GetFromMap[T any](m map[string]interface{}, key string) *T {
 func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 	value := GetFromMap[T](m, key)
 	if value == nil {
-		log.Fatalf("Error parsing JSON: key %s has incorrect type", key)
+		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
 }

@@ -18,7 +18,7 @@ func OnFunctionExecuted(data map[string]interface{}) string {
 	functionName := MustGetFromMap[string](data, "function_name")
 	parameters := MustGetFromMap[map[string]interface{}](data, "parameters")
 
-	ExitIfKeyDoesNotExistInMap(functionExecutedHandlers, functionName)
+	CheckIfKeyExists(functionExecutedHandlers, functionName)
 
 	return functionExecutedHandlers[functionName](parameters)
 }
