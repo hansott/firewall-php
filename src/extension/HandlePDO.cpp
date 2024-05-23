@@ -1,0 +1,11 @@
+#include "HandlePDO.h"
+
+ZEND_NAMED_FUNCTION(handle_PDO___construct) {
+	AIKIDO_HANDLER_START();
+	AIKIDO_HANDLER_END();
+}
+
+ZEND_NAMED_FUNCTION(handle_PDO_query) {
+	AIKIDO_HANDLER_START();
+	AIKIDO_HANDLER_END();
+}
