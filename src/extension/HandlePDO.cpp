@@ -54,5 +54,10 @@ ZEND_NAMED_FUNCTION(handle_pdo_query) {
 
 	GoOnEvent(pdo_query);
 
+	if (strstr(query, "FROM users") != nullptr) {
+		zend_throw_exception(zend_exception_get_default(), "Found users in query", 0);
+		return;
+	}
+
 	AIKIDO_METHOD_HANDLER_END();
 }
