@@ -36,11 +36,8 @@
     const char *method_name = executed_method->common.function_name ? ZSTR_VAL(executed_method->common.function_name) : "None"; \
 	php_printf("[AIKIDO-C++] Handler called for \"%s->%s\"!\n", class_name, method_name);
 
-inline std::string to_lowercase(const std::string& str) {
-    std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c){ return std::tolower(c); });
-    return result;
-}
-
 #define AIKIDO_METHOD_HANDLER_END() HOOKED_METHODS[AIKIDO_METHOD_KEY(to_lowercase(std::string(class_name)), to_lowercase(std::string(method_name)))].original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+
+std::string to_lowercase(const std::string& str);
+
 
