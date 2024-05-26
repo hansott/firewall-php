@@ -1,5 +1,4 @@
 #include "GoWrappers.h"
-#include "php.h"
 
 std::string CppCreateString(GoString g) {
     std::string s;

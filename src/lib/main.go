@@ -10,6 +10,7 @@ type eventFunctionExecutedFn func(map[string]interface{}) string
 
 var eventHandlers = map[string]eventFunctionExecutedFn{
 	"function_executed": OnFunctionExecuted,
+	"method_executed":   OnMethodExecuted,
 }
 
 //export OnEvent
