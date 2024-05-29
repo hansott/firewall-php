@@ -1,9 +1,7 @@
 #include "HandleUrls.h"
 #include "Utils.h"
 
-ZEND_NAMED_FUNCTION(handle_curl_init) {
-	AIKIDO_FUNCTION_HANDLER_START();
-
+AIKIDO_HANDLER_FUNCTION(handle_curl_init) {
 	zend_string *url = NULL;
 
 	ZEND_PARSE_PARAMETERS_START(0,1)
@@ -11,28 +9,22 @@ ZEND_NAMED_FUNCTION(handle_curl_init) {
 		Z_PARAM_STR_OR_NULL(url)
 	ZEND_PARSE_PARAMETERS_END();
 
-	AIKIDO_FUNCTION_HANDLER_END();
+	// Z_OBJ_P(return_value)
+	event = {
+		{ "event", "function_executed" },
+		{ "data", {
+			{ "function_name", "curl_init" },
+			{ "parameters", json::object() }
+		} }
+	};
 	
-	if (Z_TYPE_P(return_value) != IS_FALSE) {
-		// Z_OBJ_P(return_value)
-		json curl_init_event = {
-			{ "event", "function_executed" },
-			{ "data", {
-				{ "function_name", "curl_init" },
-				{ "parameters", json::object() }
-			} }
-		};
-		if (url) {
-			std::string urlString(ZSTR_VAL(url));
-			curl_init_event["data"]["parameters"]["url"] = urlString;
-		}
-		GoOnEvent(curl_init_event);
+	if (url) {
+		std::string urlString(ZSTR_VAL(url));
+		event["data"]["parameters"]["url"] = urlString;
 	}
 }
 
-ZEND_NAMED_FUNCTION(handle_curl_setopt) {
-	AIKIDO_FUNCTION_HANDLER_START();
-
+AIKIDO_HANDLER_FUNCTION(handle_curl_setopt) {
 	zval *curlHandle = NULL;
 	zend_long options = 0;
 	zval *zvalue = NULL;
@@ -49,7 +41,7 @@ ZEND_NAMED_FUNCTION(handle_curl_setopt) {
 
 		std::string urlString(ZSTR_VAL(url));
 	
-		json curl_setopt_event = {
+		event = {
 			{ "event", "function_executed" },
 			{ "data", {
 				{ "function_name", "curl_setopt" },
@@ -59,10 +51,6 @@ ZEND_NAMED_FUNCTION(handle_curl_setopt) {
 			} }
 		};
 
-		GoOnEvent(curl_setopt_event);
-
 		zend_tmp_string_release(tmp_str);
 	}
-
-	AIKIDO_FUNCTION_HANDLER_END();
 }

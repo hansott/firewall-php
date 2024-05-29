@@ -22,22 +22,7 @@
 */
 #define AIKIDO_REGISTER_METHOD_HANDLER(class_name, method_name) { AIKIDO_METHOD_KEY(std::string(#class_name), std::string(#method_name)), { handle_ ## class_name ## _ ## method_name, nullptr } }
 
-
 #define AIKIDO_GET_FUNCTION_NAME() (ZSTR_VAL(execute_data->func->common.function_name))
 
-#define AIKIDO_FUNCTION_HANDLER_START() php_printf("[AIKIDO-C++] Handler called for \"%s\"!\n", AIKIDO_GET_FUNCTION_NAME());
-
-#define AIKIDO_FUNCTION_HANDLER_END() HOOKED_FUNCTIONS[AIKIDO_GET_FUNCTION_NAME()].original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-
-#define AIKIDO_METHOD_HANDLER_START() \
-    zend_class_entry *executed_ce = zend_get_executed_scope(); \
-    const char *class_name = executed_ce ? ZSTR_VAL(executed_ce->name) : "None"; \
-    zend_function *executed_method = EG(current_execute_data)->func; \
-    const char *method_name = executed_method->common.function_name ? ZSTR_VAL(executed_method->common.function_name) : "None"; \
-	php_printf("[AIKIDO-C++] Handler called for \"%s->%s\"!\n", class_name, method_name);
-
-#define AIKIDO_METHOD_HANDLER_END() HOOKED_METHODS[AIKIDO_METHOD_KEY(to_lowercase(std::string(class_name)), to_lowercase(std::string(method_name)))].original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
 std::string to_lowercase(const std::string& str);
-
-

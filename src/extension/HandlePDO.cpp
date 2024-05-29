@@ -1,8 +1,6 @@
 #include "HandlePDO.h"
 
-ZEND_NAMED_FUNCTION(handle_pdo___construct) {
-	AIKIDO_METHOD_HANDLER_START();
-
+AIKIDO_HANDLER_FUNCTION(handle_pdo___construct) {
 	char *data_source;
 	size_t data_source_len;
 	char *colon;
@@ -13,7 +11,7 @@ ZEND_NAMED_FUNCTION(handle_pdo___construct) {
 
 	std::string data_source_string(data_source, data_source_len);
 
-	json pdo_construct_event = {
+	event = {
 		{ "event", "method_executed" },
 		{ "data", {
 			{ "class_name", "pdo" },
@@ -23,15 +21,9 @@ ZEND_NAMED_FUNCTION(handle_pdo___construct) {
 			} }
 		} }
 	};
-
-	GoOnEvent(pdo_construct_event);
-
-	AIKIDO_METHOD_HANDLER_END();
 }
 
-ZEND_NAMED_FUNCTION(handle_pdo_query) {
-	AIKIDO_METHOD_HANDLER_START();
-
+AIKIDO_HANDLER_FUNCTION(handle_pdo_query) {
 	char *query;
 	size_t query_len;
 
@@ -41,7 +33,7 @@ ZEND_NAMED_FUNCTION(handle_pdo_query) {
 
 	std::string query_string(query, query_len);
 
-	json pdo_query = {
+	event = {
 		{ "event", "method_executed" },
 		{ "data", {
 			{ "class_name", "pdo" },
@@ -51,8 +43,4 @@ ZEND_NAMED_FUNCTION(handle_pdo_query) {
 			} }
 		} }
 	};
-
-	GoOnEvent(pdo_query);
-
-	AIKIDO_METHOD_HANDLER_END();
 }

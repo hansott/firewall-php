@@ -2,5 +2,5 @@
 
 #include "Includes.h"
 
-ZEND_NAMED_FUNCTION(handle_pdo___construct);
-ZEND_NAMED_FUNCTION(handle_pdo_query);
+AIKIDO_HANDLER_FUNCTION(handle_pdo___construct);
+AIKIDO_HANDLER_FUNCTION(handle_pdo_query);

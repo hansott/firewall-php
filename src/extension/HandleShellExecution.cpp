@@ -1,9 +1,7 @@
 #include "HandleShellExecution.h"
 #include "Utils.h"
 
-ZEND_NAMED_FUNCTION(handle_shell_execution) {
-	AIKIDO_FUNCTION_HANDLER_START();
-
+AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	zend_string *cmd = NULL;
 
 	ZEND_PARSE_PARAMETERS_START(1,-1)
@@ -15,7 +13,7 @@ ZEND_NAMED_FUNCTION(handle_shell_execution) {
 
 	std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
 	
-	json shell_execution_event = {
+	event = {
 		{ "event", "function_executed" },
 		{ "data", {
 			{ "function_name", functionNameString },
@@ -24,8 +22,4 @@ ZEND_NAMED_FUNCTION(handle_shell_execution) {
 			} }
 		} }
 	};
-
-	GoOnEvent(shell_execution_event);
-
-	AIKIDO_FUNCTION_HANDLER_END();
 }
