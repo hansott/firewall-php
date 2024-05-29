@@ -46,6 +46,14 @@ jobs:
         make -j$(nproc)
         make install
 
+    - name: Build Curl
+      run: |
+        cd ext/curl
+        phpize
+        ./configure
+        make
+        make install
+
     - name: Build Aikido
       run: |
         cd ${{ github.workspace }}

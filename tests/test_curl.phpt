@@ -4,7 +4,7 @@ Test curl initialization and setting options
 --INI--
 extension=curl.so
 extension=aikido.so
-aikido.log_level = 1
+aikido.log_level=1
 
 --FILE--
 <?php
