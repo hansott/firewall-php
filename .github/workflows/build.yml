@@ -40,9 +40,17 @@ jobs:
         ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
         make -j$(nproc)
         make install
+        export PATH=$HOME/php/bin:$PATH
+
+    - name: Build PHP
+      run: |
+        php -v
+    
+    - name: Build Curl
+      run: |
         cd ext/curl
         phpize
-        ./configure --prefix=$HOME/php
+        ./configure
         make
         make install
 
