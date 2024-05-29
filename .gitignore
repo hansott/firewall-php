@@ -10,3 +10,4 @@ src/extension/configure~
 src/extension/configure
 src/extension/configure.ac
 src/extension/run-tests.php
+my_database.sqlite

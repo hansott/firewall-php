@@ -1,6 +1,7 @@
 /* Aikido runtime extension for PHP */
 #include "Includes.h"
 #include "Utils.h"
+#include "Handle.h"
 
 PHP_MINIT_FUNCTION(aikido)
 {
@@ -12,8 +13,8 @@ PHP_MINIT_FUNCTION(aikido)
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
 		if (function_data != NULL) {
 			it.second.original_handler = function_data->internal_function.handler;
-			function_data->internal_function.handler = it.second.aikido_handler;
-			php_printf("[AIKIDO-C++] Hooked function \"%s\" using aikido handler %p (original handler %p)!\n", it.first.c_str(), it.second.aikido_handler, it.second.original_handler);
+			function_data->internal_function.handler = aikido_generic_handler;
+			php_printf("[AIKIDO-C++] Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
 		}
 	}
 
@@ -23,8 +24,8 @@ PHP_MINIT_FUNCTION(aikido)
 			zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
 			if (method != NULL) {
 				it.second.original_handler = method->internal_function.handler;
-				method->internal_function.handler = it.second.aikido_handler;
-				php_printf("[AIKIDO-C++] Hooked method \"%s->%s\" using aikido handler %p (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.aikido_handler, it.second.original_handler);
+				method->internal_function.handler = aikido_generic_handler;
+				php_printf("[AIKIDO-C++] Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 			}
    		}
 	}
