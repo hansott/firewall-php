@@ -30,7 +30,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev php-dev
 
     - name: Clone PHP source
       run: |
@@ -50,7 +50,7 @@ jobs:
       run: |
         cd php-src/ext/curl
         phpize
-        ./configure
+        ./configure --prefix=$HOME/php
         make
         make install
 
