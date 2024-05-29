@@ -41,14 +41,16 @@ jobs:
         make -j$(nproc)
         make install
         export PATH=$HOME/php/bin:$PATH
+        echo $PATH
+        php -v
 
-    - name: Build PHP
+    - name: Run PHP
       run: |
         php -v
     
     - name: Build Curl
       run: |
-        cd ext/curl
+        cd php-src/ext/curl
         phpize
         ./configure
         make
