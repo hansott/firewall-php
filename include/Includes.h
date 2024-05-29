@@ -31,9 +31,9 @@ using json = nlohmann::json;
 #include "GoWrappers.h"
 #include "Utils.h"
 
-#define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, json& event)
+#define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent)
 
-typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, json& event);
+typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent);
 
 struct PHP_HANDLERS {
 	aikido_handler handler;

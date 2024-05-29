@@ -27,10 +27,7 @@ enum ACTION {
 };
 
 ACTION aikido_execute_output(json event) {
-	if ( event["action"] == "block" ) {
-		return BLOCK;
-	}
-	else if ( event["action"] == "throw" ) {
+	if ( event["action"] == "throw" ) {
 		std::string message = event["message"].get<std::string>();
 		int code = event["code"].get<int>();
 		zend_throw_exception(zend_exception_get_default(), message.c_str(), code);
@@ -55,6 +52,8 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 		std::string scope_name;
 
 		if (executed_scope) {
+			/* A method was executed (executed_scope stores the name of the current class) */
+
 			std::string class_name(ZSTR_VAL(executed_scope->name));
 			class_name = to_lowercase(class_name);
 
@@ -70,6 +69,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			original_handler = HOOKED_METHODS[method_key].original_handler;
 		}
 		else {
+			/* A function was executed (executed_scope is null) */
 			scope_name = function_name;
 			if (HOOKED_FUNCTIONS.find(function_name) == HOOKED_FUNCTIONS.end()) {
 				return;

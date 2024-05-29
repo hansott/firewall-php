@@ -10,7 +10,7 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_init) {
 	ZEND_PARSE_PARAMETERS_END();
 
 	// Z_OBJ_P(return_value)
-	event = {
+	inputEvent = {
 		{ "event", "function_executed" },
 		{ "data", {
 			{ "function_name", "curl_init" },
@@ -20,7 +20,7 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_init) {
 	
 	if (url) {
 		std::string urlString(ZSTR_VAL(url));
-		event["data"]["parameters"]["url"] = urlString;
+		inputEvent["data"]["parameters"]["url"] = urlString;
 	}
 }
 
@@ -41,7 +41,7 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_setopt) {
 
 		std::string urlString(ZSTR_VAL(url));
 	
-		event = {
+		inputEvent = {
 			{ "event", "function_executed" },
 			{ "data", {
 				{ "function_name", "curl_setopt" },

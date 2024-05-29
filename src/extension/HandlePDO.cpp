@@ -11,7 +11,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pdo___construct) {
 
 	std::string data_source_string(data_source, data_source_len);
 
-	event = {
+	inputEvent = {
 		{ "event", "method_executed" },
 		{ "data", {
 			{ "class_name", "pdo" },
@@ -33,7 +33,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pdo_query) {
 
 	std::string query_string(query, query_len);
 
-	event = {
+	inputEvent = {
 		{ "event", "method_executed" },
 		{ "data", {
 			{ "class_name", "pdo" },
