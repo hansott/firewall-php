@@ -21,7 +21,6 @@ bool aikido_global_init() {
 	
 	AIKIDO_LOG_DEBUG("Config:\n");
 	AIKIDO_LOG_DEBUG("Log level: %s\n", log_level_str);
-	AIKIDO_LOG_DEBUG("Token: %s\n", AIKIDO_GLOBAL(token));
 	AIKIDO_LOG_DEBUG("Blocking: %d\n", AIKIDO_GLOBAL(blocking));
 
 	json initData = {

@@ -19,7 +19,7 @@ curl_setopt($ch2, CURLOPT_URL, "https://en.wikipedia.org/wiki/Runtime_library");
 
 --EXPECT--
 [AIKIDO][INFO][GO] Got domain: example.com
-[AIKIDO][INFO][GO] Got domain: facebook.com
-[AIKIDO][INFO][GO] Got domain: google.com
+[AIKIDO][INFO][GO] Got domain: www.facebook.com
+[AIKIDO][INFO][GO] Got domain: www.google.com
 [AIKIDO][INFO][GO] Got domain: example2.com
 [AIKIDO][INFO][GO] Got domain: en.wikipedia.org
