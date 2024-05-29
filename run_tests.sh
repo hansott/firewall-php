@@ -1,0 +1,1 @@
+php src/extension/run-tests.php ./tests

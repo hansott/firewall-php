@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+import "main/log"
 
 var shellCommands = map[string]bool{}
 
@@ -10,6 +10,6 @@ func OnFunctionExecutedShell(parameters map[string]interface{}) string {
 		return "{}"
 	}
 	shellCommands[*cmd] = false
-	fmt.Println("[AIKIDO-GO] Got shell command:", *cmd)
+	log.Info("Got shell command: ", *cmd)
 	return "{}"
 }

@@ -78,7 +78,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			original_handler = HOOKED_FUNCTIONS[function_name].original_handler;
 		}
 
-		php_printf("[AIKIDO-C++] Handler called for \"%s\"!\n", scope_name.c_str());
+		AIKIDO_LOG_DEBUG("Handler called for \"%s\"!\n", scope_name.c_str());
 
 		json inputEvent;
 		handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
@@ -93,7 +93,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 		}
 	}
 	catch (const std::exception& e) {
-		php_printf("[AIKIDO-C++] Exception encountered in generic handler: %s\n", e.what());
+		AIKIDO_LOG_WARN("Exception encountered in generic handler: %s\n", e.what());
 	}
 	
 	if (original_handler) {

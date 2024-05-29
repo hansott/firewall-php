@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -36,5 +37,5 @@ func GetDomain(rawurl string) string {
 	if err != nil {
 		return ""
 	}
-	return parsedURL.Hostname()
+	return strings.TrimPrefix(parsedURL.Hostname(), "www.")
 }

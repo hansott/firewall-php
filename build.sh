@@ -8,3 +8,5 @@ cd ../../build
 CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
 make
 make install
+cd ..
+source run_tests.sh

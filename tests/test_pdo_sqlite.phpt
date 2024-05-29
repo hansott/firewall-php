@@ -1,29 +1,47 @@
+--TEST--
+Test SQLite database operations
+
+--INI--
+extension=aikido.so
+aikido.log_level = 1
+
+--FILE--
 <?php
 try {
-    // Create (connect to) SQLite database in file
+    $dbFile = 'my_database.sqlite';
+
     $pdo = new PDO('sqlite:my_database.sqlite');
 
-    // Set errormode to exceptions
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Create a table
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY, 
                 name TEXT, 
                 email TEXT)");
 
-    // Insert a row of data
     $pdo->exec("INSERT INTO users (name, email) VALUES ('John Doe', 'john@example.com')");
 
-    // Query the database and fetch data
     $result = $pdo->query('SELECT * FROM users');
 
     foreach ($result as $row) {
-        echo "ID: " . $row['id'] . "<br>";
-        echo "Name: " . $row['name'] . "<br>";
-        echo "Email: " . $row['email'] . "<br><br>";
+        echo "ID: " . $row['id'] . "\n";
+        echo "Name: " . $row['name'] . "\n";
+        echo "Email: " . $row['email'] . "\n\n";
     }
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
+
+// Close the database connection
+$pdo = null;
+
+// Delete the database file
+if (file_exists($dbFile)) {
+    unlink($dbFile);
+}
 ?>
+--EXPECTF--
+[AIKIDO][INFO][GO] Got PDO query: SELECT * FROM users
+ID: %d
+Name: John Doe
+Email: john@example.com
