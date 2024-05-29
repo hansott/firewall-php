@@ -22,11 +22,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ github.event.inputs.php_version }}
-
     - name: Install build dependencies
       run: |
         sudo apt-get update
@@ -45,10 +40,7 @@ jobs:
         ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
         make -j$(nproc)
         make install
-
-    - name: Build Curl
-      run: |
-        cd php-src/ext/curl
+        cd ext/curl
         phpize
         ./configure --prefix=$HOME/php
         make
