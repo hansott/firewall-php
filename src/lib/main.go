@@ -4,6 +4,7 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"main/log"
 )
 
 type eventFunctionExecutedFn func(map[string]interface{}) string
@@ -17,12 +18,12 @@ var eventHandlers = map[string]eventFunctionExecutedFn{
 func OnEvent(eventJson string) (outputJson string) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("[AIKIDO-GO] Recovered from panic:", r)
+			log.Warn("Recovered from panic:", r)
 			outputJson = "{}"
 		}
 	}()
 
-	fmt.Println("[AIKIDO-GO] OnEvent:", eventJson)
+	log.Debug("OnEvent: ", eventJson)
 
 	var event map[string]interface{}
 	err := json.Unmarshal([]byte(eventJson), &event)
@@ -36,6 +37,31 @@ func OnEvent(eventJson string) (outputJson string) {
 	CheckIfKeyExists(eventHandlers, eventName)
 
 	return eventHandlers[eventName](data)
+}
+
+//export Init
+func Init(initJson string) (initOk bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered from panic:", r)
+			initOk = false
+		}
+	}()
+
+	var initData map[string]interface{}
+	err := json.Unmarshal([]byte(initJson), &initData)
+	if err != nil {
+		panic(fmt.Sprintf("Error parsing JSON: %s", err))
+	}
+
+	log_level := MustGetFromMap[string](initData, "log_level")
+
+	if err := log.SetLogLevel(log_level); err != nil {
+		panic(fmt.Sprintf("Error setting log level: %s", err))
+	}
+
+	log.Debug("Init: ", initJson)
+	return true
 }
 
 func main() {}

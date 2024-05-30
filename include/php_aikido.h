@@ -12,4 +12,14 @@ extern zend_module_entry aikido_module_entry;
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
 
+ZEND_BEGIN_MODULE_GLOBALS(aikido)
+    long log_level;
+    char* token;
+    bool blocking;
+ZEND_END_MODULE_GLOBALS(aikido)
+
+ZEND_EXTERN_MODULE_GLOBALS(aikido)
+
+#define AIKIDO_GLOBAL(v) ZEND_MODULE_GLOBALS_ACCESSOR(aikido, v)
+
 #endif	/* PHP_AIKIDO_H */

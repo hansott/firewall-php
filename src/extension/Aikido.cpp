@@ -3,18 +3,59 @@
 #include "Utils.h"
 #include "Handle.h"
 
-PHP_MINIT_FUNCTION(aikido)
+ZEND_DECLARE_MODULE_GLOBALS(aikido)
+
+PHP_INI_BEGIN()
+	STD_PHP_INI_ENTRY("aikido.log_level", "-1", PHP_INI_ALL, OnUpdateLong, log_level, zend_aikido_globals, aikido_globals)
+	STD_PHP_INI_ENTRY("aikido.token", "AIK_RUNTIME_UNSET", PHP_INI_ALL, OnUpdateString, token, zend_aikido_globals, aikido_globals)
+	STD_PHP_INI_ENTRY("aikido.blocking", "0", PHP_INI_ALL, OnUpdateBool, blocking, zend_aikido_globals, aikido_globals)
+PHP_INI_END()
+
+bool aikido_global_init() {
+	if (AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_DEBUG ||
+		AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_ERROR) {
+		AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_ERROR;
+	}
+
+	const char* log_level_str = aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level));
+	
+	AIKIDO_LOG_DEBUG("Config:\n");
+	AIKIDO_LOG_DEBUG("Log level: %s\n", log_level_str);
+	AIKIDO_LOG_DEBUG("Blocking: %d\n", AIKIDO_GLOBAL(blocking));
+
+	json initData = {
+		{ "log_level", log_level_str },
+		{ "token", AIKIDO_GLOBAL(token) },
+		{ "blocking", AIKIDO_GLOBAL(blocking) }
+	};
+
+	return GoInit(initData);
+}
+
+static PHP_GINIT_FUNCTION(aikido)
 {
-#if defined(COMPILE_DL_MY_EXTENSION) && defined(ZTS)
+#if defined(COMPILE_DL_BCMATH) && defined(ZTS)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+}
+
+PHP_MINIT_FUNCTION(aikido)
+{
+	/* Register Aikido-specific (log level, blocking, token, ...) entries in php.ini */
+	REGISTER_INI_ENTRIES();
+
+	if (!aikido_global_init()) {
+		/* If the global initialization fails, we do not load the aikido extension */
+		/* The php script will still run, but without the aikido extension */
+		return FAILURE;
+	}
 
 	for ( auto& it : HOOKED_FUNCTIONS ) {
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
 		if (function_data != NULL) {
 			it.second.original_handler = function_data->internal_function.handler;
 			function_data->internal_function.handler = aikido_generic_handler;
-			php_printf("[AIKIDO-C++] Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+			AIKIDO_LOG_DEBUG("Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
 		}
 	}
 
@@ -25,7 +66,7 @@ PHP_MINIT_FUNCTION(aikido)
 			if (method != NULL) {
 				it.second.original_handler = method->internal_function.handler;
 				method->internal_function.handler = aikido_generic_handler;
-				php_printf("[AIKIDO-C++] Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
+				AIKIDO_LOG_DEBUG("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 			}
    		}
 	}
@@ -35,6 +76,8 @@ PHP_MINIT_FUNCTION(aikido)
 
 PHP_MSHUTDOWN_FUNCTION(aikido)
 {
+	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
+	UNREGISTER_INI_ENTRIES();
 	return SUCCESS;
 }
 
@@ -59,7 +102,11 @@ zend_module_entry aikido_module_entry = {
 	NULL,						/* PHP_RSHUTDOWN - Request shutdown */
 	PHP_MINFO(aikido),			/* PHP_MINFO - Module info */
 	PHP_AIKIDO_VERSION,			/* Version */
-	STANDARD_MODULE_PROPERTIES
+	PHP_MODULE_GLOBALS(aikido),	/* Module globals */
+	PHP_GINIT(aikido),			/* PHP_GINIT – Globals initialization */
+	NULL,						/* PHP_GSHUTDOWN – Globals shutdown */
+	NULL,
+	STANDARD_MODULE_PROPERTIES_EX
 };
 
 #ifdef COMPILE_DL_AIKIDO

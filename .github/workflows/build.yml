@@ -1,4 +1,4 @@
-name: Build PHP Extension
+name: Build
 
 on:
   push:
@@ -22,11 +22,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ github.event.inputs.php_version }}
-
     - name: Install build dependencies
       run: |
         sudo apt-get update
@@ -46,7 +41,22 @@ jobs:
         make -j$(nproc)
         make install
 
-    - name: Build PHP extension
+    - name: Set PHP PATH
+      run: echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Run PHP
+      run: php -v
+ 
+    - name: Build Curl
+      run: |
+        echo $PATH
+        cd php-src/ext/curl
+        phpize
+        ./configure
+        make
+        make install
+
+    - name: Build Aikido
       run: |
         cd ${{ github.workspace }}
         rm -rf build
@@ -60,8 +70,13 @@ jobs:
         make
         make install
 
+    - name: Test
+      run: |
+        cd ${{ github.workspace }}
+        php src/extension/run-tests.php ./tests
+        
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: aikido-php-runtime-extension
+        name: aikido-runtime
         path: ${{ github.workspace }}/build/modules/aikido.so

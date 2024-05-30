@@ -13,12 +13,24 @@ GoString GoCreateString(std::string& s) {
 json GoOnEvent(json& event) {
     std::string eventString = event.dump();
     
-    php_printf("[AIKIDO-C++] Seding event to GO\n");
+    AIKIDO_LOG_DEBUG("Sending event to GO\n");
     
     std::string outputString = CppCreateString(OnEvent(GoCreateString(eventString)));
     
-    php_printf("[AIKIDO-C++] Got event reply: %s\n", outputString.c_str());
+    AIKIDO_LOG_DEBUG("Got event reply: %s\n", outputString.c_str());
     
     json output = json::parse(outputString);
     return output;
+}
+
+bool GoInit(json& initData) {
+    std::string initDataString = initData.dump();
+    
+    AIKIDO_LOG_DEBUG("Sending init data to GO\n");
+    
+    bool initOk = Init(GoCreateString(initDataString));
+    
+    AIKIDO_LOG_DEBUG("Got init status: %d\n", initOk);
+    
+    return initOk;
 }

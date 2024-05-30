@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+import "main/log"
 
 var outgoingHostnames = map[string]bool{}
 
@@ -11,6 +11,6 @@ func OnFunctionExecutedCurl(parameters map[string]interface{}) string {
 	}
 	domain := GetDomain(*url)
 	outgoingHostnames[domain] = false
-	fmt.Println("[AIKIDO-GO] Got domain:", domain)
+	log.Info("Got domain: ", domain)
 	return "{}"
 }
