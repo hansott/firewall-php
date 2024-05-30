@@ -41,9 +41,12 @@ static PHP_GINIT_FUNCTION(aikido)
 
 PHP_MINIT_FUNCTION(aikido)
 {
+	/* Register Aikido-specific (log level, blocking, token, ...) entries in php.ini */
 	REGISTER_INI_ENTRIES();
 
 	if (!aikido_global_init()) {
+		/* If the global initialization fails, we do not load the aikido extension */
+		/* The php script will still run, but without the aikido extension */
 		return FAILURE;
 	}
 
@@ -73,6 +76,7 @@ PHP_MINIT_FUNCTION(aikido)
 
 PHP_MSHUTDOWN_FUNCTION(aikido)
 {
+	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
 	UNREGISTER_INI_ENTRIES();
 	return SUCCESS;
 }
