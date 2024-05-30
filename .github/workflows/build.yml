@@ -42,13 +42,14 @@ jobs:
         make install
 
     - name: Set PHP PATH
-      run: echo "PATH=$HOME/php/bin:\$PATH" >> $GITHUB_ENV
+      run: echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
 
     - name: Run PHP
       run: php -v
  
     - name: Build Curl
       run: |
+        echo $PATH
         cd php-src/ext/curl
         phpize
         ./configure
