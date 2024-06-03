@@ -7,7 +7,7 @@ std::string to_lowercase(const std::string& str) {
 }
 
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
-    if (level < AIKIDO_GLOBAL(log_level)) {
+    if (level > AIKIDO_GLOBAL(log_level)) {
         return;
     }
 
@@ -31,4 +31,10 @@ const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level) {
             return "ERROR";
     }
     return "UNKNOWN";
+}
+
+std::string get_environment_variable(const std::string& env_key) {
+    const char* env_value = getenv(env_key.c_str());
+    if (!env_value) return "";
+    return env_value;
 }

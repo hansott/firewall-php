@@ -24,5 +24,29 @@
 
 #define AIKIDO_GET_FUNCTION_NAME() (ZSTR_VAL(execute_data->func->common.function_name))
 
+enum AIKIDO_LOG_LEVEL {
+    AIKIDO_LOG_LEVEL_ERROR,
+    AIKIDO_LOG_LEVEL_WARN,
+    AIKIDO_LOG_LEVEL_INFO,
+    AIKIDO_LOG_LEVEL_DEBUG
+};
+
+void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
+
+
+#if defined(ZEND_DEBUG)
+	#define AIKIDO_LOG_DEBUG(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
+#else
+	/* Disable debugging logs for production builds */
+	#define AIKIDO_LOG_DEBUG(format, ...)
+#endif
+
+#define AIKIDO_LOG_INFO(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
+#define AIKIDO_LOG_WARN(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
+#define AIKIDO_LOG_ERROR(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
+
+const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level);
 
 std::string to_lowercase(const std::string& str);
+
+std::string get_environment_variable(const std::string& env_key);

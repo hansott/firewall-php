@@ -12,21 +12,30 @@ PHP_INI_BEGIN()
 PHP_INI_END()
 
 bool aikido_global_init() {
-	if (AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_DEBUG ||
-		AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_ERROR) {
+	if (AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_DEBUG ||
+		AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_ERROR) {
 		AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_ERROR;
 	}
 
 	const char* log_level_str = aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level));
 	
+	bool blocking = AIKIDO_GLOBAL(blocking);
+
+	std::string token_str = AIKIDO_GLOBAL(token);
+	std::string token_env = get_environment_variable("AIKIDO_TOKEN");
+	if (!token_env.empty()) {
+		// Override token config from environment variable (if exists)
+		token_str = token_env;
+	}
+
 	AIKIDO_LOG_DEBUG("Config:\n");
 	AIKIDO_LOG_DEBUG("Log level: %s\n", log_level_str);
 	AIKIDO_LOG_DEBUG("Blocking: %d\n", AIKIDO_GLOBAL(blocking));
 
 	json initData = {
 		{ "log_level", log_level_str },
-		{ "token", AIKIDO_GLOBAL(token) },
-		{ "blocking", AIKIDO_GLOBAL(blocking) }
+		{ "token", token_str },
+		{ "blocking", blocking }
 	};
 
 	return GoInit(initData);
