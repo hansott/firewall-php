@@ -4,7 +4,10 @@ Test curl initialization and setting options
 --INI--
 extension=curl.so
 extension=aikido.so
-aikido.log_level=1
+aikido.log_level=2
+
+--SKIPIF--
+<?php if (version_compare(PHP_VERSION, '8.0.0', '<')) die('skip PHP 8.0 or later required'); ?>
 
 --FILE--
 <?php

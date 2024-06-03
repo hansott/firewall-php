@@ -7,26 +7,35 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 PHP_INI_BEGIN()
 	STD_PHP_INI_ENTRY("aikido.log_level", "-1", PHP_INI_ALL, OnUpdateLong, log_level, zend_aikido_globals, aikido_globals)
+	STD_PHP_INI_ENTRY("aikido.endpoint", "http://app.local.aikido.io", PHP_INI_ALL, OnUpdateString, endpoint, zend_aikido_globals, aikido_globals)
 	STD_PHP_INI_ENTRY("aikido.token", "AIK_RUNTIME_UNSET", PHP_INI_ALL, OnUpdateString, token, zend_aikido_globals, aikido_globals)
 	STD_PHP_INI_ENTRY("aikido.blocking", "0", PHP_INI_ALL, OnUpdateBool, blocking, zend_aikido_globals, aikido_globals)
 PHP_INI_END()
 
 bool aikido_global_init() {
-	if (AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_DEBUG ||
-		AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_ERROR) {
+	if (AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_DEBUG ||
+		AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_ERROR) {
 		AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_ERROR;
 	}
 
 	const char* log_level_str = aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level));
 	
+	bool blocking = AIKIDO_GLOBAL(blocking);
+
+	std::string endpoint_str = config_override_with_env(AIKIDO_GLOBAL(endpoint), "AIKIDO_ENDPOINT");;
+	std::string token_str = config_override_with_env(AIKIDO_GLOBAL(token), "AIKIDO_TOKEN");
+
 	AIKIDO_LOG_DEBUG("Config:\n");
 	AIKIDO_LOG_DEBUG("Log level: %s\n", log_level_str);
+	AIKIDO_LOG_DEBUG("Endpoint: %s\n", endpoint_str.c_str());
+	AIKIDO_LOG_DEBUG("Token: %s\n", token_str.c_str()); // to be removed
 	AIKIDO_LOG_DEBUG("Blocking: %d\n", AIKIDO_GLOBAL(blocking));
 
 	json initData = {
 		{ "log_level", log_level_str },
-		{ "token", AIKIDO_GLOBAL(token) },
-		{ "blocking", AIKIDO_GLOBAL(blocking) }
+		{ "endpoint", endpoint_str },
+		{ "token", token_str },
+		{ "blocking", blocking }
 	};
 
 	return GoInit(initData);
@@ -78,6 +87,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 {
 	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
 	UNREGISTER_INI_ENTRIES();
+	GoUninit();
 	return SUCCESS;
 }
 

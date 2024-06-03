@@ -9,3 +9,5 @@ GoString GoCreateString(std::string& s);
 json GoOnEvent(json& event);
 
 bool GoInit(json& initData);
+
+void GoUninit();

@@ -7,7 +7,7 @@ import (
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
 	if _, exists := m[key]; !exists {
-		panic(fmt.Sprintf("Key %s does not exist in map!", key))
+		panic(fmt.Sprintf("Key %v does not exist in map!", key))
 	}
 }
 

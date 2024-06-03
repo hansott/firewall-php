@@ -31,21 +31,6 @@ using json = nlohmann::json;
 #include "GoWrappers.h"
 #include "Utils.h"
 
-enum AIKIDO_LOG_LEVEL {
-    AIKIDO_LOG_LEVEL_DEBUG,
-    AIKIDO_LOG_LEVEL_INFO,
-    AIKIDO_LOG_LEVEL_WARN,
-    AIKIDO_LOG_LEVEL_ERROR
-};
-
-void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
-const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level);
-
-#define AIKIDO_LOG_DEBUG(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
-#define AIKIDO_LOG_INFO(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
-#define AIKIDO_LOG_WARN(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
-#define AIKIDO_LOG_ERROR(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
-
 #define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent)
 
 typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent);

@@ -4,6 +4,7 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"main/cloud"
 	"main/log"
 )
 
@@ -60,8 +61,17 @@ func Init(initJson string) (initOk bool) {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 
+	cloud.Init(MustGetFromMap[string](initData, "endpoint"))
+
 	log.Debug("Init: ", initJson)
+
 	return true
+}
+
+//export Uninit
+func Uninit() {
+	log.Debug("Uninit: {}")
+	cloud.Uninit()
 }
 
 func main() {}

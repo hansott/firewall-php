@@ -3,7 +3,7 @@ Test PHP shell execution functions
 
 --INI--
 extension=aikido.so
-aikido.log_level=1
+aikido.log_level=2
 
 --FILE--
 <?php
