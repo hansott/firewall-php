@@ -34,3 +34,7 @@ bool GoInit(json& initData) {
     
     return initOk;
 }
+
+void GoUninit() {
+    Uninit();
+}

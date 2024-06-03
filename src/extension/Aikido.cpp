@@ -87,6 +87,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 {
 	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
 	UNREGISTER_INI_ENTRIES();
+	GoUninit();
 	return SUCCESS;
 }
 
