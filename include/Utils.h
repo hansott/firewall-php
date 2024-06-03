@@ -50,3 +50,5 @@ const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level);
 std::string to_lowercase(const std::string& str);
 
 std::string get_environment_variable(const std::string& env_key);
+
+std::string config_override_with_env(const std::string previous_value, const std::string& env_key);

@@ -38,3 +38,11 @@ std::string get_environment_variable(const std::string& env_key) {
     if (!env_value) return "";
     return env_value;
 }
+
+std::string config_override_with_env(const std::string previous_value, const std::string& env_key) {
+	std::string env_value = get_environment_variable(env_key.c_str());
+	if (!env_value.empty()) {
+        return env_value;
+	}
+    return previous_value;
+}

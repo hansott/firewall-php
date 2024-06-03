@@ -2,12 +2,14 @@ package cloud
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"main/log"
 	"net/http"
 	"sync"
 	"time"
 )
+
+var endpoint = ""
 
 var (
 	stop chan struct{}
@@ -22,7 +24,7 @@ func MakeGetRequest(url string) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading body:", err)
 		return
@@ -32,7 +34,7 @@ func MakeGetRequest(url string) {
 	log.Info("Response body:", string(body))
 }
 
-func StartConfigThread(url string) {
+func StartConfigThread() {
 	stop = make(chan struct{})
 
 	ticker := time.NewTicker(time.Second * 5)
@@ -43,7 +45,7 @@ func StartConfigThread(url string) {
 		for {
 			select {
 			case <-ticker.C:
-				MakeGetRequest(url)
+				MakeGetRequest(endpoint)
 			case <-stop:
 				ticker.Stop()
 				return
@@ -55,4 +57,13 @@ func StartConfigThread(url string) {
 func StopConfigThread() {
 	close(stop)
 	wg.Wait()
+}
+
+func Init(configuredEndpoint string) {
+	endpoint = configuredEndpoint
+	StartConfigThread()
+}
+
+func Uninit() {
+	StopConfigThread()
 }

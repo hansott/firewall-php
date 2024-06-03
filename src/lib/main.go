@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"main/cloud"
 	"main/log"
-	"time"
 )
 
 type eventFunctionExecutedFn func(map[string]interface{}) string
@@ -62,18 +61,17 @@ func Init(initJson string) (initOk bool) {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 
-	cloud.StartConfigThread("http://example.com")
+	cloud.Init(MustGetFromMap[string](initData, "endpoint"))
 
 	log.Debug("Init: ", initJson)
 
-	time.Sleep(100 * time.Second)
 	return true
 }
 
 //export Uninit
 func Uninit() {
 	log.Debug("Uninit: {}")
-	cloud.StopConfigThread()
+	cloud.Uninit()
 }
 
 func main() {}
