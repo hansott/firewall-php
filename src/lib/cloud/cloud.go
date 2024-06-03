@@ -61,9 +61,9 @@ func StopConfigThread() {
 
 func Init(configuredEndpoint string) {
 	endpoint = configuredEndpoint
-	StartConfigThread()
+	// StartConfigThread()
 }
 
 func Uninit() {
-	StopConfigThread()
+	// StopConfigThread()
 }
