@@ -33,7 +33,7 @@ jobs:
         echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
-      uses: AikidoSec/setup-php
+      uses: AikidoSec/setup-php@2
       with:
         php-version: ${{ matrix.php_version }}
         extensions: :curl
