@@ -38,28 +38,14 @@ jobs:
         cd php-src
         git checkout PHP-${{ matrix.php_version }}
 
-    - name: Build PHP
-      run: |
-        cd php-src
-        ./buildconf --force
-        ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
-        make -j$(nproc)
-        make install
-
-    - name: Set PHP PATH
-      run: |
-        echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_version }}
+        extensions: curl
 
     - name: Run PHP
       run: php -v
- 
-    - name: Build Curl
-      run: |
-        cd php-src/ext/curl
-        phpize
-        ./configure
-        make
-        make install
 
     - name: Build Aikido
       run: |
