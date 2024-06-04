@@ -1,15 +1,18 @@
 package main
 
-import "main/log"
+import (
+	"main/log"
+	"main/utils"
+)
 
 var outgoingHostnames = map[string]bool{}
 
 func OnFunctionExecutedCurl(parameters map[string]interface{}) string {
-	url := GetFromMap[string](parameters, "url")
+	url := utils.GetFromMap[string](parameters, "url")
 	if url == nil {
 		return "{}"
 	}
-	domain := GetDomain(*url)
+	domain := utils.GetDomain(*url)
 	outgoingHostnames[domain] = false
 	log.Info("Got domain: ", domain)
 	return "{}"

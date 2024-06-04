@@ -1,8 +1,11 @@
 package main
 
-type functionExecutedHandlersFn func(map[string]interface{}) string
+import (
+	. "main/aikido_types"
+	"main/utils"
+)
 
-var functionExecutedHandlers = map[string]functionExecutedHandlersFn{
+var functionExecutedHandlers = map[string]HandlerFunction{
 	"curl_init":   OnFunctionExecutedCurl,
 	"curl_setopt": OnFunctionExecutedCurl,
 
@@ -15,10 +18,10 @@ var functionExecutedHandlers = map[string]functionExecutedHandlersFn{
 }
 
 func OnFunctionExecuted(data map[string]interface{}) string {
-	functionName := MustGetFromMap[string](data, "function_name")
-	parameters := MustGetFromMap[map[string]interface{}](data, "parameters")
+	functionName := utils.MustGetFromMap[string](data, "function_name")
+	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 
-	CheckIfKeyExists(functionExecutedHandlers, functionName)
+	utils.CheckIfKeyExists(functionExecutedHandlers, functionName)
 
 	return functionExecutedHandlers[functionName](parameters)
 }

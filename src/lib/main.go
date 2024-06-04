@@ -4,13 +4,14 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	. "main/aikido_types"
 	"main/cloud"
+	. "main/globals"
 	"main/log"
+	"main/utils"
 )
 
-type eventFunctionExecutedFn func(map[string]interface{}) string
-
-var eventHandlers = map[string]eventFunctionExecutedFn{
+var eventHandlers = map[string]HandlerFunction{
 	"function_executed": OnFunctionExecuted,
 	"method_executed":   OnMethodExecuted,
 }
@@ -32,10 +33,10 @@ func OnEvent(eventJson string) (outputJson string) {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	eventName := MustGetFromMap[string](event, "event")
-	data := MustGetFromMap[map[string]interface{}](event, "data")
+	eventName := utils.MustGetFromMap[string](event, "event")
+	data := utils.MustGetFromMap[map[string]interface{}](event, "data")
 
-	CheckIfKeyExists(eventHandlers, eventName)
+	utils.CheckIfKeyExists(eventHandlers, eventName)
 
 	return eventHandlers[eventName](data)
 }
@@ -49,21 +50,18 @@ func Init(initJson string) (initOk bool) {
 		}
 	}()
 
-	var initData map[string]interface{}
-	err := json.Unmarshal([]byte(initJson), &initData)
+	err := json.Unmarshal([]byte(initJson), &InitData)
 	if err != nil {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	log_level := MustGetFromMap[string](initData, "log_level")
-
-	if err := log.SetLogLevel(log_level); err != nil {
+	if err := log.SetLogLevel(InitData.Aikido.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 
-	cloud.Init(MustGetFromMap[string](initData, "endpoint"))
-
 	log.Debug("Init: ", initJson)
+
+	cloud.Init()
 
 	return true
 }

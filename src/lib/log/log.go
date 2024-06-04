@@ -51,6 +51,15 @@ func logMessage(level LogLevel, args ...interface{}) {
 	}
 }
 
+func logMessagef(level LogLevel, format string, args ...interface{}) {
+	if level >= currentLogLevel {
+		formatter := &AikidoFormatter{}
+		message := fmt.Sprintf(format, args...)
+		formattedMessage := formatter.Format(level, message)
+		logger.Print(formattedMessage)
+	}
+}
+
 func Debug(args ...interface{}) {
 	logMessage(DebugLevel, args...)
 }
@@ -65,6 +74,23 @@ func Warn(args ...interface{}) {
 
 func Error(args ...interface{}) {
 	logMessage(ErrorLevel, args...)
+}
+
+func Debugf(format string, args ...interface{}) {
+	logMessagef(DebugLevel, format, args...)
+}
+
+func Infof(format string, args ...interface{}) {
+	logMessagef(InfoLevel, format, args...)
+}
+
+func Warnf(format string, args ...interface{}) {
+	logMessagef(WarnLevel, format, args...)
+}
+
+func Errorf(format string, args ...interface{}) {
+	logMessagef(ErrorLevel, format, args...)
+
 }
 
 func SetLogLevel(level string) error {
