@@ -42,12 +42,7 @@ jobs:
       run: |
         which php
         php -v
-
-    - name: Clone PHP source
-      run: |
-        git clone https://github.com/php/php-src.git
-        cd php-src
-        git checkout PHP-${{ matrix.php_version }}
+        php -i
 
     - name: Build Aikido
       run: |
