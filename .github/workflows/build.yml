@@ -7,16 +7,14 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      php_version:
-        description: 'PHP version to build against'
-        required: true
-        default: 'PHP-8.0'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+      fail-fast: false
 
     steps:
     - name: Checkout repository
@@ -27,34 +25,25 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
 
-    - name: Clone PHP source
+    - name: Get Aikido version
       run: |
-        git clone https://github.com/php/php-src.git
-        cd php-src
-        git checkout ${{ github.event.inputs.php_version }}
+        AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+        echo $AIKIDO_VERSION
+        echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
-    - name: Build PHP
+    - name: Setup PHP
+      uses: AikidoSec/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_version }}
+        extensions: :curl
+        coverage: none
+
+    - name: Check PHP setup
       run: |
-        cd php-src
-        ./buildconf
-        ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
-        make -j$(nproc)
-        make install
-
-    - name: Set PHP PATH
-      run: echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
-
-    - name: Run PHP
-      run: php -v
- 
-    - name: Build Curl
-      run: |
-        echo $PATH
-        cd php-src/ext/curl
-        phpize
-        ./configure
-        make
-        make install
+        which php
+        php -v
+        php -i
 
     - name: Build Aikido
       run: |
@@ -66,17 +55,21 @@ jobs:
         cd ../lib
         go build -buildmode=c-archive -o ../../build/libaikido_go.a
         cd ../../build
-        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure --with-php-config=$HOME/php/bin/php-config
+        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
         make
-        make install
+        sudo make install
 
-    - name: Test
+    - name: Run Aikido tests
       run: |
         cd ${{ github.workspace }}
-        php src/extension/run-tests.php ./tests
+        export TEST_PHP_EXECUTABLE=/usr/bin/php
+        /usr/bin/php src/extension/run-tests.php ./tests
         
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: aikido-runtime
-        path: ${{ github.workspace }}/build/modules/aikido.so
+        name: ${{ env.AIKIDO_ARTIFACT }}
+        path: |
+          ${{ github.workspace }}/build/modules/aikido.so
+          ${{ github.workspace }}/tests/*.diff
