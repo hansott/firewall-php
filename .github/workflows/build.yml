@@ -78,4 +78,4 @@ jobs:
         name: ${{ env.AIKIDO_ARTIFACT }}
         path: |
           ${{ github.workspace }}/build/modules/aikido.so
-          ${{ github.workspace }}/tests
+          ${{ github.workspace }}/tests/*.diff
