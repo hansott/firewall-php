@@ -12,14 +12,14 @@ on:
       php_version:
         description: 'PHP version to build against'
         required: true
-        default: 'PHP-8.0'
+        default: '8.0'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php_version: ['PHP-7.4', 'PHP-8.0', 'PHP-8.1']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
       fail-fast: false
 
     steps:
@@ -41,7 +41,7 @@ jobs:
       run: |
         git clone https://github.com/php/php-src.git
         cd php-src
-        git checkout ${{ github.event.inputs.php_version }}
+        git checkout PHP-${{ github.event.inputs.php_version }}
 
     - name: Build PHP
       run: |
@@ -87,5 +87,6 @@ jobs:
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: aikido-runtime
+        name: aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
         path: ${{ github.workspace }}/build/modules/aikido.so
+        if-no-files-found: error
