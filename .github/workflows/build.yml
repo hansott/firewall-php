@@ -30,6 +30,7 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Clone PHP source
       run: |
@@ -46,7 +47,9 @@ jobs:
         make install
 
     - name: Set PHP PATH
-      run: echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
+      run: |
+        echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
+        echo "TEST_PHP_EXECUTABLE=$HOME/php/bin" >> $GITHUB_ENV
 
     - name: Run PHP
       run: php -v
@@ -77,10 +80,15 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         php src/extension/run-tests.php ./tests
+
+    - uses: geekyeggo/delete-artifact@v5
+      with:
+          name: ${{ env.AIKIDO_ARTIFACT }}
+          failOnError: false
         
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+        name: ${{ env.AIKIDO_ARTIFACT }}
         path: ${{ github.workspace }}/build/modules/aikido.so
         if-no-files-found: error
