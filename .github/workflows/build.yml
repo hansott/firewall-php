@@ -30,13 +30,7 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
-
-    - name: Clone PHP source
-      run: |
-        git clone https://github.com/php/php-src.git
-        cd php-src
-        git checkout PHP-${{ matrix.php_version }}
+        echo "AIKIDO_ARTIFACT=aikido_$AIKIDO_VERSION_php_${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -44,10 +38,16 @@ jobs:
         php-version: ${{ matrix.php_version }}
         extensions: curl
 
-    - name: Run PHP
+    - name: Check PHP setup
       run: |
         which php
         php -v
+
+    - name: Clone PHP source
+      run: |
+        git clone https://github.com/php/php-src.git
+        cd php-src
+        git checkout PHP-${{ matrix.php_version }}
 
     - name: Build Aikido
       run: |
@@ -61,14 +61,15 @@ jobs:
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
         make
-        make install
+        sudo make install
 
-    - name: Test
+    - name: Run Aikido tests
       run: |
         cd ${{ github.workspace }}
         php src/extension/run-tests.php ./tests
 
-    - uses: geekyeggo/delete-artifact@v5
+    - name: Delete existing artifact
+      uses: geekyeggo/delete-artifact@v5
       with:
           name: ${{ env.AIKIDO_ARTIFACT }}
           failOnError: false
