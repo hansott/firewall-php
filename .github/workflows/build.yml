@@ -30,7 +30,7 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_ARTIFACT=aikido_$AIKIDO_VERSION_php_${{ matrix.php_version }}" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
