@@ -59,7 +59,7 @@ jobs:
         cd ../lib
         go build -buildmode=c-archive -o ../../build/libaikido_go.a
         cd ../../build
-        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure --with-php-config=$HOME/php/bin/php-config
+        CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
         make
         make install
 
