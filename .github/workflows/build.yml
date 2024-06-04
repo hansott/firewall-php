@@ -37,6 +37,7 @@ jobs:
       with:
         php-version: ${{ matrix.php_version }}
         extensions: :curl
+        coverage: none
 
     - name: Check PHP setup
       run: |
