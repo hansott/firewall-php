@@ -45,7 +45,9 @@ jobs:
         extensions: curl
 
     - name: Run PHP
-      run: php -v
+      run: |
+        which php
+        php -v
 
     - name: Build Aikido
       run: |
