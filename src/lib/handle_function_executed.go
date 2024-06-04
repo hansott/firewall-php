@@ -5,7 +5,7 @@ import (
 	"main/utils"
 )
 
-var functionExecutedHandlers = map[string]FunctionExecutedHandlersFn{
+var functionExecutedHandlers = map[string]HandlerFunction{
 	"curl_init":   OnFunctionExecutedCurl,
 	"curl_setopt": OnFunctionExecutedCurl,
 

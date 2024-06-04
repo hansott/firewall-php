@@ -5,7 +5,7 @@ import (
 	"main/utils"
 )
 
-var methodExecutedHandlers = map[Method]MethodExecutedHandlersFn{
+var methodExecutedHandlers = map[Method]HandlerFunction{
 	{ClassName: "pdo", MethodName: "__construct"}: OnMethodExecutedPdoConstruct,
 	{ClassName: "pdo", MethodName: "query"}:       OnMethodExecutedPdoQuery,
 }

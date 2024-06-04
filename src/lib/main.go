@@ -11,7 +11,7 @@ import (
 	"main/utils"
 )
 
-var eventHandlers = map[string]EventFunctionExecutedFn{
+var eventHandlers = map[string]HandlerFunction{
 	"function_executed": OnFunctionExecuted,
 	"method_executed":   OnMethodExecuted,
 }
