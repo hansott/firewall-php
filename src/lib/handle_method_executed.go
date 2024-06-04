@@ -1,25 +1,23 @@
 package main
 
-type Method struct {
-	ClassName  string
-	MethodName string
-}
+import (
+	. "main/aikido_types"
+	"main/utils"
+)
 
-type methodExecutedHandlersFn func(map[string]interface{}) string
-
-var methodExecutedHandlers = map[Method]methodExecutedHandlersFn{
-	Method{ClassName: "pdo", MethodName: "__construct"}: OnMethodExecutedPdoConstruct,
-	Method{ClassName: "pdo", MethodName: "query"}:       OnMethodExecutedPdoQuery,
+var methodExecutedHandlers = map[Method]MethodExecutedHandlersFn{
+	{ClassName: "pdo", MethodName: "__construct"}: OnMethodExecutedPdoConstruct,
+	{ClassName: "pdo", MethodName: "query"}:       OnMethodExecutedPdoQuery,
 }
 
 func OnMethodExecuted(data map[string]interface{}) string {
-	className := MustGetFromMap[string](data, "class_name")
-	methodName := MustGetFromMap[string](data, "method_name")
-	parameters := MustGetFromMap[map[string]interface{}](data, "parameters")
+	className := utils.MustGetFromMap[string](data, "class_name")
+	methodName := utils.MustGetFromMap[string](data, "method_name")
+	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 
 	methodKey := Method{ClassName: className, MethodName: methodName}
 
-	CheckIfKeyExists(methodExecutedHandlers, methodKey)
+	utils.CheckIfKeyExists(methodExecutedHandlers, methodKey)
 
 	return methodExecutedHandlers[methodKey](parameters)
 }

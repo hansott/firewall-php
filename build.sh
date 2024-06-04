@@ -9,4 +9,3 @@ CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-L./ -laikido_g
 make
 make install
 cd ..
-source run_tests.sh

@@ -2,6 +2,7 @@ package main
 
 import (
 	"main/log"
+	"main/utils"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ func OnMethodExecutedPdoConstruct(parameters map[string]interface{}) string {
 }
 
 func OnMethodExecutedPdoQuery(parameters map[string]interface{}) string {
-	query := MustGetFromMap[string](parameters, "query")
+	query := utils.MustGetFromMap[string](parameters, "query")
 	log.Info("Got PDO query: ", query)
 	if strings.Contains(query, " OR 1=1") {
 		return `{"action": "throw", "message": "Sql injection detected", "code": -1}`

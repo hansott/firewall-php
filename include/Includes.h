@@ -11,6 +11,12 @@
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>
+#include <sys/utsname.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <netinet/in.h> 
+#include <arpa/inet.h>
+#include <net/if.h>
 
 #include "ext/standard/info.h"
 #include "libaikido_go.h"

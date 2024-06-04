@@ -1,11 +1,14 @@
 package main
 
-import "main/log"
+import (
+	"main/log"
+	"main/utils"
+)
 
 var shellCommands = map[string]bool{}
 
 func OnFunctionExecutedShell(parameters map[string]interface{}) string {
-	cmd := GetFromMap[string](parameters, "cmd")
+	cmd := utils.GetFromMap[string](parameters, "cmd")
 	if cmd == nil {
 		return "{}"
 	}
