@@ -41,7 +41,7 @@ jobs:
     - name: Build PHP
       run: |
         cd php-src
-        ./buildconf
+        ./buildconf --force
         ./configure --prefix=$HOME/php --with-config-file-path=$HOME/php
         make -j$(nproc)
         make install
@@ -49,7 +49,6 @@ jobs:
     - name: Set PHP PATH
       run: |
         echo "PATH=$HOME/php/bin:$PATH" >> $GITHUB_ENV
-        echo "TEST_PHP_EXECUTABLE=$HOME/php/bin" >> $GITHUB_ENV
 
     - name: Run PHP
       run: php -v
