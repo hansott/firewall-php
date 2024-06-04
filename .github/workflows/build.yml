@@ -60,6 +60,7 @@ jobs:
 
     - name: Run Aikido tests
       run: |
+        export TEST_PHP_EXECUTABLE=/usr/bin/php
         cd ${{ github.workspace }}
         php src/extension/run-tests.php ./tests
 
