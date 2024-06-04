@@ -74,5 +74,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.AIKIDO_ARTIFACT }}
-        path: ${{ github.workspace }}/build/modules/aikido.so
-        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/modules/aikido.so
+          ${{ github.workspace }}/tests
