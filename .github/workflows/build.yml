@@ -64,12 +64,18 @@ jobs:
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
         /usr/bin/php src/extension/run-tests.php ./tests
+
+    - name: Run Aikido tests
+      run: |
+        cd ${{ github.workspace }}/build/modules
+        mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
         
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: ${{ env.AIKIDO_ARTIFACT }}
+        if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/modules/aikido.so
+          ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
           ${{ github.workspace }}/tests/*.diff
