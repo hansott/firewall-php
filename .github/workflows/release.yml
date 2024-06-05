@@ -21,6 +21,9 @@ jobs:
       with:
         pattern: aikido-0.1.0-php-*
         merge-multiple: true
+    - name: List stuff
+      run: |
+        ls -l
     - name: Deploy
       uses: softprops/action-gh-release@v2
       with:
