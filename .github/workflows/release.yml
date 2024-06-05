@@ -24,6 +24,8 @@ jobs:
     - name: List stuff
       run: |
         ls -l
+        pwd
+        ls -l /home/runner/work/runtime-php/runtime-php
     - name: Deploy
       uses: softprops/action-gh-release@v2
       with:
