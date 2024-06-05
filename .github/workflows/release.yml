@@ -20,7 +20,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         pattern: aikido-0.1.0-php-*
-        merge-multiple: true
     - name: List stuff
       run: |
         ls -l
