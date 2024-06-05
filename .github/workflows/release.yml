@@ -6,13 +6,13 @@ on:
       - main    
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
   release:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Build
-      uses: AikidoSec/runtime-php/.github/workflows/build.yml
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
