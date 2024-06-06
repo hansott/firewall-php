@@ -70,6 +70,10 @@ jobs:
       run: |
         echo "~/go/bin" >> $GITHUB_PATH
 
+    - name: Set PATH env
+      run: |
+        echo $PATH
+
     - name: Get Aikido version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
