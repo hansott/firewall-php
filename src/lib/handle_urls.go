@@ -1,6 +1,7 @@
 package main
 
 import (
+	"main/grpc"
 	"main/log"
 	"main/utils"
 )
@@ -11,7 +12,7 @@ func OnFunctionExecutedCurl(parameters map[string]interface{}) string {
 		return "{}"
 	}
 	domain := utils.GetDomain(*url)
-	//globals.OutgoingHostnames[domain] = false
 	log.Info("Got domain: ", domain)
+	go grpc.SendDomain(domain)
 	return "{}"
 }

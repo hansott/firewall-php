@@ -5,6 +5,7 @@ import (
 	"main/cloud"
 	"main/config"
 	"main/globals"
+	"main/grpc"
 	"main/log"
 	"main/machine"
 	"os"
@@ -38,7 +39,8 @@ func main() {
 	}
 
 	machine.Init()
-	cloud.Init()
+	go cloud.Init()
+	go grpc.Init()
 
 	runUntilKilled()
 

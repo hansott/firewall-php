@@ -4,4 +4,4 @@ import . "main/aikido_types"
 
 var Config ConfigData
 var Machine MachineData
-var OutgoingHostnames = map[string]bool{}
+var Hostnames = map[string]bool{}

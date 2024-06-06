@@ -7,9 +7,11 @@ import (
 )
 
 func GetHostnames() []Hostname {
-	hostnames := make([]Hostname, 1)
-	hostnames[0] = Hostname{
-		URL: "www.example3.com",
+	hostnames := make([]Hostname, len(globals.Hostnames))
+	i := 0
+	for domain := range globals.Hostnames {
+		hostnames[i] = Hostname{URL: domain}
+		i += 1
 	}
 	return hostnames
 }

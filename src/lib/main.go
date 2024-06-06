@@ -6,6 +6,7 @@ import (
 	"fmt"
 	. "main/aikido_types"
 	"main/globals"
+	"main/grpc"
 	"main/log"
 	"main/utils"
 )
@@ -60,12 +61,16 @@ func Init(initJson string) (initOk bool) {
 
 	log.Debug("Init: ", initJson)
 
+	grpc.Init()
+
 	return true
 }
 
 //export Uninit
 func Uninit() {
 	log.Debug("Uninit: {}")
+
+	grpc.Uninit()
 }
 
 func main() {}

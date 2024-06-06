@@ -52,7 +52,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
 
     - name: Get Aikido Version
       run: |

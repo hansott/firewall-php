@@ -19,3 +19,6 @@ tests/*.php
 tests/*.sh
 *aikido_agent
 *aikido_config.json
+*.pb.go
+*.pb.go
+*go.sum
