@@ -74,6 +74,7 @@ jobs:
       run: |
         echo $PATH
         whereis go
+        whereis protoc-gen-go
 
     - name: Get Aikido version
       run: |
