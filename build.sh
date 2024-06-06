@@ -1,6 +1,8 @@
 rm -rf build
 mkdir build
-cd src/extension
+cd src/agent
+go build -o ../../build/aikido
+cd ../extension
 phpize
 cd ../lib
 go build -buildmode=c-archive -o ../../build/libaikido_go.a

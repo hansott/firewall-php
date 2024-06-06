@@ -10,7 +10,39 @@ on:
   workflow_call:
 
 jobs:
-  build_extension:
+  build_agent:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+      fail-fast: false
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Get Aikido Version
+      run: |
+        AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+        echo $AIKIDO_VERSION
+        echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION" >> $GITHUB_ENV
+
+    - name: Build Aikido Agent
+      run: |
+        cd src/agent
+        go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
+
+    - name: Archive Build Artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ env.AIKIDO_ARTIFACT }}
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/${{ env.AIKIDO_ARTIFACT }}
+
+  build_php_extension:
     runs-on: ubuntu-latest
     strategy:
       matrix:
