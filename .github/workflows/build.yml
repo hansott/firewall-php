@@ -27,6 +27,7 @@ jobs:
     - name: Build Aikido Agent
       run: |
         cd src/agent
+        go get google.golang.org/grpc
         go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
 
     - name: Archive Build Artifacts
@@ -82,6 +83,7 @@ jobs:
         cd src/extension
         phpize
         cd ../lib
+        go get google.golang.org/grpc
         go build -buildmode=c-archive -o ../../build/libaikido_go.a
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
