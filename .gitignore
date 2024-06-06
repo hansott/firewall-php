@@ -22,3 +22,5 @@ tests/*.sh
 *.pb.go
 *.pb.go
 *go.sum
+*.log
+*.nice

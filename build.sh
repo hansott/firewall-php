@@ -1,6 +1,9 @@
 rm -rf build
 mkdir build
-cd src/agent
+cd src
+protoc --go_out=agent --go-grpc_out=agent ipc.proto
+protoc --go_out=lib --go-grpc_out=lib ipc.proto
+cd agent
 go get google.golang.org/grpc
 go build -o ../../build/aikido
 cd ../extension

@@ -26,7 +26,9 @@ jobs:
 
     - name: Build Aikido Agent
       run: |
-        cd src/agent
+        cd src
+        protoc --go_out=agent --go-grpc_out=agent ipc.proto
+        cd agent
         go get google.golang.org/grpc
         go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
 
@@ -82,7 +84,9 @@ jobs:
         mkdir build
         cd src/extension
         phpize
-        cd ../lib
+        cd ..
+        protoc --go_out=lib --go-grpc_out=lib ipc.proto
+        cd lib
         go get google.golang.org/grpc
         go build -buildmode=c-archive -o ../../build/libaikido_go.a
         cd ../../build
