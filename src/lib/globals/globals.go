@@ -1,6 +1,6 @@
 package globals
 
-import . "main/aikido_types"
-
-var InitData InitDataType
-var OutgoingHostnames = map[string]bool{}
+var InitData struct {
+	Version  string `json:"version"`
+	LogLevel string `json:"log_level"`
+}

@@ -9,7 +9,7 @@ import (
 func GetHostnames() []Hostname {
 	hostnames := make([]Hostname, 1)
 	hostnames[0] = Hostname{
-		URL: "www.example2.com",
+		URL: "www.example3.com",
 	}
 	return hostnames
 }

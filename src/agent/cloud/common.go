@@ -8,13 +8,13 @@ import (
 
 func GetAgentInfo() AgentInfo {
 	return AgentInfo{
-		DryMode:   !InitData.Aikido.Blocking,
-		Hostname:  InitData.Machine.HostName,
-		Version:   InitData.Aikido.Version,
-		IPAddress: InitData.Machine.IPAddress,
+		DryMode:   !Config.Blocking,
+		Hostname:  Machine.HostName,
+		Version:   Version,
+		IPAddress: Machine.IPAddress,
 		OS: OsInfo{
-			Name:    InitData.Machine.OS,
-			Version: InitData.Machine.OSVersion,
+			Name:    Machine.OS,
+			Version: Machine.OSVersion,
 		},
 		Packages: make(map[string]string, 0),
 		NodeEnv:  "",

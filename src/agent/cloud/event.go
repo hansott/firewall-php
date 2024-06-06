@@ -12,7 +12,7 @@ import (
 )
 
 func SendEvent(route string, method string, payload interface{}) (map[string]interface{}, error) {
-	apiEndpoint, err := url.JoinPath(globals.InitData.Aikido.Endpoint, route)
+	apiEndpoint, err := url.JoinPath(globals.Config.Endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
@@ -29,7 +29,7 @@ func SendEvent(route string, method string, payload interface{}) (map[string]int
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Authorization", globals.InitData.Aikido.Token)
+	req.Header.Set("Authorization", globals.Config.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

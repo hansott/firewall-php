@@ -10,7 +10,7 @@ on:
   workflow_call:
 
 jobs:
-  build:
+  build_extension:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,15 +18,15 @@ jobs:
       fail-fast: false
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install build dependencies
+    - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
 
-    - name: Get Aikido version
+    - name: Get Aikido Version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
@@ -46,7 +46,7 @@ jobs:
         php -v
         php -i
 
-    - name: Build Aikido
+    - name: Build Extension
       run: |
         cd ${{ github.workspace }}
         rm -rf build
@@ -60,18 +60,18 @@ jobs:
         make
         sudo make install
 
-    - name: Run Aikido tests
+    - name: Run Tests
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
         /usr/bin/php src/extension/run-tests.php ./tests
 
-    - name: Rename aikido.so
+    - name: Version Aikido Extension
       run: |
         cd ${{ github.workspace }}/build/modules
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
         
-    - name: Archive build artifacts
+    - name: Archive Build Artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
