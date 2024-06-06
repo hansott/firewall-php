@@ -24,7 +24,7 @@ jobs:
 
     - name: Set PATH env
       run: |
-        echo "~/go/bin" >> $GITHUB_PATH
+        echo "$HOME/go/bin" >> $GITHUB_PATH
 
     - name: Get Aikido version
       run: |
@@ -68,11 +68,12 @@ jobs:
 
     - name: Set PATH env
       run: |
-        echo "~/go/bin" >> $GITHUB_PATH
+        echo "$HOME/go/bin" >> $GITHUB_PATH
 
     - name: Set PATH env
       run: |
         echo $PATH
+        ls -l ~/go/bin
 
     - name: Get Aikido version
       run: |
