@@ -73,7 +73,7 @@ jobs:
     - name: Set PATH env
       run: |
         echo $PATH
-        ls -l ~/go/bin
+        whereis go
 
     - name: Get Aikido version
       run: |
