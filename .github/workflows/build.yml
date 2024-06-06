@@ -22,8 +22,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
 
-    - name: Set PATH env
+    - name: GO setup
       run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
         echo "$HOME/go/bin" >> $GITHUB_PATH
 
     - name: Get Aikido version
@@ -66,8 +68,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
 
-    - name: Set PATH env
+    - name: GO setup
       run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
         echo "$HOME/go/bin" >> $GITHUB_PATH
 
     - name: Set PATH env
