@@ -14,17 +14,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Get Aikido Version
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
+
+    - name: Set PATH env
+      run: |
+        echo "~/go/bin" >> $GITHUB_PATH
+
+    - name: Get Aikido version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
         echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION" >> $GITHUB_ENV
 
-    - name: Build Aikido Agent
+    - name: Build Aikido agent
       run: |
         cd src
         protoc --go_out=agent --go-grpc_out=agent ipc.proto
@@ -32,7 +41,7 @@ jobs:
         go get google.golang.org/grpc
         go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
 
-    - name: Archive Build Artifacts
+    - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -49,15 +58,19 @@ jobs:
       fail-fast: false
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
 
-    - name: Get Aikido Version
+    - name: Set PATH env
+      run: |
+        echo "~/go/bin" >> $GITHUB_PATH
+
+    - name: Get Aikido version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
@@ -77,7 +90,7 @@ jobs:
         php -v
         php -i
 
-    - name: Build Extension
+    - name: Build extension
       run: |
         cd ${{ github.workspace }}
         rm -rf build
@@ -94,18 +107,18 @@ jobs:
         make
         sudo make install
 
-    - name: Run Tests
+    - name: Run tests
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
         /usr/bin/php src/extension/run-tests.php ./tests
 
-    - name: Version Aikido Extension
+    - name: Version Aikido extension
       run: |
         cd ${{ github.workspace }}/build/modules
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
         
-    - name: Archive Build Artifacts
+    - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
