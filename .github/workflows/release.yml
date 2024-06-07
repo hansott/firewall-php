@@ -21,7 +21,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         pattern: |
-          aikido-${{ env.AIKIDO_VERSION }}-*
+          aikido-${{ env.AIKIDO_VERSION }}*
     - name: List Artifacts
       run: |
         ls -l
@@ -31,4 +31,4 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          ./**/aikido-${{ env.AIKIDO_VERSION }}-php-*
+          ./**/aikido-${{ env.AIKIDO_VERSION }}*
