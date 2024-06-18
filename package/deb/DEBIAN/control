@@ -1,0 +1,7 @@
+Package: aikido-runtime
+Version: 0.2.0
+Section: base
+Priority: optional
+Architecture: all
+Maintainer: Tudor <tudor@aikido.dev>
+Description: Aikido PHP runtime

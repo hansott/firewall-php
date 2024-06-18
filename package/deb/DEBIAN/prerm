@@ -1,0 +1,67 @@
+#!/bin/bash
+
+echo "Starting the uninstallation process for Aikido..."
+
+# Function to handle script termination
+cleanup() {
+    echo "Uninstallation script was terminated unexpectedly."
+    exit 1
+}
+
+# Trap termination signals
+trap cleanup SIGTERM SIGINT
+
+# Stop the service if it is running
+if [ -f /etc/init.d/aikido ]; then
+    echo "Stopping the Aikido service..."
+    /etc/init.d/aikido stop || true
+else
+    echo "Aikido service is not running or does not exist."
+fi
+
+sleep 10
+
+echo "Disabling the Aikido service..."
+update-rc.d -f aikido remove
+
+# Unlink the main executable if it exists
+if [ -L /opt/aikido/aikido ]; then
+    echo "Unlinking the Aikido main executable..."
+    unlink /opt/aikido/aikido
+else
+    echo "Aikido main executable not found. Skipping unlink step."
+fi
+
+# Remove the PHP extension
+if [ -d /etc/php ]; then
+    echo "Removing the Aikido PHP extension..."
+    PHP_VERSIONS=$(ls /etc/php)
+    for PHP_VERSION in $PHP_VERSIONS; do
+        EXT_DIR="/usr/lib/php/$PHP_VERSION"
+        if [ -d "$EXT_DIR" ]; then
+            echo "Uninstalling Aikido extension for PHP $PHP_VERSION..."
+            if [ -L /usr/lib/php/$PHP_VERSION/aikido.so ]; then
+                unlink /usr/lib/php/$PHP_VERSION/aikido.so
+            else
+                echo "Aikido extension not found for PHP $PHP_VERSION."
+            fi
+        else
+            echo "PHP extension directory $EXT_DIR does not exist for PHP $PHP_VERSION. Skipping."
+            continue
+        fi
+
+        # Remove aikido configuration from php.ini
+        if [ -f /etc/php/$PHP_VERSION/cli/php.ini ]; then
+            echo "Removing Aikido configuration from php.ini for PHP $PHP_VERSION..."
+            sed -i '/aikido/d' /etc/php/$PHP_VERSION/cli/php.ini
+        else
+            echo "php.ini not found for PHP $PHP_VERSION."
+        fi
+    done
+else
+    echo "/etc/php directory not found. Skipping PHP extension removal."
+fi
+
+echo "Uninstallation process for Aikido completed."
+
+exit 0

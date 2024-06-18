@@ -47,6 +47,14 @@ std::string config_override_with_env(const std::string previous_value, const std
     return previous_value;
 }
 
+bool config_override_with_env_bool(bool previous_value, const std::string& env_key) {
+	std::string env_value = get_environment_variable(env_key.c_str());
+	if (!env_value.empty()) {
+        return (env_value == "1" || env_value == "true");
+	}
+    return previous_value;
+}
+
 std::string get_hostname() {
     char hostname[HOST_NAME_MAX + 1];
 

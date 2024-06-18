@@ -18,9 +18,10 @@ tests/*.out
 tests/*.php
 tests/*.sh
 *aikido_agent
-*aikido_config.json
 *.pb.go
 *.pb.go
 *go.sum
 *.log
 *.nice
+aikido-*-extension-php-*.so
+.vscode/settings.json

@@ -53,6 +53,8 @@ std::string get_environment_variable(const std::string& env_key);
 
 std::string config_override_with_env(const std::string previous_value, const std::string& env_key);
 
+bool config_override_with_env_bool(bool previous_value, const std::string& env_key);
+
 std::string get_hostname();
 
 utsname get_os_info();

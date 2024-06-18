@@ -1,0 +1,53 @@
+#!/bin/bash
+
+VERSION="0.2.0"
+
+# Find all installed PHP versions
+PHP_VERSIONS=$(ls /etc/php)
+for PHP_VERSION in $PHP_VERSIONS; do
+    EXT_DIR="/usr/lib/php/$PHP_VERSION"
+    if [ -d "$EXT_DIR" ]; then
+        # Install PHP extension
+        echo "Installing Aikido extension for PHP $PHP_VERSION..."
+        if [ -f "/opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so" ]; then
+            ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $EXT_DIR/aikido.so
+        else
+            echo "Extension file /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so does not exist. Skipping."
+        fi
+
+        # Updating aikido.ini (uncomment if needed)
+        # echo "extension=aikido.so" > "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"
+        
+        # Updating php.ini
+        echo "extension=aikido.so" >> "/etc/php/$PHP_VERSION/cli/php.ini"
+        echo "aikido.log_level=DEBUG" >> "/etc/php/$PHP_VERSION/cli/php.ini"
+    else
+        echo "PHP extension directory $EXT_DIR does not exist for PHP $PHP_VERSION. Skipping."
+    fi
+done
+
+echo "Installing Aikido agent $VERSION..."
+if [ -f "/opt/aikido/aikido-$VERSION" ]; then
+    ln -sf /opt/aikido/aikido-$VERSION /opt/aikido/aikido
+else
+    echo "Aikido agent directory /opt/aikido/aikido-$VERSION does not exist. Exiting."
+    exit 1
+fi
+
+echo "Registering Aikido agent to run as service..."
+if command -v update-rc.d &> /dev/null; then
+    update-rc.d aikido defaults
+else
+    echo "update-rc.d not found. Cannot register service."
+    exit 1
+fi
+
+echo "Starting Aikido agent service..."
+if [ -x "/etc/init.d/aikido" ]; then
+    /etc/init.d/aikido start
+else
+    echo "Service script /etc/init.d/aikido not found. Cannot start service."
+    exit 1
+fi
+
+exit 0
