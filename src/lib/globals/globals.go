@@ -1,5 +1,6 @@
 package globals
 
-import . "main/aikido_types"
-
-var InitData InitDataType
+var InitData struct {
+	Version  string `json:"version"`
+	LogLevel string `json:"log_level"`
+}

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	. "main/aikido_types"
-	"main/cloud"
-	. "main/globals"
+	"main/globals"
+	"main/grpc"
 	"main/log"
 	"main/utils"
 )
@@ -50,18 +50,18 @@ func Init(initJson string) (initOk bool) {
 		}
 	}()
 
-	err := json.Unmarshal([]byte(initJson), &InitData)
+	err := json.Unmarshal([]byte(initJson), &globals.InitData)
 	if err != nil {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	if err := log.SetLogLevel(InitData.Aikido.LogLevel); err != nil {
+	if err := log.SetLogLevel(globals.InitData.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 
 	log.Debug("Init: ", initJson)
 
-	cloud.Init()
+	grpc.Init()
 
 	return true
 }
@@ -69,7 +69,8 @@ func Init(initJson string) (initOk bool) {
 //export Uninit
 func Uninit() {
 	log.Debug("Uninit: {}")
-	cloud.Uninit()
+
+	grpc.Uninit()
 }
 
 func main() {}

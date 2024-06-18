@@ -5,22 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	. "main/aikido_types"
-	. "main/globals"
+	"main/globals"
 	"main/log"
 	"net/http"
 	"net/url"
-	"sync"
-	"time"
-)
-
-var (
-	stop chan struct{}
-	wg   sync.WaitGroup
 )
 
 func SendEvent(route string, method string, payload interface{}) (map[string]interface{}, error) {
-	apiEndpoint, err := url.JoinPath(InitData.Aikido.Endpoint, route)
+	apiEndpoint, err := url.JoinPath(globals.Config.Endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
@@ -37,7 +29,7 @@ func SendEvent(route string, method string, payload interface{}) (map[string]int
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Authorization", InitData.Aikido.Token)
+	req.Header.Set("Authorization", globals.Config.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -65,63 +57,4 @@ func SendEvent(route string, method string, payload interface{}) (map[string]int
 	}
 
 	return responseJson, nil
-}
-
-func SendStartEvent() {
-	startedEvent := Started{
-		Type: "started",
-		Agent: AgentInfo{
-			DryMode:   !InitData.Aikido.Blocking,
-			Hostname:  InitData.Machine.HostName,
-			Version:   InitData.Aikido.Version,
-			IPAddress: InitData.Machine.IPAddress,
-			OS: OsInfo{
-				Name:    InitData.Machine.OS,
-				Version: InitData.Machine.OSVersion,
-			},
-			Packages: make(map[string]string, 0),
-			NodeEnv:  "",
-		},
-		Time: time.Now().Unix(),
-	}
-
-	_, err := SendEvent(EventsAPI, EventsAPIMethod, startedEvent)
-	if err != nil {
-		log.Debug("Error in sending start event: ", err)
-	}
-}
-
-func StartPollingThread() {
-	stop = make(chan struct{})
-
-	ticker := time.NewTicker(time.Second * 10)
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-		for {
-			select {
-			case <-ticker.C:
-				return
-				//MakeGetRequest(endpoint)
-			case <-stop:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-}
-
-func StopPollingThread() {
-	close(stop)
-	wg.Wait()
-}
-
-func Init() {
-	SendStartEvent()
-	//StartPollingThread()
-}
-
-func Uninit() {
-	//StopPollingThread()
 }

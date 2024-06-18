@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package ipc;
+
+option go_package = "ipc/protos;protos";
+
+service Aikido {
+  rpc SendDomain (Domain) returns (google.protobuf.Empty);
+}
+
+message Domain {
+  string domain = 1;
+}

@@ -10,7 +10,50 @@ on:
   workflow_call:
 
 jobs:
-  build:
+  build_agent:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
+
+    - name: GO setup
+      run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+        echo "$HOME/go/bin" >> $GITHUB_PATH
+
+    - name: Get Aikido version
+      run: |
+        AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+        echo $AIKIDO_VERSION
+        echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION" >> $GITHUB_ENV
+
+    - name: Build Aikido agent
+      run: |
+        cd src
+        protoc --go_out=agent --go-grpc_out=agent ipc.proto
+        cd agent
+        go get main/ipc/protos
+        go get google.golang.org/grpc
+        go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ env.AIKIDO_ARTIFACT }}
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/${{ env.AIKIDO_ARTIFACT }}
+
+  build_php_extension:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,17 +64,29 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install build dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
+
+    - name: GO setup
+      run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+        echo "$HOME/go/bin" >> $GITHUB_PATH
+
+    - name: Set PATH env
+      run: |
+        echo $PATH
+        whereis go
+        whereis protoc-gen-go
 
     - name: Get Aikido version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-${{ matrix.php_version }}" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
       uses: AikidoSec/setup-php@v2
@@ -46,27 +101,31 @@ jobs:
         php -v
         php -i
 
-    - name: Build Aikido
+    - name: Build extension
       run: |
         cd ${{ github.workspace }}
         rm -rf build
         mkdir build
         cd src/extension
         phpize
-        cd ../lib
+        cd ..
+        protoc --go_out=lib --go-grpc_out=lib ipc.proto
+        cd lib
+        go get main/ipc/protos
+        go get google.golang.org/grpc
         go build -buildmode=c-archive -o ../../build/libaikido_go.a
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -I../include" LDFLAGS="-L./ -laikido_go" ../src/extension/configure
         make
         sudo make install
 
-    - name: Run Aikido tests
+    - name: Run tests
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
         /usr/bin/php src/extension/run-tests.php ./tests
 
-    - name: Rename aikido.so
+    - name: Version Aikido extension
       run: |
         cd ${{ github.workspace }}/build/modules
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so

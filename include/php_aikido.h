@@ -6,7 +6,7 @@
 extern zend_module_entry aikido_module_entry;
 # define phpext_aikido_ptr &aikido_module_entry
 
-# define PHP_AIKIDO_VERSION "0.1.0"
+# define PHP_AIKIDO_VERSION "0.2.0"
 
 # if defined(ZTS) && defined(COMPILE_DL_AIKIDO)
 ZEND_TSRMLS_CACHE_EXTERN()
@@ -14,8 +14,6 @@ ZEND_TSRMLS_CACHE_EXTERN()
 
 ZEND_BEGIN_MODULE_GLOBALS(aikido)
     long log_level;
-    char* endpoint;
-    char* token;
     bool blocking;
 ZEND_END_MODULE_GLOBALS(aikido)
 
