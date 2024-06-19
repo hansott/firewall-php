@@ -146,6 +146,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Get Aikido version
+        run: |
+          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+          echo $AIKIDO_VERSION
+          echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-php-firewall.deb" >> $GITHUB_ENV
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -160,11 +166,11 @@ jobs:
           mv aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
       - name: Build deb package
         run: |
-          dpkg --build package/deb aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb
+          dpkg --build package/deb ${{ env.AIKIDO_ARTIFACT }}
       - name: Archive deb package
         uses: actions/upload-artifact@v4
         with:
-          name: aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb
+          name: ${{ env.AIKIDO_ARTIFACT }}
           if-no-files-found: error
           path: |
-            aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb
+            ${{ env.AIKIDO_ARTIFACT }}

@@ -62,6 +62,14 @@ else
     echo "/etc/php directory not found. Skipping PHP extension removal."
 fi
 
+# Remove the Aikido log file
+if [ -f "/var/log/aikido.log" ]; then
+    echo "Removing /var/log/aikido.log..."
+    rm -f /var/log/aikido.log
+else
+    echo "/var/log/aikido.log does not exist. Skipping."
+fi
+
 echo "Uninstallation process for Aikido completed."
 
 exit 0
