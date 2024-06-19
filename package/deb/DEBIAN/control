@@ -1,7 +1,7 @@
-Package: aikido-runtime
+Package: aikido-firewall-php
 Version: 0.2.0
 Section: base
 Priority: optional
 Architecture: all
-Maintainer: Tudor <tudor@aikido.dev>
-Description: Aikido PHP runtime
+Maintainer: Aikido <hello@aikido.dev>
+Description: Aikido Firewall for PHP

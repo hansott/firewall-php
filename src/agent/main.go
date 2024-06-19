@@ -33,16 +33,14 @@ func main() {
 	log.SetLogLevel("INFO")
 	log.Infof("Aikido agent v%s started!", globals.Version)
 
+	log.Init()
 	config.Init()
-	if err := log.SetLogLevel(globals.Config.LogLevel); err != nil {
-		panic(fmt.Sprintf("Error setting log level: %s", err))
-	}
-
 	machine.Init()
 	go cloud.Init()
 	go grpc.Init()
 
 	runUntilKilled()
 
+	log.Uninit()
 	log.Infof("Aikido agent v%s stopped!", globals.Version)
 }

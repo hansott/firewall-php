@@ -155,4 +155,16 @@ jobs:
         run: |
           ls -l
           pwd
-          ls -l /home/runner/work/runtime-php/runtime-php
+      - name: Prepare deb package
+        run: |
+          mv aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
+      - name: Build deb package
+        run: |
+          dpkg --build package/deb aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb
+      - name: Archive deb package
+        uses: actions/upload-artifact@v4
+        with:
+          name: aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb
+          if-no-files-found: error
+          path: |
+            aikido-firewall-php-${{ env.AIKIDO_VERSION }}.deb

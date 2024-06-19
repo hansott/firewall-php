@@ -1,30 +1,24 @@
 package cloud
 
 import (
-	"sync"
 	"time"
 )
 
 var (
-	stop chan struct{}
-	wg   sync.WaitGroup
+	stop            chan struct{}
+	HeartBeatTicker *time.Ticker = time.NewTicker(1 * time.Minute)
 )
 
 func StartPollingThread() {
 	stop = make(chan struct{})
 
-	ticker := time.NewTicker(time.Second * 30)
-	wg.Add(1)
-
 	go func() {
-		defer wg.Done()
 		for {
 			select {
-			case <-ticker.C:
+			case <-HeartBeatTicker.C:
 				SendHeartbeatEvent()
-				return
 			case <-stop:
-				ticker.Stop()
+				HeartBeatTicker.Stop()
 				return
 			}
 		}
@@ -33,7 +27,6 @@ func StartPollingThread() {
 
 func StopPollingThread() {
 	close(stop)
-	wg.Wait()
 }
 
 func Init() {

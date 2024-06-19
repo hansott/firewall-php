@@ -15,12 +15,13 @@ for PHP_VERSION in $PHP_VERSIONS; do
             echo "Extension file /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so does not exist. Skipping."
         fi
 
-        # Updating aikido.ini (uncomment if needed)
-        # echo "extension=aikido.so" > "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"
+        # Updating aikido.ini
+        echo "extension=aikido.so" > "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"
+        echo "aikido.log_level=3" >> "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"       
         
         # Updating php.ini
-        echo "extension=aikido.so" >> "/etc/php/$PHP_VERSION/cli/php.ini"
-        echo "aikido.log_level=DEBUG" >> "/etc/php/$PHP_VERSION/cli/php.ini"
+        # echo "extension=aikido.so" >> "/etc/php/$PHP_VERSION/cli/php.ini"
+        # echo "aikido.log_level=3" >> "/etc/php/$PHP_VERSION/cli/php.ini"
     else
         echo "PHP extension directory $EXT_DIR does not exist for PHP $PHP_VERSION. Skipping."
     fi

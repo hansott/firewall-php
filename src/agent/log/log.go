@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"main/globals"
 	"os"
+	"time"
 )
 
 type LogLevel int
@@ -19,6 +21,7 @@ const (
 var (
 	currentLogLevel = ErrorLevel
 	logger          = log.New(os.Stdout, "", 0)
+	logFile         *os.File
 )
 
 type AikidoFormatter struct{}
@@ -38,7 +41,7 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 		return "invalid log level"
 	}
 
-	logMessage := fmt.Sprintf("[AIKIDO][%s][GO] %s\n", levelStr, message)
+	logMessage := fmt.Sprintf("[AIKIDO][%s][GO][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
 	return logMessage
 }
 
@@ -109,6 +112,16 @@ func SetLogLevel(level string) error {
 	return nil
 }
 
-func init() {
-	SetLogLevel("ERROR")
+func Init() {
+	logFile, err := os.OpenFile(globals.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+
+	logger.SetOutput(logFile)
+}
+
+func Uninit() {
+	logger.SetOutput(os.Stdout)
+	logFile.Close()
 }

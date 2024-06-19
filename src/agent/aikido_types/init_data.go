@@ -8,9 +8,19 @@ type MachineData struct {
 	IPAddress  string `json:"ip_address"`
 }
 
-type ConfigData struct {
+type LocalConfigData struct {
 	LogLevel string `json:"log_level"`
 	Endpoint string `json:"endpoint"`
 	Token    string `json:"token"`
 	Blocking bool   `json:"blocking"`
+}
+
+type CloudConfigData struct {
+	Success               bool     `json:"success"`
+	ServiceID             int      `json:"serviceId"`
+	ConfigUpdatedAt       int64    `json:"configUpdatedAt"`
+	HeartbeatIntervalInMS int64    `json:"heartbeatIntervalInMS"`
+	Endpoints             []string `json:"endpoints"`
+	BlockedUserIDs        []string `json:"blockedUserIds"`
+	AllowedIPAddresses    []string `json:"allowedIPAddresses"`
 }
