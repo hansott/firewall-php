@@ -163,7 +163,8 @@ jobs:
           pwd
       - name: Prepare deb package
         run: |
-          find . -type f -name 'aikido-${{ env.AIKIDO_VERSION }}*' -exec cp {} package/deb/opt/aikido/ \;
+          mv aikido-${{ env.AIKIDO_VERSION }}/aikido-${{ env.AIKIDO_VERSION }} package/deb/opt/aikido/
+          mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
       - name: Build deb package
         run: |
           dpkg-deb --root-owner-group --build package/deb ${{ env.AIKIDO_ARTIFACT }}
