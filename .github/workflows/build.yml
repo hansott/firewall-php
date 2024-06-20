@@ -164,6 +164,10 @@ jobs:
       - name: Prepare deb package
         run: |
           mv aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
+          chown root:root package/deb/opt/aikido/*
+          chown root:root package/deb/etc/init.d/*
+          chown root:root package/deb/DEBIAN/*
+          
       - name: Build deb package
         run: |
           dpkg --build package/deb ${{ env.AIKIDO_ARTIFACT }}
