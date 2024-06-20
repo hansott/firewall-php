@@ -23,6 +23,8 @@ bool aikido_global_init() {
 		{ "log_level", log_level_str },
 	};
 
+	AIKIDO_GLOBAL(blocking) = config_override_with_env_bool(AIKIDO_GLOBAL(blocking), "AIKIDO_BLOCKING");
+	
 	return GoInit(initData);
 }
 

@@ -11,8 +11,11 @@ import (
 	"net/url"
 )
 
-func SendEvent(route string, method string, payload interface{}) (map[string]interface{}, error) {
-	apiEndpoint, err := url.JoinPath(globals.Config.Endpoint, route)
+func SendEvent(route string, method string, payload interface{}) ([]byte, error) {
+	globals.ConfigMutex.Lock()
+	defer globals.ConfigMutex.Unlock()
+
+	apiEndpoint, err := url.JoinPath(globals.LocalConfig.Endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
@@ -29,7 +32,7 @@ func SendEvent(route string, method string, payload interface{}) (map[string]int
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Authorization", globals.Config.Token)
+	req.Header.Set("Authorization", globals.LocalConfig.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -50,11 +53,5 @@ func SendEvent(route string, method string, payload interface{}) (map[string]int
 
 	log.Debug("Got response: ", string(body))
 
-	var responseJson map[string]interface{}
-	err = json.Unmarshal(body, &responseJson)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response body: %v", err)
-	}
-
-	return responseJson, nil
+	return body, nil
 }

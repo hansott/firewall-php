@@ -13,8 +13,9 @@ func SendStartEvent() {
 		Time:  GetTime(),
 	}
 
-	_, err := SendEvent(globals.EventsAPI, globals.EventsAPIMethod, startedEvent)
+	response, err := SendEvent(globals.EventsAPI, globals.EventsAPIMethod, startedEvent)
 	if err != nil {
 		log.Debug("Error in sending start event: ", err)
 	}
+	UpdateCloudConfig(response)
 }

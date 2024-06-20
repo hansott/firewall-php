@@ -1,0 +1,7 @@
+Package: aikido-firewall-php
+Version: 0.2.0
+Section: base
+Priority: optional
+Architecture: all
+Maintainer: Aikido <hello@aikido.dev>
+Description: Aikido Firewall for PHP
