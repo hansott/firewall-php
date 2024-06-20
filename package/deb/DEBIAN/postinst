@@ -16,7 +16,7 @@ for PHP_VERSION in $PHP_VERSIONS; do
     if [ -d "$EXT_DIR" ]; then
         # Install PHP extension
         echo "Installing Aikido extension for PHP $PHP_VERSION (API VERSION $PHP_API_VERSION)..."
-        if [ -f "/opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so" ]; then
+        if [ -e "/opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so" ]; then
             echo "Installing Aikido extension in $EXT_DIR/aikido.so"
             ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $EXT_DIR/aikido.so
         else
@@ -49,7 +49,7 @@ for PHP_VERSION in $PHP_VERSIONS; do
 done
 
 echo "Installing Aikido agent $VERSION..."
-if [ -f "/opt/aikido/aikido-$VERSION" ]; then
+if [ -e "/opt/aikido/aikido-$VERSION" ]; then
     ln -sf /opt/aikido/aikido-$VERSION /opt/aikido/aikido
 else
     echo "Aikido agent directory /opt/aikido/aikido-$VERSION does not exist. Exiting."
