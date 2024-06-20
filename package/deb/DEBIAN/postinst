@@ -2,26 +2,47 @@
 
 VERSION="0.2.0"
 
+declare -A php_api_versions
+
+php_api_versions=(
+    ["8.1"]="20210902"
+)
+
 # Find all installed PHP versions
 PHP_VERSIONS=$(ls /etc/php)
 for PHP_VERSION in $PHP_VERSIONS; do
-    EXT_DIR="/usr/lib/php/$PHP_VERSION"
+    PHP_API_VERSION=${php_api_versions[$PHP_VERSION]}
+    EXT_DIR="/usr/lib/php/$PHP_API_VERSION"
     if [ -d "$EXT_DIR" ]; then
         # Install PHP extension
-        echo "Installing Aikido extension for PHP $PHP_VERSION..."
+        echo "Installing Aikido extension for PHP $PHP_VERSION (API VERSION $PHP_API_VERSION)..."
         if [ -f "/opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so" ]; then
+            echo "Installing Aikido extension in $EXT_DIR/aikido.so"
             ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $EXT_DIR/aikido.so
         else
             echo "Extension file /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so does not exist. Skipping."
         fi
 
-        # Updating aikido.ini
-        echo "extension=aikido.so" > "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"
-        echo "aikido.log_level=3" >> "/etc/php/$PHP_VERSION/cli/conf.d/20-aikido.ini"       
-        
-        # Updating php.ini
-        # echo "extension=aikido.so" >> "/etc/php/$PHP_VERSION/cli/php.ini"
-        # echo "aikido.log_level=3" >> "/etc/php/$PHP_VERSION/cli/php.ini"
+        # Installing Aikido mod
+        MOD_PATHS=(
+            "/etc/php/$PHP_VERSION/mods-available"
+            "/etc/php/$PHP_VERSION/cli/conf.d"
+            "/etc/php/$PHP_VERSION/apache2/conf.d"
+        )
+
+        for MOD_PATH in "${MOD_PATHS[@]}"; do
+            if [ -d "$MOD_PATH" ]; then
+                if [[ "$MOD_PATH" == *"conf.d"* ]]; then
+                    echo "Installing Aikido mod in $MOD_PATH/20-aikido.ini..."
+                    ln -sf /opt/aikido/aikido.ini $MOD_PATH/20-aikido.ini
+                else
+                    echo "Installing Aikido mod in $MOD_PATH/aikido.ini..."
+                    ln -sf /opt/aikido/aikido.ini $MOD_PATH/aikido.ini
+                fi
+            else
+                echo "Mod path $MOD_PATH does not exist for PHP $PHP_VERSION. Skipping."
+            fi
+        done
     else
         echo "PHP extension directory $EXT_DIR does not exist for PHP $PHP_VERSION. Skipping."
     fi

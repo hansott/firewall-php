@@ -32,16 +32,24 @@ else
     echo "Aikido main executable not found. Skipping unlink step."
 fi
 
+declare -A php_api_versions
+
+php_api_versions=(
+    ["8.1"]="20210902"
+)
+
 # Remove the PHP extension
 if [ -d /etc/php ]; then
     echo "Removing the Aikido PHP extension..."
     PHP_VERSIONS=$(ls /etc/php)
     for PHP_VERSION in $PHP_VERSIONS; do
-        EXT_DIR="/usr/lib/php/$PHP_VERSION"
+        PHP_API_VERSION=${php_api_versions[$PHP_VERSION]}
+        EXT_DIR="/usr/lib/php/$PHP_API_VERSION"
         if [ -d "$EXT_DIR" ]; then
-            echo "Uninstalling Aikido extension for PHP $PHP_VERSION..."
-            if [ -L /usr/lib/php/$PHP_VERSION/aikido.so ]; then
-                unlink /usr/lib/php/$PHP_VERSION/aikido.so
+            echo "Uninstalling Aikido extension for PHP $PHP_VERSION (API VERSION $PHP_API_VERSION)..."
+            if [ -L "$EXT_DIR/aikido.so" ]; then
+                echo "Uninstalling Aikido extension from $EXT_DIR/aikido.so..."
+                unlink $EXT_DIR/aikido.so
             else
                 echo "Aikido extension not found for PHP $PHP_VERSION."
             fi
@@ -50,13 +58,26 @@ if [ -d /etc/php ]; then
             continue
         fi
 
-        # Remove aikido configuration from php.ini
-        if [ -f /etc/php/$PHP_VERSION/cli/php.ini ]; then
-            echo "Removing Aikido configuration from php.ini for PHP $PHP_VERSION..."
-            sed -i '/aikido/d' /etc/php/$PHP_VERSION/cli/php.ini
-        else
-            echo "php.ini not found for PHP $PHP_VERSION."
-        fi
+        # Uninstalling Aikido mod
+        MOD_PATHS=(
+            "/etc/php/$PHP_VERSION/mods-available"
+            "/etc/php/$PHP_VERSION/cli/conf.d"
+            "/etc/php/$PHP_VERSION/apache2/conf.d"
+        )
+
+        for MOD_PATH in "${MOD_PATHS[@]}"; do
+            if [ -d "$MOD_PATH" ]; then
+                if [[ "$MOD_PATH" == *"conf.d"* ]]; then
+                    echo "Uninstalling Aikido mod from $MOD_PATH/20-aikido.ini..."
+                    rm -f $MOD_PATH/20-aikido.ini
+                else
+                    echo "Uninstalling Aikido mod from $MOD_PATH/aikido.ini..."
+                    rm -f $MOD_PATH/aikido.ini
+                fi
+            else
+                echo "Mod path $MOD_PATH does not exist for PHP $PHP_VERSION. Skipping."
+            fi
+        done
     done
 else
     echo "/etc/php directory not found. Skipping PHP extension removal."
