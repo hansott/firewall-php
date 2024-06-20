@@ -164,6 +164,7 @@ jobs:
       - name: Prepare deb package
         run: |
           mv aikido-${{ env.AIKIDO_VERSION }}/aikido-${{ env.AIKIDO_VERSION }} package/deb/opt/aikido/
+          chmod 711 package/deb/opt/aikido/aikido-${{ env.AIKIDO_VERSION }} 
           mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
       - name: Build deb package
         run: |
