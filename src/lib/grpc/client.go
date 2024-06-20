@@ -9,6 +9,7 @@ import (
 	"main/ipc/protos"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const socketPath = "/var/aikido.sock"
@@ -22,7 +23,7 @@ func Init() {
 	var err error
 	conn, err = grpc.Dial(
 		"unix://"+socketPath,
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		panic(fmt.Sprintf("did not connect: %v", err))

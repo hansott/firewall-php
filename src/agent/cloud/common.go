@@ -30,7 +30,9 @@ func GetTime() int64 {
 
 func ApplyCloudConfig() {
 	log.Infof("Applying new cloud config: %v", globals.CloudConfig)
-	HeartBeatTicker.Reset(time.Duration(globals.CloudConfig.HeartbeatIntervalInMS) * time.Millisecond)
+	if globals.CloudConfig.HeartbeatIntervalInMS >= globals.MinHeartbeatIntervalInMS {
+		HeartBeatTicker.Reset(time.Duration(globals.CloudConfig.HeartbeatIntervalInMS) * time.Millisecond)
+	}
 }
 
 func UpdateCloudConfig(response []byte) bool {
