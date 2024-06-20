@@ -166,7 +166,7 @@ jobs:
           mv aikido-${{ env.AIKIDO_VERSION }}* package/deb/opt/aikido/
       - name: Build deb package
         run: |
-          dpkg --root-owner-group --build package/deb ${{ env.AIKIDO_ARTIFACT }}
+          dpkg-deb --root-owner-group --build package/deb ${{ env.AIKIDO_ARTIFACT }}
       - name: Archive deb package
         uses: actions/upload-artifact@v4
         with:
