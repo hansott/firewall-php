@@ -12,7 +12,7 @@ cleanup() {
 trap cleanup SIGTERM SIGINT
 
 # Stop the service if it is running
-if [ -e /etc/init.d/aikido ]; then
+if [ -f /etc/init.d/aikido ]; then
     echo "Stopping the Aikido service..."
     /etc/init.d/aikido stop || true
 else
@@ -84,7 +84,7 @@ else
 fi
 
 # Remove the Aikido log file
-if [ -e "/var/log/aikido.log" ]; then
+if [ -f "/var/log/aikido.log" ]; then
     echo "Removing /var/log/aikido.log..."
     rm -f /var/log/aikido.log
 else
