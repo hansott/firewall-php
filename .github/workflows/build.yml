@@ -159,7 +159,7 @@ jobs:
             aikido-${{ env.AIKIDO_VERSION }}*
       - name: List Artifacts
         run: |
-          ls -l
+          ls -l -R
           pwd
       - name: Prepare deb package
         run: |
