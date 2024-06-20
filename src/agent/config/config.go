@@ -12,6 +12,9 @@ import (
 
 var quit chan struct{}
 
+// Reloads the local config from /opt/aikido once every minute, in order to provide fast
+// reload of critical info like the token used for cloud comms or the blocking flags.
+// This allows for fast local fixes if something goes wrong and needs to be enabled/disabled.
 func loadLocalConfig() {
 	globals.ConfigMutex.Lock()
 	defer globals.ConfigMutex.Unlock()
