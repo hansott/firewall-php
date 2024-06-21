@@ -6,7 +6,7 @@ import (
 
 var (
 	stop            chan struct{}
-	HeartBeatTicker *time.Ticker = time.NewTicker(1 * time.Minute)
+	HeartBeatTicker = time.NewTicker(10 * time.Minute)
 )
 
 func StartPollingThread() {
