@@ -1,0 +1,14 @@
+[Unit]
+Description=Aikido Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/aikido/aikido
+ExecStop=/bin/pkill -x aikido
+Restart=on-failure
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
