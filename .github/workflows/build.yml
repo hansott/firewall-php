@@ -176,3 +176,48 @@ jobs:
           if-no-files-found: error
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
+
+  build_rpm_package:
+    runs-on: ubuntu-latest
+    needs: [ build_agent, build_php_extension ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Get Aikido version
+        run: |
+          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+          echo $AIKIDO_VERSION
+          echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.el9.x86_64.rpm" >> $GITHUB_ENV
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: |
+            aikido-${{ env.AIKIDO_VERSION }}*
+      - name: List Artifacts
+        run: |
+          ls -l -R
+          pwd
+      - name: Prepare rpm package
+        run: |
+          mv aikido-${{ env.AIKIDO_VERSION }}/aikido-${{ env.AIKIDO_VERSION }} package/rpm/opt/aikido/
+          chmod 711 package/rpm/opt/aikido/aikido-${{ env.AIKIDO_VERSION }} 
+          mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/rpm/opt/aikido/
+          rpmdev-setuptree
+          mkdir -p ~/rpmbuild/SOURCES/aikido-${{ env.AIKIDO_VERSION }}
+          cp -rf package/rpm/etc ~/rpmbuild/SOURCES/aikido-${{ env.AIKIDO_VERSION }}/
+          cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-${{ env.AIKIDO_VERSION }}/
+          cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
+          cd ~/rpmbuild/SOURCES
+          tar czvf ~/rpmbuild/SOURCES/aikido-${{ env.AIKIDO_VERSION }}.tar.gz *
+          rm -rf ~/rpmbuild/SOURCES/aikido-${{ env.AIKIDO_VERSION }}
+      - name: Build rpm package
+        run: |
+          rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
+      - name: Archive rpm package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.AIKIDO_ARTIFACT }}
+          if-no-files-found: error
+          path: |
+            ${{ env.AIKIDO_ARTIFACT }}
