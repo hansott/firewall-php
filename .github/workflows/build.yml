@@ -185,6 +185,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install rpmdevtools
+        run: |
+          yum -y install epel-release
+          yum -y install rpmdevtools
+
       - name: Get Aikido version
         run: |
           AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
