@@ -17,5 +17,3 @@ make
 make install
 cd ..
 
-mv build/aikido package/deb/opt/aikido/aikido-1.0.0
-mv build/modules/aikido.so package/deb/opt/aikido/aikido-1.0.0-extension-php-8.1.so
