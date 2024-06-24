@@ -10,8 +10,6 @@ jobs:
     uses: ./.github/workflows/build.yml
   release:
     runs-on: ubuntu-latest
-    container:
-      image: centos:latest
     needs: build
     permissions:
       contents: write

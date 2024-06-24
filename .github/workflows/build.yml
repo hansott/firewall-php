@@ -179,8 +179,13 @@ jobs:
 
   build_rpm_package:
     runs-on: ubuntu-latest
+    container:
+      image: centos:latest
     needs: [ build_agent, build_php_extension ]
     steps:
+      - name: Install dependencies
+        run: |
+          sudo yum install rpm-build rpmdevtools
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Get Aikido version
