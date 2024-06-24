@@ -185,7 +185,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          sudo yum install rpm-build rpmdevtools
+          yum install rpm-build rpmdevtools
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Get Aikido version
