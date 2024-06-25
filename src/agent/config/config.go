@@ -7,7 +7,6 @@ import (
 	"main/globals"
 	"main/log"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -16,14 +15,10 @@ var quit chan struct{}
 func loadEnvConfigIfExistsStr(environmentVariableName string, originalValue string) string {
 	environmentVariableValue := os.Getenv(environmentVariableName)
 
-	if environmentVariableValue == "" {
+	if environmentVariableValue == "" || environmentVariableValue == "UNSET" {
 		return originalValue
 	}
 	return environmentVariableValue
-}
-
-func loadEnvConfigIfExistsBool(environmentVariableName string, originalValue bool) bool {
-	return strings.ToLower(os.Getenv(environmentVariableName)) == "true"
 }
 
 // Reloads the local config from /opt/aikido once every minute, in order to provide fast
@@ -49,14 +44,11 @@ func loadLocalConfig() {
 		panic(fmt.Sprintf("Failed to unmarshal JSON: %v", err))
 	}
 
+	globals.LocalConfig.Token = loadEnvConfigIfExistsStr("AIKIDO_TOKEN", globals.LocalConfig.Token)
+
 	if err := log.SetLogLevel(globals.LocalConfig.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
-
-	globals.LocalConfig.LogLevel = loadEnvConfigIfExistsStr("AIKIDO_LOG_LEVEL", globals.LocalConfig.LogLevel)
-	globals.LocalConfig.Endpoint = loadEnvConfigIfExistsStr("AIKIDO_ENDPOINT", globals.LocalConfig.Endpoint)
-	globals.LocalConfig.Token = loadEnvConfigIfExistsStr("AIKIDO_TOKEN", globals.LocalConfig.Token)
-	globals.LocalConfig.Blocking = loadEnvConfigIfExistsBool("AIKIDO_BLOCKING", globals.LocalConfig.Blocking)
 
 	log.Infof("Loaded local config: %+v", globals.LocalConfig)
 }
