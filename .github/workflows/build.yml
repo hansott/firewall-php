@@ -238,6 +238,7 @@ jobs:
       - name: Setup RPM for dev
         if: ${{ github.event.inputs.AIKIDO_TOKEN == '' }}
         run: |
+          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1-dev.x86_64.rpm" >> $GITHUB_ENV
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido.ini
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/config.json
 
