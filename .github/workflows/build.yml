@@ -225,9 +225,6 @@ jobs:
           cp -rf package/rpm/etc ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/
           cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/
           cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
-          cd ~/rpmbuild/SOURCES
-          tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
-          rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
 
       - name: Setup RPM for prod
         if: ${{ github.event.inputs.AIKIDO_TOKEN != '' }}
@@ -246,6 +243,9 @@ jobs:
 
       - name: Build rpm package
         run: |
+          cd ~/rpmbuild/SOURCES
+          tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
+          rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
