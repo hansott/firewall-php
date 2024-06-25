@@ -16,3 +16,5 @@ rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-1.0.0
 cd ~/Work/firewall-php
 
 rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
+
+rpm -ivh ~/rpmbuild/RPMS/x86_64/aikido-php-firewall-1.0.0-1.x86_64.rpm
