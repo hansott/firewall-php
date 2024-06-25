@@ -1,6 +1,6 @@
 {
     "log_level": "ERROR",
-    "endpoint": "http://app.aikido.dev/",
+    "endpoint": "https://app.aikido.dev/",
     "token": "",
     "blocking": false
 }
