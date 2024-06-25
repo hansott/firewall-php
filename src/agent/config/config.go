@@ -31,7 +31,10 @@ func loadLocalConfig() {
 
 	file, err := os.Open(globals.ConfigFilePath)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to open config file: %v", err))
+		file, err = os.Open(globals.DevConfigFilePath)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to open config file: %v", err))
+		}
 	}
 	defer file.Close()
 

@@ -2,7 +2,8 @@ package globals
 
 const (
 	Version                  = "1.0.0"
-	ConfigFilePath           = "/opt/aikido/dev-config.json"
+	ConfigFilePath           = "/opt/aikido/config.json"
+	DevConfigFilePath        = "/opt/aikido/config-dev.json"
 	LogFilePath              = "/var/log/aikido.log"
 	SocketPath               = "/var/aikido.sock"
 	ConfigAPIMethod          = "GET"
