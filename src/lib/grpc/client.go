@@ -56,7 +56,7 @@ func SendToken() {
 }
 
 func SendDomain(domain string) {
-	log.Info("Sending domain: ", domain)
+	log.Info("Got domain: ", domain)
 	_, err := client.SendDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
 		log.Debugf("Could not send domain %v: %v", domain, err)

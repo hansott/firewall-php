@@ -21,6 +21,7 @@ curl_setopt($ch2, CURLOPT_URL, "https://en.wikipedia.org/wiki/Runtime_library");
 ?>
 
 --EXPECT--
+[AIKIDO][WARN][GO] AIKIDO_TOKEN not found in env variables!
 [AIKIDO][INFO][GO] Got domain: example.com
 [AIKIDO][INFO][GO] Got domain: www.facebook.com
 [AIKIDO][INFO][GO] Got domain: www.google.com
