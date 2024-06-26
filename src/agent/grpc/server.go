@@ -24,20 +24,22 @@ func (s *server) SendToken(ctx context.Context, req *protos.Token) (*emptypb.Emp
 
 	newToken := req.GetToken()
 
-	log.Infof("Received new token: %s", newToken)
-
 	if globals.Token == newToken {
 		// Got the same token, nothing to do
 		return &emptypb.Empty{}, nil
 	}
 
+	log.Infof("Received new token: %s", newToken)
+
 	if globals.Token != "" {
 		// Token was previously set and got a new diffent token (token update)
 		// Stop the previous cloud communication routines
+		log.Infof("Stopping cloud routines for previous token...")
 		cloud.Uninit()
 	}
 
 	globals.Token = newToken
+	log.Infof("Starting cloud routines for new token...")
 	go cloud.Init()
 
 	return &emptypb.Empty{}, nil

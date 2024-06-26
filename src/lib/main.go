@@ -62,7 +62,7 @@ func Init(initJson string) (initOk bool) {
 	log.Debug("Init: ", initJson)
 
 	grpc.Init()
-	grpc.SendToken()
+	go grpc.SendToken()
 
 	return true
 }
