@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"main/cloud"
 	"main/config"
 	"main/globals"
 	"main/grpc"
@@ -13,7 +12,7 @@ import (
 	"syscall"
 )
 
-func runUntilKilled() {
+func runForever() {
 	sigChannel := make(chan os.Signal, 1)
 
 	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
@@ -36,10 +35,9 @@ func main() {
 	log.Init()
 	config.Init()
 	machine.Init()
-	go cloud.Init()
 	go grpc.Init()
 
-	runUntilKilled()
+	runForever()
 
 	log.Uninit()
 	log.Infof("Aikido agent v%s stopped!", globals.Version)

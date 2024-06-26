@@ -8,12 +8,6 @@ on:
     branches:
       - main
   workflow_call:
-  workflow_dispatch:
-    inputs:
-      AIKIDO_TOKEN:
-        description: 'Aikido cloud token'
-        required: true
-        default: ''
 
 jobs:
   build_agent:
@@ -188,6 +182,10 @@ jobs:
     container:
       image: centos:latest
     needs: [ build_agent, build_php_extension ]
+    strategy:
+      matrix:
+        stage: ['dev', 'prod']
+      fail-fast: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -227,16 +225,14 @@ jobs:
           cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
 
       - name: Setup RPM for prod
-        if: ${{ github.event.inputs.AIKIDO_TOKEN != '' }}
+        if: ${{ matrix.stage == 'prod' }}
         run: |
-          echo "AIKIDO_TOKEN is set to ${{ github.event.inputs.AIKIDO_TOKEN }}"
-          sed -i "s/AIKIDO_TOKEN=UNSET/AIKIDO_TOKEN=${{ github.event.inputs.AIKIDO_TOKEN }}/" ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/etc/systemd/system/aikido.service
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido-dev.ini
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/config-dev.json
           sed -i "s/aikido-dev.ini/aikido.ini/" ~/rpmbuild/SPECS/aikido.spec
 
       - name: Setup RPM for dev
-        if: ${{ github.event.inputs.AIKIDO_TOKEN == '' }}
+        if: ${{ matrix.stage == 'dev' }}
         run: |
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1-dev.x86_64.rpm" >> $GITHUB_ENV
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido.ini

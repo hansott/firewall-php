@@ -7,7 +7,12 @@ package ipc;
 option go_package = "ipc/protos;protos";
 
 service Aikido {
+  rpc SendToken (Token) returns (google.protobuf.Empty);
   rpc SendDomain (Domain) returns (google.protobuf.Empty);
+}
+
+message Token {
+  string token = 1;
 }
 
 message Domain {

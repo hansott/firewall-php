@@ -5,7 +5,10 @@ import (
 	"sync"
 )
 
-// Local config loaded from LocalConfigPath, that contains info about endpoint, log_level, token, ...
+// Aikido cloud token, passed by the extension via gRPC
+var Token string
+
+// Local config loaded from LocalConfigPath, that contains info about endpoint, log_level, ...
 var LocalConfig LocalConfigData
 
 // Cloud config that is obtain as a result from sending events to cloud or pulling the config when it changes

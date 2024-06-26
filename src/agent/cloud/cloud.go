@@ -9,7 +9,7 @@ var (
 	HeartBeatTicker = time.NewTicker(10 * time.Minute)
 )
 
-func StartPollingThread() {
+func StartHeartbeatRoutine() {
 	stop = make(chan struct{})
 
 	go func() {
@@ -25,15 +25,15 @@ func StartPollingThread() {
 	}()
 }
 
-func StopPollingThread() {
+func StopHeartbeatRoutine() {
 	close(stop)
 }
 
 func Init() {
 	SendStartEvent()
-	StartPollingThread()
+	StartHeartbeatRoutine()
 }
 
 func Uninit() {
-	StopPollingThread()
+	StopHeartbeatRoutine()
 }

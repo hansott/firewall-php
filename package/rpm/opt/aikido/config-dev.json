@@ -1,6 +1,5 @@
 {
     "log_level": "DEBUG",
     "endpoint": "http://app.local.aikido.io/",
-    "token": "",
     "blocking": false
 }
