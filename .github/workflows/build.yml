@@ -232,13 +232,6 @@ jobs:
           tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
-      
-      - name: Setup PHP
-        uses: AikidoSec/setup-php@v2
-        with:
-          php-version: 8.1
-          extensions: :curl
-          coverage: none
 
       - name: Install rpm package
         run: |
