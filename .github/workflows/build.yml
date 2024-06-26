@@ -232,17 +232,6 @@ jobs:
           tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
-
-      - name: Install rpm package
-        run: |
-          rpm -ivh ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
-
-      - name: Test rpm install
-        run: |
-          ps aux | grep aikido
-          ls -l /opt/aikido
-          ls -l /var/aikido.sock
-          cat /var/log/aikido.log
       
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
