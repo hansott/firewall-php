@@ -32,7 +32,7 @@ func SendEvent(route string, method string, payload interface{}) ([]byte, error)
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Authorization", globals.LocalConfig.Token)
+	req.Header.Set("Authorization", globals.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

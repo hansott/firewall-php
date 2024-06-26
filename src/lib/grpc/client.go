@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"main/log"
+	"os"
 	"time"
 
 	"main/ipc/protos"
@@ -41,9 +42,22 @@ func Uninit() {
 	cancel()
 }
 
-func SendDomain(domain string) {
-	_, err := client.SendDomain(ctx, &protos.Domain{Domain: domain})
+func OnReceiveToken() {
+	token := os.Getenv("AIKIDO_TOKEN")
+	if token == "" {
+		log.Warn("AIKIDO_TOKEN not found in env variables!")
+		return
+	}
+	log.Info("Sending token: ", token)
+	_, err := client.OnReceiveToken(ctx, &protos.Token{Token: token})
 	if err != nil {
-		log.Debugf("Could not send domain: %v", domain, err)
+		log.Debugf("Could not send token %v: %v", token, err)
+	}
+}
+
+func OnReceiveDomain(domain string) {
+	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
+	if err != nil {
+		log.Debugf("Could not send domain %v: %v", domain, err)
 	}
 }

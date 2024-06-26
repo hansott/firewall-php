@@ -41,6 +41,7 @@ if (file_exists($dbFile)) {
 }
 ?>
 --EXPECTF--
+[AIKIDO][WARN][GO] AIKIDO_TOKEN not found in env variables!
 [AIKIDO][INFO][GO] Got PDO query: SELECT * FROM users
 ID: %d
 Name: John Doe

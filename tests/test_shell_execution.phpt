@@ -57,6 +57,7 @@ echo "\n";
 ?>
 
 --EXPECTF--
+[AIKIDO][WARN][GO] AIKIDO_TOKEN not found in env variables!
 [AIKIDO][INFO][GO] Got shell command: echo "Hello from exec!"
 Array
 (

@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"main/cloud"
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
@@ -17,7 +18,34 @@ type server struct {
 	protos.AikidoServer
 }
 
-func (s *server) SendDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
+func (s *server) OnReceiveToken(ctx context.Context, req *protos.Token) (*emptypb.Empty, error) {
+	globals.ConfigMutex.Lock()
+	defer globals.ConfigMutex.Unlock()
+
+	newToken := req.GetToken()
+
+	if globals.Token == newToken {
+		// Got the same token, nothing to do
+		return &emptypb.Empty{}, nil
+	}
+
+	log.Infof("Received new token: %s", newToken)
+
+	if globals.Token != "" {
+		// Token was previously set and got a new diffent token (token update)
+		// Stop the previous cloud communication routines
+		log.Infof("Stopping cloud routines for previous token...")
+		cloud.Uninit()
+	}
+
+	globals.Token = newToken
+	log.Infof("Starting cloud routines for new token...")
+	go cloud.Init()
+
+	return &emptypb.Empty{}, nil
+}
+
+func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
@@ -39,6 +67,11 @@ func Init() {
 		panic(fmt.Sprintf("failed to listen: %v", err))
 	}
 	defer lis.Close()
+
+	// Change the permissions of the socket to make it accessible by non-root users
+	if err := os.Chmod(globals.SocketPath, 0777); err != nil {
+		panic(fmt.Sprintf("failed to change permissions of Unix socket: %v", err))
+	}
 
 	s := grpc.NewServer()
 	protos.RegisterAikidoServer(s, &server{})

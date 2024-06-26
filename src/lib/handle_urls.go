@@ -13,6 +13,6 @@ func OnFunctionExecutedCurl(parameters map[string]interface{}) string {
 	}
 	domain := utils.GetDomain(*url)
 	log.Info("Got domain: ", domain)
-	go grpc.SendDomain(domain)
+	go grpc.OnReceiveDomain(domain)
 	return "{}"
 }

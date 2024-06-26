@@ -11,7 +11,6 @@ type MachineData struct {
 type LocalConfigData struct {
 	LogLevel string `json:"log_level"`
 	Endpoint string `json:"endpoint"`
-	Token    string `json:"token"`
 	Blocking bool   `json:"blocking"`
 }
 

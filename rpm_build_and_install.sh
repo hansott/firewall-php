@@ -13,7 +13,6 @@ cp build/modules/aikido.so ~/rpmbuild/SOURCES/aikido-php-firewall-1.0.0/opt/aiki
 cd ~/rpmbuild/SOURCES
 tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-1.0.0.tar.gz *
 rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-1.0.0
-cd ~/Work/firewall-php
 
 rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
 

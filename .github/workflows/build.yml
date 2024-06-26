@@ -8,12 +8,6 @@ on:
     branches:
       - main
   workflow_call:
-  workflow_dispatch:
-    inputs:
-      AIKIDO_TOKEN:
-        description: 'Aikido cloud token'
-        required: true
-        default: ''
 
 jobs:
   build_agent:
@@ -63,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        php_version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
       fail-fast: false
 
     steps:
@@ -205,7 +199,6 @@ jobs:
           AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -227,20 +220,11 @@ jobs:
           cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
 
       - name: Setup RPM for prod
-        if: ${{ github.event.inputs.AIKIDO_TOKEN != '' }}
         run: |
-          echo "AIKIDO_TOKEN is set to ${{ github.event.inputs.AIKIDO_TOKEN }}"
-          sed -i "s/AIKIDO_TOKEN=UNSET/AIKIDO_TOKEN=${{ github.event.inputs.AIKIDO_TOKEN }}/" ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/etc/systemd/system/aikido.service
+          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido-dev.ini
           rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/config-dev.json
           sed -i "s/aikido-dev.ini/aikido.ini/" ~/rpmbuild/SPECS/aikido.spec
-
-      - name: Setup RPM for dev
-        if: ${{ github.event.inputs.AIKIDO_TOKEN == '' }}
-        run: |
-          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1-dev.x86_64.rpm" >> $GITHUB_ENV
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido.ini
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/config.json
 
       - name: Build rpm package
         run: |
@@ -248,6 +232,7 @@ jobs:
           tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
+      
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
         with:

@@ -22,8 +22,7 @@ func loadEnvConfigIfExistsStr(environmentVariableName string, originalValue stri
 }
 
 // Reloads the local config from /opt/aikido once every minute, in order to provide fast
-// reload of critical info like the token used for cloud comms or the blocking flags.
-// Also loads the same from ENV variables (if it exists). The ENV config takes precedence over the json config.
+// reload of critical info used for cloud comms or the blocking flags.
 // This allows for fast local fixes if something goes wrong and needs to be enabled/disabled.
 func loadLocalConfig() {
 	globals.ConfigMutex.Lock()
@@ -47,13 +46,14 @@ func loadLocalConfig() {
 		panic(fmt.Sprintf("Failed to unmarshal JSON: %v", err))
 	}
 
-	globals.LocalConfig.Token = loadEnvConfigIfExistsStr("AIKIDO_TOKEN", globals.LocalConfig.Token)
-
 	if err := log.SetLogLevel(globals.LocalConfig.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 
 	log.Infof("Loaded local config: %+v", globals.LocalConfig)
+	if globals.Token == "" {
+		log.Infof("Waiting for token to initiate cloud communication...")
+	}
 }
 
 func Init() {
