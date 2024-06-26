@@ -18,7 +18,7 @@ type server struct {
 	protos.AikidoServer
 }
 
-func (s *server) SendToken(ctx context.Context, req *protos.Token) (*emptypb.Empty, error) {
+func (s *server) OnReceiveToken(ctx context.Context, req *protos.Token) (*emptypb.Empty, error) {
 	globals.ConfigMutex.Lock()
 	defer globals.ConfigMutex.Unlock()
 
@@ -45,7 +45,7 @@ func (s *server) SendToken(ctx context.Context, req *protos.Token) (*emptypb.Emp
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) SendDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
+func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
