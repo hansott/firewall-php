@@ -235,7 +235,7 @@ jobs:
 
       - name: Install rpm package
         run: |
-          sudo rpm -ivh ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
+          rpm -ivh ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
 
       - name: Test rpm install
         run: |
@@ -243,7 +243,6 @@ jobs:
           ls -l /opt/aikido
           ls -l /var/aikido.sock
           cat /var/log/aikido.log
-          php -i | grep -i aikido
       
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
