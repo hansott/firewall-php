@@ -45,7 +45,7 @@ for EXT_DIR in "${EXT_DIRS[@]}"; do
         echo "Installing Aikido extension in $EXT_DIR/aikido.so..."
         ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $EXT_DIR/aikido.so
     else
-        echo "Extension dir path $MOD_PATH does not exist for PHP. Skipping."
+        echo "Extension dir path $EXT_DIR does not exist for PHP. Skipping."
     fi
 done
 
@@ -128,7 +128,7 @@ for EXT_DIR in "${EXT_DIRS[@]}"; do
         echo "Uninstalling Aikido extension from $EXT_DIR/aikido.so..."
         rm -f $EXT_DIR/aikido.so
     else
-        echo "Extension dir path $MOD_PATH does not exist for PHP. Skipping."
+        echo "Extension dir path $EXT_DIR does not exist for PHP. Skipping."
     fi
 done
 
