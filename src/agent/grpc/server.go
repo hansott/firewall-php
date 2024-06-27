@@ -45,6 +45,25 @@ func (s *server) OnReceiveToken(ctx context.Context, req *protos.Token) (*emptyp
 	return &emptypb.Empty{}, nil
 }
 
+func (s *server) OnReceiveLogLevel(ctx context.Context, req *protos.LogLevel) (*emptypb.Empty, error) {
+	globals.ConfigMutex.Lock()
+	defer globals.ConfigMutex.Unlock()
+
+	newLogLevel := req.GetLogLevel()
+
+	if globals.LogLevel == newLogLevel {
+		// Got the same log level, nothing to do
+		return &emptypb.Empty{}, nil
+	}
+
+	log.Infof("Received new log level: %s", newLogLevel)
+
+	globals.LogLevel = newLogLevel
+	log.SetLogLevel(globals.LogLevel)
+
+	return &emptypb.Empty{}, nil
+}
+
 func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
 	globals.HostnamesMutex.Lock()

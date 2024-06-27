@@ -46,8 +46,10 @@ func loadLocalConfig() {
 		panic(fmt.Sprintf("Failed to unmarshal JSON: %v", err))
 	}
 
-	if err := log.SetLogLevel(globals.LocalConfig.LogLevel); err != nil {
-		panic(fmt.Sprintf("Error setting log level: %s", err))
+	if globals.LogLevel == "" {
+		if err := log.SetLogLevel(globals.LocalConfig.LogLevel); err != nil {
+			panic(fmt.Sprintf("Error setting log level: %s", err))
+		}
 	}
 
 	log.Infof("Loaded local config: %+v", globals.LocalConfig)

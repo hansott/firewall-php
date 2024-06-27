@@ -63,6 +63,7 @@ func Init(initJson string) (initOk bool) {
 
 	grpc.Init()
 	go grpc.OnReceiveToken()
+	go grpc.OnReceiveLogLevel()
 
 	return true
 }

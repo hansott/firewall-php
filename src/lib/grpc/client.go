@@ -55,6 +55,19 @@ func OnReceiveToken() {
 	}
 }
 
+func OnReceiveLogLevel() {
+	log_level := os.Getenv("AIKIDO_LOG_LEVEL")
+	if log_level == "" {
+		log.Debug("AIKIDO_LOG_LEVEL not found in env variables!")
+		return
+	}
+	log.Info("Sending log level: ", log_level)
+	_, err := client.OnReceiveLogLevel(ctx, &protos.LogLevel{LogLevel: log_level})
+	if err != nil {
+		log.Debugf("Could not send log level %v: %v", log_level, err)
+	}
+}
+
 func OnReceiveDomain(domain string) {
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {

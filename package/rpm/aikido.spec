@@ -34,6 +34,10 @@ echo "Installing Aikido extension for PHP $PHP_VERSION..."
 EXT_DIRS=(
     "/lib64/php-zts/modules"
     "/lib64/php/modules"
+    "/lib64/php-zts$PHP_VERSION/modules"
+    "/lib64/php$PHP_VERSION/modules"
+    "/usr/lib64/php-zts$PHP_VERSION/modules"
+    "/usr/lib64/php$PHP_VERSION/modules"
 )
 
 for EXT_DIR in "${EXT_DIRS[@]}"; do

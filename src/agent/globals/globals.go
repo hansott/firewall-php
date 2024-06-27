@@ -8,6 +8,9 @@ import (
 // Aikido cloud token, passed by the extension via gRPC
 var Token string
 
+// Aikido log level token, passed by the extension via gRPC
+var LogLevel string
+
 // Local config loaded from LocalConfigPath, that contains info about endpoint, log_level, ...
 var LocalConfig LocalConfigData
 
