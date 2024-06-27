@@ -42,13 +42,13 @@ jobs:
     - name: Sync packages to S3 bucket
       run: |
         ls -l
-        aws s3 cp aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm/aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm s3://aikido-firewall/${{ env.AIKIDO_VERSION }}/aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm
-        aws s3 cp aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb s3://aikido-firewall/${{ env.AIKIDO_VERSION }}/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb
+        aws s3 cp aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm/aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm s3://aikido-firewall/aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm
+        aws s3 cp aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb s3://aikido-firewall/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb
     
     - name: Make S3 bucket publicly readable
       run: |
-        aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key ${{ env.AIKIDO_VERSION }}/aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm
-        aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key ${{ env.AIKIDO_VERSION }}/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb
+        aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm
+        aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb
 
     - name: Deploy to GitHub Release
       uses: softprops/action-gh-release@v2
