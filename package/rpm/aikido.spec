@@ -1,11 +1,11 @@
 Name:           aikido-php-firewall
-Version:        1.1.0
+Version:        1.2.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
 License:        GPL
 URL:            https://aikido.dev
-Source0:        aikido-php-firewall-1.1.0.tar.gz
+Source0:        aikido-php-firewall-1.2.0.tar.gz
 
 %description
 Aikido PHP extension and agent.
@@ -164,5 +164,5 @@ echo "Uninstallation process for Aikido completed."
 /opt/aikido
 
 %changelog
-* Fri Jun 21 2024 Aikido <hello@aikido.dev> - 1.1.0-1
+* Fri Jun 21 2024 Aikido <hello@aikido.dev> - 1.2.0-1
 - Initial package
