@@ -21,7 +21,7 @@ jobs:
     - name: Set env
       run: |
         echo "AIKIDO_S3=s3://aikido-firewall" >> $GITHUB_ENV
-        echo "AIKIDO_S3_BUCKET=/v${{ env.AIKIDO_VERSION }}/linux_x86_64" >> $GITHUB_ENV
+        echo "AIKIDO_S3_BUCKET=v${{ env.AIKIDO_VERSION }}/linux_x86_64" >> $GITHUB_ENV
         echo "AIKIDO_RPM=aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm" >> $GITHUB_ENV
         echo "AIKIDO_DEB=aikido-php-firewall-${{ env.AIKIDO_VERSION }}.x86_64.deb" >> $GITHUB_ENV
 
