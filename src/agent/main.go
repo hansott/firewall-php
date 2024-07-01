@@ -32,7 +32,7 @@ func main() {
 	log.SetLogLevel("INFO")
 	log.Infof("Aikido agent v%s started!", globals.Version)
 
-	log.Init()
+	// log.Init()
 	config.Init()
 	machine.Init()
 	go grpc.Init()
