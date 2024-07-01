@@ -100,3 +100,12 @@ func Init() {
 		panic(fmt.Sprintf("failed to serve: %v", err))
 	}
 }
+
+func Uninit() {
+	// Remove the socket file if it exists
+	if _, err := os.Stat(globals.SocketPath); err == nil {
+		if err := os.RemoveAll(globals.SocketPath); err != nil {
+			panic(fmt.Sprintf("failed to remove existing socket: %v", err))
+		}
+	}
+}

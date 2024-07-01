@@ -12,7 +12,7 @@ import (
 	"syscall"
 )
 
-func runForever() {
+func runUntilKilled() {
 	sigChannel := make(chan os.Signal, 1)
 
 	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
@@ -37,8 +37,9 @@ func main() {
 	machine.Init()
 	go grpc.Init()
 
-	runForever()
+	runUntilKilled()
 
+	grpc.Uninit()
 	log.Uninit()
 	log.Infof("Aikido agent v%s stopped!", globals.Version)
 }
