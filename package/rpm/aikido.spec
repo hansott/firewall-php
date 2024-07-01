@@ -25,10 +25,6 @@ cp -f etc/systemd/system/aikido.service %{buildroot}/etc/systemd/system/aikido.s
 %post
 #!/bin/bash
 
-echo "Disabling SE Linux..."
-sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-sudo setenforce 0
-
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
 
