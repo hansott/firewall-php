@@ -5,7 +5,7 @@ const (
 	ConfigFilePath           = "/opt/aikido/config.json"
 	DevConfigFilePath        = "/opt/aikido/config-dev.json"
 	LogFilePath              = "/var/log/aikido.log"
-	SocketPath               = "/var/aikido.sock"
+	SocketPath               = "/run/aikido.sock"
 	ConfigAPIMethod          = "GET"
 	ConfigAPI                = "/api/runtime/config"
 	ConfigUpdatedAtMethod    = "GET"

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const socketPath = "/var/aikido.sock"
+const socketPath = "/run/aikido.sock"
 
 var conn *grpc.ClientConn
 var cancel context.CancelFunc
