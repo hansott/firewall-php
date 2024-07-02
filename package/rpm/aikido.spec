@@ -83,7 +83,7 @@ sleep 10
 
 echo "Installing SE Linux module for allowing access to /run/aikido.sock..."
 sudo semodule -i /opt/aikido/aikido.pp
-chcon -t var_run_t /run/aikido.sock
+sudo chcon -t var_run_t /run/aikido.sock
 
 %preun
 #!/bin/bash
@@ -160,6 +160,21 @@ if [ -f "/var/log/aikido.log" ]; then
     rm -f /var/log/aikido.log
 else
     echo "/var/log/aikido.log does not exist. Skipping."
+fi
+
+# Remove the Aikido socket
+SOCKET_PATH="/run/aikido.sock"
+
+if [ -S "$SOCKET_PATH" ]; then
+    echo "Removing $SOCKET_PATH ..."
+    rm "$SOCKET_PATH"
+    if [ $? -eq 0 ]; then
+        echo "Socket removed successfully."
+    else
+        echo "Failed to remove the socket."
+    fi
+else
+    echo "Socket $SOCKET_PATH does not exist."
 fi
 
 echo "Uninstallation process for Aikido completed."
