@@ -27,5 +27,5 @@ aikido-*-extension-php-*.so
 .vscode/settings.json
 src/extension/ndDb2pJ5Px
 *.deb
-package/deb/opt/aikido/aikido-1.5.0*
+package/deb/opt/aikido/aikido-1.6.0*
 src/agent/aikido_config.json
