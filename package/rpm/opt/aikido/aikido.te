@@ -1,0 +1,10 @@
+module aikido 1.0;
+
+require {
+    type unconfined_t;
+    type var_run_t;
+    class sock_file write;
+}
+
+# Allow all processes write access to the /run/aikido.sock file
+allow unconfined_t var_run_t:sock_file write;

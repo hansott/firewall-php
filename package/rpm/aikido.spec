@@ -25,9 +25,6 @@ cp -f etc/systemd/system/aikido.service %{buildroot}/etc/systemd/system/aikido.s
 %post
 #!/bin/bash
 
-echo "Installing SE Linux module for php-fpm allow..."
-sudo semodule -i /opt/aikido/php-fpm.pp
-
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
 
@@ -82,6 +79,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable aikido.service
 sudo systemctl start aikido.service
 
+sleep 10
+
+echo "Installing SE Linux module for allowing access to /run/aikido.sock..."
+sudo semodule -i /opt/aikido/aikido.pp
+chcon -t var_run_t /run/aikido.sock
 
 %preun
 #!/bin/bash
