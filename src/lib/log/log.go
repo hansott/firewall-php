@@ -115,7 +115,7 @@ func SetLogLevel(level string) error {
 func Init(level string) {
 	rand.Seed(time.Now().UnixNano())
 	randomPart := rand.Int63()
-	logFilePath := fmt.Sprintf("/var/log/aikido_extension_%d.log", randomPart)
+	logFilePath := fmt.Sprintf("/var/log/aikido_go_%d.log", randomPart)
 
 	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {

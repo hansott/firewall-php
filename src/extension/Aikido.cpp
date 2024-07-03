@@ -11,6 +11,8 @@ PHP_INI_BEGIN()
 PHP_INI_END()
 
 bool aikido_global_init() {
+	aikido_log_init();
+
 	if (AIKIDO_GLOBAL(log_level) > AIKIDO_LOG_LEVEL_DEBUG ||
 		AIKIDO_GLOBAL(log_level) < AIKIDO_LOG_LEVEL_ERROR) {
 		AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_ERROR;
@@ -78,6 +80,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
 	UNREGISTER_INI_ENTRIES();
 	GoUninit();
+	aikido_log_uninit();
 	return SUCCESS;
 }
 

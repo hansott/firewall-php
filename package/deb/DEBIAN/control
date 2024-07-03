@@ -1,5 +1,5 @@
 Package: aikido-firewall-php
-Version: 1.11.0
+Version: 1.12.0
 Section: base
 Priority: optional
 Architecture: all

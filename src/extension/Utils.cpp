@@ -6,16 +6,34 @@ std::string to_lowercase(const std::string& str) {
     return result;
 }
 
+char log_file_path[256];
+FILE* log_file = nullptr;
+
+void aikido_log_init() {
+    srand(time(NULL));
+    int random_number = rand();
+    snprintf(log_file_path, sizeof(log_file_path), "/var/log/aikido_cpp_%d.log", random_number);
+
+    log_file = fopen(log_file_path, "w");
+    if (!log_file) {
+        return;
+    }
+}
+
+void aikido_log_uninit() {
+    fclose(log_file);
+}
+
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
     if (level > AIKIDO_GLOBAL(log_level)) {
         return;
     }
 
-    printf("[AIKIDO][%s][C++] ", aikido_log_level_str(level));
+    fprintf(log_file, "[AIKIDO][%s][C++] ", aikido_log_level_str(level));
 
     va_list args;
     va_start(args, format);
-    vprintf(format, args);
+    vfprintf(log_file, format, args);
     va_end(args);
 }
 

@@ -31,6 +31,10 @@ enum AIKIDO_LOG_LEVEL {
     AIKIDO_LOG_LEVEL_DEBUG
 };
 
+void aikido_log_init();
+
+void aikido_log_uninit();
+
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
 
 
