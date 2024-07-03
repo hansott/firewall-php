@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.12.0
+Version:        1.13.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
