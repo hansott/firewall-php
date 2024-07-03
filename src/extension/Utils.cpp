@@ -12,12 +12,14 @@ FILE* log_file = nullptr;
 void aikido_log_init() {
     srand(time(NULL));
     int random_number = rand();
-    snprintf(log_file_path, sizeof(log_file_path), "/var/log/aikido_cpp_%d.log", random_number);
+    snprintf(log_file_path, sizeof(log_file_path), "/opt/aikido/aikido_cpp_%d.log", random_number);
 
     log_file = fopen(log_file_path, "w");
     if (!log_file) {
         return;
     }
+    
+    AIKIDO_LOG_DEBUG("Rand: %d\n", random_number);
 }
 
 void aikido_log_uninit() {

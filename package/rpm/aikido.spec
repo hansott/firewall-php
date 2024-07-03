@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.14.0
+Version:        1.15.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
@@ -84,6 +84,8 @@ sleep 10
 echo "Installing SE Linux module for allowing access to /run/aikido.sock..."
 sudo semodule -i /opt/aikido/aikido.pp
 sudo chcon -t var_run_t /run/aikido.sock
+
+sudo chmod 777 /opt/aikido
 
 %preun
 #!/bin/bash
