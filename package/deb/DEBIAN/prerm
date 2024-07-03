@@ -68,8 +68,8 @@ if [ -d /etc/php ]; then
         for MOD_PATH in "${MOD_PATHS[@]}"; do
             if [ -d "$MOD_PATH" ]; then
                 if [[ "$MOD_PATH" == *"conf.d"* ]]; then
-                    echo "Uninstalling Aikido mod from $MOD_PATH/20-aikido.ini..."
-                    rm -f $MOD_PATH/20-aikido.ini
+                    echo "Uninstalling Aikido mod from $MOD_PATH/50-aikido.ini..."
+                    rm -f $MOD_PATH/50-aikido.ini
                 else
                     echo "Uninstalling Aikido mod from $MOD_PATH/aikido.ini..."
                     rm -f $MOD_PATH/aikido.ini

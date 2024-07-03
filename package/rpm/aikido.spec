@@ -59,8 +59,8 @@ MOD_PATHS=(
 
 for MOD_PATH in "${MOD_PATHS[@]}"; do
     if [ -d "$MOD_PATH" ]; then
-        echo "Installing Aikido mod in $MOD_PATH/20-aikido.ini..."
-        ln -sf /opt/aikido/aikido-dev.ini $MOD_PATH/20-aikido.ini
+        echo "Installing Aikido mod in $MOD_PATH/50-aikido.ini..."
+        ln -sf /opt/aikido/aikido-dev.ini $MOD_PATH/50-aikido.ini
     else
         echo "Mod path $MOD_PATH does not exist for PHP. Skipping."
     fi
@@ -147,8 +147,8 @@ MOD_PATHS=(
 
 for MOD_PATH in "${MOD_PATHS[@]}"; do
     if [ -d "$MOD_PATH" ]; then
-        echo "Uninstalling Aikido mod from $MOD_PATH/20-aikido.ini..."
-        rm -f $MOD_PATH/20-aikido.ini
+        echo "Uninstalling Aikido mod from $MOD_PATH/50-aikido.ini..."
+        rm -f $MOD_PATH/50-aikido.ini
     else
         echo "Mod path $MOD_PATH does not exist for PHP. Skipping."
     fi

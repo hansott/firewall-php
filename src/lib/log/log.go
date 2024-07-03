@@ -4,7 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"main/globals"
+	"math/rand"
 	"os"
+	"time"
 )
 
 type LogLevel int
@@ -109,6 +112,19 @@ func SetLogLevel(level string) error {
 	return nil
 }
 
-func init() {
-	SetLogLevel("ERROR")
+func Init(level string) {
+	rand.Seed(time.Now().UnixNano())
+	randomPart := rand.Int63()
+	logFilePath := fmt.Sprintf("/var/log/aikido_extension_%d.log", randomPart)
+
+	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+
+	logger.SetOutput(logFile)
+
+	if err := SetLogLevel(globals.InitData.LogLevel); err != nil {
+		panic(fmt.Sprintf("Error setting log level: %s", err))
+	}
 }

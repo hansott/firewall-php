@@ -55,9 +55,7 @@ func Init(initJson string) (initOk bool) {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	if err := log.SetLogLevel(globals.InitData.LogLevel); err != nil {
-		panic(fmt.Sprintf("Error setting log level: %s", err))
-	}
+	log.Init(globals.InitData.LogLevel)
 
 	log.Debug("Init: ", initJson)
 
