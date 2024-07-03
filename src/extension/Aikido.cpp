@@ -43,10 +43,12 @@ PHP_MINIT_FUNCTION(aikido)
 	if (!aikido_global_init()) {
 		/* If the global initialization fails, we do not load the aikido extension */
 		/* The php script will still run, but without the aikido extension */
+		AIKIDO_LOG_ERROR("Init failed!");
 		return FAILURE;
 	}
 
 	for ( auto& it : HOOKED_FUNCTIONS ) {
+		AIKIDO_LOG_DEBUG("Trying to hook function \"%s\"...!\n", it.first.c_str());
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
 		if (function_data != NULL) {
 			it.second.original_handler = function_data->internal_function.handler;
@@ -56,6 +58,7 @@ PHP_MINIT_FUNCTION(aikido)
 	}
 
 	for ( auto& it : HOOKED_METHODS ) {
+		AIKIDO_LOG_DEBUG("Trying to hook method \"%s->%s\"...!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
 		zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
 		if (class_entry != NULL) {
 			zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
@@ -66,7 +69,7 @@ PHP_MINIT_FUNCTION(aikido)
 			}
    		}
 	}
-
+	AIKIDO_LOG_INFO("Init successfull!");
 	return SUCCESS;
 }
 
