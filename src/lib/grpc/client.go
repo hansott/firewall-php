@@ -53,6 +53,7 @@ func OnReceiveToken() {
 	if err != nil {
 		log.Debugf("Could not send token %v: %v", token, err)
 	}
+	log.Info("Token sent")
 }
 
 func OnReceiveLogLevel() {
@@ -66,6 +67,7 @@ func OnReceiveLogLevel() {
 	if err != nil {
 		log.Debugf("Could not send log level %v: %v", log_level, err)
 	}
+	log.Info("Log level sent")
 }
 
 func OnReceiveDomain(domain string) {

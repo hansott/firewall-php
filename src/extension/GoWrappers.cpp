@@ -28,7 +28,7 @@ bool GoInit(json& initData) {
     
     AIKIDO_LOG_DEBUG("Sending init data to GO\n");
     
-    bool initOk = Init(GoCreateString(initDataString));
+    int initOk = Init(GoCreateString(initDataString));
     
     AIKIDO_LOG_DEBUG("Got init status: %d\n", initOk);
     
