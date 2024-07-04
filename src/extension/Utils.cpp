@@ -37,6 +37,8 @@ void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
     va_start(args, format);
     vfprintf(log_file, format, args);
     va_end(args);
+
+    fflush(log_file);
 }
 
 const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level) {
