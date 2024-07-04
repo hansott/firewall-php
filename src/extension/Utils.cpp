@@ -12,7 +12,7 @@ FILE* log_file = nullptr;
 void aikido_log_init() {
     srand(time(NULL));
     int random_number = rand();
-    snprintf(log_file_path, sizeof(log_file_path), "/opt/aikido/aikido_cpp_%d.log", random_number);
+    snprintf(log_file_path, sizeof(log_file_path), "/var/log/aikido/aikido_cpp_%d.log", random_number);
 
     log_file = fopen(log_file_path, "w");
     if (!log_file) {
@@ -27,9 +27,9 @@ void aikido_log_uninit() {
 }
 
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
-    if (level > AIKIDO_GLOBAL(log_level)) {
-        return;
-    }
+    //if (level > AIKIDO_GLOBAL(log_level)) {
+    //    return;
+    //}
 
     fprintf(log_file, "[AIKIDO][%s][C++] ", aikido_log_level_str(level));
 

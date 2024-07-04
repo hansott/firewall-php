@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.15.0
+Version:        1.16.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
@@ -24,6 +24,9 @@ cp -f etc/systemd/system/aikido.service %{buildroot}/etc/systemd/system/aikido.s
 
 %post
 #!/bin/bash
+
+sudo mkdir /var/log/aikido
+sudo chmod 777 /var/log/aikido
 
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
@@ -84,8 +87,6 @@ sleep 10
 echo "Installing SE Linux module for allowing access to /run/aikido.sock..."
 sudo semodule -i /opt/aikido/aikido.pp
 sudo chcon -t var_run_t /run/aikido.sock
-
-sudo chmod 777 /opt/aikido
 
 %preun
 #!/bin/bash
@@ -181,6 +182,8 @@ if [ -S "$SOCKET_PATH" ]; then
 else
     echo "Socket $SOCKET_PATH does not exist."
 fi
+
+sudo rm -rf /var/log/aikido
 
 echo "Uninstallation process for Aikido completed."
 

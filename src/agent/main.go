@@ -29,7 +29,7 @@ func runUntilKilled() {
 }
 
 func main() {
-	log.SetLogLevel("INFO")
+	log.SetLogLevel("DEBUG")
 	log.Infof("Aikido agent v%s started!", globals.Version)
 
 	log.Init()
