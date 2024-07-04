@@ -59,7 +59,6 @@ func Init(initJson string) (initOk bool) {
 
 	log.Debug("Init: ", initJson)
 
-	grpc.Init()
 	go grpc.OnReceiveToken()
 	go grpc.OnReceiveLogLevel()
 
@@ -69,8 +68,6 @@ func Init(initJson string) (initOk bool) {
 //export Uninit
 func Uninit() {
 	log.Debug("Uninit: {}")
-
-	grpc.Uninit()
 }
 
 func main() {}
