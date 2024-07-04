@@ -16,9 +16,7 @@ import (
 const socketPath = "/run/aikido.sock"
 
 var conn *grpc.ClientConn
-var cancel context.CancelFunc
 var client protos.AikidoClient
-var ctx context.Context
 
 func Init() {
 	var err error
@@ -32,23 +30,26 @@ func Init() {
 
 	client = protos.NewAikidoClient(conn)
 
-	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
-
 	log.Debug("Initialized gRPC client!")
 }
 
 func Uninit() {
 	conn.Close()
-	cancel()
 }
 
 func OnReceiveToken() {
+	log.Infof("Client: %v", client)
+
 	token := os.Getenv("AIKIDO_TOKEN")
 	if token == "" {
 		log.Warn("AIKIDO_TOKEN not found in env variables!")
 		return
 	}
 	log.Info("Sending token: ", token)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	_, err := client.OnReceiveToken(ctx, &protos.Token{Token: token})
 	if err != nil {
 		log.Debugf("Could not send token %v: %v", token, err)
@@ -57,12 +58,17 @@ func OnReceiveToken() {
 }
 
 func OnReceiveLogLevel() {
+	log.Infof("Client: %v", client)
+
 	log_level := os.Getenv("AIKIDO_LOG_LEVEL")
 	if log_level == "" {
 		log.Debug("AIKIDO_LOG_LEVEL not found in env variables!")
 		return
 	}
 	log.Info("Sending log level: ", log_level)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
 	_, err := client.OnReceiveLogLevel(ctx, &protos.LogLevel{LogLevel: log_level})
 	if err != nil {
 		log.Debugf("Could not send log level %v: %v", log_level, err)
@@ -71,6 +77,11 @@ func OnReceiveLogLevel() {
 }
 
 func OnReceiveDomain(domain string) {
+	log.Infof("Client: %v", client)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
 		log.Debugf("Could not send domain %v: %v", domain, err)
