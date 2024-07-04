@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.17.0
+Version:        1.18.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
@@ -25,49 +25,38 @@ cp -f etc/systemd/system/aikido.service %{buildroot}/etc/systemd/system/aikido.s
 %post
 #!/bin/bash
 
+echo "Starting the installation process for Aikido..."
+
 sudo mkdir /var/log/aikido
 sudo chmod 777 /var/log/aikido
 
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
+echo "Found PHP version $PHP_VERSION!"
 
 # Install PHP extension
-echo "Installing Aikido extension for PHP $PHP_VERSION..."
+PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
+echo "Installing Aikido extension in EXT_DIR $PHP_EXT_DIR..."
 
-EXT_DIRS=(
-    "/lib64/php-zts/modules"
-    "/lib64/php/modules"
-    "/lib64/php-zts$PHP_VERSION/modules"
-    "/lib64/php$PHP_VERSION/modules"
-    "/usr/lib64/php-zts$PHP_VERSION/modules"
-    "/usr/lib64/php$PHP_VERSION/modules"
-)
-
-for EXT_DIR in "${EXT_DIRS[@]}"; do
-    if [ -d "$EXT_DIR" ]; then
-        echo "Installing Aikido extension in $EXT_DIR/aikido.so..."
-        ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $EXT_DIR/aikido.so
-    else
-        echo "Extension dir path $EXT_DIR does not exist for PHP. Skipping."
-    fi
-done
+if [ -d "$PHP_EXT_DIR" ]; then
+    echo "Installing Aikido extension in $EXT_DIR/aikido.so..."
+    ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $PHP_EXT_DIR/aikido.so
+else
+    echo "No extension dir. Exiting."
+    exit 1
+fi
 
 # Installing Aikido mod
-echo "Installing Aikido mod for PHP $PHP_VERSION..."
+PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=> " '{print $2}')
+echo "Installing Aikido mod in $PHP_MOD_DIR..."
 
-MOD_PATHS=(
-    "/etc/php.d"
-    "/etc/php-zts.d"
-)
-
-for MOD_PATH in "${MOD_PATHS[@]}"; do
-    if [ -d "$MOD_PATH" ]; then
-        echo "Installing Aikido mod in $MOD_PATH/50-aikido.ini..."
-        ln -sf /opt/aikido/aikido-dev.ini $MOD_PATH/50-aikido.ini
-    else
-        echo "Mod path $MOD_PATH does not exist for PHP. Skipping."
-    fi
-done
+if [ -d "$PHP_MOD_DIR" ]; then
+    echo "Installing Aikido mod in $PHP_MOD_DIR/zz-aikido-firewall.ini..."
+    ln -sf /opt/aikido/aikido-dev.ini $PHP_MOD_DIR/zz-aikido-firewall.ini
+else
+    echo "No mod dir. Exiting."
+    exit 1
+fi
 
 echo "Installing Aikido agent $VERSION..."
 if [ -f "/opt/aikido/aikido-$VERSION" ]; then
@@ -91,10 +80,12 @@ sudo chcon -t var_run_t /run/aikido.sock
 %preun
 #!/bin/bash
 
+echo "Starting the uninstallation process for Aikido..."
+
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
 
-echo "Starting the uninstallation process for Aikido..."
+echo "Found PHP version $PHP_VERSION!"
 
 # Function to handle script termination
 cleanup() {
@@ -123,39 +114,30 @@ else
     echo "Aikido main executable not found. Skipping unlink step."
 fi
 
+
 # Uninstall PHP extension
-echo "Uninstalling Aikido extension for PHP $PHP_VERSION..."
+PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
+echo "Uinstalling Aikido extension from EXT_DIR $PHP_EXT_DIR..."
 
-EXT_DIRS=(
-    "/lib64/php-zts/modules"
-    "/lib64/php/modules"
-)
-
-for EXT_DIR in "${EXT_DIRS[@]}"; do
-    if [ -d "$EXT_DIR" ]; then
-        echo "Uninstalling Aikido extension from $EXT_DIR/aikido.so..."
-        rm -f $EXT_DIR/aikido.so
-    else
-        echo "Extension dir path $EXT_DIR does not exist for PHP. Skipping."
-    fi
-done
+if [ -d "$PHP_EXT_DIR" ]; then
+    echo "Uinstalling Aikido extension from $EXT_DIR/aikido.so..."
+    rm -f $PHP_EXT_DIR/aikido.so
+else
+    echo "No extension dir. Exiting."
+    exit 1
+fi
 
 # Uninstalling Aikido mod
-echo "Uninstalling Aikido mod for PHP $PHP_VERSION..."
+PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=> " '{print $2}')
+echo "Unistalling Aikido mod from $PHP_MOD_DIR..."
 
-MOD_PATHS=(
-    "/etc/php.d"
-    "/etc/php-zts.d"
-)
-
-for MOD_PATH in "${MOD_PATHS[@]}"; do
-    if [ -d "$MOD_PATH" ]; then
-        echo "Uninstalling Aikido mod from $MOD_PATH/50-aikido.ini..."
-        rm -f $MOD_PATH/50-aikido.ini
-    else
-        echo "Mod path $MOD_PATH does not exist for PHP. Skipping."
-    fi
-done
+if [ -d "$PHP_MOD_DIR" ]; then
+    echo "Uninstalling Aikido mod from $PHP_MOD_DIR/zz-aikido-firewall.ini..."
+    rm -f $PHP_MOD_DIR/zz-aikido-firewall.ini
+else
+    echo "No mod dir. Exiting."
+    exit 1
+fi
 
 # Remove the Aikido log file
 if [ -f "/var/log/aikido.log" ]; then

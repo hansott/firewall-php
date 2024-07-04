@@ -47,7 +47,7 @@ static PHP_GSHUTDOWN_FUNCTION(aikido)
 PHP_MINIT_FUNCTION(aikido)
 {
 	AIKIDO_LOG_INFO("MInit started!\n");
-
+	/*
 	for ( auto& it : HOOKED_FUNCTIONS ) {
 		AIKIDO_LOG_DEBUG("Trying to hook function \"%s\"...!\n", it.first.c_str());
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
@@ -70,6 +70,7 @@ PHP_MINIT_FUNCTION(aikido)
 			}
    		}
 	}
+	*/
 	AIKIDO_LOG_INFO("MInit finished!\n");
 	return SUCCESS;
 }
