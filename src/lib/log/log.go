@@ -21,7 +21,7 @@ const (
 
 var (
 	currentLogLevel = ErrorLevel
-	logger          = log.New(os.Stdout, "", 0)
+	Logger          = log.New(os.Stdout, "", 0)
 )
 
 type AikidoFormatter struct{}
@@ -50,7 +50,7 @@ func logMessage(level LogLevel, args ...interface{}) {
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprint(args...)
 		formattedMessage := formatter.Format(level, message)
-		logger.Print(formattedMessage)
+		Logger.Print(formattedMessage)
 	}
 }
 
@@ -59,7 +59,7 @@ func logMessagef(level LogLevel, format string, args ...interface{}) {
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprintf(format, args...)
 		formattedMessage := formatter.Format(level, message)
-		logger.Print(formattedMessage)
+		Logger.Print(formattedMessage)
 	}
 }
 
@@ -123,7 +123,7 @@ func Init(level string) {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
 
-	logger.SetOutput(logFile)
+	Logger.SetOutput(logFile)
 
 	if err := SetLogLevel(globals.InitData.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))

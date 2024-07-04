@@ -11,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/grpclog"
 )
 
 const socketPath = "/run/aikido.sock"
@@ -81,6 +82,11 @@ func OnReceiveDomain(domain string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	// Setup gRPC logging to a file
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(log.Logger.Writer(), log.Logger.Writer(), log.Logger.Writer()))
+
+	log.Infof("Before domain send")
 
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
