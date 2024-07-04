@@ -51,9 +51,13 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 		aikido_handler handler = nullptr;
 
-		std::string scope_name;
-
-		if (executed_scope) {
+		std::string scope_name = function_name;
+		AIKIDO_LOG_DEBUG("Function name: %s\n", scope_name.c_str());
+		if (HOOKED_FUNCTIONS.find(function_name) != HOOKED_FUNCTIONS.end()) {
+			handler = HOOKED_FUNCTIONS[function_name].handler;
+			original_handler = HOOKED_FUNCTIONS[function_name].original_handler;
+		}
+		else if (executed_scope) {
 			/* A method was executed (executed_scope stores the name of the current class) */
 
 			std::string class_name(ZSTR_VAL(executed_scope->name));
@@ -66,6 +70,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			AIKIDO_LOG_DEBUG("Method name: %s\n", scope_name.c_str());
 
 			if (HOOKED_METHODS.find(method_key) == HOOKED_METHODS.end()) {
+				AIKIDO_LOG_DEBUG("Method not found! Returning!\n");
 				return;
 			}
 
@@ -73,17 +78,11 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			original_handler = HOOKED_METHODS[method_key].original_handler;
 		}
 		else {
-			/* A function was executed (executed_scope is null) */
-			scope_name = function_name;
-			AIKIDO_LOG_DEBUG("Function name: %s\n", scope_name.c_str());
-			if (HOOKED_FUNCTIONS.find(function_name) == HOOKED_FUNCTIONS.end()) {
-				return;
-			}
-			handler = HOOKED_FUNCTIONS[function_name].handler;
-			original_handler = HOOKED_FUNCTIONS[function_name].original_handler;
+			AIKIDO_LOG_DEBUG("Nothing matches the current handler! Returning!\n");
+			return;
 		}
 
-		AIKIDO_LOG_DEBUG("Handler called for \"%s\"!\n", scope_name.c_str());
+		AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
 		json inputEvent;
 		handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
