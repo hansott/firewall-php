@@ -4,50 +4,53 @@ import (
 	"context"
 	"fmt"
 	"main/log"
-	"net"
 	"os"
+	"sync"
 	"time"
 
 	"main/ipc/protos"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/grpclog"
 )
 
 const socketPath = "/run/aikido.sock"
 
 var conn *grpc.ClientConn
-var rootCtx = context.Background()
-var mainCtx, mainCxl = context.WithCancel(rootCtx)
-
-func unixDialer(ctx context.Context, addr string) (net.Conn, error) {
-	var d net.Dialer
-	log.Debugf("Unix dialer called: %v %v", ctx, addr)
-	return d.DialContext(ctx, "unix", addr)
-}
+var client protos.AikidoClient
+var mu sync.Mutex
 
 func Init() {
+	mu.Lock()
+	defer mu.Unlock()
+
 	var err error
 	conn, err = grpc.Dial(
-		socketPath,
+		"unix://"+socketPath,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
-		grpc.WithContextDialer(unixDialer),
 	)
 	if err != nil {
 		panic(fmt.Sprintf("did not connect: %v", err))
 	}
 
+	client = protos.NewAikidoClient(conn)
+
 	log.Debug("Initialized gRPC client!")
 }
 
 func Uninit() {
-	mainCxl()
+	mu.Lock()
+	defer mu.Unlock()
+
 	conn.Close()
 }
 
 func OnReceiveToken() {
-	client := protos.NewAikidoClient(conn)
+	mu.Lock()
+	defer mu.Unlock()
+
 	log.Infof("Client: %v", client)
 
 	token := os.Getenv("AIKIDO_TOKEN")
@@ -57,7 +60,7 @@ func OnReceiveToken() {
 	}
 	log.Info("Sending token: ", token)
 
-	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	_, err := client.OnReceiveToken(ctx, &protos.Token{Token: token})
@@ -68,7 +71,9 @@ func OnReceiveToken() {
 }
 
 func OnReceiveLogLevel() {
-	client := protos.NewAikidoClient(conn)
+	mu.Lock()
+	defer mu.Unlock()
+
 	log.Infof("Client: %v", client)
 
 	log_level := os.Getenv("AIKIDO_LOG_LEVEL")
@@ -78,9 +83,8 @@ func OnReceiveLogLevel() {
 	}
 	log.Info("Sending log level: ", log_level)
 
-	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-
 	_, err := client.OnReceiveLogLevel(ctx, &protos.LogLevel{LogLevel: log_level})
 	if err != nil {
 		log.Debugf("Could not send log level %v: %v", log_level, err)
@@ -89,13 +93,18 @@ func OnReceiveLogLevel() {
 }
 
 func OnReceiveDomain(domain string) {
-	client := protos.NewAikidoClient(conn)
+	mu.Lock()
+	defer mu.Unlock()
+
 	log.Infof("Client: %v", client)
 
-	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	log.Infof("Ctx: %v", ctx)
+	// Setup gRPC logging to a file
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(log.Logger.Writer(), log.Logger.Writer(), log.Logger.Writer()))
+
+	log.Infof("Client: %v", client)
 
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
