@@ -63,6 +63,8 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 			AIKIDO_METHOD_KEY method_key(class_name, function_name);
 
+			AIKIDO_LOG_DEBUG("Method name: %s\n", scope_name.c_str());
+
 			if (HOOKED_METHODS.find(method_key) == HOOKED_METHODS.end()) {
 				return;
 			}
@@ -73,6 +75,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 		else {
 			/* A function was executed (executed_scope is null) */
 			scope_name = function_name;
+			AIKIDO_LOG_DEBUG("Function name: %s\n", scope_name.c_str());
 			if (HOOKED_FUNCTIONS.find(function_name) == HOOKED_FUNCTIONS.end()) {
 				return;
 			}
