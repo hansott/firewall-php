@@ -37,6 +37,8 @@ ACTION aikido_execute_output(json event) {
 }
 
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
+	AIKIDO_LOG_DEBUG("Aikido generic handler started!\n");
+
 	zif_handler original_handler = nullptr;
 	
 	try {
@@ -99,4 +101,6 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 	if (original_handler) {
 		original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 	}
+
+	AIKIDO_LOG_DEBUG("Aikido generic handler ended!\n");
 }
