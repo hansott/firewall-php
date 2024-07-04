@@ -47,30 +47,45 @@ static PHP_GSHUTDOWN_FUNCTION(aikido)
 PHP_MINIT_FUNCTION(aikido)
 {
 	AIKIDO_LOG_INFO("MInit started!\n");
-	/*
 	for ( auto& it : HOOKED_FUNCTIONS ) {
-		AIKIDO_LOG_DEBUG("Trying to hook function \"%s\"...!\n", it.first.c_str());
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
-		if (function_data != NULL) {
-			it.second.original_handler = function_data->internal_function.handler;
-			function_data->internal_function.handler = aikido_generic_handler;
-			AIKIDO_LOG_DEBUG("Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+		if (function_data == NULL) {
+			AIKIDO_LOG_DEBUG("Function \"%s\" does not exist!\n", it.first.c_str());
+			continue;
 		}
+		if (it.second.original_handler) {
+			AIKIDO_LOG_DEBUG("Function \"%s\" already hooked (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+			continue;
+		}
+
+		it.second.original_handler = function_data->internal_function.handler;
+		function_data->internal_function.handler = aikido_generic_handler;
+		AIKIDO_LOG_DEBUG("Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
 	}
 
 	for ( auto& it : HOOKED_METHODS ) {
-		AIKIDO_LOG_DEBUG("Trying to hook method \"%s->%s\"...!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
 		zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
-		if (class_entry != NULL) {
-			zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
-			if (method != NULL) {
-				it.second.original_handler = method->internal_function.handler;
-				method->internal_function.handler = aikido_generic_handler;
-				AIKIDO_LOG_DEBUG("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
-			}
-   		}
+		if (class_entry == NULL) {
+			AIKIDO_LOG_DEBUG("Class \"%s\" does not exist!\n", it.first.class_name.c_str());
+			continue;
+		}
+
+		zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
+		if (method == NULL) {
+			AIKIDO_LOG_DEBUG("Method \"%s->%s\" does not exist!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
+			continue;
+		}
+
+		if (it.second.original_handler) {
+			AIKIDO_LOG_DEBUG("Method \"%s->%s\" already hooked (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
+			continue;
+		}
+
+		it.second.original_handler = method->internal_function.handler;
+		method->internal_function.handler = aikido_generic_handler;
+		AIKIDO_LOG_DEBUG("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 	}
-	*/
+
 	AIKIDO_LOG_INFO("MInit finished!\n");
 	return SUCCESS;
 }
