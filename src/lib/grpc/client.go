@@ -75,4 +75,5 @@ func OnReceiveDomain(domain string) {
 	if err != nil {
 		log.Debugf("Could not send domain %v: %v", domain, err)
 	}
+	log.Debugf("Domain sent: %v", domain)
 }
