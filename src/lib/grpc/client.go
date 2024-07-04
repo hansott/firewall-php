@@ -30,7 +30,7 @@ func unixDialer(ctx context.Context, addr string) (net.Conn, error) {
 func Init() {
 	var err error
 	conn, err = grpc.Dial(
-		"unix://"+socketPath,
+		socketPath,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithContextDialer(unixDialer),
 	)

@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.28.0
+Version:        1.29.0
 Release:        1
 Summary:        Aikido PHP extension and agent
 
@@ -36,10 +36,10 @@ echo "Found PHP version $PHP_VERSION!"
 
 # Install PHP extension
 PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
-echo "Installing Aikido extension in EXT_DIR $PHP_EXT_DIR..."
+echo "Installing Aikido extension in $PHP_EXT_DIR..."
 
 if [ -d "$PHP_EXT_DIR" ]; then
-    echo "Installing Aikido extension in $EXT_DIR/aikido.so..."
+    echo "Installing Aikido extension in $PHP_EXT_DIR/aikido.so..."
     ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $PHP_EXT_DIR/aikido.so
 else
     echo "No extension dir. Exiting."
