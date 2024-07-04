@@ -20,14 +20,13 @@ static PHP_GINIT_FUNCTION(aikido)
 	aikido_globals->blocking = false;
 
 	aikido_globals->blocking = config_override_with_env_bool(aikido_globals->blocking, "AIKIDO_BLOCKING");
-	/*
+
 	json initData = {
 		{ "version", PHP_AIKIDO_VERSION },
 		{ "log_level", "DEBUG" },
 	};
 
 	GoInit(initData);
-	*/
 
 	AIKIDO_LOG_INFO("GInit finished!\n");
 }
@@ -39,7 +38,7 @@ static PHP_GSHUTDOWN_FUNCTION(aikido)
 #endif
 	AIKIDO_LOG_INFO("GShutdown started!\n");
 	
-	//GoUninit();
+	GoUninit();
 
 	AIKIDO_LOG_INFO("GShutdown finished!\n");
 	aikido_log_uninit();
