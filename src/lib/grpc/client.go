@@ -16,21 +16,34 @@ import (
 
 const socketPath = "/run/aikido.sock"
 
-func OnReceiveToken() {
-	conn, err := grpc.Dial(
+var conn *grpc.ClientConn
+var client protos.AikidoClient
+
+func Init() {
+	var err error
+	conn, err = grpc.Dial(
 		"unix://"+socketPath,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
-	defer conn.Close()
-
 	if err != nil {
 		panic(fmt.Sprintf("did not connect: %v", err))
 	}
 
-	client := protos.NewAikidoClient(conn)
+	client = protos.NewAikidoClient(conn)
 
+	log.Debugf("Current connection state: %s\n", conn.GetState().String())
+
+	log.Debug("Initialized gRPC client!")
+}
+
+func Uninit() {
+	conn.Close()
+}
+
+func OnReceiveToken() {
 	log.Infof("Client: %v", client)
+
+	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
 	token := os.Getenv("AIKIDO_TOKEN")
 	if token == "" {
@@ -42,7 +55,7 @@ func OnReceiveToken() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	_, err = client.OnReceiveToken(ctx, &protos.Token{Token: token})
+	_, err := client.OnReceiveToken(ctx, &protos.Token{Token: token})
 	if err != nil {
 		log.Debugf("Could not send token %v: %v", token, err)
 	}
@@ -50,20 +63,8 @@ func OnReceiveToken() {
 }
 
 func OnReceiveLogLevel() {
-	conn, err := grpc.Dial(
-		"unix://"+socketPath,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	defer conn.Close()
-
-	if err != nil {
-		panic(fmt.Sprintf("did not connect: %v", err))
-	}
-
-	client := protos.NewAikidoClient(conn)
-
 	log.Infof("Client: %v", client)
+	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
 	log_level := os.Getenv("AIKIDO_LOG_LEVEL")
 	if log_level == "" {
@@ -74,7 +75,7 @@ func OnReceiveLogLevel() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	_, err = client.OnReceiveLogLevel(ctx, &protos.LogLevel{LogLevel: log_level})
+	_, err := client.OnReceiveLogLevel(ctx, &protos.LogLevel{LogLevel: log_level})
 	if err != nil {
 		log.Debugf("Could not send log level %v: %v", log_level, err)
 	}
@@ -82,20 +83,8 @@ func OnReceiveLogLevel() {
 }
 
 func OnReceiveDomain(domain string) {
-	conn, err := grpc.Dial(
-		"unix://"+socketPath,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
-	)
-	defer conn.Close()
-
-	if err != nil {
-		panic(fmt.Sprintf("did not connect: %v", err))
-	}
-
-	client := protos.NewAikidoClient(conn)
-
 	log.Infof("Client: %v", client)
+	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -103,9 +92,7 @@ func OnReceiveDomain(domain string) {
 	// Setup gRPC logging to a file
 	grpclog.SetLoggerV2(grpclog.NewLoggerV2(log.Logger.Writer(), log.Logger.Writer(), log.Logger.Writer()))
 
-	log.Infof("Client: %v", client)
-
-	_, err = client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
+	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
 		log.Debugf("Could not send domain %v: %v", domain, err)
 	}
