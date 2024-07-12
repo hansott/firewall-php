@@ -190,8 +190,19 @@ jobs:
         with:
           pattern: |
             aikido-${{ env.AIKIDO_VERSION }}*
-            aikido_agent
-            aikido_request_processor
+            
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: |
+            aikido_agent*
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: |
+            aikido_request_processor*
+
       - name: List Artifacts
         run: |
           ls -l -R
