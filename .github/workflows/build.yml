@@ -43,7 +43,7 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/$AIKIDO_AGENT_ARTIFACT.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_AGENT_ARTIFACT}.so
 
     - name: Build Aikido agent
       run: |
@@ -52,7 +52,7 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/$AIKIDO_REQUEST_PROCESSOR_ARTIFACT.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
 
     - name: Archive agent 
       uses: actions/upload-artifact@v4
@@ -61,7 +61,7 @@ jobs:
         name: $AIKIDO_AGENT_ARTIFACT
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/$AIKIDO_AGENT_ARTIFACT.so
+          ${{ github.workspace }}/build/${AIKIDO_AGENT_ARTIFACT}.so
 
     - name: Archive request processor
       uses: actions/upload-artifact@v4
@@ -70,7 +70,7 @@ jobs:
         name: $AIKIDO_REQUEST_PROCESSOR_ARTIFACT
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/$AIKIDO_REQUEST_PROCESSOR_ARTIFACT.so
+          ${{ github.workspace }}/build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
 
   build_php_extension:
     runs-on: ubuntu-latest
