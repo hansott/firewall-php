@@ -10,7 +10,7 @@ on:
   workflow_call:
 
 jobs:
-  build_agent:
+  build_libs:
     runs-on: ubuntu-latest
 
     steps:
@@ -121,6 +121,17 @@ jobs:
         mkdir build
         cd lib/php-extension
         phpize
+        cd ../
+        protoc --go_out=agent --go-grpc_out=agent ipc.proto
+        protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
+        cd agent
+        go get main/ipc/protos
+        go get google.golang.org/grpc
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
+        cd ../request-processor
+        go get main/ipc/protos
+        go get google.golang.org/grpc
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
@@ -154,7 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: centos:latest
-    needs: [ build_agent, build_php_extension ]
+    needs: [ build_libs, build_php_extension ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
