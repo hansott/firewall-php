@@ -33,8 +33,8 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_AGENT_ARTIFACT=aikido_agent_$AIKIDO_VERSION"
-        echo "AIKIDO_REQUEST_PROCESSOR_ARTIFACT=aikido_request_processor_$AIKIDO_VERSION"
+        echo "AIKIDO_AGENT_ARTIFACT=aikido_agent_$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_REQUEST_PROCESSOR_ARTIFACT=aikido_request_processor_$AIKIDO_VERSION" >> $GITHUB_ENV
 
     - name: Build Aikido agent
       run: |
