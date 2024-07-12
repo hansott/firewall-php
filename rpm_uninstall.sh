@@ -1,1 +1,1 @@
-rpm -e aikido-php-firewall-2.0.0-1.x86_64
+rpm -e aikido-php-firewall-2.0.1-1.x86_64
