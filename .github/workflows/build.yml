@@ -185,12 +185,13 @@ jobs:
           AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+      
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: |
             aikido-${{ env.AIKIDO_VERSION }}*
-            
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -205,8 +206,9 @@ jobs:
 
       - name: List Artifacts
         run: |
-          ls -l -R
+          ls -l -R | grep aikido
           pwd
+      
       - name: Prepare rpm package
         run: |
           mv aikido_agent/aikido_agent.so package/rpm/opt/aikido/aikido_agent.so
