@@ -1,1 +1,1 @@
-php src/extension/run-tests.php ./tests
+php srcphp-extension/run-tests.php ./tests

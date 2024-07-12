@@ -125,7 +125,7 @@ jobs:
         cd ${{ github.workspace }}
         rm -rf build
         mkdir build
-        cd lib/extension
+        cd libphp-extension
         phpize
         cd ..
         cd agent
@@ -143,7 +143,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
-        /usr/bin/php lib/extension/run-tests.php ./tests
+        /usr/bin/php libphp-extension/run-tests.php ./tests
       continue-on-error: true
 
     - name: Version Aikido extension
