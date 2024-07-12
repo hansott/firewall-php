@@ -33,25 +33,44 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_AGENT_ARTIFACT=aikido_agent_$AIKIDO_VERSION"
+        echo "AIKIDO_REQUEST_PROCESSOR_ARTIFACT=aikido_request_processor_$AIKIDO_VERSION"
 
     - name: Build Aikido agent
       run: |
-        cd src
+        cd lib
         protoc --go_out=agent --go-grpc_out=agent ipc.proto
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -o ../../build/${{ env.AIKIDO_ARTIFACT }}
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/$AIKIDO_AGENT_ARTIFACT.so
 
-    - name: Archive build artifacts
+    - name: Build Aikido agent
+      run: |
+        cd lib
+        protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
+        cd request-processor
+        go get main/ipc/protos
+        go get google.golang.org/grpc
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/$AIKIDO_REQUEST_PROCESSOR_ARTIFACT.so
+
+    - name: Archive agent 
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{ env.AIKIDO_ARTIFACT }}
+        name: $AIKIDO_AGENT_ARTIFACT
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/${{ env.AIKIDO_ARTIFACT }}
+          ${{ github.workspace }}/build/$AIKIDO_AGENT_ARTIFACT.so
+
+    - name: Archive request processor
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: $AIKIDO_REQUEST_PROCESSOR_ARTIFACT
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/$AIKIDO_REQUEST_PROCESSOR_ARTIFACT.so
 
   build_php_extension:
     runs-on: ubuntu-latest
@@ -106,16 +125,17 @@ jobs:
         cd ${{ github.workspace }}
         rm -rf build
         mkdir build
-        cd src/extension
+        cd lib/extension
         phpize
         cd ..
-        protoc --go_out=lib --go-grpc_out=lib ipc.proto
-        cd lib
-        go get main/ipc/protos
+        cd agent
         go get google.golang.org/grpc
-        go build -gcflags=all="-N -l" -buildmode=c-archive -o ../../build/libaikido_go.a
+        go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_agent.so
+        cd ../request-processor
+        go get google.golang.org/grpc
+        go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_request_processor.so
         cd ../../build
-        CXX=g++ CXXFLAGS="-g -fPIC -I../include" LDFLAGS="-L./ -laikido_go -lstdc++" ../src/extension/configure
+        CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
         sudo make install
 
@@ -123,7 +143,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
-        /usr/bin/php src/extension/run-tests.php ./tests
+        /usr/bin/php lib/extension/run-tests.php ./tests
       continue-on-error: true
 
     - name: Version Aikido extension

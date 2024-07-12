@@ -1,7 +1,7 @@
 Name:           aikido-php-firewall
-Version:        1.31.4
+Version:        2.0.0
 Release:        1
-Summary:        Aikido PHP extension and agent
+Summary:        Aikido PHP extension and Agent
 
 License:        GPL
 URL:            https://aikido.dev
@@ -19,8 +19,6 @@ Aikido PHP extension and agent.
 %install
 mkdir -p %{buildroot}/opt/aikido
 cp -rf opt/aikido/* %{buildroot}/opt/aikido
-mkdir -p %{buildroot}/etc/systemd/system/
-cp -f etc/systemd/system/aikido.service %{buildroot}/etc/systemd/system/aikido.service
 
 %post
 #!/bin/bash
@@ -58,24 +56,6 @@ else
     exit 1
 fi
 
-echo "Installing Aikido agent $VERSION..."
-if [ -f "/opt/aikido/aikido-$VERSION" ]; then
-    ln -sf /opt/aikido/aikido-$VERSION /opt/aikido/aikido
-else
-    echo "Aikido agent directory /opt/aikido/aikido-$VERSION does not exist. Exiting."
-    exit 1
-fi
-
-echo "Registering Aikido agent to run as service..."
-sudo systemctl daemon-reload
-sudo systemctl enable aikido.service
-sudo systemctl start aikido.service
-
-sleep 10
-
-echo "Installing SE Linux module for allowing access to /run/aikido.sock..."
-sudo semodule -i /opt/aikido/aikido.pp
-sudo chcon -t var_run_t /run/aikido.sock
 
 %preun
 #!/bin/bash
@@ -84,6 +64,8 @@ echo "Starting the uninstallation process for Aikido..."
 
 VERSION="%{version}"
 PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
+PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
+PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=> " '{print $2}')
 
 echo "Found PHP version $PHP_VERSION!"
 
@@ -96,27 +78,7 @@ cleanup() {
 # Trap termination signals
 trap cleanup SIGTERM SIGINT
 
-# Stop the service if it is running
-echo "Stopping the Aikido service..."
-sudo systemctl stop aikido.service
-
-sleep 10
-
-echo "Disabling the Aikido service..."
-sudo systemctl disable aikido.service
-sudo systemctl daemon-reload
-
-# Unlink the main executable if it exists
-if [ -L /opt/aikido/aikido ]; then
-    echo "Unlinking the Aikido main executable..."
-    unlink /opt/aikido/aikido
-else
-    echo "Aikido main executable not found. Skipping unlink step."
-fi
-
-
 # Uninstall PHP extension
-PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
 echo "Uinstalling Aikido extension from EXT_DIR $PHP_EXT_DIR..."
 
 if [ -d "$PHP_EXT_DIR" ]; then
@@ -128,7 +90,6 @@ else
 fi
 
 # Uninstalling Aikido mod
-PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=> " '{print $2}')
 echo "Unistalling Aikido mod from $PHP_MOD_DIR..."
 
 if [ -d "$PHP_MOD_DIR" ]; then
@@ -138,17 +99,6 @@ else
     echo "No mod dir. Exiting."
     exit 1
 fi
-
-# Remove the Aikido log file
-if [ -f "/var/log/aikido.log" ]; then
-    echo "Removing /var/log/aikido.log..."
-    rm -f /var/log/aikido.log
-else
-    echo "/var/log/aikido.log does not exist. Skipping."
-fi
-
-# Remove semodule
-sudo semodule -r aikido
 
 # Remove the Aikido socket
 SOCKET_PATH="/run/aikido.sock"
@@ -170,7 +120,6 @@ sudo rm -rf /var/log/aikido
 echo "Uninstallation process for Aikido completed."
 
 %files
-/etc/systemd/system/aikido.service
 /opt/aikido
 
 %changelog

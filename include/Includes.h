@@ -19,7 +19,8 @@
 #include <net/if.h>
 
 #include "ext/standard/info.h"
-#include "libaikido_go.h"
+#include "aikido_agent.h"
+#include "aikido_request_processor.h"
 #include "php_aikido.h"
 
 #include "3rdparty/json.hpp"
@@ -34,8 +35,7 @@ using json = nlohmann::json;
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-#include "GoWrappers.h"
-#include "Utils.h"
+
 
 #define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent)
 
@@ -70,3 +70,18 @@ public:
 };
 
 extern unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HOOKED_METHODS;
+
+typedef GoUint8 (*AgentInitFn)(GoString initJson);
+typedef void (*AgentUninitFn)();
+
+typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
+typedef GoString (*RequestProcessorOnEventFn)(GoString eventJson);
+typedef void (*RequestProcessorUninitFn)();
+
+
+extern void* aikido_request_processor_lib_handle;
+extern RequestProcessorOnEventFn request_processor_on_event_fn;
+
+
+#include "GoWrappers.h"
+#include "Utils.h"

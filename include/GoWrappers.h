@@ -6,8 +6,12 @@ std::string CppCreateString(GoString g);
 
 GoString GoCreateString(std::string& s);
 
-json GoOnEvent(json& event);
+json GoRequestProcessorOnEvent(json& event);
 
-bool GoInit(json& initData);
+bool GoRequestProcessorInit(json& initData);
 
-void GoUninit();
+void GoRequestProcessorUninit();
+
+bool GoAgentInit(json& initData);
+
+void GoAgentUninit();
