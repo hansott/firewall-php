@@ -2965,7 +2965,7 @@ namespace detail
 @pre The search string @a f must not be empty. **This precondition is
 enforced with an assertion.**
 
-@since version 2.0.1
+@since version 2.0.2
 */
 template<typename StringType>
 inline void replace_substring(StringType& s, const StringType& f,

@@ -16,8 +16,8 @@ func AgentInit(initJson string) (initOk bool) {
 	log.Init()
 	log.Infof("Aikido Agent v%s loaded!", globals.Version)
 
-	config.Init(initJson)
 	machine.Init()
+	config.Init(initJson)
 	go grpc.Init()
 	return true
 }
