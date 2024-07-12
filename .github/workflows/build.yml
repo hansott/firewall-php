@@ -33,8 +33,6 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_AGENT_ARTIFACT=aikido_agent_$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_REQUEST_PROCESSOR_ARTIFACT=aikido_request_processor_$AIKIDO_VERSION" >> $GITHUB_ENV
 
     - name: Build Aikido Agent
       run: |
@@ -44,7 +42,6 @@ jobs:
         go get main/ipc/protos
         go get google.golang.org/grpc
         go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
-        mv ../../build/aikido_agent.so ../../build/${AIKIDO_AGENT_ARTIFACT}.so
         ls -l ../../build
 
     - name: Build Aikido Request Processor
@@ -57,26 +54,25 @@ jobs:
         go get main/ipc/protos
         go get google.golang.org/grpc
         go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
-        mv ../../build/aikido_request_processor.so ../../build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
         ls -l ../../build
 
     - name: Archive agent 
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: $AIKIDO_AGENT_ARTIFACT
+        name: aikido_agent
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/${AIKIDO_AGENT_ARTIFACT}.so
+          ${{ github.workspace }}/build/aikido_agent.so
 
     - name: Archive request processor
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: $AIKIDO_REQUEST_PROCESSOR_ARTIFACT
+        name: aikido_request_processor
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
+          ${{ github.workspace }}/build/aikido_request_processor.so
 
   build_php_extension:
     runs-on: ubuntu-latest
