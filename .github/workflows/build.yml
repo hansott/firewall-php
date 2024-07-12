@@ -92,18 +92,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
 
-    - name: GO setup
-      run: |
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-        echo "$HOME/go/bin" >> $GITHUB_PATH
-
-    - name: Set PATH env
-      run: |
-        echo $PATH
-        whereis go
-        whereis protoc-gen-go
-
     - name: Get Aikido version
       run: |
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
@@ -131,13 +119,6 @@ jobs:
         mkdir build
         cd lib/php-extension
         phpize
-        cd ..
-        cd agent
-        go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_agent.so
-        cd ../request-processor
-        go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_request_processor.so
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
