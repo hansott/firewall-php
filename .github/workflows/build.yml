@@ -190,18 +190,20 @@ jobs:
         with:
           pattern: |
             aikido-${{ env.AIKIDO_VERSION }}*
+            aikido_agent
+            aikido_request_processor
       - name: List Artifacts
         run: |
           ls -l -R
           pwd
       - name: Prepare rpm package
         run: |
-          mv aikido-${{ env.AIKIDO_VERSION }}/aikido-${{ env.AIKIDO_VERSION }} package/rpm/opt/aikido/
-          chmod 711 package/rpm/opt/aikido/aikido-${{ env.AIKIDO_VERSION }} 
+          mv aikido_agent/aikido_agent.so package/rpm/opt/aikido/aikido_agent.so
+          mv aikido_request_processor/aikido_request_processor.so package/rpm/opt/aikido/aikido_request_processor.so
           mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/rpm/opt/aikido/
+          chmod 777 package/rpm/opt/aikido/*
           rpmdev-setuptree
           mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
-          cp -rf package/rpm/etc ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/
           cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/
           cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
 
