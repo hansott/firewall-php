@@ -43,7 +43,8 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_AGENT_ARTIFACT}.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
+        mv ../../build/aikido_agent.so ../../build/${AIKIDO_AGENT_ARTIFACT}.so
         ls -l ../../build
 
     - name: Build Aikido Request Processor
@@ -53,7 +54,8 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
+        mv ../../build/aikido_request_processor.so ../../build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
         ls -l ../../build
 
     - name: Archive agent 
