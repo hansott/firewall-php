@@ -36,7 +36,7 @@ jobs:
         echo "AIKIDO_AGENT_ARTIFACT=aikido_agent_$AIKIDO_VERSION" >> $GITHUB_ENV
         echo "AIKIDO_REQUEST_PROCESSOR_ARTIFACT=aikido_request_processor_$AIKIDO_VERSION" >> $GITHUB_ENV
 
-    - name: Build Aikido agent
+    - name: Build Aikido Agent
       run: |
         cd lib
         protoc --go_out=agent --go-grpc_out=agent ipc.proto
@@ -44,8 +44,9 @@ jobs:
         go get main/ipc/protos
         go get google.golang.org/grpc
         go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_AGENT_ARTIFACT}.so
+        ls -l ../../build
 
-    - name: Build Aikido agent
+    - name: Build Aikido Request Processor
       run: |
         cd lib
         protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
@@ -53,6 +54,7 @@ jobs:
         go get main/ipc/protos
         go get google.golang.org/grpc
         go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/${AIKIDO_REQUEST_PROCESSOR_ARTIFACT}.so
+        ls -l ../../build
 
     - name: Archive agent 
       uses: actions/upload-artifact@v4
