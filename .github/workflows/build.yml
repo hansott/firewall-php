@@ -11,7 +11,7 @@ on:
 
 jobs:
   build_libs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-1604
 
     steps:
     - name: Checkout repository
