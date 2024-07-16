@@ -57,7 +57,7 @@ jobs:
         ls -l ../../build
 
     - name: Archive agent 
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact
       if: always()
       with:
         name: aikido_agent
@@ -66,7 +66,7 @@ jobs:
           ${{ github.workspace }}/build/aikido_agent.so
 
     - name: Archive request processor
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact
       if: always()
       with:
         name: aikido_request_processor
@@ -92,8 +92,8 @@ jobs:
 
     - name: GO setup
       run: |
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+        go install google.golang.org/protobuf/cmd/protoc-gen-go
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
         echo "$HOME/go/bin" >> $GITHUB_PATH
 
     - name: Get Aikido version
