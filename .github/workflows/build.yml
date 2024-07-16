@@ -11,7 +11,7 @@ on:
 
 jobs:
   build_libs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - name: Checkout repository
@@ -75,7 +75,7 @@ jobs:
           ${{ github.workspace }}/build/aikido_request_processor.so
 
   build_php_extension:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
@@ -124,7 +124,7 @@ jobs:
         cd lib/php-extension
         phpize
         cd ../../build
-        CXX=g++ CXXFLAGS="-static -fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-static-libgcc -static-libstdc++" ../lib/php-extension/configure
+        CXX=g++ CXXFLAGS="-fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
         sudo make install
 
