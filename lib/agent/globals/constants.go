@@ -1,7 +1,7 @@
 package globals
 
 const (
-	Version                  = "2.0.7"
+	Version                  = "2.0.8"
 	ConfigFilePath           = "/opt/aikido/config.json"
 	DevConfigFilePath        = "/opt/aikido/config-dev.json"
 	LogFilePath              = "/var/log/aikido/aikido_agent.log"
