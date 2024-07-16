@@ -11,7 +11,7 @@ on:
 
 jobs:
   build_libs:
-    runs-on: ubuntu-1604
+    runs-on: Pyinstaller-runner
 
     steps:
     - name: Checkout repository
