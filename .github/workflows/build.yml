@@ -19,14 +19,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apt list --installed
         sudo add-apt-repository ppa:longsleep/golang-backports
         sudo apt-get update
-        sudo apt-get install -y golang-1.20 protobuf-compiler protobuf-compiler-grpc
+        sudo apt-get install -y golang-1.22
+        go version
+        which go
+        whereis go
+        sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
 
     - name: GO setup
       run: |
-        go version
         go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
         go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
         echo "$HOME/go/bin" >> $GITHUB_PATH
