@@ -19,6 +19,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        apt list --installed
         sudo add-apt-repository ppa:longsleep/golang-backports
         sudo apt-get update
         sudo apt-get install -y golang-1.20 protobuf-compiler protobuf-compiler-grpc
