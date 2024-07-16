@@ -19,8 +19,7 @@
 #include <net/if.h>
 
 #include "ext/standard/info.h"
-#include "aikido_agent.h"
-#include "aikido_request_processor.h"
+#include "GoCGO.h"
 #include "php_aikido.h"
 
 #include "3rdparty/json.hpp"
