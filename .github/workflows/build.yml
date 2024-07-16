@@ -19,15 +19,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get remove golang-go
-        sudo apt-get remove --auto-remove golang-go
-        wget https://golang.org/dl/go1.20.linux-amd64.tar.gz
-        sudo tar -C /usr/local -xzf go1.20.linux-amd64.tar.gz
-        export PATH=$PATH:/usr/local/go/bin
-        source ~/.profile
-        go version
         sudo apt-get update
-        sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
+        sudo apt-get install -y golang protobuf-compiler protobuf-compiler-grpc
 
     - name: GO setup
       run: |
