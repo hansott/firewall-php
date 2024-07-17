@@ -66,22 +66,18 @@ jobs:
         ls -l ../../build
 
     - name: Archive agent 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v1
       if: always()
       with:
         name: aikido_agent
-        if-no-files-found: error
-        path: |
-          ${{ github.workspace }}/build/aikido_agent.so
+        path: ${{ github.workspace }}/build/aikido_agent.so
 
     - name: Archive request processor
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v1
       if: always()
       with:
         name: aikido_request_processor
-        if-no-files-found: error
-        path: |
-          ${{ github.workspace }}/build/aikido_request_processor.so
+        path: ${{ github.workspace }}/build/aikido_request_processor.so
 
   build_php_extension:
     runs-on: ubuntu-latest
