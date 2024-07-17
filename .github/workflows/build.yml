@@ -101,6 +101,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
         ldd --version
+        sudo apt-get install php${{ matrix.php_version }}-devel
 
     - name: Get Aikido version
       run: |
@@ -108,13 +109,6 @@ jobs:
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
         echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
-
-    - name: Setup PHP
-      uses: AikidoSec/setup-php@v1
-      with:
-        php-version: ${{ matrix.php_version }}
-        extensions: :curl
-        coverage: none
 
     - name: Check PHP setup
       run: |
