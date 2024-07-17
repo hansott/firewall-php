@@ -27,6 +27,7 @@ jobs:
         whereis go
         dpkg-query -L golang-1.22
         ls -l /usr/lib
+        ls -l /usr/bin
         sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
 
     - name: GO setup
