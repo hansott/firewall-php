@@ -11,7 +11,7 @@ on:
 
 jobs:
   build_libs:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -86,7 +86,7 @@ jobs:
         path: ${{ github.workspace }}/build/aikido_request_processor.so
 
   build_php_extension:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php_version: ['8.1']
