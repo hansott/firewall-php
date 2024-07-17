@@ -22,11 +22,11 @@ jobs:
         uname -a
         sudo add-apt-repository ppa:longsleep/golang-backports
         sudo apt-get update
-        sudo apt-get install -y golang-1.20
+        sudo apt-get install -y golang-1.22
         ls -l /usr/bin/go
-        ls -l /usr/lib/go-1.20/bin
+        ls -l /usr/lib/go-1.22/bin
         sudo rm /usr/bin/go
-        sudo ln -s /usr/lib/go-1.20/bin/go /usr/bin/go
+        sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
         ls -l /usr/bin/go
         go version
         go env
@@ -51,8 +51,10 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
+        go build -buildmode=c-shared -o ../../build/aikido_agent.so
         ls -l ../../build
+        nm -D ../../build/aikido_agent.so
+        ldd ../../build/aikido_agent.so
 
     - name: Build Aikido Request Processor
       run: |
@@ -63,8 +65,10 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
+        go build -buildmode=c-shared -o ../../build/aikido_request_processor.so
         ls -l ../../build
+        nm -D ../../build/aikido_request_processor.so
+        ldd ../../build/aikido_request_processor.so
 
     - name: Archive agent 
       uses: actions/upload-artifact@v1
