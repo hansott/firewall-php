@@ -9,13 +9,12 @@ protoc --go_out=agent --go-grpc_out=agent ipc.proto
 protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
 cd agent
 go get google.golang.org/grpc
-go build -gcflags "all=-N -l" -buildmode=c-archive -o ../../build/libaikido_agent.a
-g++ -fPIC -static -shared -I../../build -o ../../build/aikido_agent.so AgentLibWrapper.cpp ../../build/libaikido_agent.a -static-libgcc -static-libstdc++
+go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/libaikido_agent.so
 cd ../request-processor
 go get google.golang.org/grpc
-go build -gcflags "all=-N -l" -buildmode=c-archive -o ../../build/libaikido_request_processor.a
+go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/libaikido_request_processor.so
 cd ../../build
-CXX=g++ CXXFLAGS="-static -fPIC -std=c++20 -g -O0 -I../include" LDFLAGS="-static-libgcc -static-libstdc++" ../lib/php-extension/configure
+CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
 make
 cd ..
 
