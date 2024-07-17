@@ -10,20 +10,19 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
 	protos.AikidoServer
 }
 
-func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
+func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*protos.BoolResponse, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
 
 	globals.Hostnames[req.GetDomain()] = true
-	return &emptypb.Empty{}, nil
+	return &protos.BoolResponse{Success: true}, nil
 }
 
 func Init() {
