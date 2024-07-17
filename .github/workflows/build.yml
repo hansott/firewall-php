@@ -89,7 +89,7 @@ jobs:
     runs-on: Pyinstaller-runner
     strategy:
       matrix:
-        php_version: ['8.4']
+        php_version: ['8.1']
       fail-fast: false
 
     steps:
@@ -101,7 +101,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
         ldd --version
-        sudo apt-get install php${{ matrix.php_version }}-devel
+        sudo apt-get install php${{ matrix.php_version }}-dev
 
     - name: Get Aikido version
       run: |
