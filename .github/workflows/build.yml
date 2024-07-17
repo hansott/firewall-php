@@ -189,12 +189,12 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
-          path: aikido_agent
+          name: aikido_agent
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v1
         with:
-          oath: aikido_request_processor
+          name: aikido_request_processor
 
       - name: List Artifacts
         run: |
