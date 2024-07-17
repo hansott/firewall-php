@@ -94,18 +94,13 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v1
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc
-
-    - name: GO setup
-      run: |
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-        echo "$HOME/go/bin" >> $GITHUB_PATH
+        sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+        ldd --version
 
     - name: Get Aikido version
       run: |
@@ -152,16 +147,10 @@ jobs:
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
         
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
+      uses: actions/upload-artifact@v1
       with:
         name: ${{ env.AIKIDO_ARTIFACT }}
-        if-no-files-found: error
-        path: |
-          ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
-          ${{ github.workspace }}/tests/*.diff
-
-
+        path: ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
 
   build_rpm_package:
     runs-on: ubuntu-latest
