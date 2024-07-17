@@ -181,7 +181,7 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
       
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           pattern: |
             aikido-${{ env.AIKIDO_VERSION }}*
@@ -189,14 +189,12 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
-          pattern: |
-            aikido_agent*
+          path: aikido_agent
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: |
-            aikido_request_processor*
+          oath: aikido_request_processor
 
       - name: List Artifacts
         run: |
