@@ -5,7 +5,6 @@ Summary:        Aikido PHP extension and Agent
 License:        GPL
 URL:            https://aikido.dev
 Source0:        %{name}-%{version}.tar.gz
-Obsoletes:      %{name} < %{version}
 
 %description
 Aikido PHP extension and agent.
