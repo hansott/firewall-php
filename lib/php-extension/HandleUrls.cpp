@@ -31,12 +31,19 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_setopt) {
 
 	AIKIDO_LOG_DEBUG("Handling curl setopt!");
 
-
-	ZEND_PARSE_PARAMETERS_START(3, 3)
-		Z_PARAM_OBJECT(curlHandle)
-		Z_PARAM_LONG(options)
-		Z_PARAM_ZVAL(zvalue)
-	ZEND_PARSE_PARAMETERS_END();
+	#if PHP_VERSION_ID >= 80000
+		ZEND_PARSE_PARAMETERS_START(3, 3)
+			Z_PARAM_OBJECT_OF_CLASS(curlHandle)
+			Z_PARAM_LONG(options)
+			Z_PARAM_ZVAL(zvalue)
+		ZEND_PARSE_PARAMETERS_END();
+	#else
+		ZEND_PARSE_PARAMETERS_START(3, 3)
+			Z_PARAM_RESOURCE(curlHandle)
+			Z_PARAM_LONG(options)
+			Z_PARAM_ZVAL(zvalue)
+		ZEND_PARSE_PARAMETERS_END();
+	#endif
 
 	AIKIDO_LOG_DEBUG("Handling curl setopt: options = %d, CURLOPT_URL = %d\n", options, CURLOPT_URL);
 
