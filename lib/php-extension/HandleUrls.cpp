@@ -29,11 +29,16 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_setopt) {
 	zend_long options = 0;
 	zval *zvalue = NULL;
 
+	AIKIDO_LOG_DEBUG("Handling curl setopt!");
+
+
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJECT(curlHandle)
 		Z_PARAM_LONG(options)
 		Z_PARAM_ZVAL(zvalue)
 	ZEND_PARSE_PARAMETERS_END();
+
+	AIKIDO_LOG_DEBUG("Handling curl setopt: options = %d, CURLOPT_URL = %d\n", options, CURLOPT_URL);
 
 	if (options == CURLOPT_URL) {
 		zend_string *tmp_str;

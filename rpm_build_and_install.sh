@@ -1,15 +1,15 @@
 rm -rf ~/rpmbuild
 rpmdev-setuptree
 
-VERSION="1.0.1"
+VERSION="1.0.2"
 
 mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION
 cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/
 
 cp -f package/rpm/aikido.spec ~/rpmbuild/SPECS/
 
-cp build/aikido_agent.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido/aikido_agent_$VERSION.so
-cp build/aikido_request_processor.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido/aikido_agent_$VERSION.so
+cp build/aikido_agent.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido/aikido_agent.so
+cp build/aikido_request_processor.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido/aikido_request_processor.so
 cp build/modules/aikido.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido/aikido-$VERSION-extension-php-8.0.so
 
 cd ~/rpmbuild/SOURCES
