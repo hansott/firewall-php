@@ -43,15 +43,9 @@ func OnReceiveDomain(domain string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	response, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
+	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
 		log.Debugf("Could not send domain %v: %v", domain, err)
-		return
-	}
-
-	if !response.Success {
-		log.Debugf("Could not send domain %v: operation unsuccessful", domain)
-		return
 	}
 
 	log.Infof("Domain sent via socket: %v", domain)

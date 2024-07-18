@@ -11,26 +11,15 @@ on:
 
 jobs:
   build_libs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
-        uname -a
-        ldd --version
-        sudo add-apt-repository ppa:longsleep/golang-backports
         sudo apt-get update
-        sudo apt-get install -y golang-1.22
-        ls -l /usr/bin/go
-        ls -l /usr/lib/go-1.22/bin
-        sudo rm /usr/bin/go
-        sudo ln -s /usr/lib/go-1.22/bin/go /usr/bin/go
-        ls -l /usr/bin/go
-        go version
-        go env
         sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
 
     - name: GO setup
@@ -52,10 +41,8 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -buildmode=c-shared -o ../../build/aikido_agent.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
         ls -l ../../build
-        nm -D ../../build/aikido_agent.so
-        ldd ../../build/aikido_agent.so
 
     - name: Build Aikido Request Processor
       run: |
@@ -66,42 +53,42 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -buildmode=c-shared -o ../../build/aikido_request_processor.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
         ls -l ../../build
-        nm -D ../../build/aikido_request_processor.so
-        ldd ../../build/aikido_request_processor.so
 
     - name: Archive agent 
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: aikido_agent
-        path: ${{ github.workspace }}/build/aikido_agent.so
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/aikido_agent.so
 
     - name: Archive request processor
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: aikido_request_processor
-        path: ${{ github.workspace }}/build/aikido_request_processor.so
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/aikido_request_processor.so
 
   build_php_extension:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php_version: ['8.1']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
       fail-fast: false
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
-        ldd --version
-        sudo apt-get install php${{ matrix.php_version }}-dev
 
     - name: Get Aikido version
       run: |
@@ -109,6 +96,13 @@ jobs:
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
         echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
+
+    - name: Setup PHP
+      uses: AikidoSec/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_version }}
+        extensions: :curl
+        coverage: none
 
     - name: Check PHP setup
       run: |
@@ -141,10 +135,16 @@ jobs:
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
         
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: ${{ env.AIKIDO_ARTIFACT }}
-        path: ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
+          ${{ github.workspace }}/tests/*.diff
+
+
 
   build_rpm_package:
     runs-on: ubuntu-latest
@@ -176,14 +176,16 @@ jobs:
             aikido-${{ env.AIKIDO_VERSION }}*
 
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
-          name: aikido_agent
+          pattern: |
+            aikido_agent*
 
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
-          name: aikido_request_processor
+          pattern: |
+            aikido_request_processor*
 
       - name: List Artifacts
         run: |
