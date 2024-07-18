@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"net/url"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -29,12 +28,4 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
-}
-
-func GetDomain(rawurl string) string {
-	parsedURL, err := url.Parse(rawurl)
-	if err != nil {
-		return ""
-	}
-	return parsedURL.Hostname()
 }

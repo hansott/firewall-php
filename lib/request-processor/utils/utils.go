@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -31,8 +32,18 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 	return *value
 }
 
+func FixURL(url string) string {
+	if !strings.HasPrefix(url, "https://") && strings.HasPrefix(url, "https:/") {
+		return strings.Replace(url, "https:/", "https://", 1)
+	}
+	if !strings.HasPrefix(url, "http://") && strings.HasPrefix(url, "http:/") {
+		return strings.Replace(url, "http:/", "http://", 1)
+	}
+	return url
+}
+
 func GetDomain(rawurl string) string {
-	parsedURL, err := url.Parse(rawurl)
+	parsedURL, err := url.Parse(FixURL(rawurl))
 	if err != nil {
 		return ""
 	}
