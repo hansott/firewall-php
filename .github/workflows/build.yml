@@ -95,7 +95,7 @@ jobs:
         AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_ARTIFACT=aikido-$AIKIDO_VERSION-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
+        echo "AIKIDO_ARTIFACT=aikido-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
       uses: AikidoSec/setup-php@v2
@@ -126,7 +126,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         export TEST_PHP_EXECUTABLE=/usr/bin/php
-        /usr/bin/php libphp-extension/run-tests.php ./tests
+        /usr/bin/php lib/php-extension/run-tests.php ./tests
       continue-on-error: true
 
     - name: Version Aikido extension
@@ -143,7 +143,6 @@ jobs:
         path: |
           ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
           ${{ github.workspace }}/tests/*.diff
-
 
 
   build_rpm_package:
@@ -196,7 +195,7 @@ jobs:
         run: |
           mv aikido-agent/aikido-agent.so package/rpm/opt/aikido/aikido-agent.so
           mv aikido-request-processor/aikido-request-processor.so package/rpm/opt/aikido/aikido-request-processor.so
-          mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/rpm/opt/aikido/
+          mv aikido-extension-php-*/build/modules/aikido-extension-php-* package/rpm/opt/aikido/
           mv package/rpm/opt/aikido package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}
           chmod 777 package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}/*
           rpmdev-setuptree
