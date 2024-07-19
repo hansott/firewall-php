@@ -31,7 +31,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         pattern: |
-          aikido-php-firewall-${{ env.AIKIDO_VERSION }}*
+          aikido-php-firewall-*
     
     - name: List Artifacts
       run: |
