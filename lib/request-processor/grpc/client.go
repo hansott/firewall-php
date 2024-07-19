@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"main/globals"
 	"main/log"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const socketPath = "/run/aikido.sock"
+const socketPath = "/run/aikido-" + globals.Version + ".sock"
 
 var conn grpc.ClientConn
 var client protos.AikidoClient
