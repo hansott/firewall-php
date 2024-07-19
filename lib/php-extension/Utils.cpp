@@ -6,14 +6,16 @@ std::string to_lowercase(const std::string& str) {
     return result;
 }
 
-char log_file_path[256];
 FILE* log_file = nullptr;
 
 void aikido_log_init() {
-    log_file = fopen("/var/log/aikido/aikido_extension.log", "w");
+    php_printf("AICI\n");
+    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php.log";
+    log_file = fopen(log_file_path.c_str(), "w");
     if (!log_file) {
         return;
     }
+    php_printf("AICI2\n");
 }
 
 void aikido_log_uninit() {

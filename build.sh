@@ -9,14 +9,11 @@ protoc --go_out=agent --go-grpc_out=agent ipc.proto
 protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
 cd agent
 go get google.golang.org/grpc
-go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_agent.so
+go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido-agent.so
 cd ../request-processor
 go get google.golang.org/grpc
-go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido_request_processor.so
+go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido-request-processor.so
 cd ../../build
 CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
 make
 cd ..
-
-#sudo cp -f ./build/aikido_agent.so /opt/aikido/aikido_agent.so
-#sudo cp -f ./build/aikido_request_processor.so /opt/aikido/aikido_request_processor.so

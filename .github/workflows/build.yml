@@ -41,7 +41,7 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_agent.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido-agent.so
         ls -l ../../build
 
     - name: Build Aikido Request Processor
@@ -53,26 +53,26 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
-        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido_request_processor.so
+        go build -gcflags "all=-N -l" -buildmode=c-shared -o ../../build/aikido-request-processor.so
         ls -l ../../build
 
     - name: Archive agent 
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: aikido_agent
+        name: aikido-agent
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/aikido_agent.so
+          ${{ github.workspace }}/build/aikido-agent.so
 
     - name: Archive request processor
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: aikido_request_processor
+        name: aikido-request-processor
         if-no-files-found: error
         path: |
-          ${{ github.workspace }}/build/aikido_request_processor.so
+          ${{ github.workspace }}/build/aikido-request-processor.so
 
   build_php_extension:
     runs-on: ubuntu-20.04
@@ -179,13 +179,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido_agent*
+            aikido-agent*
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido_request_processor*
+            aikido-request-processor*
 
       - name: List Artifacts
         run: |
@@ -194,10 +194,11 @@ jobs:
       
       - name: Prepare rpm package
         run: |
-          mv aikido_agent/aikido_agent.so package/rpm/opt/aikido/aikido_agent.so
-          mv aikido_request_processor/aikido_request_processor.so package/rpm/opt/aikido/aikido_request_processor.so
+          mv aikido-agent/aikido-agent.so package/rpm/opt/aikido/aikido-agent.so
+          mv aikido-request-processor/aikido-request-processor.so package/rpm/opt/aikido/aikido-request-processor.so
           mv aikido-${{ env.AIKIDO_VERSION }}*/build/modules/aikido-${{ env.AIKIDO_VERSION }}* package/rpm/opt/aikido/
-          chmod 777 package/rpm/opt/aikido/*
+          mv package/rpm/opt/aikido package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}
+          chmod 777 package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}/*
           rpmdev-setuptree
           mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/
@@ -206,8 +207,9 @@ jobs:
       - name: Setup RPM for prod
         run: |
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/aikido-dev.ini
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido/config-dev.json
+          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/aikido-dev.ini
+          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/config-dev.json
+          sed -i "s/aikido.so/aikido-${{ env.AIKIDO_VERSION }}.so/" ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/aikido.ini
           sed -i "s/aikido-dev.ini/aikido.ini/" ~/rpmbuild/SPECS/aikido.spec
 
       - name: Build rpm package

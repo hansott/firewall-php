@@ -1,9 +1,11 @@
 Name:           aikido-php-firewall
-Version:        1.0.11
+Version:        1.0.17
 Release:        1
-Summary:        Aikido PHP extension and Agent
+Summary:        Aikido PHP Extension
 License:        GPL
 URL:            https://aikido.dev
+Obsoletes:      %{name} < %{version}
+Provides:       %{name} = %{version}
 Source0:        %{name}-%{version}.tar.gz
 
 %description
@@ -13,19 +15,18 @@ Aikido PHP extension and agent.
 %setup -q
 
 %install
-mkdir -p %{buildroot}/opt/aikido
-cp -rf opt/aikido/* %{buildroot}/opt/aikido
+mkdir -p %{buildroot}/opt/aikido-%{version}
+cp -rf opt/aikido-%{version}/* %{buildroot}/opt/aikido-%{version}
 
 %post
 #!/bin/bash
 
-echo "Starting the installation process for Aikido..."
+echo "Starting the installation process for Aikido PHP Firewall v%{version}..."
 
-sudo mkdir /var/log/aikido
-sudo chmod 777 /var/log/aikido
+sudo mkdir -p /var/log/aikido-%{version}
+sudo chmod 777 /var/log/aikido-%{version}
 
-VERSION="%{version}"
-PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
+PHP_VERSION=$(php -v | grep -oP 'PHP \K\d+\.\d+' | head -n 1)
 echo "Found PHP version $PHP_VERSION!"
 
 # Install PHP extension
@@ -33,10 +34,10 @@ PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
 echo "Installing Aikido extension in $PHP_EXT_DIR..."
 
 if [ -d "$PHP_EXT_DIR" ]; then
-    echo "Installing Aikido extension in $PHP_EXT_DIR/aikido.so..."
-    ln -sf /opt/aikido/aikido-$VERSION-extension-php-$PHP_VERSION.so $PHP_EXT_DIR/aikido.so
+    echo "Installing new Aikido extension in $PHP_EXT_DIR/aikido-%{version}.so..."
+    ln -sf /opt/aikido-%{version}/aikido-extension-php-$PHP_VERSION.so $PHP_EXT_DIR/aikido-%{version}.so
 else
-    echo "No extension dir. Exiting."
+    echo "No extension dir! Exiting..."
     exit 1
 fi
 
@@ -45,21 +46,36 @@ PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=
 echo "Installing Aikido mod in $PHP_MOD_DIR..."
 
 if [ -d "$PHP_MOD_DIR" ]; then
-    echo "Installing Aikido mod in $PHP_MOD_DIR/zz-aikido-firewall.ini..."
-    ln -sf /opt/aikido/aikido-dev.ini $PHP_MOD_DIR/zz-aikido-firewall.ini
+    echo "Installing new Aikido mod in $PHP_MOD_DIR/zz-aikido-%{version}.ini..."
+    ln -sf /opt/aikido-%{version}/aikido-dev.ini $PHP_MOD_DIR/zz-aikido-%{version}.ini
 else
     echo "No mod dir. Exiting."
     exit 1
 fi
 
+# Remove the Aikido Socket
+SOCKET_PATH="/run/aikido-%{version}.sock"
+
+if [ -S "$SOCKET_PATH" ]; then
+    echo "Removing $SOCKET_PATH ..."
+    rm "$SOCKET_PATH"
+    if [ $? -eq 0 ]; then
+        echo "Socket removed successfully."
+    else
+        echo "Failed to remove the socket."
+    fi
+else
+    echo "Socket $SOCKET_PATH does not exist."
+fi
+
+echo "Installation process for Aikido v%{version} completed."
 
 %preun
 #!/bin/bash
 
-echo "Starting the uninstallation process for Aikido..."
+echo "Starting the uninstallation process for Aikido v%{version}..."
 
-VERSION="%{version}"
-PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}' | cut -d '.' -f1,2)
+PHP_VERSION=$(php -v | grep -oP 'PHP \K\d+\.\d+' | head -n 1)
 PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
 PHP_MOD_DIR=$(php -i | grep "Scan this dir for additional .ini files" | awk -F"=> " '{print $2}')
 
@@ -75,11 +91,11 @@ cleanup() {
 trap cleanup SIGTERM SIGINT
 
 # Uninstall PHP extension
-echo "Uinstalling Aikido extension from EXT_DIR $PHP_EXT_DIR..."
+echo "Uninstalling Aikido extension from $PHP_EXT_DIR..."
 
 if [ -d "$PHP_EXT_DIR" ]; then
-    echo "Uinstalling Aikido extension from $EXT_DIR/aikido.so..."
-    rm -f $PHP_EXT_DIR/aikido.so
+    echo "Uninstalling Aikido extension from $PHP_EXT_DIR/aikido-%{version}.so..."
+    rm -f $PHP_EXT_DIR/aikido-%{version}.so
 else
     echo "No extension dir. Exiting."
     exit 1
@@ -89,34 +105,19 @@ fi
 echo "Unistalling Aikido mod from $PHP_MOD_DIR..."
 
 if [ -d "$PHP_MOD_DIR" ]; then
-    echo "Uninstalling Aikido mod from $PHP_MOD_DIR/zz-aikido-firewall.ini..."
-    rm -f $PHP_MOD_DIR/zz-aikido-firewall.ini
+    echo "Uninstalling Aikido mod from $PHP_MOD_DIR/zz-aikido-%{version}.ini..."
+    rm -f $PHP_MOD_DIR/zz-aikido-%{version}.ini
 else
-    echo "No mod dir. Exiting."
+    echo "No mod dir! Exiting..."
     exit 1
 fi
 
-# Remove the Aikido socket
-SOCKET_PATH="/run/aikido.sock"
+sudo rm -rf /var/log/aikido-%{version}
 
-if [ -S "$SOCKET_PATH" ]; then
-    echo "Removing $SOCKET_PATH ..."
-    rm "$SOCKET_PATH"
-    if [ $? -eq 0 ]; then
-        echo "Socket removed successfully."
-    else
-        echo "Failed to remove the socket."
-    fi
-else
-    echo "Socket $SOCKET_PATH does not exist."
-fi
-
-sudo rm -rf /var/log/aikido
-
-echo "Uninstallation process for Aikido completed."
+echo "Uninstallation process for Aikido v%{version} completed."
 
 %files
-/opt/aikido
+/opt/aikido-%{version}
 
 %changelog
 * Fri Jun 21 2024 Aikido <hello@aikido.dev> - %{version}-1

@@ -28,7 +28,8 @@ static PHP_GINIT_FUNCTION(aikido)
 		{ "blocking", aikido_globals->blocking }
 	};
 
-	aikido_agent_lib_handle = dlopen("/opt/aikido/aikido_agent.so", RTLD_LAZY);
+	std::string aikido_agent_lib_handle_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-agent.so";
+	aikido_agent_lib_handle = dlopen(aikido_agent_lib_handle_path.c_str(), RTLD_LAZY);
     if (!aikido_agent_lib_handle) {
 		AIKIDO_LOG_ERROR("Error loading the Aikido Agent library: %s!\n", dlerror());
         return;
@@ -139,7 +140,8 @@ PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RInit started (PID = %d)!\n", getpid());
 
 	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed) {
-		aikido_request_processor_lib_handle = dlopen("/opt/aikido/aikido_request_processor.so", RTLD_LAZY);
+		std::string aikido_request_processor_lib_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-request-processor.so";
+		aikido_request_processor_lib_handle = dlopen(aikido_request_processor_lib_path.c_str(), RTLD_LAZY);
 		if (!aikido_request_processor_lib_handle) {
 			AIKIDO_LOG_ERROR("Error loading the Aikido Request Processor library: %s!\n", dlerror());
 			request_processor_loading_failed = true;

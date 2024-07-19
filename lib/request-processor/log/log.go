@@ -112,7 +112,7 @@ func SetLogLevel(level string) error {
 }
 
 func Init(level string) {
-	logFilePath := fmt.Sprintf("/var/log/aikido/aikido_request_processor_%d.log", os.Getpid())
+	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%d.log", os.Getpid())
 
 	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
