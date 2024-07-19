@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.0.9
+Version:        1.0.10
 Release:        1
 Summary:        Aikido PHP extension and Agent
 License:        GPL
@@ -10,9 +10,6 @@ Source0:        %{name}-%{version}.tar.gz
 Aikido PHP extension and agent.
 
 %prep
-if rpm -q %{name}; then
-    rpm -e %{name}
-fi
 %setup -q
 
 %install
