@@ -1,7 +1,7 @@
 rm -rf ~/rpmbuild
 rpmdev-setuptree
 
-VERSION="1.0.21"
+VERSION="1.0.22"
 
 mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION
 cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/

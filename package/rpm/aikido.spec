@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.0.21
+Version:        1.0.22
 Release:        1
 Summary:        Aikido PHP Extension
 License:        GPL
@@ -67,6 +67,9 @@ if [ -S "$SOCKET_PATH" ]; then
 else
     echo "Socket $SOCKET_PATH does not exist."
 fi
+
+service httpd restart || true
+rpm -qa | grep aikido
 
 echo "Installation process for Aikido v%{version} completed."
 
