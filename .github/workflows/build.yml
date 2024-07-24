@@ -299,4 +299,4 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           export TEST_PHP_EXECUTABLE=/usr/bin/php
-          /usr/bin/php lib/php-extension/cli/run-tests.php ./tests
+          php lib/php-extension/run-tests.php ./tests/cli
