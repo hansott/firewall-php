@@ -7,11 +7,6 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
 
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("aikido.log_level_ini", "ERROR", PHP_INI_ALL, OnUpdateLongGEZero, log_level_ini, zend_aikido_globals, aikido_globals)
-PHP_INI_END()
-
-
 PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
@@ -70,7 +65,6 @@ PHP_MINIT_FUNCTION(aikido)
 
 	/* If SAPI name starts with "cli" run in "simple" mode */
 	if (sapi_name.rfind("cli", 0) == 0) {
-		REGISTER_INI_ENTRIES();
 		AIKIDO_LOG_INFO("MINIT finished earlier because we run in CLI mode!\n");
 		return SUCCESS;
 	}
@@ -117,7 +111,6 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 
 	/* If SAPI name starts with "cli" run in "simple" mode */
 	if (sapi_name.rfind("cli", 0) == 0) {
-		UNREGISTER_INI_ENTRIES();
 		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
 		
 		aikido_log_uninit();

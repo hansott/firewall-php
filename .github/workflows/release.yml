@@ -23,6 +23,7 @@ jobs:
         echo "AIKIDO_S3=s3://aikido-firewall" >> $GITHUB_ENV
         echo "AIKIDO_S3_BUCKET=v${{ env.AIKIDO_VERSION }}/linux_x86_64" >> $GITHUB_ENV
         echo "AIKIDO_RPM=aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.rpm" >> $GITHUB_ENV
+        echo "AIKIDO_DEB=aikido-php-firewall-${{ env.AIKIDO_VERSION }}-1.x86_64.deb" >> $GITHUB_ENV
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -49,10 +50,12 @@ jobs:
       run: |
         ls -l
         aws s3 cp ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }} ${{ env.AIKIDO_S3 }}/${{ env.AIKIDO_S3_BUCKET }}/${{ env.AIKIDO_RPM }}
+        aws s3 cp ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }} ${{ env.AIKIDO_S3 }}/${{ env.AIKIDO_S3_BUCKET }}/${{ env.AIKIDO_DEB }}
     
     - name: Make S3 bucket publicly readable
       run: |
         aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key ${{ env.AIKIDO_S3_BUCKET }}/${{ env.AIKIDO_RPM }}
+        aws s3api put-object-acl --acl public-read --bucket aikido-firewall --key ${{ env.AIKIDO_S3_BUCKET }}/${{ env.AIKIDO_DEB }}
 
     - name: Deploy to GitHub Release
       uses: softprops/action-gh-release@v2
