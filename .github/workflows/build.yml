@@ -237,6 +237,7 @@ jobs:
           AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+          echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
       
       - name: Build deb
@@ -274,18 +275,7 @@ jobs:
           AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
-
-      - name: Install sudo and set up user permissions
-        run: |
-          cd /etc/yum.repos.d/
-          sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-          yum -y install epel-release
-          yum -y update
-          yum -y install sudo
-          echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          usermod -aG wheel $(whoami)
+          echo "AIKIDO_DEB=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -293,18 +283,16 @@ jobs:
           php-version: ${{ matrix.php_version }}
           extensions: :curl
           coverage: none
-        env:
-          runner: self-hosted
 
-      - name: Install RPM
-        run: |
-          rpm -Uvh ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
-  
       - name: Check PHP setup
         run: |
           which php
           php -v
           php -i
+
+      - name: Install DEB
+        run: |
+          dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
 
       - name: Run CLI tests
         run: |
