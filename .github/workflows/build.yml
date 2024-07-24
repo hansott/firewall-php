@@ -240,9 +240,9 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
 
-      - name: Install RPM
+      - name: Install composer dependencies
         run: |
-          rpm -Uvh ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
+          composer install --no-scripts
 
       - name: Setup PHP
         uses: AikidoSec/setup-php@v2
@@ -250,6 +250,10 @@ jobs:
           php-version: ${{ matrix.php_version }}
           extensions: :curl
           coverage: none
+
+      - name: Install RPM
+        run: |
+          rpm -Uvh ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
   
       - name: Check PHP setup
         run: |
