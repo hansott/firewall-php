@@ -205,6 +205,10 @@ jobs:
           tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
+
+      - name: Check rpm dependencies
+        run: |
+          yum listdep ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
       
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
@@ -300,6 +304,15 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-test-results-centos-php-${{ matrix.php_version }}
+          if-no-files-found: ignore
+          path: |
+            ${{ github.workspace }}/tests/cli/*.diff
+
   test_ubuntu_php_cli:
     runs-on: ubuntu-latest
     needs: [ build_deb ]
@@ -351,7 +364,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-test-results-php-${{ matrix.php_version }}
+          name: cli-test-results-ubuntu-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
