@@ -300,3 +300,14 @@ jobs:
           cd ${{ github.workspace }}
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
+
+          - name: Archive build artifacts
+      
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ env.AIKIDO_DEB }}
+          if-no-files-found: ignore
+          path: |
+            ${{ github.workspace }}/tests/*.diff
