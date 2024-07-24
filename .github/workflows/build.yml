@@ -241,7 +241,7 @@ jobs:
       
       - name: Build deb
         run: |
-          alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
+          sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
           ls -l
   
       - name: Archive deb package
