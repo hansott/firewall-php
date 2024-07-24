@@ -310,4 +310,4 @@ jobs:
           name: test-results-${{ env.AIKIDO_DEB }}
           if-no-files-found: ignore
           path: |
-            ${{ github.workspace }}/tests/*.diff
+            ${{ github.workspace }}/tests/cli/*.diff
