@@ -254,7 +254,7 @@ jobs:
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
 
-  test_php_cli_debian:
+  test_debian_php_cli:
     runs-on: ubuntu-latest
     needs: [ build_deb ]
     strategy:
@@ -293,7 +293,7 @@ jobs:
 
       - name: Install DEB
         run: |
-          dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
+          sudo dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
 
       - name: Run CLI tests
         run: |
