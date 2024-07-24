@@ -1,9 +1,8 @@
 --TEST--
 Test PHP shell execution functions
 
---INI--
-extension=aikido.so
-aikido.log_level=2
+--ENV--
+AIKIDO_LOG_LEVEL=INFO
 
 --FILE--
 <?php
@@ -57,24 +56,23 @@ echo "\n";
 ?>
 
 --EXPECTF--
-[AIKIDO][WARN][GO] AIKIDO_TOKEN not found in env variables!
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from exec!"
+[AIKIDO][INFO] Got shell command: echo "Hello from exec!"
 Array
 (
     [0] => Hello from exec!
 )
 
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from shell_exec!"
+[AIKIDO][INFO] Got shell command: echo "Hello from shell_exec!"
 Hello from shell_exec!
 
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from system!"
+[AIKIDO][INFO] Got shell command: echo "Hello from system!"
 Hello from system!
 
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from passthru!"
+[AIKIDO][INFO] Got shell command: echo "Hello from passthru!"
 Hello from passthru!
 
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from popen!"
+[AIKIDO][INFO] Got shell command: echo "Hello from popen!"
 Hello from popen!
 
-[AIKIDO][INFO][GO] Got shell command: echo "Hello from proc_open!"
+[AIKIDO][INFO] Got shell command: echo "Hello from proc_open!"
 Hello from proc_open!

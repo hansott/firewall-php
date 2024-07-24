@@ -14,6 +14,7 @@ ZEND_TSRMLS_CACHE_EXTERN()
 
 ZEND_BEGIN_MODULE_GLOBALS(aikido)
     long log_level;
+    char* log_level_ini;
     bool blocking;
 ZEND_END_MODULE_GLOBALS(aikido)
 

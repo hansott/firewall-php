@@ -2,6 +2,7 @@ package globals
 
 var InitData struct {
 	LogLevel string `json:"log_level"`
+	SAPI     string `json:"sapi"`
 }
 
 const (

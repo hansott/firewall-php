@@ -39,9 +39,11 @@ func Uninit() {
 }
 
 func OnReceiveDomain(domain string) {
-	log.Debug("OnReceiveDomain")
+	if client == nil {
+		return
+	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})

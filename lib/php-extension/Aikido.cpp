@@ -7,65 +7,130 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
 
-static PHP_GINIT_FUNCTION(aikido)
-{
-#if defined(COMPILE_DL_BCMATH) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
-#endif
+PHP_INI_BEGIN()
+    STD_PHP_INI_ENTRY("aikido.log_level_ini", "ERROR", PHP_INI_ALL, OnUpdateLongGEZero, log_level_ini, zend_aikido_globals, aikido_globals)
+PHP_INI_END()
 
+
+PHP_MINIT_FUNCTION(aikido)
+{
 	aikido_log_init();
 
-	aikido_globals->log_level = 3;
+	auto log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
+	auto token = config_override_with_env("AIKIDO_TOKEN", "");
+	auto endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
+	bool blocking = config_override_with_env_bool("AIKIDO_BLOCKING", false);
 
-	AIKIDO_LOG_DEBUG("GInit started (PID = %d)!\n", getpid());
+	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
+	AIKIDO_GLOBAL(blocking) = blocking;
 
-	aikido_globals->blocking = config_override_with_env_bool(false, "AIKIDO_BLOCKING");
+	AIKIDO_LOG_INFO("MINIT started!\n");
+
+	for ( auto& it : HOOKED_FUNCTIONS ) {
+		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
+		if (function_data == NULL) {
+			AIKIDO_LOG_WARN("Function \"%s\" does not exist!\n", it.first.c_str());
+			continue;
+		}
+		if (it.second.original_handler) {
+			AIKIDO_LOG_WARN("Function \"%s\" already hooked (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+			continue;
+		}
+
+		it.second.original_handler = function_data->internal_function.handler;
+		function_data->internal_function.handler = aikido_generic_handler;
+		AIKIDO_LOG_INFO("Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+	}
+
+	for ( auto& it : HOOKED_METHODS ) {
+		zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
+		if (class_entry == NULL) {
+			AIKIDO_LOG_WARN("Class \"%s\" does not exist!\n", it.first.class_name.c_str());
+			continue;
+		}
+
+		zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
+		if (method == NULL) {
+			AIKIDO_LOG_WARN("Method \"%s->%s\" does not exist!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
+			continue;
+		}
+
+		if (it.second.original_handler) {
+			AIKIDO_LOG_WARN("Method \"%s->%s\" already hooked (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
+			continue;
+		}
+
+		it.second.original_handler = method->internal_function.handler;
+		method->internal_function.handler = aikido_generic_handler;
+		AIKIDO_LOG_INFO("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
+	}
+
+	std::string sapi_name(sapi_module.name);
+	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
+
+	/* If SAPI name starts with "cli" run in "simple" mode */
+	if (sapi_name.rfind("cli", 0) == 0) {
+		REGISTER_INI_ENTRIES();
+		AIKIDO_LOG_INFO("MINIT finished earlier because we run in CLI mode!\n");
+		return SUCCESS;
+	}
 
 	json initData = {
-		{ "token", config_override_with_env("", "AIKIDO_TOKEN") },
-		{ "endpoint", config_override_with_env("https://guard.aikido.dev/", "AIKIDO_ENDPOINT") },
-		{ "log_level", config_override_with_env("DEBUG", "AIKIDO_LOG_LEVEL") },
-		{ "blocking", aikido_globals->blocking }
+		{ "token", token },
+		{ "endpoint", endpoint },
+		{ "log_level", log_level },
+		{ "blocking", blocking }
 	};
 
 	std::string aikido_agent_lib_handle_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-agent.so";
 	aikido_agent_lib_handle = dlopen(aikido_agent_lib_handle_path.c_str(), RTLD_LAZY);
     if (!aikido_agent_lib_handle) {
-		AIKIDO_LOG_ERROR("Error loading the Aikido Agent library: %s!\n", dlerror());
-        return;
+		AIKIDO_LOG_ERROR("Error loading the Aikido Agent library from %s: %s!\n", aikido_agent_lib_handle_path.c_str(), dlerror());
+        return SUCCESS;
     }
 
     AgentInitFn agent_init_fn = (AgentInitFn)dlsym(aikido_agent_lib_handle, "AgentInit");
     if (!agent_init_fn) {
 		AIKIDO_LOG_ERROR("Error loading symbol 'AgentInit' from the Aikido Agent library: %s!\n", dlerror());
         dlclose(aikido_agent_lib_handle);
-        return;
+        return SUCCESS;
     }
 
-    AIKIDO_LOG_DEBUG("Initializing Aikido Agent...\n");
+    AIKIDO_LOG_INFO("Initializing Aikido Agent...\n");
 
 	std::string initDataString = initData.dump();
 
 	int initOk = agent_init_fn(GoCreateString(initDataString));
 
-	AIKIDO_LOG_DEBUG("Aikido Agent initialized with status: %d!\n", initOk);
+	AIKIDO_LOG_INFO("Aikido Agent initialized with status: %d!\n", initOk);
 
-	AIKIDO_LOG_DEBUG("GInit finished!\n");
+	AIKIDO_LOG_INFO("MINIT finished!\n");
+	return SUCCESS;
 }
 
-static PHP_GSHUTDOWN_FUNCTION(aikido)
+PHP_MSHUTDOWN_FUNCTION(aikido)
 {
-#if defined(COMPILE_DL_BCMATH) && defined(ZTS)
-	ZEND_TSRMLS_CACHE_UPDATE();
-#endif
-	AIKIDO_LOG_DEBUG("GShutdown started (PID = %d)!\n", getpid());
+	AIKIDO_LOG_DEBUG("MSHUTDOWN started!\n");
+
+	std::string sapi_name(sapi_module.name);
+	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
+
+	/* If SAPI name starts with "cli" run in "simple" mode */
+	if (sapi_name.rfind("cli", 0) == 0) {
+		UNREGISTER_INI_ENTRIES();
+		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
+		
+		aikido_log_uninit();
+		return SUCCESS;
+	}
+
 
 	if (aikido_agent_lib_handle) {
 		AgentUninitFn agent_uninit_fn = (AgentUninitFn)dlsym(aikido_agent_lib_handle, "AgentUninit");
 		if (agent_uninit_fn) {
-			AIKIDO_LOG_DEBUG("Uninitializing Aikido Agent...\n");
+			AIKIDO_LOG_INFO("Uninitializing Aikido Agent library...\n");
 			agent_uninit_fn();
-			AIKIDO_LOG_DEBUG("Aikido Agent uninitialized!\n");
+			AIKIDO_LOG_INFO("Aikido Agent library uninitialized!\n");
 		}
 		else {
 			AIKIDO_LOG_ERROR("Error loading symbol 'AgentUninit' from Aikido Agent library: %s!\n", dlerror());		
@@ -73,62 +138,11 @@ static PHP_GSHUTDOWN_FUNCTION(aikido)
 		dlclose(aikido_agent_lib_handle);
 		aikido_agent_lib_handle = nullptr;
 	}
-	
-	AIKIDO_LOG_INFO("GShutdown finished!\n");
+
+	AIKIDO_LOG_DEBUG("MSHUTDOWN finished!\n");
+
 	aikido_log_uninit();
-}
 
-PHP_MINIT_FUNCTION(aikido)
-{
-	AIKIDO_LOG_INFO("MInit started (PID = %d)!\n", getpid());
-	for ( auto& it : HOOKED_FUNCTIONS ) {
-		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
-		if (function_data == NULL) {
-			AIKIDO_LOG_DEBUG("Function \"%s\" does not exist!\n", it.first.c_str());
-			continue;
-		}
-		if (it.second.original_handler) {
-			AIKIDO_LOG_DEBUG("Function \"%s\" already hooked (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
-			continue;
-		}
-
-		it.second.original_handler = function_data->internal_function.handler;
-		function_data->internal_function.handler = aikido_generic_handler;
-		AIKIDO_LOG_DEBUG("Hooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
-	}
-
-	for ( auto& it : HOOKED_METHODS ) {
-		zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
-		if (class_entry == NULL) {
-			AIKIDO_LOG_DEBUG("Class \"%s\" does not exist!\n", it.first.class_name.c_str());
-			continue;
-		}
-
-		zend_function *method = (zend_function*)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
-		if (method == NULL) {
-			AIKIDO_LOG_DEBUG("Method \"%s->%s\" does not exist!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
-			continue;
-		}
-
-		if (it.second.original_handler) {
-			AIKIDO_LOG_DEBUG("Method \"%s->%s\" already hooked (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
-			continue;
-		}
-
-		it.second.original_handler = method->internal_function.handler;
-		method->internal_function.handler = aikido_generic_handler;
-		AIKIDO_LOG_DEBUG("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
-	}
-
-	AIKIDO_LOG_INFO("MInit finished!\n");
-	return SUCCESS;
-}
-
-PHP_MSHUTDOWN_FUNCTION(aikido)
-{
-	/* Unregister Aikido-specific (log level, blocking, token, ...) entries in php.ini */
-	AIKIDO_LOG_INFO("MShutdown started (PID = %d)!\n", getpid());
-	AIKIDO_LOG_INFO("MShutdown finished!\n");
 	return SUCCESS;
 }
 
@@ -137,24 +151,25 @@ bool request_processor_loading_failed = false;
 RequestProcessorOnEventFn request_processor_on_event_fn = nullptr;
 
 PHP_RINIT_FUNCTION(aikido) {
-	AIKIDO_LOG_DEBUG("RInit started (PID = %d)!\n", getpid());
+	AIKIDO_LOG_DEBUG("RINIT started!\n");
 
 	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed) {
 		std::string aikido_request_processor_lib_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-request-processor.so";
 		aikido_request_processor_lib_handle = dlopen(aikido_request_processor_lib_path.c_str(), RTLD_LAZY);
 		if (!aikido_request_processor_lib_handle) {
-			AIKIDO_LOG_ERROR("Error loading the Aikido Request Processor library: %s!\n", dlerror());
+			AIKIDO_LOG_ERROR("Error loading the Aikido Request Processor library from %s: %s!\n", aikido_request_processor_lib_path.c_str(), dlerror());
 			request_processor_loading_failed = true;
 			return SUCCESS;
 		}
 		
 		json initData = {
-			{ "log_level", "DEBUG" }
+			{ "log_level", aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level)) },
+			{ "sapi", sapi_module.name }
 		};
 
 		std::string initDataString = initData.dump();
 
-		AIKIDO_LOG_DEBUG("Initializing Aikido Request Processor for PID %d...\n", getpid());
+		AIKIDO_LOG_DEBUG("Initializing Aikido Request Processor...\n");
 
 		RequestProcessorInitFn request_processor_init_fn = (RequestProcessorInitFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorInit");
 		request_processor_on_event_fn = (RequestProcessorOnEventFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorOnEvent");
@@ -174,7 +189,7 @@ PHP_RINIT_FUNCTION(aikido) {
 }
 
 PHP_RSHUTDOWN_FUNCTION(aikido) {
-	AIKIDO_LOG_DEBUG("RShutdown started (PID = %d)!\n", getpid());
+	AIKIDO_LOG_DEBUG("RShutdown started!\n");
 
 	/*
 	if (aikido_request_processor_lib_handle)) {
@@ -216,8 +231,8 @@ zend_module_entry aikido_module_entry = {
 	PHP_MINFO(aikido),			/* PHP_MINFO - Module info */
 	PHP_AIKIDO_VERSION,			/* Version */
 	PHP_MODULE_GLOBALS(aikido),	/* Module globals */
-	PHP_GINIT(aikido),			/* PHP_GINIT – Globals initialization */
-	PHP_GSHUTDOWN(aikido),		/* PHP_GSHUTDOWN – Globals shutdown */
+	NULL,						/* PHP_GINIT – Globals initialization */
+	NULL,						/* PHP_GSHUTDOWN – Globals shutdown */
 	NULL,
 	STANDARD_MODULE_PROPERTIES_EX
 };

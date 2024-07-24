@@ -29,9 +29,7 @@ func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*empt
 func Init() {
 	// Remove the socket file if it already exists
 	if _, err := os.Stat(globals.SocketPath); err == nil {
-		if err := os.RemoveAll(globals.SocketPath); err != nil {
-			panic(fmt.Sprintf("failed to remove existing socket: %v", err))
-		}
+		os.RemoveAll(globals.SocketPath)
 	}
 
 	lis, err := net.Listen("unix", globals.SocketPath)

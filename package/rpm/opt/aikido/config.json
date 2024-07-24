@@ -1,5 +1,0 @@
-{
-    "log_level": "DEBUG",
-    "endpoint": "https://guard.aikido.dev/",
-    "blocking": false
-}

@@ -9,25 +9,23 @@ std::string to_lowercase(const std::string& str) {
 FILE* log_file = nullptr;
 
 void aikido_log_init() {
-    php_printf("AICI\n");
     std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php.log";
     log_file = fopen(log_file_path.c_str(), "w");
-    if (!log_file) {
-        return;
-    }
-    php_printf("AICI2\n");
 }
 
 void aikido_log_uninit() {
-    fclose(log_file);
+    if (log_file) {
+        fclose(log_file);
+        log_file = nullptr;
+    }
 }
 
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
-    //if (level > AIKIDO_GLOBAL(log_level)) {
-    //    return;
-    //}
+    if (!log_file || level < AIKIDO_GLOBAL(log_level)) {
+        return;
+    }
 
-    fprintf(log_file, "[AIKIDO][%s][C++] ", aikido_log_level_str(level));
+    fprintf(log_file, "[AIKIDO][%s] ", aikido_log_level_str(level));
 
     va_list args;
     va_start(args, format);
@@ -51,76 +49,40 @@ const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level) {
     return "UNKNOWN";
 }
 
+AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level) {
+    if (level == "ERROR") {
+        return AIKIDO_LOG_LEVEL_ERROR;
+    }
+    if (level == "WARN") {
+        return AIKIDO_LOG_LEVEL_WARN;
+    }
+    if (level == "INFO") {
+        return AIKIDO_LOG_LEVEL_INFO;
+    }
+    if (level == "DEBUG") {
+        return AIKIDO_LOG_LEVEL_DEBUG;
+    }
+    return AIKIDO_LOG_LEVEL_ERROR;
+}
+
 std::string get_environment_variable(const std::string& env_key) {
     const char* env_value = getenv(env_key.c_str());
     if (!env_value) return "";
     return env_value;
 }
 
-std::string config_override_with_env(const std::string previous_value, const std::string& env_key) {
+std::string config_override_with_env(const std::string& env_key, const std::string default_value) {
 	std::string env_value = get_environment_variable(env_key.c_str());
 	if (!env_value.empty()) {
         return env_value;
 	}
-    return previous_value;
+    return default_value;
 }
 
-bool config_override_with_env_bool(bool previous_value, const std::string& env_key) {
+bool config_override_with_env_bool(const std::string& env_key, bool default_value) {
 	std::string env_value = get_environment_variable(env_key.c_str());
 	if (!env_value.empty()) {
         return (env_value == "1" || env_value == "true");
 	}
-    return previous_value;
-}
-
-std::string get_hostname() {
-    char hostname[HOST_NAME_MAX + 1];
-
-    if (gethostname(hostname, sizeof(hostname)) == 0) {
-        return hostname;
-    }
-
-    return "";
-}
-
-utsname get_os_info() {
-    utsname buffer = {};
-    uname(&buffer);
-    return buffer;
-}
-
-std::string get_ip_address() {
-    std::string ip_address;
-
-    ifaddrs* ifAddrStruct = nullptr;
-    ifaddrs* ifa = nullptr;
-    void* tmpAddrPtr = nullptr;
-
-    getifaddrs(&ifAddrStruct);
-
-    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
-        if (!ifa->ifa_addr || (ifa->ifa_flags & IFF_LOOPBACK)) {
-            continue;
-        }
-        if (ifa->ifa_addr->sa_family == AF_INET) {
-            // IPv4 Address
-            tmpAddrPtr=&((sockaddr_in*)ifa->ifa_addr)->sin_addr;
-            char addressBuffer[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-            ip_address = addressBuffer;
-            break;
-        }
-        else if (ifa->ifa_addr->sa_family == AF_INET6) {
-            // IPv6 Address
-            tmpAddrPtr=&((sockaddr_in6*)ifa->ifa_addr)->sin6_addr;
-            char addressBuffer[INET6_ADDRSTRLEN];
-            inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
-            ip_address = addressBuffer;
-            break;
-        } 
-    }
-    if (ifAddrStruct != nullptr) {
-        freeifaddrs(ifAddrStruct);
-    }
-    return ip_address;
+    return default_value;
 }

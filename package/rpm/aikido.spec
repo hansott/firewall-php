@@ -47,7 +47,7 @@ echo "Installing Aikido mod in $PHP_MOD_DIR..."
 
 if [ -d "$PHP_MOD_DIR" ]; then
     echo "Installing new Aikido mod in $PHP_MOD_DIR/zz-aikido-%{version}.ini..."
-    ln -sf /opt/aikido-%{version}/aikido-dev.ini $PHP_MOD_DIR/zz-aikido-%{version}.ini
+    ln -sf /opt/aikido-%{version}/aikido.ini $PHP_MOD_DIR/zz-aikido-%{version}.ini
 else
     echo "No mod dir. Exiting."
     exit 1
@@ -67,12 +67,6 @@ if [ -S "$SOCKET_PATH" ]; then
 else
     echo "Socket $SOCKET_PATH does not exist."
 fi
-
-systemctl restart php-fpm.service || true
-systemctl restart httpd.service || true
-systemctl restart nginx.service || true
-
-service httpd restart || true
 
 rpm -qa | grep aikido
 
@@ -110,7 +104,7 @@ else
 fi
 
 # Uninstalling Aikido mod
-echo "Unistalling Aikido mod from $PHP_MOD_DIR..."
+echo "Uninstalling Aikido mod from $PHP_MOD_DIR..."
 
 if [ -d "$PHP_MOD_DIR" ]; then
     echo "Uninstalling Aikido mod from $PHP_MOD_DIR/zz-aikido-%{version}.ini..."

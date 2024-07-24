@@ -120,14 +120,6 @@ jobs:
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
-        sudo make install
-
-    - name: Run tests
-      run: |
-        cd ${{ github.workspace }}
-        export TEST_PHP_EXECUTABLE=/usr/bin/php
-        /usr/bin/php lib/php-extension/run-tests.php ./tests
-      continue-on-error: true
 
     - name: Version Aikido extension
       run: |
@@ -144,8 +136,7 @@ jobs:
           ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
           ${{ github.workspace }}/tests/*.diff
 
-
-  build_rpm_package:
+  build_rpm:
     runs-on: ubuntu-latest
     container:
       image: centos:latest
@@ -206,10 +197,7 @@ jobs:
       - name: Setup RPM for prod
         run: |
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/aikido-dev.ini
-          rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/config-dev.json
           sed -i "s/aikido.so/aikido-${{ env.AIKIDO_VERSION }}.so/" ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/aikido.ini
-          sed -i "s/aikido-dev.ini/aikido.ini/" ~/rpmbuild/SPECS/aikido.spec
 
       - name: Build rpm package
         run: |
@@ -225,3 +213,52 @@ jobs:
           if-no-files-found: error
           path: |
             ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
+
+  test_php_cli:
+    runs-on: ubuntu-latest
+    container:
+      image: centos:latest
+    needs: [ build_rpm ]
+    strategy:
+      matrix:
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: |
+            aikido-php-firewall-*
+
+      - name: Set env
+        run: |
+          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' include/php_aikido.h | awk -F'"' '{print $2}')
+          echo $AIKIDO_VERSION
+          echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+          echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
+
+      - name: Install RPM
+        run: |
+          rpm -Uvh ${{ env.AIKIDO_RPM }}
+
+      - name: Setup PHP
+        uses: AikidoSec/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          extensions: :curl
+          coverage: none
+  
+      - name: Check PHP setup
+        run: |
+          which php
+          php -v
+          php -i
+
+      - name: Run CLI tests
+        run: |
+          cd ${{ github.workspace }}
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          /usr/bin/php lib/php-extension/cli/run-tests.php ./tests

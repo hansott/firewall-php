@@ -1,1 +1,1 @@
-php srcphp-extension/run-tests.php ./tests
+php lib/php-extension/run-tests.php ./tests/cli
