@@ -101,7 +101,7 @@ jobs:
       uses: AikidoSec/setup-php@v2
       with:
         php-version: ${{ matrix.php_version }}
-        extensions: :curl
+        extensions: curl
         coverage: none
 
     - name: Check PHP setup
@@ -282,7 +282,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_version }}
-          extensions: :curl
+          extensions: curl
           coverage: none
 
       - name: Check PHP setup
