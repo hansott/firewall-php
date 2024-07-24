@@ -246,6 +246,8 @@ jobs:
           php-version: ${{ matrix.php_version }}
           extensions: :curl
           coverage: none
+        env:
+          runner: self-hosted
 
       - name: Install RPM
         run: |
