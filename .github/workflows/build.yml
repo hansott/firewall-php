@@ -242,7 +242,7 @@ jobs:
 
       - name: Install RPM
         run: |
-          rpm -Uvh ${{ env.AIKIDO_RPM }}
+          rpm -Uvh ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
 
       - name: Setup PHP
         uses: AikidoSec/setup-php@v2
