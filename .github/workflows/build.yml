@@ -240,6 +240,13 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
 
+      - name: Install sudo and set up user permissions
+        run: |
+          yum -y update
+          yum -y install sudo
+          echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          usermod -aG wheel $(whoami)
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
