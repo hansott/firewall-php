@@ -38,12 +38,12 @@ void aikido_log_uninit();
 void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
 
 
-//#if defined(ZEND_DEBUG)
+#if defined(ZEND_DEBUG)
 	#define AIKIDO_LOG_DEBUG(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
-//#else
+#else
 	/* Disable debugging logs for production builds */
-//	#define AIKIDO_LOG_DEBUG(format, ...)
-//#endif
+	#define AIKIDO_LOG_DEBUG(format, ...)
+#endif
 
 #define AIKIDO_LOG_INFO(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
 #define AIKIDO_LOG_WARN(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
