@@ -49,7 +49,7 @@ void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
 #define AIKIDO_LOG_WARN(format, ...)   aikido_log(AIKIDO_LOG_LEVEL_WARN, format, ##__VA_ARGS__)
 #define AIKIDO_LOG_ERROR(format, ...)  aikido_log(AIKIDO_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
 
-const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level);
+std::string aikido_log_level_str(AIKIDO_LOG_LEVEL level);
 
 AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level);
 

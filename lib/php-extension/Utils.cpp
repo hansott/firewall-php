@@ -25,7 +25,7 @@ void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
         return;
     }
 
-    fprintf(log_file, "[AIKIDO][%s] ", aikido_log_level_str(level));
+    fprintf(log_file, "[AIKIDO][%s] ", aikido_log_level_str(level).c_str());
 
     va_list args;
     va_start(args, format);
@@ -35,7 +35,7 @@ void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...) {
     fflush(log_file);
 }
 
-const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level) {
+std::string aikido_log_level_str(AIKIDO_LOG_LEVEL level) {
     switch (level) {
         case AIKIDO_LOG_LEVEL_DEBUG:
             return "DEBUG";

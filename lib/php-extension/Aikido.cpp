@@ -11,9 +11,9 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	auto log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
-	auto token = config_override_with_env("AIKIDO_TOKEN", "");
-	auto endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
+	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
+	std::string token = config_override_with_env("AIKIDO_TOKEN", "");
+	std::string endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
 	bool blocking = config_override_with_env_bool("AIKIDO_BLOCKING", false);
 
 	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
@@ -95,8 +95,12 @@ PHP_MINIT_FUNCTION(aikido)
 	std::string initDataString = initData.dump();
 
 	int initOk = agent_init_fn(GoCreateString(initDataString));
-
-	AIKIDO_LOG_INFO("Aikido Agent initialized with status: %d!\n", initOk);
+	if (!initOk) {
+		AIKIDO_LOG_INFO("Aikido Agent initialization failed!\n");
+	}
+	else {
+		AIKIDO_LOG_INFO("Aikido Agent initialization succeded!\n");
+	}
 
 	AIKIDO_LOG_INFO("MINIT finished!\n");
 	return SUCCESS;
@@ -175,6 +179,8 @@ PHP_RINIT_FUNCTION(aikido) {
 			request_processor_loading_failed = true;
 			return SUCCESS;
 		}
+
+		AIKIDO_LOG_DEBUG("Aikido Request Processor initialized successfully!\n");
 	}
 
 	AIKIDO_LOG_DEBUG("RInit finished!\n");
