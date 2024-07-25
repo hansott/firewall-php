@@ -281,6 +281,7 @@ jobs:
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
+          dnf --assumeyes --nogpgcheck module install php-pdo:remi-${{ matrix.php_version }}
 
       - name: Check PHP setup
         run: |
@@ -319,10 +320,11 @@ jobs:
             ${{ github.workspace }}/tests/cli/*.diff
 
   test_ubuntu_php_cli:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: [ build_deb ]
     strategy:
       matrix:
+        os: ['ubuntu-latest', 'ubuntu-20.04']
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
       fail-fast: false
     steps:
