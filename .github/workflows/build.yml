@@ -277,7 +277,7 @@ jobs:
           cd /etc/yum.repos.d/
           sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-          yum install yum-utils
+          yum install -y yum-utils
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
           yum-config-manager --enable remi-php${{ matrix.php_version }}
           yum install -y php
