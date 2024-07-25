@@ -279,8 +279,14 @@ jobs:
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
           yum install -y yum-utils
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
-          dnf module reset php
-          dnf module install php:remi-${{ matrix.php_version }}
+          yum-config-manager --enable remi-php74
+          yum install -y php
+
+      - name: Check PHP setup
+        run: |
+          which php
+          php -v
+          php -i
 
       - name: Get Aikido version
         run: |
