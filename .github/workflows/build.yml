@@ -284,7 +284,6 @@ jobs:
 
       - name: Check PHP setup
         run: |
-          which php
           php -v
           php -i
 
