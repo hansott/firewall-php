@@ -63,7 +63,7 @@ PHP_MINIT_FUNCTION(aikido)
 	std::string sapi_name(sapi_module.name);
 	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
 
-	/* If SAPI name starts with "cli" run in "simple" mode */
+	/* If SAPI name starts with "cli" run in "simple" mode */ 
 	if (sapi_name.rfind("cli", 0) == 0) {
 		AIKIDO_LOG_INFO("MINIT finished earlier because we run in CLI mode!\n");
 		return SUCCESS;
@@ -183,12 +183,12 @@ PHP_RINIT_FUNCTION(aikido) {
 		AIKIDO_LOG_DEBUG("Aikido Request Processor initialized successfully!\n");
 	}
 
-	AIKIDO_LOG_DEBUG("RInit finished!\n");
+	AIKIDO_LOG_DEBUG("RINIT finished!\n");
 	return SUCCESS;
 }
 
 PHP_RSHUTDOWN_FUNCTION(aikido) {
-	AIKIDO_LOG_DEBUG("RShutdown started!\n");
+	AIKIDO_LOG_DEBUG("RSHUTDOWN started!\n");
 
 	/*
 	if (aikido_request_processor_lib_handle)) {
@@ -203,7 +203,7 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 	}
 	*/
 
-	AIKIDO_LOG_DEBUG("RShutdown finished!\n");
+	AIKIDO_LOG_DEBUG("RSHUTDOWN finished!\n");
 	return SUCCESS;
 }
 

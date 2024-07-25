@@ -30,7 +30,6 @@ func Init() {
 
 	client = protos.NewAikidoClient(conn)
 
-	log.Debugf("Client: %v", client)
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 }
 
@@ -48,8 +47,8 @@ func OnReceiveDomain(domain string) {
 
 	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
-		log.Debugf("Could not send domain %v: %v", domain, err)
+		log.Warnf("Could not send domain %v: %v", domain, err)
 	}
 
-	log.Infof("Domain sent via socket: %v", domain)
+	log.Debugf("Domain sent via socket: %v", domain)
 }
