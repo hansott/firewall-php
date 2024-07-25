@@ -1,10 +1,9 @@
 --TEST--
 Test SQLite database operations
 
---INI--
-extension=aikido.so
-aikido.log_level=2
-aikido.blocking=1
+--ENV--
+AIKIDO_LOG_LEVEL=INFO
+AIKIDO_BLOCKING=1
 
 --FILE--
 <?php

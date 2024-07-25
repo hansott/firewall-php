@@ -41,7 +41,7 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 		return "invalid log level"
 	}
 
-	logMessage := fmt.Sprintf("[AIKIDO][%s][GO][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
+	logMessage := fmt.Sprintf("[AIKIDO][%s][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
 	return logMessage
 }
 

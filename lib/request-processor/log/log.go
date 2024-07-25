@@ -6,7 +6,6 @@ import (
 	"log"
 	"main/globals"
 	"os"
-	"time"
 )
 
 type LogLevel int
@@ -40,7 +39,7 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 		return "invalid log level"
 	}
 
-	logMessage := fmt.Sprintf("[AIKIDO][%s][GO] %s\n", levelStr, message)
+	logMessage := fmt.Sprintf("[AIKIDO][%s] %s\n", levelStr, message)
 	return logMessage
 }
 
@@ -124,6 +123,4 @@ func Init(level string) {
 	if err := SetLogLevel(globals.InitData.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
-
-	Info("Time now: ", time.Now().UnixNano())
 }

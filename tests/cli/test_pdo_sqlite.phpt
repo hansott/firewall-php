@@ -1,9 +1,8 @@
 --TEST--
 Test SQLite database operations
 
---INI--
-extension=aikido.so
-aikido.log_level=2 
+--ENV--
+AIKIDO_LOG_LEVEL=INFO
 
 --FILE--
 <?php
@@ -41,8 +40,7 @@ if (file_exists($dbFile)) {
 }
 ?>
 --EXPECTF--
-[AIKIDO][WARN][GO] AIKIDO_TOKEN not found in env variables!
-[AIKIDO][INFO][GO] Got PDO query: SELECT * FROM users
+[AIKIDO][INFO] Got PDO query: SELECT * FROM users
 ID: %d
 Name: John Doe
 Email: john@example.com

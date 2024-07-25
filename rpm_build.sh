@@ -1,7 +1,7 @@
 rm -rf ~/rpmbuild
 rpmdev-setuptree
 
-VERSION="1.0.24"
+VERSION="1.0.25"
 
 mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION
 cp -rf package/rpm/opt ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/
@@ -14,9 +14,7 @@ cp build/modules/aikido.so ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/a
 
 mv ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido-$VERSION
 
-rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido-$VERSION/aikido.ini
-rm -f ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido-$VERSION/config.json
-sed -i "s/aikido.so/aikido-$VERSION.so/" ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido-$VERSION/aikido-dev.ini
+sed -i "s/aikido.so/aikido-$VERSION.so/" ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION/opt/aikido-$VERSION/aikido.ini
 
 cd ~/rpmbuild/SOURCES
 tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION.tar.gz *

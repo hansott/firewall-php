@@ -11,13 +11,19 @@ import (
 
 //export AgentInit
 func AgentInit(initJson string) (initOk bool) {
-	log.SetLogLevel("DEBUG")
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered from panic:", r)
+			initOk = false
+		}
+	}()
 
 	log.Init()
-	log.Infof("Aikido Agent v%s loaded!", globals.Version)
-
 	machine.Init()
-	config.Init(initJson)
+	if !config.Init(initJson) {
+		return false
+	}
+	log.Infof("Aikido Agent v%s loaded!", globals.Version)
 	go grpc.Init()
 	return true
 }

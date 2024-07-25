@@ -25,10 +25,10 @@
 #define AIKIDO_GET_FUNCTION_NAME() (ZSTR_VAL(execute_data->func->common.function_name))
 
 enum AIKIDO_LOG_LEVEL {
-    AIKIDO_LOG_LEVEL_ERROR,
-    AIKIDO_LOG_LEVEL_WARN,
-    AIKIDO_LOG_LEVEL_INFO,
-    AIKIDO_LOG_LEVEL_DEBUG
+	AIKIDO_LOG_LEVEL_DEBUG,
+	AIKIDO_LOG_LEVEL_INFO,
+	AIKIDO_LOG_LEVEL_WARN,
+    AIKIDO_LOG_LEVEL_ERROR
 };
 
 void aikido_log_init();
@@ -51,16 +51,12 @@ void aikido_log(AIKIDO_LOG_LEVEL level, const char* format, ...);
 
 const char* aikido_log_level_str(AIKIDO_LOG_LEVEL level);
 
+AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level);
+
 std::string to_lowercase(const std::string& str);
 
 std::string get_environment_variable(const std::string& env_key);
 
-std::string config_override_with_env(const std::string previous_value, const std::string& env_key);
+std::string config_override_with_env(const std::string& env_key, const std::string default_value);
 
-bool config_override_with_env_bool(bool previous_value, const std::string& env_key);
-
-std::string get_hostname();
-
-utsname get_os_info();
-
-std::string get_ip_address();
+bool config_override_with_env_bool(const std::string& env_key, bool default_value);
