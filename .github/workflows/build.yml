@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
       fail-fast: false
 
     steps:
@@ -265,7 +265,7 @@ jobs:
     needs: [ build_rpm ]
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -298,7 +298,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-extension-php-*
+            aikido-php-firewall-*
 
       - name: Install RPM
         run: |
@@ -324,7 +324,7 @@ jobs:
     needs: [ build_deb ]
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
       fail-fast: false
     steps:
       - name: Checkout repository
