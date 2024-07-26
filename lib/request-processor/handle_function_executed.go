@@ -6,8 +6,7 @@ import (
 )
 
 var functionExecutedHandlers = map[string]HandlerFunction{
-	"curl_init":   OnFunctionExecutedCurl,
-	"curl_setopt": OnFunctionExecutedCurl,
+	"curl_exec": OnFunctionExecutedCurl,
 
 	"exec":       OnFunctionExecutedShell,
 	"shell_exec": OnFunctionExecutedShell,
