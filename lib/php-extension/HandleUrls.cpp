@@ -15,23 +15,21 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_exec) {
         ZEND_PARSE_PARAMETERS_END();
     #endif
 
-
-	zval *retval = NULL;
+	zval retval;
 	zval params[2];
 	ZVAL_COPY(&params[0], curlHandle);
 	ZVAL_LONG(&params[1], CURLINFO_EFFECTIVE_URL);
 	zval* fname = NULL;
 
-	retval = (zval*)emalloc(sizeof(zval));
 	fname = (zval*)emalloc(sizeof(zval));
 
-	if (retval == NULL || fname == NULL) {
+	if (fname == NULL) {
 		return;
 	}
 		
 	ZVAL_STRING(fname, "curl_getinfo");
 
-	if (call_user_function(EG(function_table), NULL, fname, retval, 2, params) == SUCCESS) {
+	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) == SUCCESS) {
 		if (Z_TYPE(retval) == IS_STRING) {
 			std::string urlString(Z_STRVAL(retval));
 			inputEvent = {
@@ -46,11 +44,8 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_exec) {
 		}
 	}
 
-	zval_dtor(retval);
+	zval_dtor(&retval);
 	zval_dtor(&params[0]);
 	zval_dtor(&params[1]);
-	efree(fname);
-	
-
-     
+	efree(fname);     
 }
