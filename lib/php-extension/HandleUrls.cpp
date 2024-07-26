@@ -6,8 +6,7 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_exec) {
     zval *curlHandle = NULL;
     #if PHP_VERSION_ID >= 80000
         ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_OBJECT(curlHandle)
-            
+            Z_PARAM_OBJECT(curlHandle) 
         ZEND_PARSE_PARAMETERS_END();
     #else
         ZEND_PARSE_PARAMETERS_START(1, 1)
@@ -22,7 +21,6 @@ AIKIDO_HANDLER_FUNCTION(handle_curl_exec) {
 	zval* fname = NULL;
 
 	fname = (zval*)emalloc(sizeof(zval));
-
 	if (fname == NULL) {
 		return;
 	}

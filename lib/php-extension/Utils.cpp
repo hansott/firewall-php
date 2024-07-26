@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include <ctime>
 
 std::string to_lowercase(const std::string& str) {
     std::string result = str;
@@ -9,7 +10,10 @@ std::string to_lowercase(const std::string& str) {
 FILE* log_file = nullptr;
 
 void aikido_log_init() {
-    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php.log";
+    std::time_t current_time = std::time(nullptr);
+    char time_str[20];
+    std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
+    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + ".log";
     log_file = fopen(log_file_path.c_str(), "w");
 }
 
