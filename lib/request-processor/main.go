@@ -15,7 +15,7 @@ import (
 var eventHandlers = map[string]HandlerFunction{
 	"function_executed": OnFunctionExecuted,
 	"method_executed":   OnMethodExecuted,
-	"request_metadata":  OnHttpRequestInfo,
+	"request_metadata":  OnRequestMetadata,
 }
 
 //export RequestProcessorInit

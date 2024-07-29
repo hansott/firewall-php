@@ -8,14 +8,14 @@ option go_package = "ipc/protos;protos";
 
 service Aikido {
   rpc OnReceiveDomain (Domain) returns (google.protobuf.Empty);
-  rpc OnReceiveHttpRequestInfo (HttpRequestInfo) returns (google.protobuf.Empty);
+  rpc OnReceiveRequestMetadata (RequestMetadata) returns (google.protobuf.Empty);
 }
 
 message Domain {
   string domain = 1;
 }
 
-message HttpRequestInfo {
+message RequestMetadata {
   string method = 1;
   string route = 2;
 }

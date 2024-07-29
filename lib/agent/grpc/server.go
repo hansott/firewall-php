@@ -26,7 +26,7 @@ func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*empt
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) OnReceiveHttpRequestInfo(ctx context.Context, req *protos.HttpRequestInfo) (*emptypb.Empty, error) {
+func (s *server) OnReceiveRequestMetadata(ctx context.Context, req *protos.RequestMetadata) (*emptypb.Empty, error) {
 	log.Debugf("Received HTTP request info: %s %s", req.GetMethod(), req.GetRoute())
 
 	globals.RoutesMutex.Lock()

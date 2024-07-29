@@ -185,6 +185,7 @@ PHP_RINIT_FUNCTION(aikido) {
 	
 	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
 	if (server_str){
+		/* Guarantee that "_SERVER" global variable is initialized for the current request */
 		zend_is_auto_global(server_str); 
 		zend_string_release(server_str);
 		send_request_metadata_event();
