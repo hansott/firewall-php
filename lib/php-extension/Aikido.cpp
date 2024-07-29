@@ -187,7 +187,7 @@ PHP_RINIT_FUNCTION(aikido) {
 	if (server_str){
 		zend_is_auto_global(server_str); 
 		zend_string_release(server_str);
-		send_api_route_and_method_to_agent();
+		send_request_metadata_event();
 	}
 	
 	AIKIDO_LOG_DEBUG("RINIT finished!\n");
