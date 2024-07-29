@@ -5,8 +5,7 @@
 #include "Utils.h"
 
 unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
-	AIKIDO_REGISTER_FUNCTION_HANDLER(curl_init),
-	AIKIDO_REGISTER_FUNCTION_HANDLER(curl_setopt),
+	AIKIDO_REGISTER_FUNCTION_HANDLER(curl_exec),
 
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(exec,       handle_shell_execution),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(shell_exec, handle_shell_execution),

@@ -6,6 +6,7 @@ import (
 	"log"
 	"main/globals"
 	"os"
+	"time"
 )
 
 type LogLevel int
@@ -111,9 +112,11 @@ func SetLogLevel(level string) error {
 }
 
 func Init() {
-	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%d.log", os.Getpid())
+	currentTime := time.Now()
+	timeStr := currentTime.Format("20060102150405")
+	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%d-%s.log", os.Getpid(), timeStr)
 
-	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}

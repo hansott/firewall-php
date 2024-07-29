@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include <ctime>
 
 std::string to_lowercase(const std::string& str) {
     std::string result = str;
@@ -9,7 +10,10 @@ std::string to_lowercase(const std::string& str) {
 FILE* log_file = nullptr;
 
 void aikido_log_init() {
-    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php.log";
+    std::time_t current_time = std::time(nullptr);
+    char time_str[20];
+    std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
+    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + ".log";
     log_file = fopen(log_file_path.c_str(), "w");
 }
 
@@ -85,4 +89,56 @@ bool config_override_with_env_bool(const std::string& env_key, bool default_valu
         return (env_value == "1" || env_value == "true");
 	}
     return default_value;
+}
+
+
+std::string extract_server_var(zval *server, const char *var) {
+    zval *data = zend_hash_str_find(Z_ARRVAL_P(server), var, strlen(var));
+    if (!data) {
+        return "";
+    }
+    return Z_STRVAL_P(data);
+}
+
+json get_route_and_method(zval *server) {
+    std::string route = extract_server_var(server, "REQUEST_URI");
+    std::string method = extract_server_var(server, "REQUEST_METHOD");
+    // Remove query string
+    size_t pos = route.find("?");
+    if (pos != std::string::npos) {
+        route = route.substr(0, pos);
+    }
+    json result = {
+        {"route", route},
+        {"method", method}
+    };
+    return result;
+}
+
+bool send_request_metadata_event(){
+    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+    if (!server) {
+        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
+        return false;
+    }
+    
+    json routeAndMethod = get_route_and_method(server);
+    
+    if (routeAndMethod["route"].size() <= 1 || routeAndMethod["method"].size() <= 1) {
+        AIKIDO_LOG_WARN("Route('%s') or method('%s') variables are empty!\n", routeAndMethod["route"].get<std::string>().c_str(), routeAndMethod["method"].get<std::string>().c_str());
+        return false;
+    }
+
+    json inputEvent = {
+        { "event", "request_metadata" },
+        { "data", {
+            { "route", routeAndMethod["route"] },
+            { "method", routeAndMethod["method"] }
+        }
+        }
+    };
+
+    json response = GoRequestProcessorOnEvent(inputEvent);
+    
+    return response["status"] == "ok";
 }

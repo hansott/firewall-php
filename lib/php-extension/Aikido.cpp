@@ -182,7 +182,15 @@ PHP_RINIT_FUNCTION(aikido) {
 
 		AIKIDO_LOG_DEBUG("Aikido Request Processor initialized successfully!\n");
 	}
-
+	
+	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
+	if (server_str){
+		/* Guarantee that "_SERVER" global variable is initialized for the current request */
+		zend_is_auto_global(server_str); 
+		zend_string_release(server_str);
+		send_request_metadata_event();
+	}
+	
 	AIKIDO_LOG_DEBUG("RINIT finished!\n");
 	return SUCCESS;
 }

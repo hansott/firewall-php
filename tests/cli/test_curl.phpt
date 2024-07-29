@@ -1,5 +1,5 @@
 --TEST--
-Test curl initialization and setting options
+Test curl exec function
 
 --ENV--
 AIKIDO_LOG_LEVEL=INFO
@@ -7,17 +7,34 @@ AIKIDO_LOG_LEVEL=INFO
 --FILE--
 <?php
 $ch1 = curl_init("https://example.com/");
-$ch2 = curl_init("http://www.facebook.com");
-$ch3 = curl_init("https://www.google.com/search?q=test");
-$ch4 = curl_copy_handle($ch1);
-curl_setopt($ch2, CURLOPT_URL, "https://example2.com");
-$ch5 = curl_copy_handle($ch1);
-curl_setopt($ch2, CURLOPT_URL, "https://en.wikipedia.org/wiki/Runtime_library");
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+curl_exec($ch1);
+curl_close($ch1);
+
+
+$ch2 = curl_init("https://httpbin.org/get");
+$queryParams = http_build_query([
+    'param1' => 'value1',
+    'param2' => 'value2'
+]);
+curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch2, CURLOPT_URL, "https://httpbin.org/get?" . $queryParams);
+curl_exec($ch2);
+curl_close($ch2);
+
+$ch3 = curl_init();
+$options = [
+CURLOPT_URL => "https://facebook.com",
+CURLOPT_RETURNTRANSFER => true,
+CURLOPT_HEADER => false,
+];
+curl_setopt_array($ch3, $options);
+curl_exec($ch3);
+curl_close($ch3);
+
 ?>
 
 --EXPECT--
 [AIKIDO][INFO] Got domain: example.com
-[AIKIDO][INFO] Got domain: www.facebook.com
-[AIKIDO][INFO] Got domain: www.google.com
-[AIKIDO][INFO] Got domain: example2.com
-[AIKIDO][INFO] Got domain: en.wikipedia.org
+[AIKIDO][INFO] Got domain: httpbin.org
+[AIKIDO][INFO] Got domain: facebook.com

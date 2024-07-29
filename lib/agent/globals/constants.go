@@ -1,8 +1,7 @@
 package globals
 
 const (
-	Version                  = "1.0.27"
-	LogFilePath              = "/var/log/aikido-" + Version + "/aikido-agent.log"
+	Version                  = "1.0.29"
 	SocketPath               = "/run/aikido-" + Version + ".sock"
 	ConfigAPIMethod          = "GET"
 	ConfigAPI                = "/api/runtime/config"

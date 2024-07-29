@@ -1,64 +1,49 @@
 #include "HandleUrls.h"
 #include "Utils.h"
 
-AIKIDO_HANDLER_FUNCTION(handle_curl_init) {
-	zend_string *url = NULL;
 
-	ZEND_PARSE_PARAMETERS_START(0,1)
-		Z_PARAM_OPTIONAL
-		Z_PARAM_STR(url)
-	ZEND_PARSE_PARAMETERS_END();
+AIKIDO_HANDLER_FUNCTION(handle_curl_exec) {
+    zval *curlHandle = NULL;
+    #if PHP_VERSION_ID >= 80000
+        ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_OBJECT(curlHandle) 
+        ZEND_PARSE_PARAMETERS_END();
+    #else
+        ZEND_PARSE_PARAMETERS_START(1, 1)
+            Z_PARAM_RESOURCE(curlHandle)
+        ZEND_PARSE_PARAMETERS_END();
+    #endif
 
-	// Z_OBJ_P(return_value)
-	inputEvent = {
-		{ "event", "function_executed" },
-		{ "data", {
-			{ "function_name", "curl_init" },
-			{ "parameters", json::object() }
-		} }
-	};
-	
-	if (url) {
-		std::string urlString(ZSTR_VAL(url));
-		inputEvent["data"]["parameters"]["url"] = urlString;
+	zval retval;
+	zval params[2];
+	ZVAL_COPY(&params[0], curlHandle);
+	ZVAL_LONG(&params[1], CURLINFO_EFFECTIVE_URL);
+	zval* fname = NULL;
+
+	fname = (zval*)emalloc(sizeof(zval));
+	if (fname == NULL) {
+		return;
 	}
-}
+		
+	ZVAL_STRING(fname, "curl_getinfo");
 
-AIKIDO_HANDLER_FUNCTION(handle_curl_setopt) {
-	zval *curlHandle = NULL;
-	zend_long options = 0;
-	zval *zvalue = NULL;
-
-	#if PHP_VERSION_ID >= 80000
-		ZEND_PARSE_PARAMETERS_START(3, 3)
-			Z_PARAM_OBJECT(curlHandle)
-			Z_PARAM_LONG(options)
-			Z_PARAM_ZVAL(zvalue)
-		ZEND_PARSE_PARAMETERS_END();
-	#else
-		ZEND_PARSE_PARAMETERS_START(3, 3)
-			Z_PARAM_RESOURCE(curlHandle)
-			Z_PARAM_LONG(options)
-			Z_PARAM_ZVAL(zvalue)
-		ZEND_PARSE_PARAMETERS_END();
-	#endif
-
-	if (options == CURLOPT_URL) {
-		zend_string *tmp_str;
-		zend_string *url = zval_get_tmp_string(zvalue, &tmp_str);
-
-		std::string urlString(ZSTR_VAL(url));
-	
-		inputEvent = {
-			{ "event", "function_executed" },
-			{ "data", {
-				{ "function_name", "curl_setopt" },
-				{ "parameters", {
-					{ "url", urlString }
+	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) == SUCCESS) {
+		if (Z_TYPE(retval) == IS_STRING) {
+			std::string urlString(Z_STRVAL(retval));
+			inputEvent = {
+				{ "event", "function_executed" },
+				{ "data", {
+					{ "function_name", "curl_exec" },
+					{ "parameters", {
+						{ "url", urlString }
+					} }
 				} }
-			} }
-		};
-
-		zend_tmp_string_release(tmp_str);
+			};
+		}
 	}
+
+	zval_dtor(&retval);
+	zval_dtor(&params[0]);
+	zval_dtor(&params[1]);
+	efree(fname);     
 }

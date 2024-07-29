@@ -113,7 +113,11 @@ func SetLogLevel(level string) error {
 }
 
 func Init() {
-	logFile, err := os.OpenFile(globals.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	currentTime := time.Now()
+	timeStr := currentTime.Format("20060102150405")
+	logFilePath := fmt.Sprintf("/var/log/aikido-%s/aikido-agent-%s.log", globals.Version, timeStr)
+
+	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
