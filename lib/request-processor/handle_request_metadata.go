@@ -11,7 +11,6 @@ func OnRequestMetadata(data map[string]interface{}) string {
 	route := utils.MustGetFromMap[string](data, "route")
 
 	if method == "" || route == "" {
-		log.Warn("Missing required fields!")
 		return "{\"status\": \"ok\"}"
 	}
 
