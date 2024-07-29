@@ -22,3 +22,10 @@ var Hostnames = map[string]bool{}
 
 // Hostnames mutex used to sync access to hostnames data across the go routines that populate and read the array
 var HostnamesMutex sync.Mutex
+
+// List of routes and their methods and count of calls collect from the extensions
+// [method][route] = hits
+var Routes = map[string]map[string]int{}
+
+// Routes mutex used to sync access to routes data across the go routines that populate and read the array
+var RoutesMutex sync.Mutex

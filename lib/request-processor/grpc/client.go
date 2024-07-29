@@ -52,3 +52,19 @@ func OnReceiveDomain(domain string) {
 
 	log.Debugf("Domain sent via socket: %v", domain)
 }
+
+func OnReceiveHttpRequestInfo(method string, route string) {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err := client.OnReceiveHttpRequestInfo(ctx, &protos.HttpRequestInfo{Method: method, Route: route})
+	if err != nil {
+		log.Warnf("Could not send http request info %v %v: %v", method, route, err)
+	}
+
+	log.Infof("Http request info sent via socket: %v %v", method, route)
+}

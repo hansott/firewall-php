@@ -6,7 +6,7 @@ import (
 	"main/log"
 )
 
-func GetHostnames() []Hostname {
+func GetHostnamesAndClear() []Hostname {
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
 
@@ -21,14 +21,29 @@ func GetHostnames() []Hostname {
 	return hostnames
 }
 
+func GetRoutesAndClear() []Route {
+	globals.RoutesMutex.Lock()
+	defer globals.RoutesMutex.Unlock()
+
+	routes := make([]Route, 0)
+	for method, routeMap := range globals.Routes {
+		for route, hits := range routeMap {
+			routes = append(routes, Route{Path: route, Method: method, Hits: int64(hits)})
+		}
+	}
+
+	globals.Routes = map[string]map[string]int{}
+	return routes
+}
+
 func SendHeartbeatEvent() {
 	heartbeatEvent := Heartbeat{
 		Type:      "heartbeat",
 		Agent:     GetAgentInfo(),
 		Time:      GetTime(),
 		Stats:     make(map[string]string, 0),
-		Hostnames: GetHostnames(),
-		Routes:    make([]Route, 0),
+		Hostnames: GetHostnamesAndClear(),
+		Routes:    GetRoutesAndClear(),
 		Users:     make([]User, 0),
 	}
 

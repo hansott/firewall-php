@@ -90,3 +90,55 @@ bool config_override_with_env_bool(const std::string& env_key, bool default_valu
 	}
     return default_value;
 }
+
+
+std::string extract_server_var(zval *server, const char *var) {
+    zval *data = zend_hash_str_find(Z_ARRVAL_P(server), var, strlen(var));
+    if (!data) {
+        return "";
+    }
+    return Z_STRVAL_P(data);
+}
+
+json get_route_and_method(zval *server) {
+    std::string route = extract_server_var(server, "REQUEST_URI");
+    std::string method = extract_server_var(server, "REQUEST_METHOD");
+    // Remove query string
+    size_t pos = route.find("?");
+    if (pos != std::string::npos) {
+        route = route.substr(0, pos);
+    }
+    json result = {
+        {"route", route},
+        {"method", method}
+    };
+    return result;
+}
+
+bool send_request_data_to_agent(){
+    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+    if (!server) {
+        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
+        return false;
+    }
+    
+    json routeAndMethod = get_route_and_method(server);
+    
+    if (routeAndMethod["route"].size() <= 1 || routeAndMethod["method"].size() <= 1) {
+        AIKIDO_LOG_WARN("Route('%s') or method('%s') variables are empty!\n", routeAndMethod["route"].get<std::string>().c_str(), routeAndMethod["method"].get<std::string>().c_str());
+        return false;
+    }
+
+    json inputEvent = {
+        { "event", "http_request_info" },
+        { "data", {
+            { "route", routeAndMethod["route"] },
+            { "method", routeAndMethod["method"] }
+        }
+        }
+    };
+
+    json response = GoRequestProcessorOnEvent(inputEvent);
+    
+    return response["status"] == "ok";
+}
