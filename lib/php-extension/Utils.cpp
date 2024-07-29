@@ -123,11 +123,6 @@ bool send_request_metadata_event(){
     }
     
     json routeAndMethod = get_route_and_method(server);
-    
-    if (routeAndMethod["route"].size() <= 1 || routeAndMethod["method"].size() <= 1) {
-        AIKIDO_LOG_WARN("Route('%s') or method('%s') variables are empty!\n", routeAndMethod["route"].get<std::string>().c_str(), routeAndMethod["method"].get<std::string>().c_str());
-        return false;
-    }
 
     json inputEvent = {
         { "event", "request_metadata" },

@@ -11,11 +11,11 @@ func OnRequestMetadata(data map[string]interface{}) string {
 	route := utils.MustGetFromMap[string](data, "route")
 
 	if method == "" || route == "" {
-		log.Error("Missing required fields in OnRequestMetadata")
+		log.Warn("Missing required fields!")
 		return "{\"status\": \"ok\"}"
 	}
 
-	log.Info("Got HTTP request: ", method, " ", route)
+	log.Info("Got request metadata: ", method, " ", route)
 	go grpc.OnReceiveRequestMetadata(method, route)
 
 	return "{\"status\": \"ok\"}"
