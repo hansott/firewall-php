@@ -68,5 +68,5 @@ func OnReceiveRequestMetadata(method string, route string) {
 		log.Warnf("Could not send http request info %v %v: %v", method, route, err)
 	}
 
-	log.Infof("Http request info sent via socket: %v %v", method, route)
+	log.Debugf("Http request info sent via socket: %v %v", method, route)
 }
