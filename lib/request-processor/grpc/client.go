@@ -37,6 +37,7 @@ func Uninit() {
 	conn.Close()
 }
 
+/* Send outgoing domain to Aikido Agent via gRPC */
 func OnReceiveDomain(domain string) {
 	if client == nil {
 		return
@@ -53,6 +54,7 @@ func OnReceiveDomain(domain string) {
 	log.Debugf("Domain sent via socket: %v", domain)
 }
 
+/* Send request metadata (route & method) to Aikido Agent via gRPC */
 func OnReceiveRequestMetadata(method string, route string) {
 	if client == nil {
 		return
