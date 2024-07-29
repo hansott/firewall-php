@@ -115,7 +115,7 @@ json get_route_and_method(zval *server) {
     return result;
 }
 
-bool send_request_data_to_agent(){
+bool send_api_route_and_method_to_agent(){
     zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
     if (!server) {
         AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");

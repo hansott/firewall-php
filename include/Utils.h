@@ -61,5 +61,5 @@ std::string config_override_with_env(const std::string& env_key, const std::stri
 
 bool config_override_with_env_bool(const std::string& env_key, bool default_value);
 
-bool send_request_data_to_agent();
+bool send_api_route_and_method_to_agent();
 
