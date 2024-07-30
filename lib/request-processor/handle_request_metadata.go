@@ -15,6 +15,8 @@ func OnRequestMetadata(data map[string]interface{}) string {
 	}
 
 	log.Info("Got request metadata: ", method, " ", route)
+
+	route = utils.BuildRouteFromURL(route)
 	go grpc.OnReceiveRequestMetadata(method, route)
 
 	return "{\"status\": \"ok\"}"
