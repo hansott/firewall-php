@@ -26,7 +26,7 @@ func contains(input string, chars []string) bool {
 	return found
 }
 
-func looksLikeASecret(str string) bool {
+func LooksLikeASecret(str string) bool {
 	if len(str) <= MINIMUM_LENGTH {
 		return false
 	}

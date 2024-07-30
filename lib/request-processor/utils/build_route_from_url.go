@@ -78,7 +78,7 @@ func replaceURLSegmentWithParam(segment string) string {
 		}
 	}
 
-	if looksLikeASecret(segment) {
+	if LooksLikeASecret(segment) {
 		return ":secret"
 	}
 
