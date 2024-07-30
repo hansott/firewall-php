@@ -14,15 +14,6 @@ var (
 	EMAIL        = regexp.MustCompile(`^[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$`)
 	HASH         = regexp.MustCompile(`^(?:[a-f0-9]{32}|[a-f0-9]{40}|[a-f0-9]{64}|[a-f0-9]{128})$`)
 	HASH_LENGTHS = []int{32, 40, 64, 128}
-
-	secretPatterns = []*regexp.Regexp{
-		regexp.MustCompile(`(?i)api[_-]?key`),
-		regexp.MustCompile(`(?i)secret`),
-		regexp.MustCompile(`(?i)token`),
-		regexp.MustCompile(`(?i)password`),
-		regexp.MustCompile(`(?i)passwd`),
-		regexp.MustCompile(`(?i)pwd`),
-	}
 )
 
 func BuildRouteFromURL(url string) string {

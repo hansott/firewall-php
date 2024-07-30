@@ -15,51 +15,29 @@ var (
 	MINIMUM_LENGTH        = 10
 )
 
+func contains(input string, chars []string) bool {
+	found := false
+	for _, char := range chars {
+		if strings.Contains(input, char) {
+			found = true
+			break
+		}
+	}
+	return found
+}
+
 func looksLikeASecret(str string) bool {
 	if len(str) <= MINIMUM_LENGTH {
 		return false
 	}
 
-	hasNumber := false
-	for _, char := range NUMBERS {
-		if strings.Contains(str, char) {
-			hasNumber = true
-			break
-		}
-	}
-
-	if !hasNumber {
+	if !contains(str, NUMBERS) {
 		return false
 	}
 
-	hasLower := false
-	hasUpper := false
-	hasSpecial := false
-
-	for _, char := range LOWERCASE {
-		if strings.Contains(str, char) {
-			hasLower = true
-			break
-		}
-	}
-
-	for _, char := range UPPERCASE {
-		if strings.Contains(str, char) {
-			hasUpper = true
-			break
-		}
-	}
-
-	for _, char := range SPECIAL {
-		if strings.Contains(str, char) {
-			hasSpecial = true
-			break
-		}
-	}
-
-	charsets := []bool{hasLower, hasUpper, hasSpecial}
-
 	// If the string doesn't have at least 2 different charsets, it's not a secret
+	charsets := []bool{contains(str, LOWERCASE), contains(str, UPPERCASE), contains(str, SPECIAL)}
+
 	numCharsets := 0
 	for _, charset := range charsets {
 		if charset {
@@ -75,10 +53,8 @@ func looksLikeASecret(str string) bool {
 		return false
 	}
 
-	for _, separator := range KNOWN_WORD_SEPARATORS {
-		if strings.Contains(str, separator) {
-			return false
-		}
+	if contains(str, KNOWN_WORD_SEPARATORS) {
+		return false
 	}
 
 	// Check uniqueness of characters in a window of 10 characters
