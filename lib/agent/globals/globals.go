@@ -20,12 +20,15 @@ var Machine MachineData
 // List of outgoing hostnames collect from the extensions
 var Hostnames = map[string]bool{}
 
-// Hostnames mutex used to sync access to hostnames data across the go routines that populate and read the array
+// Hostnames mutex used to sync access to hostnames data across the go routines
 var HostnamesMutex sync.Mutex
 
 // List of routes and their methods and count of calls collect from the extensions
 // [method][route] = hits
 var Routes = map[string]map[string]int{}
 
-// Routes mutex used to sync access to routes data across the go routines that populate and read the array
+// Routes mutex used to sync access to routes data across the go routines
 var RoutesMutex sync.Mutex
+
+// Global stats data, including mutex used to sync access to stats data across the go routines
+var StatsData StatsDataType
