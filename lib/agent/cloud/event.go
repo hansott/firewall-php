@@ -25,7 +25,7 @@ func SendEvent(route string, method string, payload interface{}) ([]byte, error)
 		return nil, fmt.Errorf("failed to marshal payload: %v", err)
 	}
 
-	log.Debugf("Sending %s request to %s with content %s", method, apiEndpoint, jsonData)
+	log.Infof("Sending %s request to %s with content %s", method, apiEndpoint, jsonData)
 
 	req, err := http.NewRequest(method, apiEndpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -51,7 +51,7 @@ func SendEvent(route string, method string, payload interface{}) ([]byte, error)
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	log.Debug("Got response: ", string(body))
+	log.Info("Got response: ", string(body))
 
 	return body, nil
 }

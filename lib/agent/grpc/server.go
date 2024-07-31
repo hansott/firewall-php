@@ -19,26 +19,15 @@ type server struct {
 
 func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
-	globals.HostnamesMutex.Lock()
-	defer globals.HostnamesMutex.Unlock()
-
-	globals.Hostnames[req.GetDomain()] = true
+	storeDomain(req)
 	return &emptypb.Empty{}, nil
 }
 
 func (s *server) OnReceiveRequestMetadata(ctx context.Context, req *protos.RequestMetadata) (*emptypb.Empty, error) {
 	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
 
-	globals.RoutesMutex.Lock()
-	defer globals.RoutesMutex.Unlock()
-
-	if _, ok := globals.Routes[req.GetMethod()]; !ok {
-		globals.Routes[req.GetMethod()] = make(map[string]int)
-	}
-	if _, ok := globals.Routes[req.GetMethod()][req.GetRoute()]; !ok {
-		globals.Routes[req.GetMethod()][req.GetRoute()] = 0
-	}
-	globals.Routes[req.GetMethod()][req.GetRoute()]++
+	storeRoute(req)
+	incrementRequests()
 
 	return &emptypb.Empty{}, nil
 }

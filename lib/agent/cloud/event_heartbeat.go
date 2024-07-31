@@ -36,15 +36,46 @@ func GetRoutesAndClear() []Route {
 	return routes
 }
 
+func GetUsersAndClear() []User {
+	return make([]User, 0)
+}
+
+func GetStatsAndClear() Stats {
+	globals.StatsData.StatsMutex.Lock()
+	defer globals.StatsData.StatsMutex.Unlock()
+
+	stats := Stats{
+		Sinks:     make(map[string]MonitoredSinkStats),
+		StartedAt: globals.StatsData.StartedAt,
+		EndedAt:   GetTime(),
+		Requests: Requests{
+			Total:   globals.StatsData.Requests,
+			Aborted: globals.StatsData.RequestsAborted,
+			AttacksDetected: AttacksDetected{
+				Total:   globals.StatsData.Attacks,
+				Blocked: globals.StatsData.AttacksBlocked,
+			},
+		},
+	}
+
+	globals.StatsData.StartedAt = GetTime()
+	globals.StatsData.Requests = 0
+	globals.StatsData.RequestsAborted = 0
+	globals.StatsData.Attacks = 0
+	globals.StatsData.AttacksBlocked = 0
+
+	return stats
+}
+
 func SendHeartbeatEvent() {
 	heartbeatEvent := Heartbeat{
 		Type:      "heartbeat",
 		Agent:     GetAgentInfo(),
 		Time:      GetTime(),
-		Stats:     make(map[string]string, 0),
+		Stats:     GetStatsAndClear(),
 		Hostnames: GetHostnamesAndClear(),
 		Routes:    GetRoutesAndClear(),
-		Users:     make([]User, 0),
+		Users:     GetUsersAndClear(),
 	}
 
 	response, err := SendEvent(globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)

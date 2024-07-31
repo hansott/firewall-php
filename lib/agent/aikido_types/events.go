@@ -24,6 +24,38 @@ type User struct {
 	LastSeenAt    int64  `json:"lastSeenAt"`
 }
 
+type AttacksDetected struct {
+	Total   int `json:"total"`
+	Blocked int `json:"blocked"`
+}
+
+type CompressedTiming struct {
+	AverageInMS  float64            `json:"averageInMS"`
+	Percentiles  map[string]float64 `json:"percentiles"`
+	CompressedAt int64              `json:"compressedAt"`
+}
+
+type MonitoredSinkStats struct {
+	AttacksDetected       AttacksDetected    `json:"attacksDetected"`
+	InterceptorThrewError int                `json:"interceptorThrewError"`
+	WithoutContext        int                `json:"withoutContext"`
+	Total                 int                `json:"total"`
+	CompressedTimings     []CompressedTiming `json:"compressedTimings"`
+}
+
+type Requests struct {
+	Total           int             `json:"total"`
+	Aborted         int             `json:"aborted"`
+	AttacksDetected AttacksDetected `json:"attacksDetected"`
+}
+
+type Stats struct {
+	Sinks     map[string]MonitoredSinkStats `json:"sinks"`
+	StartedAt int64                         `json:"startedAt"`
+	EndedAt   int64                         `json:"endedAt"`
+	Requests  Requests                      `json:"requests"`
+}
+
 type AgentInfo struct {
 	DryMode                   bool              `json:"dryMode"`
 	Hostname                  string            `json:"hostname"`
@@ -42,11 +74,11 @@ type Started struct {
 }
 
 type Heartbeat struct {
-	Type      string            `json:"type"`
-	Stats     map[string]string `json:"stats"`
-	Hostnames []Hostname        `json:"hostnames"`
-	Routes    []Route           `json:"routes"`
-	Users     []User            `json:"users"`
-	Agent     AgentInfo         `json:"agent"`
-	Time      int64             `json:"time"`
+	Type      string     `json:"type"`
+	Stats     Stats      `json:"stats"`
+	Hostnames []Hostname `json:"hostnames"`
+	Routes    []Route    `json:"routes"`
+	Users     []User     `json:"users"`
+	Agent     AgentInfo  `json:"agent"`
+	Time      int64      `json:"time"`
 }
