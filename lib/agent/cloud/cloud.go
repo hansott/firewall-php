@@ -1,6 +1,7 @@
 package cloud
 
 import (
+	"main/globals"
 	"time"
 )
 
@@ -32,6 +33,8 @@ func StopHeartbeatRoutine() {
 func Init() {
 	SendStartEvent()
 	StartHeartbeatRoutine()
+
+	globals.StatsData.StartedAt = GetTime()
 }
 
 func Uninit() {
