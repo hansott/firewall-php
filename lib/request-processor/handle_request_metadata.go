@@ -4,6 +4,7 @@ import (
 	"main/grpc"
 	"main/log"
 	"main/utils"
+	"time"
 )
 
 func OnRequestMetadata(data map[string]interface{}) string {
@@ -17,7 +18,14 @@ func OnRequestMetadata(data map[string]interface{}) string {
 	log.Info("Got request metadata: ", method, " ", route)
 
 	route = utils.BuildRouteFromURL(route)
-	go grpc.OnRequest(method, route)
+
+	if grpc.IsRequestConfiguredForRateLimiting(method, route) {
+		if !grpc.OnRequest(method, route, 5*time.Millisecond) {
+			return `{"action": "throw", "message": "Request was rate limited by Aikido Security", "code": -1}`
+		}
+	} else {
+		go grpc.OnRequest(method, route, 2*time.Second)
+	}
 
 	return "{\"status\": \"ok\"}"
 }

@@ -36,6 +36,15 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	}
 }
 
+func IsRequestConfiguredForRateLimiting(method string, route string) bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	_, exists := globals.CloudConfig.Endpoints[EndpointKey{Method: method, Route: route}]
+
+	return exists
+}
+
 func startCloudConfigRoutine() {
 	stop = make(chan struct{})
 

@@ -58,22 +58,22 @@ func OnDomain(domain string) {
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
-func OnRequest(method string, route string) bool {
+func OnRequest(method string, route string, timeout time.Duration) bool {
 	if client == nil {
-		return false
+		return true
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	rateLimitingStatus, err := client.OnRequest(ctx, &protos.RequestMetadata{Method: method, Route: route})
+	requestStatus, err := client.OnRequest(ctx, &protos.RequestMetadata{Method: method, Route: route})
 	if err != nil {
 		log.Warnf("Could not send request metadata %v %v: %v", method, route, err)
-		return false
+		return true
 	}
 
-	log.Debugf("Request metadata sent via socket (%v %v) and got reply %v", method, route, rateLimitingStatus)
-	return rateLimitingStatus.Exceeded
+	log.Debugf("Request metadata sent via socket (%v %v) and got reply %v", method, route, requestStatus)
+	return requestStatus.ForwardToServer
 }
 
 /* Get latest cloud config from Aikido Agent via gRPC */

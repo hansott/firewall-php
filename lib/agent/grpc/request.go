@@ -39,18 +39,18 @@ func updateRateLimitingStatus(req *protos.RequestMetadata) {
 	rateLimitingData.Status.NumberOfRequestPerWindow.IncrementLast()
 }
 
-func getRateLimitingStatus(req *protos.RequestMetadata) *protos.RateLimitingStatus {
+func getRequestStatus(req *protos.RequestMetadata) *protos.RequestStatus {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
-	exceeded := false
+	forwardToServer := true
 	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
 	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
-		exceeded = true
+		forwardToServer = false
 	}
 
-	return &protos.RateLimitingStatus{
-		Exceeded: exceeded,
+	return &protos.RequestStatus{
+		ForwardToServer: forwardToServer,
 	}
 }
 
