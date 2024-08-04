@@ -11,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const socketPath = "/run/aikido-" + globals.Version + ".sock"
@@ -31,6 +32,8 @@ func Init() {
 	client = protos.NewAikidoClient(conn)
 
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
+
+	startCloudConfigRoutine()
 }
 
 func Uninit() {
@@ -38,7 +41,7 @@ func Uninit() {
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */
-func OnReceiveDomain(domain string) {
+func OnDomain(domain string) {
 	if client == nil {
 		return
 	}
@@ -46,7 +49,7 @@ func OnReceiveDomain(domain string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	_, err := client.OnReceiveDomain(ctx, &protos.Domain{Domain: domain})
+	_, err := client.OnDomain(ctx, &protos.Domain{Domain: domain})
 	if err != nil {
 		log.Warnf("Could not send domain %v: %v", domain, err)
 	}
@@ -55,7 +58,26 @@ func OnReceiveDomain(domain string) {
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
-func OnReceiveRequestMetadata(method string, route string) {
+func OnRequest(method string, route string) bool {
+	if client == nil {
+		return false
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	rateLimitingStatus, err := client.OnRequest(ctx, &protos.RequestMetadata{Method: method, Route: route})
+	if err != nil {
+		log.Warnf("Could not send request metadata %v %v: %v", method, route, err)
+		return false
+	}
+
+	log.Debugf("Request metadata sent via socket (%v %v) and got reply %v", method, route, rateLimitingStatus)
+	return rateLimitingStatus.Exceeded
+}
+
+/* Get latest cloud config from Aikido Agent via gRPC */
+func GetCloudConfig() {
 	if client == nil {
 		return
 	}
@@ -63,10 +85,11 @@ func OnReceiveRequestMetadata(method string, route string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	_, err := client.OnReceiveRequestMetadata(ctx, &protos.RequestMetadata{Method: method, Route: route})
+	cloudConfig, err := client.GetCloudConfig(ctx, &emptypb.Empty{})
 	if err != nil {
-		log.Warnf("Could not send http request info %v %v: %v", method, route, err)
+		log.Warnf("Could not get cloud config: %v", err)
 	}
 
-	log.Debugf("Http request info sent via socket: %v %v", method, route)
+	log.Debugf("Got cloud config: %v", cloudConfig)
+	setCloudConfig(cloudConfig)
 }

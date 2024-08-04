@@ -8,19 +8,33 @@ type MachineData struct {
 	IPAddress  string `json:"ip_address"`
 }
 
-type LocalConfigData struct {
+type EnvironmentConfigData struct {
 	Token    string `json:"token,omitempty"`
 	LogLevel string `json:"log_level,omitempty"`
 	Endpoint string `json:"endpoint,omitempty"`
 	Blocking bool   `json:"blocking,omitempty"`
 }
 
+type RateLimiting struct {
+	Enabled        bool `json:"enabled"`
+	MaxRequests    int  `json:"maxRequests"`
+	WindowSizeInMS int  `json:"windowSizeInMS"`
+}
+
+type Endpoint struct {
+	Method             string       `json:"method"`
+	Route              string       `json:"route"`
+	ForceProtectionOff bool         `json:"forceProtectionOff"`
+	Graphql            interface{}  `json:"graphql"`
+	RateLimiting       RateLimiting `json:"rateLimiting"`
+}
+
 type CloudConfigData struct {
-	Success               bool     `json:"success"`
-	ServiceID             int      `json:"serviceId"`
-	ConfigUpdatedAt       int64    `json:"configUpdatedAt"`
-	HeartbeatIntervalInMS int64    `json:"heartbeatIntervalInMS"`
-	Endpoints             []string `json:"endpoints"`
-	BlockedUserIDs        []string `json:"blockedUserIds"`
-	AllowedIPAddresses    []string `json:"allowedIPAddresses"`
+	Success               bool       `json:"success"`
+	ServiceId             int        `json:"serviceId"`
+	ConfigUpdatedAt       int64      `json:"configUpdatedAt"`
+	HeartbeatIntervalInMS int        `json:"heartbeatIntervalInMS"`
+	Endpoints             []Endpoint `json:"endpoints"`
+	BlockedUserIds        []string   `json:"blockedUserIds"`
+	AllowedIPAddresses    []string   `json:"allowedIPAddresses"`
 }

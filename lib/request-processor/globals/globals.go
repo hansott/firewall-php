@@ -1,9 +1,14 @@
 package globals
 
-var InitData struct {
-	LogLevel string `json:"log_level"`
-	SAPI     string `json:"sapi"`
-}
+import (
+	. "main/aikido_types"
+	"sync"
+)
+
+var InitData InitConfigData
+
+var CloudConfig CloudConfigData
+var CloudConfigMutex sync.Mutex
 
 const (
 	Version = "1.0.35"

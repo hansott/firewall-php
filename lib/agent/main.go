@@ -8,6 +8,10 @@ import (
 	"main/log"
 	"main/machine"
 )
+import (
+	"main/cloud"
+	"main/rate_limiting"
+)
 
 //export AgentInit
 func AgentInit(initJson string) (initOk bool) {
@@ -23,6 +27,9 @@ func AgentInit(initJson string) (initOk bool) {
 	if !config.Init(initJson) || !grpc.Init() {
 		return false
 	}
+
+	cloud.Init()
+	rate_limiting.Init()
 
 	log.Infof("Aikido Agent v%s loaded!", globals.Version)
 	return true
