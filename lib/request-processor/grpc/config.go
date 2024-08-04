@@ -26,8 +26,14 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		}
 		globals.CloudConfig.Endpoints[EndpointKey{Method: ep.Method, Route: ep.Route}] = endpointData
 	}
-	globals.CloudConfig.BlockedUserIds = cloudConfigFromAgent.BlockedUserIds
-	globals.CloudConfig.AllowedIPAddresses = cloudConfigFromAgent.AllowedIPAddresses
+
+	for _, userId := range cloudConfigFromAgent.BlockedUserIds {
+		globals.CloudConfig.BlockedUserIds[userId] = true
+	}
+
+	for _, allowedIpAddress := range cloudConfigFromAgent.AllowedIPAddresses {
+		globals.CloudConfig.AllowedIPAddresses[allowedIpAddress] = true
+	}
 }
 
 func startCloudConfigRoutine() {
