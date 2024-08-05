@@ -19,12 +19,14 @@ func OnRequestMetadata(data map[string]interface{}) string {
 
 	route = utils.BuildRouteFromURL(route)
 
-	if grpc.IsRequestConfiguredForRateLimiting(method, route) {
-		if !grpc.OnRequest(method, route, 5*time.Millisecond) {
-			return `{"action": "throw", "message": "Request was rate limited by Aikido Security", "code": -1}`
+	if grpc.IsRequestMonitoredForRateLimiting(method, route) {
+		// If request is monitored for rate limiting, do a sync call via gRPC to see if the request should be aborded or not
+		if !grpc.OnRequest(method, route, 10*time.Millisecond) {
+			return "{\"action\": \"throw\", \"message\": \"Request was rate limited by Aikido Security\", \"code\": -1}"
 		}
 	} else {
-		go grpc.OnRequest(method, route, 2*time.Second)
+		// Otherwise, do an async call via gRPC
+		go grpc.OnRequest(method, route, 1*time.Second)
 	}
 
 	return "{\"status\": \"ok\"}"

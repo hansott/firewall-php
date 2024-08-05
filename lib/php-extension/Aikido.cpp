@@ -11,7 +11,7 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "INFO");
+	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
 	std::string token = config_override_with_env("AIKIDO_TOKEN", "");
 	std::string endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
 	bool blocking = config_override_with_env_bool("AIKIDO_BLOCKING", false);
