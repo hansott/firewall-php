@@ -18,8 +18,8 @@ type RateLimitingConfig struct {
 }
 
 type RateLimitingStatus struct {
-	NumberOfRequestPerWindow Queue
-	TotalNumberOfRequests    int
+	NumberOfRequestsPerWindow Queue
+	TotalNumberOfRequests     int
 }
 
 type RateLimitingKey struct {

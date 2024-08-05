@@ -72,7 +72,7 @@ func OnRequest(method string, route string, timeout time.Duration) bool {
 		return true
 	}
 
-	log.Debugf("Request metadata sent via socket (%v %v) and got reply %v", method, route, requestStatus)
+	log.Debugf("Request metadata sent via socket (%v %v) and got reply (%v)", method, route, requestStatus)
 	return requestStatus.ForwardToServer
 }
 

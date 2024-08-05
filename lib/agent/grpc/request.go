@@ -36,7 +36,7 @@ func updateRateLimitingStatus(req *protos.RequestMetadata) {
 	}
 
 	rateLimitingData.Status.TotalNumberOfRequests += 1
-	rateLimitingData.Status.NumberOfRequestPerWindow.IncrementLast()
+	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
 }
 
 func getRequestStatus(req *protos.RequestMetadata) *protos.RequestStatus {

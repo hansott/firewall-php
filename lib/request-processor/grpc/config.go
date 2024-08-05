@@ -27,10 +27,12 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		globals.CloudConfig.Endpoints[EndpointKey{Method: ep.Method, Route: ep.Route}] = endpointData
 	}
 
+	globals.CloudConfig.BlockedUserIds = map[string]bool{}
 	for _, userId := range cloudConfigFromAgent.BlockedUserIds {
 		globals.CloudConfig.BlockedUserIds[userId] = true
 	}
 
+	globals.CloudConfig.AllowedIPAddresses = map[string]bool{}
 	for _, allowedIpAddress := range cloudConfigFromAgent.AllowedIPAddresses {
 		globals.CloudConfig.AllowedIPAddresses[allowedIpAddress] = true
 	}
@@ -40,9 +42,12 @@ func IsRequestConfiguredForRateLimiting(method string, route string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	_, exists := globals.CloudConfig.Endpoints[EndpointKey{Method: method, Route: route}]
+	endpointData, exists := globals.CloudConfig.Endpoints[EndpointKey{Method: method, Route: route}]
+	if !exists {
+		return false
+	}
 
-	return exists
+	return endpointData.RateLimiting.Enabled
 }
 
 func startCloudConfigRoutine() {
