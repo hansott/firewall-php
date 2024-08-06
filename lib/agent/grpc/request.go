@@ -47,7 +47,7 @@ func getRequestStatus(req *protos.RequestMetadata) *protos.RequestStatus {
 	forwardToServer := true
 	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
 	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
-		log.Debugf("Rate limited request for (%v) - status (%v)", req, rateLimitingData)
+		log.Infof("Rate limited request for (%v) - status (%v)", req, rateLimitingData)
 		forwardToServer = false
 	}
 
