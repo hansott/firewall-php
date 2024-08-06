@@ -171,7 +171,23 @@ ACTION aikido_execute_output(json event) {
 		zend_try {
 			ret = zend_eval_stringl(php_code.get(), size - 1, NULL, "aikido php code (exit action)");
 		} zend_catch {
-			throw std::runtime_error( "Error during php code eval." );
+            if (EG(exception)) {
+                zend_object *ex = EG(exception);
+                zend_class_entry *default_ce = zend_exception_get_default();
+                
+                zval rv;
+                zval *message = zend_read_property(default_ce, ex, "message", sizeof("message")-1, 1, &rv);
+                
+                std::string exception_message = "Exception during php code eval: ";
+                if (Z_TYPE_P(message) == IS_STRING) {
+                    exception_message += Z_STRVAL_P(message);
+                } else {
+                    exception_message += "no message";
+                }
+
+                throw std::runtime_error( exception_message.c_str() );
+                zend_clear_exception();
+            }
 		} zend_end_try();
 
 		if (ret == FAILURE) {
