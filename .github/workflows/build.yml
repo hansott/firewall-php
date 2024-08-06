@@ -111,6 +111,7 @@ jobs:
         which php
         php -v
         php -i
+        php -r "exit;"
 
     - name: Build extension
       run: |
