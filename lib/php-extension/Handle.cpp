@@ -20,21 +20,6 @@ unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HOOKED_ME
 	AIKIDO_REGISTER_METHOD_HANDLER(pdo, query)
 };
 
-enum ACTION {
-	CONTINUE,
-	BLOCK
-};
-
-ACTION aikido_execute_output(json event) {
-	if ( event["action"] == "throw" ) {
-		std::string message = event["message"].get<std::string>();
-		int code = event["code"].get<int>();
-		zend_throw_exception(zend_exception_get_default(), message.c_str(), code);
-		return BLOCK;
-	}
-	return CONTINUE;
-}
-
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 	AIKIDO_LOG_DEBUG("Aikido generic handler started!\n");
 
@@ -97,7 +82,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			}
 		}
 		catch (const std::exception& e) {
-			AIKIDO_LOG_WARN("Exception encountered in generic handler: %s\n", e.what());
+			AIKIDO_LOG_ERROR("Exception encountered in generic handler: %s\n", e.what());
 		}
 	}
 	

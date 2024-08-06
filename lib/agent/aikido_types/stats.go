@@ -11,3 +11,23 @@ type StatsDataType struct {
 	Attacks         int
 	AttacksBlocked  int
 }
+
+type RateLimitingConfig struct {
+	MaxRequests         int
+	WindowSizeInMinutes int
+}
+
+type RateLimitingStatus struct {
+	NumberOfRequestsPerWindow Queue
+	TotalNumberOfRequests     int
+}
+
+type RateLimitingKey struct {
+	Method string
+	Route  string
+}
+
+type RateLimitingValue struct {
+	Config RateLimitingConfig
+	Status RateLimitingStatus
+}

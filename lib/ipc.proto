@@ -7,8 +7,9 @@ package ipc;
 option go_package = "ipc/protos;protos";
 
 service Aikido {
-  rpc OnReceiveDomain (Domain) returns (google.protobuf.Empty);
-  rpc OnReceiveRequestMetadata (RequestMetadata) returns (google.protobuf.Empty);
+  rpc OnDomain (Domain) returns (google.protobuf.Empty);
+  rpc OnRequest (RequestMetadata) returns (RequestStatus);
+  rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
 }
 
 message Domain {
@@ -18,4 +19,25 @@ message Domain {
 message RequestMetadata {
   string method = 1;
   string route = 2;
+}
+
+message RateLimiting {
+  bool enabled = 1;
+}
+
+message Endpoint {
+  string method = 1;
+  string route = 2;
+  bool forceProtectionOff = 3;
+  RateLimiting rateLimiting = 4;
+}
+
+message CloudConfig {
+  repeated Endpoint endpoints = 1;
+  repeated string blockedUserIds = 2;
+  repeated string allowedIPAddresses = 3;
+}
+
+message RequestStatus {
+  bool forwardToServer = 1;
 }

@@ -12,10 +12,7 @@ import (
 )
 
 func SendEvent(route string, method string, payload interface{}) ([]byte, error) {
-	globals.ConfigMutex.Lock()
-	defer globals.ConfigMutex.Unlock()
-
-	apiEndpoint, err := url.JoinPath(globals.LocalConfig.Endpoint, route)
+	apiEndpoint, err := url.JoinPath(globals.EnvironmentConfig.Endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
@@ -32,7 +29,7 @@ func SendEvent(route string, method string, payload interface{}) ([]byte, error)
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
-	req.Header.Set("Authorization", globals.LocalConfig.Token)
+	req.Header.Set("Authorization", globals.EnvironmentConfig.Token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

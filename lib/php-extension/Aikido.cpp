@@ -11,7 +11,7 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "INFO");
+	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
 	std::string token = config_override_with_env("AIKIDO_TOKEN", "");
 	std::string endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
 	bool blocking = config_override_with_env_bool("AIKIDO_BLOCKING", false);
@@ -61,10 +61,10 @@ PHP_MINIT_FUNCTION(aikido)
 	}
 
 	std::string sapi_name(sapi_module.name);
-	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
+	AIKIDO_LOG_INFO("SAPI: %s\n", sapi_name.c_str());
 
-	/* If SAPI name starts with "cli" run in "simple" mode */ 
-	if (sapi_name.rfind("cli", 0) == 0) {
+	/* If SAPI name is "cli" run in "simple" mode */ 
+	if (sapi_name == "cli") {
 		AIKIDO_LOG_INFO("MINIT finished earlier because we run in CLI mode!\n");
 		return SUCCESS;
 	}
@@ -113,14 +113,12 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 	std::string sapi_name(sapi_module.name);
 	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
 
-	/* If SAPI name starts with "cli" run in "simple" mode */
-	if (sapi_name.rfind("cli", 0) == 0) {
+	/* If SAPI name is "cli" run in "simple" mode */
+	if (sapi_name == "cli" == 0) {
 		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
-		
 		aikido_log_uninit();
 		return SUCCESS;
 	}
-
 
 	if (aikido_agent_lib_handle) {
 		AgentUninitFn agent_uninit_fn = (AgentUninitFn)dlsym(aikido_agent_lib_handle, "AgentUninit");

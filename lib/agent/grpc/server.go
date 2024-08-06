@@ -17,19 +17,24 @@ type server struct {
 	protos.AikidoServer
 }
 
-func (s *server) OnReceiveDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
+func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s", req.GetDomain())
 	storeDomain(req)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) OnReceiveRequestMetadata(ctx context.Context, req *protos.RequestMetadata) (*emptypb.Empty, error) {
+func (s *server) OnRequest(ctx context.Context, req *protos.RequestMetadata) (*protos.RequestStatus, error) {
 	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
 
-	storeRoute(req)
-	incrementRequests()
+	go storeStats()
+	go storeRoute(req)
+	go updateRateLimitingStatus(req)
 
-	return &emptypb.Empty{}, nil
+	return getRequestStatus(req), nil
+}
+
+func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*protos.CloudConfig, error) {
+	return getCloudConfig(), nil
 }
 
 func StartServer(lis net.Listener) {
