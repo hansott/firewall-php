@@ -22,6 +22,7 @@
 #include "ext/standard/info.h"
 #include "GoCGO.h"
 #include "php_aikido.h"
+#include "PhpTemplates.h"
 
 #include "3rdparty/json.hpp"
 

@@ -9,7 +9,6 @@ import (
 	"main/grpc"
 	"main/log"
 	"main/utils"
-	"strings"
 )
 
 var eventHandlers = map[string]HandlerFunction{
@@ -32,7 +31,7 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	if !strings.HasPrefix(globals.InitData.SAPI, "cli") {
+	if globals.InitData.SAPI != "cli" {
 		log.Init()
 	} else {
 		if err := log.SetLogLevel(globals.InitData.LogLevel); err != nil {
@@ -43,7 +42,7 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 	log.Debugf("Aikido Request Processor v%s started in \"%s\" mode!", globals.Version, globals.InitData.SAPI)
 	log.Debugf("Init data: %s", initJson)
 
-	if !strings.HasPrefix(globals.InitData.SAPI, "cli") {
+	if globals.InitData.SAPI != "cli" {
 		grpc.Init()
 	}
 	return true

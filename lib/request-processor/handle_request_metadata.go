@@ -22,7 +22,7 @@ func OnRequestMetadata(data map[string]interface{}) string {
 	if grpc.IsRequestMonitoredForRateLimiting(method, route) {
 		// If request is monitored for rate limiting, do a sync call via gRPC to see if the request should be aborded or not
 		if !grpc.OnRequest(method, route, 10*time.Millisecond) {
-			return "{\"action\": \"throw\", \"message\": \"Request was rate limited by Aikido Security\", \"code\": -1}"
+			return "{\"action\": \"exit\", \"message\": \"This request was rate limited by Aikido Security!\", \"response_code\": 429}"
 		}
 	} else {
 		// Otherwise, do an async call via gRPC

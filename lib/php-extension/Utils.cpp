@@ -133,7 +133,51 @@ bool send_request_metadata_event(){
         }
     };
 
-    json response = GoRequestProcessorOnEvent(inputEvent);
-    
-    return response["status"] == "ok";
+    try {
+        json response = GoRequestProcessorOnEvent(inputEvent);
+        aikido_execute_output(response);
+    }
+    catch (const std::exception& e) {
+        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+    }
+    return true;
+}
+
+
+ACTION aikido_execute_output(json event) {
+	if (event["action"] == "throw") {
+		std::string message = event["message"].get<std::string>();
+		int code = event["code"].get<int>();
+		zend_throw_exception(zend_exception_get_default(), message.c_str(), code);
+		return BLOCK;
+	}
+	else if (event["action"] == "exit") {
+		int response_code = event["response_code"].get<int>();
+		std::string message = event["message"].get<std::string>();
+
+		int size_s = std::snprintf(nullptr, 0, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str());
+		if(size_s <= 0) {
+			throw std::runtime_error("Error during formatting.");
+		}
+		size_s += 1;
+		auto size = static_cast<size_t>(size_s);
+		std::unique_ptr<char[]> php_code(new char[ size ]);
+
+		std::snprintf(php_code.get(), size, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str());
+
+        AIKIDO_LOG_DEBUG("Executing PHP code: \n%s\n", php_code.get());
+
+		int ret = 0;
+		zend_try {
+			ret = zend_eval_stringl(php_code.get(), size - 1, NULL, "aikido php code (exit action)");
+		} zend_catch {
+			throw std::runtime_error( "Error during php code eval." );
+		} zend_end_try();
+
+		if (ret == FAILURE) {
+			throw std::runtime_error( "Php code eval resulted in failure." );
+		}
+		return CONTINUE;
+	}
+	return CONTINUE;
 }
