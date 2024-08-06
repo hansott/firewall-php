@@ -108,10 +108,10 @@ jobs:
 
     - name: Check PHP setup
       run: |
+        php tests/test.php
         which php
         php -v
         php -i
-        php -r "exit;"
 
     - name: Build extension
       run: |
