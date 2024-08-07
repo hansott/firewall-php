@@ -156,7 +156,7 @@ ACTION aikido_execute_output(json event) {
 		std::string message = event["message"].get<std::string>();
 
         #if PHP_VERSION_ID >= 80000
-            const char* exit = "exit();\n"
+            const char* exit = "exit();\n";
         #else
             const char* exit = "";
         #endif
