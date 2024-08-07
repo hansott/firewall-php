@@ -14,6 +14,7 @@ void* aikido_agent_lib_handle = nullptr;
 
 	void aikido_zend_execute_ex(zend_execute_data *execute_data) {
 		if (exit_current_request) {
+			AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
 			zend_bailout();
 		}
 		original_zend_execute_ex(execute_data);
@@ -206,6 +207,7 @@ PHP_RINIT_FUNCTION(aikido) {
 		zend_string_release(server_str);
 		if (send_request_metadata_event() == EXIT) {
 			#if PHP_VERSION_ID < 80000
+				AIKIDO_LOG_INFO("Marking current request for exit!\n");
 				exit_current_request = true;
 			#endif
 		}

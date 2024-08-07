@@ -155,7 +155,13 @@ ACTION aikido_execute_output(json event) {
 		int response_code = event["response_code"].get<int>();
 		std::string message = event["message"].get<std::string>();
 
-		int size_s = std::snprintf(nullptr, 0, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str());
+        #if PHP_VERSION_ID >= 80000
+            const char* exit = "exit();\n"
+        #else
+            const char* exit = "";
+        #endif
+
+		int size_s = std::snprintf(nullptr, 0, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str(), exit);
 		if(size_s <= 0) {
 			throw std::runtime_error("Error during formatting.");
 		}
@@ -163,9 +169,9 @@ ACTION aikido_execute_output(json event) {
 		auto size = static_cast<size_t>(size_s);
 		std::unique_ptr<char[]> php_code(new char[ size ]);
 
-		std::snprintf(php_code.get(), size, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str());
+		std::snprintf(php_code.get(), size, PHP_EXIT_ACTION_TEMPLATE, response_code, message.c_str(), exit);
 
-        AIKIDO_LOG_DEBUG("Executing PHP code: \n%s\n", php_code.get());
+        AIKIDO_LOG_INFO("Executing PHP code: \n%s\n", php_code.get());
 
 		int ret = 0;
 		zend_try {
