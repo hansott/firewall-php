@@ -61,11 +61,12 @@ std::string config_override_with_env(const std::string& env_key, const std::stri
 
 bool config_override_with_env_bool(const std::string& env_key, bool default_value);
 
-bool send_request_metadata_event();
-
 enum ACTION {
 	CONTINUE,
-	BLOCK
+	BLOCK,
+	EXIT
 };
+
+ACTION send_request_metadata_event();
 
 ACTION aikido_execute_output(json event);

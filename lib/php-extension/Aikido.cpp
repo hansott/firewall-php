@@ -7,6 +7,19 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
 
+#if PHP_VERSION_ID < 80000
+	bool exit_current_request = false;
+
+	static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
+
+	void aikido_zend_execute_ex(zend_execute_data *execute_data) {
+		if (exit_current_request) {
+			zend_bailout();
+		}
+		original_zend_execute_ex(execute_data);
+	}
+#endif
+
 PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
@@ -59,6 +72,11 @@ PHP_MINIT_FUNCTION(aikido)
 		method->internal_function.handler = aikido_generic_handler;
 		AIKIDO_LOG_INFO("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 	}
+
+	#if PHP_VERSION_ID < 80000
+		original_zend_execute_ex = zend_execute_ex;
+		zend_execute_ex = aikido_zend_execute_ex;
+	#endif
 
 	std::string sapi_name(sapi_module.name);
 	AIKIDO_LOG_INFO("SAPI: %s\n", sapi_name.c_str());
@@ -114,7 +132,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
 
 	/* If SAPI name is "cli" run in "simple" mode */
-	if (sapi_name == "cli" == 0) {
+	if (sapi_name == "cli") {
 		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
 		aikido_log_uninit();
 		return SUCCESS;
@@ -186,7 +204,11 @@ PHP_RINIT_FUNCTION(aikido) {
 		/* Guarantee that "_SERVER" global variable is initialized for the current request */
 		zend_is_auto_global(server_str); 
 		zend_string_release(server_str);
-		send_request_metadata_event();
+		if (send_request_metadata_event() == EXIT) {
+			#if PHP_VERSION_ID < 80000
+				exit_current_request = true;
+			#endif
+		}
 	}
 	
 	AIKIDO_LOG_DEBUG("RINIT finished!\n");
@@ -195,6 +217,10 @@ PHP_RINIT_FUNCTION(aikido) {
 
 PHP_RSHUTDOWN_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RSHUTDOWN started!\n");
+
+	#if PHP_VERSION_ID < 80000
+		exit_current_request = false;
+	#endif
 
 	/*
 	if (aikido_request_processor_lib_handle)) {

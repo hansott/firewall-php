@@ -115,11 +115,11 @@ json get_route_and_method(zval *server) {
     return result;
 }
 
-bool send_request_metadata_event(){
+ACTION send_request_metadata_event(){
     zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
     if (!server) {
         AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
-        return false;
+        return CONTINUE;
     }
     
     json routeAndMethod = get_route_and_method(server);
@@ -135,12 +135,12 @@ bool send_request_metadata_event(){
 
     try {
         json response = GoRequestProcessorOnEvent(inputEvent);
-        aikido_execute_output(response);
+        return aikido_execute_output(response);
     }
     catch (const std::exception& e) {
         AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
     }
-    return true;
+    return CONTINUE;
 }
 
 
@@ -171,29 +171,13 @@ ACTION aikido_execute_output(json event) {
 		zend_try {
 			ret = zend_eval_stringl(php_code.get(), size - 1, NULL, "aikido php code (exit action)");
 		} zend_catch {
-            if (EG(exception)) {
-                zend_object *ex = EG(exception);
-                zend_class_entry *default_ce = zend_exception_get_default();
-                
-                zval rv;
-                zval *message = zend_read_property(default_ce, ex, "message", sizeof("message")-1, 1, &rv);
-                
-                std::string exception_message = "Exception during php code eval: ";
-                if (Z_TYPE_P(message) == IS_STRING) {
-                    exception_message += Z_STRVAL_P(message);
-                } else {
-                    exception_message += "no message";
-                }
-
-                throw std::runtime_error( exception_message.c_str() );
-                zend_clear_exception();
-            }
+            throw std::runtime_error( "Exception during php code eval" );
 		} zend_end_try();
 
 		if (ret == FAILURE) {
 			throw std::runtime_error( "Php code eval resulted in failure." );
 		}
-		return CONTINUE;
+		return EXIT;
 	}
 	return CONTINUE;
 }
