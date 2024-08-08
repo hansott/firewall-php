@@ -23,14 +23,21 @@ func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Emp
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) OnRequest(ctx context.Context, req *protos.RequestMetadata) (*protos.RequestStatus, error) {
+func (s *server) OnRequestInit(ctx context.Context, req *protos.RequestMetadataInit) (*protos.RequestStatus, error) {
 	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
 
 	go storeStats()
+
+	return getRequestStatus(req), nil
+}
+
+func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
+	log.Debugf("Received request metadata: %s %s %d", req.GetMethod(), req.GetRoute(), req.GetStatusCode())
+
 	go storeRoute(req)
 	go updateRateLimitingStatus(req)
 
-	return getRequestStatus(req), nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*protos.CloudConfig, error) {
