@@ -115,7 +115,12 @@ json get_route_and_method(zval *server) {
     return result;
 }
 
-ACTION send_request_metadata_event(){
+int get_status_code() {
+    int status_code = SG(sapi_headers).http_response_code;
+    return status_code;
+}
+
+ACTION send_request_init_metadata_event(){
     zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
     if (!server) {
         AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
@@ -125,7 +130,7 @@ ACTION send_request_metadata_event(){
     json routeAndMethod = get_route_and_method(server);
 
     json inputEvent = {
-        { "event", "request_metadata" },
+        { "event", "request_init" },
         { "data", {
             { "route", routeAndMethod["route"] },
             { "method", routeAndMethod["method"] }
@@ -142,6 +147,36 @@ ACTION send_request_metadata_event(){
     }
     return CONTINUE;
 }
+
+ACTION send_request_shutdown_metadata_event(){
+    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+    if (!server) {
+        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
+        return CONTINUE;
+    }
+    
+    json routeAndMethod = get_route_and_method(server);
+
+    json inputEvent = {
+        { "event", "request_shutdown" },
+        { "data", {
+            { "route", routeAndMethod["route"] },
+            { "method", routeAndMethod["method"] },
+            { "status_code", get_status_code() }
+        }
+        }
+    };
+
+    try {
+        json response = GoRequestProcessorOnEvent(inputEvent);
+        return aikido_execute_output(response);
+    }
+    catch (const std::exception& e) {
+        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+    }
+    return CONTINUE;
+}
+   
 
 
 ACTION aikido_execute_output(json event) {

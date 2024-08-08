@@ -8,7 +8,8 @@ option go_package = "ipc/protos;protos";
 
 service Aikido {
   rpc OnDomain (Domain) returns (google.protobuf.Empty);
-  rpc OnRequest (RequestMetadata) returns (RequestStatus);
+  rpc OnRequestInit (RequestMetadataInit) returns (RequestStatus);
+  rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
 }
 
@@ -16,10 +17,17 @@ message Domain {
   string domain = 1;
 }
 
-message RequestMetadata {
+message RequestMetadataInit {
   string method = 1;
   string route = 2;
 }
+
+message RequestMetadataShutdown {
+  string method = 1;
+  string route = 2;
+  int32 statusCode = 3;
+}
+
 
 message RateLimiting {
   bool enabled = 1;

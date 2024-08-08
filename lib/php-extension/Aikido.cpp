@@ -205,7 +205,7 @@ PHP_RINIT_FUNCTION(aikido) {
 		/* Guarantee that "_SERVER" global variable is initialized for the current request */
 		zend_is_auto_global(server_str); 
 		zend_string_release(server_str);
-		if (send_request_metadata_event() == EXIT) {
+		if (send_request_init_metadata_event() == EXIT) {
 			#if PHP_VERSION_ID < 80000
 				AIKIDO_LOG_INFO("Marking current request for exit!\n");
 				exit_current_request = true;
@@ -236,6 +236,8 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 		}
 	}
 	*/
+
+	send_request_shutdown_metadata_event();
 
 	AIKIDO_LOG_DEBUG("RSHUTDOWN finished!\n");
 	return SUCCESS;

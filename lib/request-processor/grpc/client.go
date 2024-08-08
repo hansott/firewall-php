@@ -58,7 +58,7 @@ func OnDomain(domain string) {
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
-func OnRequest(method string, route string, timeout time.Duration) bool {
+func OnRequestInit(method string, route string, timeout time.Duration) bool {
 	if client == nil {
 		return true
 	}
@@ -66,7 +66,7 @@ func OnRequest(method string, route string, timeout time.Duration) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	requestStatus, err := client.OnRequest(ctx, &protos.RequestMetadata{Method: method, Route: route})
+	requestStatus, err := client.OnRequestInit(ctx, &protos.RequestMetadataInit{Method: method, Route: route})
 	if err != nil {
 		log.Warnf("Could not send request metadata %v %v: %v", method, route, err)
 		return true
@@ -74,6 +74,23 @@ func OnRequest(method string, route string, timeout time.Duration) bool {
 
 	log.Debugf("Request metadata sent via socket (%v %v) and got reply (%v)", method, route, requestStatus)
 	return requestStatus.ForwardToServer
+}
+
+/* Send request metadata (route, method & status code) to Aikido Agent via gRPC */
+func OnRequestShutdown(method string, route string, statusCode int, timeout time.Duration) {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode)})
+	if err != nil {
+		log.Warnf("Could not send request metadata %v %v %v: %v", method, route, statusCode, err)
+	}
+
+	log.Debugf("Request metadata sent via socket (%v %v %v)", method, route, statusCode)
 }
 
 /* Get latest cloud config from Aikido Agent via gRPC */

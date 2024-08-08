@@ -14,7 +14,7 @@ func storeStats() {
 	globals.StatsData.Requests += 1
 }
 
-func storeRoute(req *protos.RequestMetadata) {
+func storeRoute(req *protos.RequestMetadataShutdown) {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
 
@@ -27,7 +27,7 @@ func storeRoute(req *protos.RequestMetadata) {
 	globals.Routes[req.GetMethod()][req.GetRoute()]++
 }
 
-func updateRateLimitingStatus(req *protos.RequestMetadata) {
+func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
@@ -40,7 +40,7 @@ func updateRateLimitingStatus(req *protos.RequestMetadata) {
 	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
 }
 
-func getRequestStatus(req *protos.RequestMetadata) *protos.RequestStatus {
+func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
