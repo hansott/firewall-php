@@ -11,20 +11,25 @@ import (
 	"net/url"
 )
 
-func SendEvent(route string, method string, payload interface{}) ([]byte, error) {
-	apiEndpoint, err := url.JoinPath(globals.EnvironmentConfig.Endpoint, route)
+func SendCloudRequest(endpoint string, route string, method string, payload interface{}) ([]byte, error) {
+	apiEndpoint, err := url.JoinPath(endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
 
-	jsonData, err := json.Marshal(payload)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal payload: %v", err)
+	var buffer *bytes.Buffer = nil
+	if payload != nil {
+		jsonData, err := json.Marshal(payload)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal payload: %v", err)
+		}
+
+		log.Infof("Sending %s request to %s with content %s", method, apiEndpoint, jsonData)
+
+		buffer = bytes.NewBuffer(jsonData)
 	}
 
-	log.Infof("Sending %s request to %s with content %s", method, apiEndpoint, jsonData)
-
-	req, err := http.NewRequest(method, apiEndpoint, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(method, apiEndpoint, buffer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
@@ -49,6 +54,5 @@ func SendEvent(route string, method string, payload interface{}) ([]byte, error)
 	}
 
 	log.Info("Got response: ", string(body))
-
 	return body, nil
 }

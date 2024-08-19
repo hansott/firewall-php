@@ -21,7 +21,7 @@ func GetAgentInfo() AgentInfo {
 		},
 		Packages: make(map[string]string, 0),
 		NodeEnv:  "",
-		Library: "firewall-php",
+		Library:  "firewall-php",
 	}
 }
 
@@ -91,7 +91,7 @@ func ApplyCloudConfig() {
 	UpdateRateLimitingConfig()
 }
 
-func UpdateCloudConfig(response []byte) bool {
+func StoreCloudConfig(response []byte) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 

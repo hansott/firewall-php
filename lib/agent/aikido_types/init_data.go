@@ -9,10 +9,11 @@ type MachineData struct {
 }
 
 type EnvironmentConfigData struct {
-	Token    string `json:"token,omitempty"`
-	LogLevel string `json:"log_level,omitempty"`
-	Endpoint string `json:"endpoint,omitempty"`
-	Blocking bool   `json:"blocking,omitempty"`
+	Token          string `json:"token,omitempty"`
+	LogLevel       string `json:"log_level,omitempty"`
+	Endpoint       string `json:"endpoint,omitempty"`
+	ConfigEndpoint string `json:"config_endpoint,omitempty"`
+	Blocking       bool   `json:"blocking,omitempty"`
 }
 
 type RateLimiting struct {
@@ -37,4 +38,9 @@ type CloudConfigData struct {
 	Endpoints             []Endpoint `json:"endpoints"`
 	BlockedUserIds        []string   `json:"blockedUserIds"`
 	AllowedIPAddresses    []string   `json:"allowedIPAddresses"`
+}
+
+type CloudConfigUpdatedAt struct {
+	ServiceId       int   `json:"serviceId"`
+	ConfigUpdatedAt int64 `json:"configUpdatedAt"`
 }
