@@ -10,7 +10,7 @@ import (
 func CheckConfigUpdatedAt() {
 	response, err := SendCloudRequest(globals.EnvironmentConfig.ConfigEndpoint, globals.ConfigUpdatedAtAPI, globals.ConfigUpdatedAtMethod, nil)
 	if err != nil {
-		log.Debug("Error in sending polling config request: ", err)
+		log.Warn("Error in sending polling config request: ", err)
 		return
 	}
 
@@ -26,7 +26,7 @@ func CheckConfigUpdatedAt() {
 
 	response, err = SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.ConfigAPI, globals.ConfigAPIMethod, nil)
 	if err != nil {
-		log.Debug("Error in sending config request: ", err)
+		log.Warn("Error in sending config request: ", err)
 		return
 	}
 	StoreCloudConfig(response)

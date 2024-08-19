@@ -80,7 +80,7 @@ func SendHeartbeatEvent() {
 
 	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)
 	if err != nil {
-		log.Debug("Error in sending heartbeat event: ", err)
+		log.Warn("Error in sending heartbeat event: ", err)
 		return
 	}
 	StoreCloudConfig(response)

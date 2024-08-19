@@ -17,23 +17,25 @@ func SendCloudRequest(endpoint string, route string, method string, payload inte
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
 	}
 
-	var buffer *bytes.Buffer = nil
+	var req *http.Request
 	if payload != nil {
-		jsonData, err := json.Marshal(payload)
+		var jsonData []byte
+		jsonData, err = json.Marshal(payload)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal payload: %v", err)
 		}
 
 		log.Infof("Sending %s request to %s with content %s", method, apiEndpoint, jsonData)
 
-		buffer = bytes.NewBuffer(jsonData)
+		req, err = http.NewRequest(method, apiEndpoint, bytes.NewBuffer(jsonData))
+	} else {
+		log.Infof("Sending %s request to %s", method, apiEndpoint)
+		req, err = http.NewRequest(method, apiEndpoint, nil)
 	}
 
-	req, err := http.NewRequest(method, apiEndpoint, buffer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
-
 	req.Header.Set("Authorization", globals.EnvironmentConfig.Token)
 	req.Header.Set("Content-Type", "application/json")
 
