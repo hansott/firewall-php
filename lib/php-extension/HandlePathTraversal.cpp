@@ -7,12 +7,8 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access) {
    
 
     ZEND_PARSE_PARAMETERS_START(0, -1)
-        Z_PARAM_OPTIONAL 
         Z_PARAM_STR(filename)
     ZEND_PARSE_PARAMETERS_END();
-    if (filename == NULL) {
-        return;
-    }
 
     std::string filenameString(ZSTR_VAL(filename));
 
@@ -38,13 +34,9 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access_2) {
    
 
     ZEND_PARSE_PARAMETERS_START(0, -1)
-        Z_PARAM_OPTIONAL 
         Z_PARAM_STR(filename)
         Z_PARAM_STR(filename2)
     ZEND_PARSE_PARAMETERS_END();
-    if (filename == NULL || filename2 == NULL) {
-        return;
-    }
 
     std::string filenameString(ZSTR_VAL(filename));
     std::string filenameString2(ZSTR_VAL(filename2));
