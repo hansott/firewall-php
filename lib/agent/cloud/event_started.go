@@ -15,7 +15,8 @@ func SendStartEvent() {
 
 	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, startedEvent)
 	if err != nil {
-		log.Debug("Error in sending start event: ", err)
+		log.Warn("Error in sending start event: ", err)
+		return
 	}
 	StoreCloudConfig(response)
 }
