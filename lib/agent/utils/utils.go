@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"time"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -28,4 +29,22 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
+}
+
+func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFunction func()) {
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				pollingFunction()
+			case <-stopChan:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+func StopPollingRouting(stopChan chan struct{}) {
+	close(stopChan)
 }

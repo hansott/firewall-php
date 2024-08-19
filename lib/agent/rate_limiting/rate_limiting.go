@@ -3,12 +3,13 @@ package rate_limiting
 import (
 	"main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 )
 
 var (
-	stop               chan struct{}
-	RateLimitingTicker = time.NewTicker(globals.MinRateLimitingIntervalInMs * time.Millisecond)
+	RateLimitingChannel = make(chan struct{})
+	RateLimitingTicker  = time.NewTicker(globals.MinRateLimitingIntervalInMs * time.Millisecond)
 )
 
 func AdvanceRateLimitingQueues() {
@@ -38,32 +39,11 @@ func AdvanceRateLimitingQueues() {
 	}
 }
 
-func StartRateLimitingRoutine() {
-	AdvanceRateLimitingQueues()
-
-	stop = make(chan struct{})
-
-	go func() {
-		for {
-			select {
-			case <-RateLimitingTicker.C:
-				AdvanceRateLimitingQueues()
-			case <-stop:
-				RateLimitingTicker.Stop()
-				return
-			}
-		}
-	}()
-}
-
-func StopRateLimitingRoutine() {
-	close(stop)
-}
-
 func Init() {
-	StartRateLimitingRoutine()
+	AdvanceRateLimitingQueues()
+	utils.StartPollingRoutine(RateLimitingChannel, RateLimitingTicker, AdvanceRateLimitingQueues)
 }
 
 func Uninit() {
-	StopRateLimitingRoutine()
+	utils.StopPollingRouting(RateLimitingChannel)
 }

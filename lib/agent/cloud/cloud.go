@@ -2,41 +2,25 @@ package cloud
 
 import (
 	"main/globals"
+	"main/utils"
 	"time"
 )
 
 var (
-	stop            chan struct{}
-	HeartBeatTicker = time.NewTicker(10 * time.Minute)
+	HeartbeatRoutineChannel     = make(chan struct{})
+	HeartBeatTicker             = time.NewTicker(10 * time.Minute)
+	ConfigPollingRoutineChannel = make(chan struct{})
+	ConfigPollingTicker         = time.NewTicker(1 * time.Minute)
 )
-
-func StartHeartbeatRoutine() {
-	stop = make(chan struct{})
-
-	go func() {
-		for {
-			select {
-			case <-HeartBeatTicker.C:
-				SendHeartbeatEvent()
-			case <-stop:
-				HeartBeatTicker.Stop()
-				return
-			}
-		}
-	}()
-}
-
-func StopHeartbeatRoutine() {
-	close(stop)
-}
 
 func Init() {
 	SendStartEvent()
-	StartHeartbeatRoutine()
+	utils.StartPollingRoutine(HeartbeatRoutineChannel, HeartBeatTicker, SendHeartbeatEvent)
+	utils.StartPollingRoutine(ConfigPollingRoutineChannel, ConfigPollingTicker, CheckConfigUpdatedAt)
 
 	globals.StatsData.StartedAt = GetTime()
 }
 
 func Uninit() {
-	StopHeartbeatRoutine()
+	utils.StopPollingRouting(HeartbeatRoutineChannel)
 }

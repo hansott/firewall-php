@@ -78,9 +78,10 @@ func SendHeartbeatEvent() {
 		Users:     GetUsersAndClear(),
 	}
 
-	response, err := SendEvent(globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)
+	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)
 	if err != nil {
 		log.Debug("Error in sending heartbeat event: ", err)
+		return
 	}
-	UpdateCloudConfig(response)
+	StoreCloudConfig(response)
 }

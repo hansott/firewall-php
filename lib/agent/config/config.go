@@ -7,8 +7,6 @@ import (
 	"main/log"
 )
 
-var quit chan struct{}
-
 func setConfigFromJson(jsonString []byte) bool {
 	if err := json.Unmarshal(jsonString, &globals.EnvironmentConfig); err != nil {
 		panic(fmt.Sprintf("Failed to unmarshal JSON: %v", err))
@@ -35,5 +33,5 @@ func Init(initJson string) bool {
 }
 
 func Uninit() {
-	close(quit)
+
 }
