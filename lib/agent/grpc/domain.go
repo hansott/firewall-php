@@ -9,5 +9,9 @@ func storeDomain(req *protos.Domain) {
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
 
-	globals.Hostnames[req.GetDomain()] = true
+	if _, ok := globals.Hostnames[req.GetDomain()]; !ok {
+		globals.Hostnames[req.GetDomain()] = make(map[int]bool)
+	}
+
+	globals.Hostnames[req.GetDomain()][int(req.GetPort())] = true
 }

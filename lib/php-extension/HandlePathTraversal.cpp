@@ -15,7 +15,7 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access) {
     std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
     
     inputEvent = {
-        { "event", "function_executed" },
+        { "event", "before_function_executed" },
         { "data", {
             { "function_name", "path_accessed" },
             { "parameters", {
@@ -44,7 +44,7 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access_2) {
     std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
     
     inputEvent = {
-        { "event", "function_executed" },
+        { "event", "before_function_executed" },
         { "data", {
             { "function_name", "path_accessed" },
             { "parameters", {

@@ -35,6 +35,9 @@ curl_close($ch3);
 ?>
 
 --EXPECT--
-[AIKIDO][INFO] Got domain: example.com
-[AIKIDO][INFO] Got domain: httpbin.org
-[AIKIDO][INFO] Got domain: facebook.com
+[AIKIDO][INFO] [BEFORE] Got domain: example.com
+[AIKIDO][INFO] [AFTER] Got domain: example.com port: 443
+[AIKIDO][INFO] [BEFORE] Got domain: httpbin.org
+[AIKIDO][INFO] [AFTER] Got domain: httpbin.org port: 443
+[AIKIDO][INFO] [BEFORE] Got domain: facebook.com
+[AIKIDO][INFO] [AFTER] Got domain: facebook.com port: 443

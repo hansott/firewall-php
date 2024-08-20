@@ -43,8 +43,9 @@ using json = nlohmann::json;
 typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent);
 
 struct PHP_HANDLERS {
-	aikido_handler handler;
-	zif_handler original_handler;
+    aikido_handler handler;
+    aikido_handler post_handler;
+    zif_handler original_handler;
 };
 
 extern unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS;
