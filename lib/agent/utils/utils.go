@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
+func KeyMustExist[K comparable, V any](m map[K]V, key K) {
 	if _, exists := m[key]; !exists {
 		panic(fmt.Sprintf("Key %v does not exist in map!", key))
 	}
@@ -48,10 +48,6 @@ func isLocalhost(ip string) bool {
 	}
 
 	return parsedIP.IsLoopback()
-}
-
-func IsIpAllowed(allowedIps []string, ip string) bool {
-	return isLocalhost(ip) || ArrayContains(allowedIps, ip)
 }
 
 func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFunction func()) {

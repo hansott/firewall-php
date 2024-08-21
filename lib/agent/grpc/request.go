@@ -5,7 +5,6 @@ import (
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
-	"main/utils"
 )
 
 func storeStats() {
@@ -41,18 +40,12 @@ func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
 	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
 }
 
-func isIpBypassedForRateLimiting(ip string) bool {
-	globals.CloudConfigMutex.Lock()
-	defer globals.CloudConfigMutex.Unlock()
-
-	return utils.IsIpAllowed(globals.CloudConfig.AllowedIPAddresses, ip)
-}
-
 func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
 	forwardToServer := true
+
 	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
 	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
 		log.Infof("Rate limited request for (%v) - status (%v)", req, rateLimitingData)
@@ -78,6 +71,7 @@ func getCloudConfig() *protos.CloudConfig {
 			Method:             endpoint.Method,
 			Route:              endpoint.Route,
 			ForceProtectionOff: endpoint.ForceProtectionOff,
+			AllowedIPAddresses: endpoint.AllowedIPAddresses,
 			RateLimiting: &protos.RateLimiting{
 				Enabled: endpoint.RateLimiting.Enabled,
 			},

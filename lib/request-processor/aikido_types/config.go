@@ -14,6 +14,7 @@ type RateLimiting struct {
 type EndpointData struct {
 	ForceProtectionOff bool
 	RateLimiting       RateLimiting
+	AllowedIPAddresses map[string]bool
 }
 
 type EndpointKey struct {

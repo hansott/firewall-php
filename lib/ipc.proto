@@ -29,7 +29,6 @@ message RequestMetadataShutdown {
   int32 statusCode = 3;
 }
 
-
 message RateLimiting {
   bool enabled = 1;
 }
@@ -39,6 +38,7 @@ message Endpoint {
   string route = 2;
   bool forceProtectionOff = 3;
   RateLimiting rateLimiting = 4;
+  repeated string allowedIPAddresses = 5;
 }
 
 message CloudConfig {

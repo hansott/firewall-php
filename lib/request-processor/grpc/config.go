@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"errors"
 	. "main/aikido_types"
 	"main/globals"
 	"main/ipc/protos"
@@ -24,6 +25,9 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 				Enabled: ep.RateLimiting.Enabled,
 			},
 		}
+		for _, ip := range ep.AllowedIPAddresses {
+			endpointData.AllowedIPAddresses[ip] = true
+		}
 		globals.CloudConfig.Endpoints[EndpointKey{Method: ep.Method, Route: ep.Route}] = endpointData
 	}
 
@@ -38,16 +42,16 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	}
 }
 
-func IsRequestMonitoredForRateLimiting(method string, route string) bool {
+func GetEndpointConfig(method string, route string) (EndpointData, error) {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
 	endpointData, exists := globals.CloudConfig.Endpoints[EndpointKey{Method: method, Route: route}]
 	if !exists {
-		return false
+		return EndpointData{}, errors.New("endpoint does not exist")
 	}
 
-	return endpointData.RateLimiting.Enabled
+	return endpointData, nil
 }
 
 func startCloudConfigRoutine() {
