@@ -5,7 +5,6 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	zend_string *cmd = NULL;
 
 	ZEND_PARSE_PARAMETERS_START(0,-1)
-		Z_PARAM_OPTIONAL
 		Z_PARAM_STR(cmd)
 	ZEND_PARSE_PARAMETERS_END();
 
@@ -14,7 +13,7 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
 	
 	inputEvent = {
-		{ "event", "function_executed" },
+		{ "event", "before_function_executed" },
 		{ "data", {
 			{ "function_name", functionNameString },
 			{ "parameters", {

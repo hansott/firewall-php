@@ -13,11 +13,13 @@ func GetHostnamesAndClear() []Hostname {
 	hostnames := make([]Hostname, len(globals.Hostnames))
 	i := 0
 	for domain := range globals.Hostnames {
-		hostnames[i] = Hostname{URL: domain}
-		i += 1
+		for port := range globals.Hostnames[domain] {
+			hostnames[i] = Hostname{URL: domain, Port: int64(port)}
+		}
+		i++
 	}
 
-	globals.Hostnames = map[string]bool{}
+	globals.Hostnames = map[string]map[int]bool{}
 	return hostnames
 }
 
@@ -78,9 +80,10 @@ func SendHeartbeatEvent() {
 		Users:     GetUsersAndClear(),
 	}
 
-	response, err := SendEvent(globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)
+	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)
 	if err != nil {
-		log.Debug("Error in sending heartbeat event: ", err)
+		log.Warn("Error in sending heartbeat event: ", err)
+		return
 	}
-	UpdateCloudConfig(response)
+	StoreCloudConfig(response)
 }

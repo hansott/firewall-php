@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"net"
+	"time"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -51,4 +52,22 @@ func isLocalhost(ip string) bool {
 
 func IsIpAllowed(allowedIps []string, ip string) bool {
 	return isLocalhost(ip) || ArrayContains(allowedIps, ip)
+}
+
+func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFunction func()) {
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				pollingFunction()
+			case <-stopChan:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+func StopPollingRouting(stopChan chan struct{}) {
+	close(stopChan)
 }

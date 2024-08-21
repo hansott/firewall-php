@@ -6,7 +6,7 @@ import (
 )
 
 var functionExecutedHandlers = map[string]HandlerFunction{
-	"curl_exec": OnFunctionExecutedCurl,
+	"curl_exec": OnBeforeFunctionExecutedCurl,
 
 	"exec":       OnFunctionExecutedShell,
 	"shell_exec": OnFunctionExecutedShell,
@@ -19,7 +19,7 @@ var functionExecutedHandlers = map[string]HandlerFunction{
 	"path_accessed": OnPathAccessed,
 }
 
-func OnFunctionExecuted(data map[string]interface{}) string {
+func OnBeforeFunctionExecuted(data map[string]interface{}) string {
 	functionName := utils.MustGetFromMap[string](data, "function_name")
 	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 

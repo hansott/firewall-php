@@ -12,10 +12,11 @@ import (
 )
 
 var eventHandlers = map[string]HandlerFunction{
-	"function_executed": OnFunctionExecuted,
-	"method_executed":   OnMethodExecuted,
-	"request_init":      OnRequestInit,
-	"request_shutdown":  OnRequestShutdown,
+	"before_function_executed": OnBeforeFunctionExecuted,
+	"after_function_executed":  OnAfterFunctionExecuted,
+	"method_executed":          OnMethodExecuted,
+	"request_init":             OnRequestInit,
+	"request_shutdown":         OnRequestShutdown,
 }
 
 //export RequestProcessorInit
