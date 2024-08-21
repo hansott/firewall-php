@@ -41,7 +41,7 @@ func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
 	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
 }
 
-func isIpAllowedForRateLimiting(ip string) bool {
+func isIpBypassedForRateLimiting(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
