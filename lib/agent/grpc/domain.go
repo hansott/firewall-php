@@ -6,6 +6,10 @@ import (
 )
 
 func storeDomain(req *protos.Domain) {
+	if req.GetPort() == 0 {
+		return
+	}
+
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
 
