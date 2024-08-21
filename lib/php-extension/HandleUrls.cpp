@@ -4,6 +4,8 @@
 
 AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
     zval *curlHandle = NULL;
+
+	// Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
     #if PHP_VERSION_ID >= 80000
         ZEND_PARSE_PARAMETERS_START(1, 1)
             Z_PARAM_OBJECT(curlHandle) 
@@ -14,6 +16,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
         ZEND_PARSE_PARAMETERS_END();
     #endif
 
+	// Prepare parameters for curl_getinfo php call
 	zval retval;
 	zval params[2];
 	ZVAL_COPY(&params[0], curlHandle);
@@ -27,24 +30,21 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
 		
 	ZVAL_STRING(fname, "curl_getinfo");
 
-	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) != SUCCESS) {
-		return;
+	// Call curl_getinfo to extract the URL
+	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) == SUCCESS) {
+		if (Z_TYPE(retval) == IS_STRING) {
+			std::string urlString(Z_STRVAL(retval));
+			inputEvent = {
+				{ "event", "before_function_executed" },
+				{ "data", {
+					{ "function_name", "curl_exec" },
+					{ "parameters", {
+						{ "url", urlString }
+					} }
+				} }
+			};
+		}
 	}
-
-	if (Z_TYPE(retval) != IS_STRING) {
-		return;
-	}
-	
-	std::string urlString(Z_STRVAL(retval));
-	inputEvent = {
-		{ "event", "before_function_executed" },
-		{ "data", {
-			{ "function_name", "curl_exec" },
-			{ "parameters", {
-				{ "url", urlString }
-			} }
-		} }
-	};
 		
 	zval_dtor(&retval);
 	zval_dtor(&params[0]);
@@ -55,6 +55,8 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
 
 AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
     zval *curlHandle = NULL;
+
+	// Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
     #if PHP_VERSION_ID >= 80000
         ZEND_PARSE_PARAMETERS_START(1, 1)
             Z_PARAM_OBJECT(curlHandle) 
@@ -65,6 +67,7 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
         ZEND_PARSE_PARAMETERS_END();
     #endif
 
+	// Prepare parameters for curl_getinfo php call
 	zval retval;
 	zval params[2];
 	ZVAL_COPY(&params[0], curlHandle);
@@ -78,17 +81,16 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
 		
 	ZVAL_STRING(fname, "curl_getinfo");
 
-	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) != SUCCESS) {
-		return;
+	// Call curl_getinfo to extract the PORT
+	if (call_user_function(EG(function_table), NULL, fname, &retval, 2, params) == SUCCESS) {
+		if (Z_TYPE(retval) == IS_LONG) {
+			inputEvent["event"] = "after_function_executed";
+			inputEvent["data"]["parameters"]["port"] = Z_LVAL(retval);
+		}
 	}
-	if (Z_TYPE(retval) != IS_LONG) {
-		return;
-	}
-	inputEvent["event"] = "after_function_executed";
-	inputEvent["data"]["parameters"]["port"] = Z_LVAL(retval);
 	
 	zval_dtor(&retval);
 	zval_dtor(&params[0]);
 	zval_dtor(&params[1]);
-	efree(fname);     
+	efree(fname);
 }

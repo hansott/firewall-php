@@ -54,7 +54,7 @@ func OnDomain(domain string, port int) {
 		log.Warnf("Could not send domain %v: %v", domain, err)
 	}
 
-	log.Debugf("Domain sent via socket: %v", domain)
+	log.Debugf("Domain sent via socket: %v:%v", domain, port)
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
