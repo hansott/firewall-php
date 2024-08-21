@@ -30,8 +30,12 @@ func GetTime() int64 {
 }
 
 func ResetHeartbeatTicker() {
-	if globals.CloudConfig.HeartbeatIntervalInMS >= globals.MinHeartbeatIntervalInMS {
-		HeartBeatTicker.Reset(time.Duration(globals.CloudConfig.HeartbeatIntervalInMS) * time.Millisecond)
+	if !globals.CloudConfig.ReceivedAnyStats {
+		HeartBeatTicker.Reset(1 * time.Minute)
+	} else {
+		if globals.CloudConfig.HeartbeatIntervalInMS >= globals.MinHeartbeatIntervalInMS {
+			HeartBeatTicker.Reset(time.Duration(globals.CloudConfig.HeartbeatIntervalInMS) * time.Millisecond)
+		}
 	}
 }
 
