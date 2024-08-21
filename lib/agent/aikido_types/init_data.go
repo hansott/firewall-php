@@ -38,6 +38,7 @@ type CloudConfigData struct {
 	Endpoints             []Endpoint `json:"endpoints"`
 	BlockedUserIds        []string   `json:"blockedUserIds"`
 	AllowedIPAddresses    []string   `json:"allowedIPAddresses"`
+	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
 }
 
 type CloudConfigUpdatedAt struct {
