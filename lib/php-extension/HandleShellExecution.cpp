@@ -13,7 +13,7 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
 	
 	inputEvent = {
-		{ "event", "function_executed" },
+		{ "event", "before_function_executed" },
 		{ "data", {
 			{ "function_name", functionNameString },
 			{ "parameters", {

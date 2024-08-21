@@ -41,7 +41,7 @@ func Uninit() {
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */
-func OnDomain(domain string) {
+func OnDomain(domain string, port int) {
 	if client == nil {
 		return
 	}
@@ -49,7 +49,7 @@ func OnDomain(domain string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	_, err := client.OnDomain(ctx, &protos.Domain{Domain: domain})
+	_, err := client.OnDomain(ctx, &protos.Domain{Domain: domain, Port: int32(port)})
 	if err != nil {
 		log.Warnf("Could not send domain %v: %v", domain, err)
 	}

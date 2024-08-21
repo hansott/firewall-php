@@ -6,7 +6,7 @@
 #include "Utils.h"
 
 unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
-	AIKIDO_REGISTER_FUNCTION_HANDLER(curl_exec),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(curl_exec),
 
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(exec,                handle_shell_execution),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(shell_exec,          handle_shell_execution),
@@ -81,6 +81,10 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 	AIKIDO_LOG_DEBUG("Aikido generic handler started!\n");
 
 	zif_handler original_handler = nullptr;
+	aikido_handler post_handler = nullptr;
+
+	json inputEvent;
+	bool caughtException = false;
 
 	if (request_processor_on_event_fn) {
 		try {
@@ -97,6 +101,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			AIKIDO_LOG_DEBUG("Function name: %s\n", scope_name.c_str());
 			if (HOOKED_FUNCTIONS.find(function_name) != HOOKED_FUNCTIONS.end()) {
 				handler = HOOKED_FUNCTIONS[function_name].handler;
+				post_handler = HOOKED_FUNCTIONS[function_name].post_handler;
 				original_handler = HOOKED_FUNCTIONS[function_name].original_handler;
 			}
 			else if (executed_scope) {
@@ -117,6 +122,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 				}
 
 				handler = HOOKED_METHODS[method_key].handler;
+				post_handler = HOOKED_METHODS[method_key].post_handler;
 				original_handler = HOOKED_METHODS[method_key].original_handler;
 			}
 			else {
@@ -126,7 +132,6 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 			AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
-			json inputEvent;
 			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
 
 			if (!inputEvent.empty()) {
@@ -139,12 +144,20 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			}
 		}
 		catch (const std::exception& e) {
+			caughtException = true;
 			AIKIDO_LOG_ERROR("Exception encountered in generic handler: %s\n", e.what());
 		}
 	}
 	
 	if (original_handler) {
 		original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+
+		if (!caughtException && post_handler) {
+			post_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
+			if (!inputEvent.empty()) {
+				GoRequestProcessorOnEvent(inputEvent);
+			}
+		}
 	}
 
 	AIKIDO_LOG_DEBUG("Aikido generic handler ended!\n");

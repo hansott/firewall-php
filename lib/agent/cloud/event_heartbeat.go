@@ -13,11 +13,13 @@ func GetHostnamesAndClear() []Hostname {
 	hostnames := make([]Hostname, len(globals.Hostnames))
 	i := 0
 	for domain := range globals.Hostnames {
-		hostnames[i] = Hostname{URL: domain}
-		i += 1
+		for port := range globals.Hostnames[domain] {
+			hostnames[i] = Hostname{URL: domain, Port: int64(port)}
+		}
+		i++
 	}
 
-	globals.Hostnames = map[string]bool{}
+	globals.Hostnames = map[string]map[int]bool{}
 	return hostnames
 }
 

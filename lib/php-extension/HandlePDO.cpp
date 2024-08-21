@@ -1,6 +1,6 @@
 #include "HandlePDO.h"
 
-AIKIDO_HANDLER_FUNCTION(handle_pdo___construct) {
+AIKIDO_HANDLER_FUNCTION(handle_pre_pdo___construct) {
 	char *data_source;
 	size_t data_source_len;
 	char *colon;
@@ -23,7 +23,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pdo___construct) {
 	};
 }
 
-AIKIDO_HANDLER_FUNCTION(handle_pdo_query) {
+AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 	char *query;
 	size_t query_len;
 
