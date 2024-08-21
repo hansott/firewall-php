@@ -32,6 +32,22 @@ curl_setopt_array($ch3, $options);
 curl_exec($ch3);
 curl_close($ch3);
 
+$ch4 = curl_init("https://facebook.com:443");
+curl_setopt($ch4, CURLOPT_RETURNTRANSFER, true);
+curl_exec($ch4);
+curl_close($ch4);
+
+$ch5 = curl_init("http://www.aikido.dev:80");
+curl_setopt($ch5, CURLOPT_RETURNTRANSFER, true);
+curl_exec($ch5);
+curl_close($ch5);
+
+$ch6 = curl_init("http://some-invalid-domain.com:4113");
+curl_setopt($ch6, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch6, CURLOPT_TIMEOUT, 1);
+curl_exec($ch6);
+curl_close($ch6);
+
 ?>
 
 --EXPECT--
@@ -41,3 +57,9 @@ curl_close($ch3);
 [AIKIDO][INFO] [AFTER] Got domain: httpbin.org port: 443
 [AIKIDO][INFO] [BEFORE] Got domain: facebook.com
 [AIKIDO][INFO] [AFTER] Got domain: facebook.com port: 443
+[AIKIDO][INFO] [BEFORE] Got domain: facebook.com
+[AIKIDO][INFO] [AFTER] Got domain: facebook.com port: 443
+[AIKIDO][INFO] [BEFORE] Got domain: www.aikido.dev
+[AIKIDO][INFO] [AFTER] Got domain: www.aikido.dev port: 80
+[AIKIDO][INFO] [BEFORE] Got domain: some-invalid-domain.com
+[AIKIDO][INFO] [AFTER] Got domain: some-invalid-domain.com port: 0
