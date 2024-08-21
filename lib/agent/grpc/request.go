@@ -5,6 +5,7 @@ import (
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
+	"main/utils"
 )
 
 func storeStats() {
@@ -38,6 +39,13 @@ func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
 
 	rateLimitingData.Status.TotalNumberOfRequests += 1
 	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
+}
+
+func isIpAllowedForRateLimiting(ip string) bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	return utils.IsIpAllowed(globals.CloudConfig.AllowedIPAddresses, ip)
 }
 
 func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {

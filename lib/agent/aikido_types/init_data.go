@@ -26,6 +26,7 @@ type Endpoint struct {
 	Route              string       `json:"route"`
 	ForceProtectionOff bool         `json:"forceProtectionOff"`
 	Graphql            interface{}  `json:"graphql"`
+	AllowedIPAddresses []string     `json:"allowedIPAddresses"`
 	RateLimiting       RateLimiting `json:"rateLimiting"`
 }
 

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"net"
 )
 
 func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
@@ -28,4 +29,26 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
+}
+
+func ArrayContains(array []string, search string) bool {
+	for _, member := range array {
+		if member == search {
+			return true
+		}
+	}
+	return false
+}
+
+func isLocalhost(ip string) bool {
+	parsedIP := net.ParseIP(ip)
+	if parsedIP == nil {
+		return false
+	}
+
+	return parsedIP.IsLoopback()
+}
+
+func IsIpAllowed(allowedIps []string, ip string) bool {
+	return isLocalhost(ip) || ArrayContains(allowedIps, ip)
 }
