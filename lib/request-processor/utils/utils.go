@@ -120,5 +120,5 @@ func IsIpExcludedFromRateLimiting(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	return isLocalhost(ip) || KeyExists(globals.CloudConfig.AllowedIPAddresses, ip)
+	return isLocalhost(ip) || KeyExists(globals.CloudConfig.IpsExcludedFromRateLimiting, ip)
 }

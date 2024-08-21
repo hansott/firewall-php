@@ -23,7 +23,7 @@ type EndpointKey struct {
 }
 
 type CloudConfigData struct {
-	Endpoints          map[EndpointKey]EndpointData
-	BlockedUserIds     map[string]bool
-	AllowedIPAddresses map[string]bool
+	Endpoints                   map[EndpointKey]EndpointData
+	BlockedUserIds              map[string]bool
+	IpsExcludedFromRateLimiting map[string]bool
 }

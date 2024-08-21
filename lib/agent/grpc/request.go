@@ -62,8 +62,8 @@ func getCloudConfig() *protos.CloudConfig {
 	defer globals.CloudConfigMutex.Unlock()
 
 	cloudConfig := &protos.CloudConfig{
-		BlockedUserIds:     globals.CloudConfig.BlockedUserIds,
-		AllowedIPAddresses: globals.CloudConfig.AllowedIPAddresses,
+		BlockedUserIds:              globals.CloudConfig.BlockedUserIds,
+		IpsExcludedFromRateLimiting: globals.CloudConfig.IpsExcludedFromRateLimiting,
 	}
 
 	for _, endpoint := range globals.CloudConfig.Endpoints {
