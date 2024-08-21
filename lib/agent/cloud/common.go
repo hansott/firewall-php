@@ -104,7 +104,7 @@ func StoreCloudConfig(response []byte) bool {
 	if err != nil {
 		return false
 	}
-	if tempCloudConfig.ConfigUpdatedAt == globals.CloudConfig.ConfigUpdatedAt {
+	if tempCloudConfig.ConfigUpdatedAt <= globals.CloudConfig.ConfigUpdatedAt {
 		return true
 	}
 	globals.CloudConfig = tempCloudConfig

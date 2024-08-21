@@ -20,7 +20,7 @@ func CheckConfigUpdatedAt() {
 		return
 	}
 
-	if cloudConfigUpdatedAt.ConfigUpdatedAt == globals.CloudConfig.ConfigUpdatedAt {
+	if cloudConfigUpdatedAt.ConfigUpdatedAt <= globals.CloudConfig.ConfigUpdatedAt {
 		return
 	}
 

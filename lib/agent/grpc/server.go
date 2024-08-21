@@ -18,7 +18,7 @@ type server struct {
 }
 
 func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
-	log.Debugf("Received domain: %s", req.GetDomain())
+	log.Debugf("Received domain: %s:%d", req.GetDomain(), req.GetPort())
 	storeDomain(req)
 	return &emptypb.Empty{}, nil
 }
