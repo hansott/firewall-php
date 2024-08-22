@@ -59,13 +59,15 @@ func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {
 }
 
 func getCloudConfig() *protos.CloudConfig {
+	isBlockingEnabled := utils.IsBlockingEnabled()
+
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
 	cloudConfig := &protos.CloudConfig{
 		BlockedUserIds: globals.CloudConfig.BlockedUserIds,
 		BypassedIps:    globals.CloudConfig.BypassedIps,
-		Block:          utils.IsBlockingEnabled(),
+		Block:          isBlockingEnabled,
 	}
 
 	for _, endpoint := range globals.CloudConfig.Endpoints {

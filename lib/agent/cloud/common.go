@@ -12,7 +12,7 @@ import (
 
 func GetAgentInfo() AgentInfo {
 	return AgentInfo{
-		DryMode:   utils.IsBlockingEnabled(),
+		DryMode:   !utils.IsBlockingEnabled(),
 		Hostname:  Machine.HostName,
 		Version:   Version,
 		IPAddress: Machine.IPAddress,

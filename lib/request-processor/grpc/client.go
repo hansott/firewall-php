@@ -52,6 +52,7 @@ func OnDomain(domain string, port int) {
 	_, err := client.OnDomain(ctx, &protos.Domain{Domain: domain, Port: int32(port)})
 	if err != nil {
 		log.Warnf("Could not send domain %v: %v", domain, err)
+		return
 	}
 
 	log.Debugf("Domain sent via socket: %v:%v", domain, port)
@@ -88,6 +89,7 @@ func OnRequestShutdown(method string, route string, statusCode int, timeout time
 	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode)})
 	if err != nil {
 		log.Warnf("Could not send request metadata %v %v %v: %v", method, route, statusCode, err)
+		return
 	}
 
 	log.Debugf("Request metadata sent via socket (%v %v %v)", method, route, statusCode)
@@ -105,6 +107,7 @@ func GetCloudConfig() {
 	cloudConfig, err := client.GetCloudConfig(ctx, &emptypb.Empty{})
 	if err != nil {
 		log.Warnf("Could not get cloud config: %v", err)
+		return
 	}
 
 	log.Debugf("Got cloud config: %v", cloudConfig)
