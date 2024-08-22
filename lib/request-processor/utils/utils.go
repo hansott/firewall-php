@@ -147,7 +147,7 @@ func getIpFromXForwardedFor(value string) string {
 func GetIpFromRequest(remoteAddress string, xForwardedFor string) string {
 	if xForwardedFor != "" && globals.InitData.TrustProxy {
 		ip := getIpFromXForwardedFor(xForwardedFor)
-		if ip != "" && isIP(ip) {
+		if isIP(ip) {
 			return ip
 		}
 	}
