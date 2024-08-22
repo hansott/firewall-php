@@ -21,14 +21,12 @@ var eventHandlers = map[string]HandlerFunction{
 
 //export RequestProcessorInit
 func RequestProcessorInit(initJson string) (initOk bool) {
-	/*
-		defer func() {
-			if r := recover(); r != nil {
-				log.Warn("Recovered from panic:", r)
-				initOk = false
-			}
-		}()
-	*/
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered from panic:", r)
+			initOk = false
+		}
+	}()
 
 	err := json.Unmarshal([]byte(initJson), &globals.InitData)
 	if err != nil {
