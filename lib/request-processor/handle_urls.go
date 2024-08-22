@@ -29,5 +29,4 @@ func OnAfterFunctionExecutedCurl(parameters map[string]interface{}) string {
 	go grpc.OnDomain(domain, int(*port))
 
 	return "{}"
-
 }

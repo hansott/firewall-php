@@ -44,7 +44,7 @@ message Endpoint {
 message CloudConfig {
   repeated Endpoint endpoints = 1;
   repeated string blockedUserIds = 2;
-  repeated string ipsExcludedFromRateLimiting = 3;
+  repeated string bypassedIps = 3;
 }
 
 message RequestStatus {

@@ -1,8 +1,9 @@
 package aikido_types
 
 type InitConfigData struct {
-	LogLevel string `json:"log_level"`
-	SAPI     string `json:"sapi"`
+	LogLevel   string `json:"log_level"`
+	SAPI       string `json:"sapi"`
+	TrustProxy bool   `json:"trust_proxy"`
 }
 
 type RateLimiting struct {
@@ -23,7 +24,7 @@ type EndpointKey struct {
 }
 
 type CloudConfigData struct {
-	Endpoints                   map[EndpointKey]EndpointData
-	BlockedUserIds              map[string]bool
-	IpsExcludedFromRateLimiting map[string]bool
+	Endpoints      map[EndpointKey]EndpointData
+	BlockedUserIds map[string]bool
+	BypassedIps    map[string]bool
 }

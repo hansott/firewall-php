@@ -32,14 +32,14 @@ type Endpoint struct {
 }
 
 type CloudConfigData struct {
-	Success                     bool       `json:"success"`
-	ServiceId                   int        `json:"serviceId"`
-	ConfigUpdatedAt             int64      `json:"configUpdatedAt"`
-	HeartbeatIntervalInMS       int        `json:"heartbeatIntervalInMS"`
-	Endpoints                   []Endpoint `json:"endpoints"`
-	BlockedUserIds              []string   `json:"blockedUserIds"`
-	IpsExcludedFromRateLimiting []string   `json:"allowedIPAddresses"`
-	ReceivedAnyStats            bool       `json:"receivedAnyStats"`
+	Success               bool       `json:"success"`
+	ServiceId             int        `json:"serviceId"`
+	ConfigUpdatedAt       int64      `json:"configUpdatedAt"`
+	HeartbeatIntervalInMS int        `json:"heartbeatIntervalInMS"`
+	Endpoints             []Endpoint `json:"endpoints"`
+	BlockedUserIds        []string   `json:"blockedUserIds"`
+	BypassedIps           []string   `json:"allowedIPAddresses"`
+	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
 }
 
 type CloudConfigUpdatedAt struct {

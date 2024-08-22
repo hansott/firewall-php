@@ -66,9 +66,9 @@ std::string to_lowercase(const std::string& str);
 
 std::string get_environment_variable(const std::string& env_key);
 
-std::string config_override_with_env(const std::string& env_key, const std::string default_value);
+std::string get_env_string(const std::string& env_key, const std::string default_value);
 
-bool config_override_with_env_bool(const std::string& env_key, bool default_value);
+bool get_env_bool(const std::string& env_key, bool default_value);
 
 enum ACTION {
 	CONTINUE,

@@ -103,6 +103,10 @@ func ParseContext(context map[string]interface{}) map[string]interface{} {
 	return context
 }
 
+func isIP(ip string) bool {
+	return net.ParseIP(ip) != nil
+}
+
 func isLocalhost(ip string) bool {
 	parsedIP := net.ParseIP(ip)
 	if parsedIP == nil {
@@ -116,9 +120,41 @@ func IsIpAllowed(allowedIps map[string]bool, ip string) bool {
 	return isLocalhost(ip) || len(allowedIps) == 0 || KeyExists(allowedIps, ip)
 }
 
-func IsIpExcludedFromRateLimiting(ip string) bool {
+func IsIpBypassed(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	return isLocalhost(ip) || KeyExists(globals.CloudConfig.IpsExcludedFromRateLimiting, ip)
+	return isLocalhost(ip) || KeyExists(globals.CloudConfig.BypassedIps, ip)
+}
+
+func getIpFromXForwardedFor(value string) string {
+	forwardedIps := strings.Split(value, ",")
+	for _, ip := range forwardedIps {
+		ip = strings.TrimSpace(ip)
+		if strings.Contains(ip, ":") {
+			parts := strings.Split(ip, ":")
+			if len(parts) == 2 {
+				ip = parts[0]
+			}
+		}
+		if isIP(ip) {
+			return ip
+		}
+	}
+	return ""
+}
+
+func GetIpFromRequest(remoteAddress string, xForwardedFor string) string {
+	if xForwardedFor != "" && globals.InitData.TrustProxy {
+		ip := getIpFromXForwardedFor(xForwardedFor)
+		if isIP(ip) {
+			return ip
+		}
+	}
+
+	if remoteAddress != "" && isIP(remoteAddress) {
+		return remoteAddress
+	}
+
+	return ""
 }
