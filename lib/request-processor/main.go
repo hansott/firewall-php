@@ -67,6 +67,11 @@ func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	return cString
 }
 
+/*
+	Returns -1 if the config was not yet pulled from Agent.
+	Otherwise, if blocking was set from cloud, it returns that value.
+	Otherwise, it returns the environment value.
+*/
 //export RequestProcessorGetBlockingMode
 func RequestProcessorGetBlockingMode() int {
 	return utils.GetBlockingMode()
