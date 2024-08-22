@@ -45,6 +45,7 @@ message CloudConfig {
   repeated Endpoint endpoints = 1;
   repeated string blockedUserIds = 2;
   repeated string bypassedIps = 3;
+  bool block = 4;
 }
 
 message RequestStatus {

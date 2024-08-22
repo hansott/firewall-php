@@ -136,7 +136,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 			if (!inputEvent.empty()) {
 				json outputEvent = GoRequestProcessorOnEvent(inputEvent);
-				if (AIKIDO_GLOBAL(blocking) == true && aikido_execute_output(outputEvent) == BLOCK) {
+				if (IsBlockingEnabled() && aikido_execute_output(outputEvent) == BLOCK) {
 					// exit generic handler and do not call the original handler
 					// thus blocking the execution 
 					return;

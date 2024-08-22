@@ -27,4 +27,5 @@ type CloudConfigData struct {
 	Endpoints      map[EndpointKey]EndpointData
 	BlockedUserIds map[string]bool
 	BypassedIps    map[string]bool
+	Block          int
 }

@@ -158,3 +158,14 @@ func GetIpFromRequest(remoteAddress string, xForwardedFor string) string {
 
 	return ""
 }
+
+/*
+Returns -1 if the config was not yet pulled from Agent.
+Otherwise, if blocking was set from cloud, it returns that value.
+Otherwise, it returns the environment value.
+*/
+func GetBlockingMode() int {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+	return globals.CloudConfig.Block
+}

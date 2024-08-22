@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"main/globals"
 	"net"
 	"time"
 )
@@ -66,4 +67,14 @@ func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFun
 
 func StopPollingRouting(stopChan chan struct{}) {
 	close(stopChan)
+}
+
+func IsBlockingEnabled() bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	if globals.CloudConfig.Block == nil {
+		return globals.EnvironmentConfig.Blocking
+	}
+	return *globals.CloudConfig.Block
 }

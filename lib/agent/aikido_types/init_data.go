@@ -40,6 +40,7 @@ type CloudConfigData struct {
 	BlockedUserIds        []string   `json:"blockedUserIds"`
 	BypassedIps           []string   `json:"allowedIPAddresses"`
 	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
+	Block                 *bool      `json:"block,omitempty"`
 }
 
 type CloudConfigUpdatedAt struct {

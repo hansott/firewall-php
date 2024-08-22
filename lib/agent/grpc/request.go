@@ -5,6 +5,7 @@ import (
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
+	"main/utils"
 )
 
 func storeStats() {
@@ -64,6 +65,7 @@ func getCloudConfig() *protos.CloudConfig {
 	cloudConfig := &protos.CloudConfig{
 		BlockedUserIds: globals.CloudConfig.BlockedUserIds,
 		BypassedIps:    globals.CloudConfig.BypassedIps,
+		Block:          utils.IsBlockingEnabled(),
 	}
 
 	for _, endpoint := range globals.CloudConfig.Endpoints {
