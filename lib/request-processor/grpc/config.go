@@ -36,9 +36,9 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		globals.CloudConfig.BlockedUserIds[userId] = true
 	}
 
-	globals.CloudConfig.IpsExcludedFromRateLimiting = map[string]bool{}
-	for _, ip := range cloudConfigFromAgent.IpsExcludedFromRateLimiting {
-		globals.CloudConfig.IpsExcludedFromRateLimiting[ip] = true
+	globals.CloudConfig.BypassedIps = map[string]bool{}
+	for _, ip := range cloudConfigFromAgent.BypassedIps {
+		globals.CloudConfig.BypassedIps[ip] = true
 	}
 }
 

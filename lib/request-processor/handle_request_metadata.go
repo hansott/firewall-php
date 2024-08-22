@@ -11,13 +11,14 @@ import (
 func OnRequestInit(data map[string]interface{}) string {
 	method := utils.MustGetFromMap[string](data, "method")
 	route := utils.MustGetFromMap[string](data, "route")
-	ip := utils.MustGetFromMap[string](data, "remoteAddress")
+	remoteAddress := utils.MustGetFromMap[string](data, "remoteAddress")
+	xForwardedFor := utils.MustGetFromMap[string](data, "xForwardedFor")
 
 	if method == "" || route == "" {
 		return "{\"status\": \"ok\"}"
 	}
 
-	log.Infof("[RINIT] Got request metadata: %s %s (%s)", method, route, ip)
+	log.Infof("[RINIT] Got request metadata: %s %s (%s - %s)", method, route, remoteAddress, xForwardedFor)
 
 	route = utils.BuildRouteFromURL(route)
 
@@ -26,6 +27,8 @@ func OnRequestInit(data map[string]interface{}) string {
 		// This endpoint (method + route) has not configuration -> continue
 		return "{\"status\": \"ok\"}"
 	}
+
+	ip := utils.GetIpFromRequest(remoteAddress, xForwardedFor)
 
 	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
 		message := "Your IP address is not allowed to access this resource!"
@@ -36,14 +39,14 @@ func OnRequestInit(data map[string]interface{}) string {
 	}
 
 	if endpointData.RateLimiting.Enabled {
-		if !utils.IsIpExcludedFromRateLimiting(ip) {
-			// If request is monitored for rate limiting and the IP is not excluded from rate limiting,
+		if !utils.IsIpBypassed(ip) {
+			// If request is monitored for rate limiting and the IP is not bypassed,
 			// do a sync call via gRPC to see if the request should be aborded or not
 			if !grpc.OnRequestInit(method, route, 10*time.Millisecond) {
 				return "{\"action\": \"exit\", \"message\": \"This request was rate limited by Aikido Security!\", \"response_code\": 429}"
 			}
 		} else {
-			log.Infof("IP \"%s\" is excluded from rate limiting!", ip)
+			log.Infof("IP \"%s\" is bypassed for rate limiting!", ip)
 		}
 	}
 

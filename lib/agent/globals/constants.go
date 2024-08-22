@@ -1,7 +1,7 @@
 package globals
 
 const (
-	Version                     = "1.0.44"
+	Version                     = "1.0.45"
 	SocketPath                  = "/run/aikido-" + Version + ".sock"
 	ConfigUpdatedAtMethod       = "GET"
 	ConfigUpdatedAtAPI          = "/config"

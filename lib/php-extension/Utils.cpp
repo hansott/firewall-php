@@ -75,7 +75,7 @@ std::string get_environment_variable(const std::string& env_key) {
     return env_value;
 }
 
-std::string config_override_with_env(const std::string& env_key, const std::string default_value) {
+std::string get_env_string(const std::string& env_key, const std::string default_value) {
 	std::string env_value = get_environment_variable(env_key.c_str());
 	if (!env_value.empty()) {
         return env_value;
@@ -83,7 +83,7 @@ std::string config_override_with_env(const std::string& env_key, const std::stri
     return default_value;
 }
 
-bool config_override_with_env_bool(const std::string& env_key, bool default_value) {
+bool get_env_bool(const std::string& env_key, bool default_value) {
 	std::string env_value = get_environment_variable(env_key.c_str());
 	if (!env_value.empty()) {
         return (env_value == "1" || env_value == "true");
@@ -190,6 +190,7 @@ ACTION send_request_init_metadata_event(){
             { "route", routeAndMethod["route"] },
             { "method", routeAndMethod["method"] },
             { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
+            { "xForwardedFor",  extract_server_var(server, "HTTP_X_FORWARDED_FOR") },
         }
         }
     };

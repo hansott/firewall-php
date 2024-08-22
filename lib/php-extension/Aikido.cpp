@@ -25,11 +25,11 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	std::string log_level = config_override_with_env("AIKIDO_LOG_LEVEL", "DEBUG");
-	std::string token = config_override_with_env("AIKIDO_TOKEN", "");
-	std::string endpoint = config_override_with_env("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
-	std::string config_endpoint = config_override_with_env("AIKIDO_CONFIG_ENDPOINT", "https://runtime.aikido.dev/");
-	bool blocking = config_override_with_env_bool("AIKIDO_BLOCKING", false);
+	std::string log_level = get_env_string("AIKIDO_LOG_LEVEL", "DEBUG");
+	std::string token = get_env_string("AIKIDO_TOKEN", "");
+	std::string endpoint = get_env_string("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
+	std::string config_endpoint = get_env_string("AIKIDO_CONFIG_ENDPOINT", "https://runtime.aikido.dev/");
+	bool blocking = get_env_bool("AIKIDO_BLOCKING", false);
 
 	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
 	AIKIDO_GLOBAL(blocking) = blocking;
@@ -177,9 +177,10 @@ PHP_RINIT_FUNCTION(aikido) {
 			request_processor_loading_failed = true;
 			return SUCCESS;
 		}
-		
+
 		json initData = {
 			{ "log_level", aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level)) },
+			{ "trust_proxy", get_env_bool("AIKIDO_TRUST_PROXY", true) },
 			{ "sapi", sapi_module.name }
 		};
 
