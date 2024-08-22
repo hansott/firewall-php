@@ -17,7 +17,7 @@ func OnMethodExecuted(data map[string]interface{}) string {
 
 	methodKey := Method{ClassName: className, MethodName: methodName}
 
-	utils.CheckIfKeyExists(methodExecutedHandlers, methodKey)
+	utils.KeyMustExist(methodExecutedHandlers, methodKey)
 
 	return methodExecutedHandlers[methodKey](parameters)
 }

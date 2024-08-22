@@ -27,18 +27,19 @@ type Endpoint struct {
 	Route              string       `json:"route"`
 	ForceProtectionOff bool         `json:"forceProtectionOff"`
 	Graphql            interface{}  `json:"graphql"`
+	AllowedIPAddresses []string     `json:"allowedIPAddresses"`
 	RateLimiting       RateLimiting `json:"rateLimiting"`
 }
 
 type CloudConfigData struct {
-	Success               bool       `json:"success"`
-	ServiceId             int        `json:"serviceId"`
-	ConfigUpdatedAt       int64      `json:"configUpdatedAt"`
-	HeartbeatIntervalInMS int        `json:"heartbeatIntervalInMS"`
-	Endpoints             []Endpoint `json:"endpoints"`
-	BlockedUserIds        []string   `json:"blockedUserIds"`
-	AllowedIPAddresses    []string   `json:"allowedIPAddresses"`
-	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
+	Success                     bool       `json:"success"`
+	ServiceId                   int        `json:"serviceId"`
+	ConfigUpdatedAt             int64      `json:"configUpdatedAt"`
+	HeartbeatIntervalInMS       int        `json:"heartbeatIntervalInMS"`
+	Endpoints                   []Endpoint `json:"endpoints"`
+	BlockedUserIds              []string   `json:"blockedUserIds"`
+	IpsExcludedFromRateLimiting []string   `json:"allowedIPAddresses"`
+	ReceivedAnyStats            bool       `json:"receivedAnyStats"`
 }
 
 type CloudConfigUpdatedAt struct {

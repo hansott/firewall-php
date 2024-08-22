@@ -3,11 +3,18 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"main/globals"
+	"net"
 	"net/url"
 	"strings"
 )
 
-func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
+func KeyExists[K comparable, V any](m map[K]V, key K) bool {
+	_, exists := m[key]
+	return exists
+}
+
+func KeyMustExist[K comparable, V any](m map[K]V, key K) {
 	if _, exists := m[key]; !exists {
 		panic(fmt.Sprintf("Key %v does not exist in map!", key))
 	}
@@ -94,4 +101,24 @@ func ParseContext(context map[string]interface{}) map[string]interface{} {
 	}
 
 	return context
+}
+
+func isLocalhost(ip string) bool {
+	parsedIP := net.ParseIP(ip)
+	if parsedIP == nil {
+		return false
+	}
+
+	return parsedIP.IsLoopback()
+}
+
+func IsIpAllowed(allowedIps map[string]bool, ip string) bool {
+	return isLocalhost(ip) || len(allowedIps) == 0 || KeyExists(allowedIps, ip)
+}
+
+func IsIpExcludedFromRateLimiting(ip string) bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	return isLocalhost(ip) || KeyExists(globals.CloudConfig.IpsExcludedFromRateLimiting, ip)
 }

@@ -45,6 +45,7 @@ func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {
 	defer globals.RateLimitingMutex.Unlock()
 
 	forwardToServer := true
+
 	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
 	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
 		log.Infof("Rate limited request for (%v) - status (%v)", req, rateLimitingData)
@@ -61,8 +62,8 @@ func getCloudConfig() *protos.CloudConfig {
 	defer globals.CloudConfigMutex.Unlock()
 
 	cloudConfig := &protos.CloudConfig{
-		BlockedUserIds:     globals.CloudConfig.BlockedUserIds,
-		AllowedIPAddresses: globals.CloudConfig.AllowedIPAddresses,
+		BlockedUserIds:              globals.CloudConfig.BlockedUserIds,
+		IpsExcludedFromRateLimiting: globals.CloudConfig.IpsExcludedFromRateLimiting,
 	}
 
 	for _, endpoint := range globals.CloudConfig.Endpoints {
@@ -70,6 +71,7 @@ func getCloudConfig() *protos.CloudConfig {
 			Method:             endpoint.Method,
 			Route:              endpoint.Route,
 			ForceProtectionOff: endpoint.ForceProtectionOff,
+			AllowedIPAddresses: endpoint.AllowedIPAddresses,
 			RateLimiting: &protos.RateLimiting{
 				Enabled: endpoint.RateLimiting.Enabled,
 			},

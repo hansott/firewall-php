@@ -14,6 +14,7 @@ type RateLimiting struct {
 type EndpointData struct {
 	ForceProtectionOff bool
 	RateLimiting       RateLimiting
+	AllowedIPAddresses map[string]bool
 }
 
 type EndpointKey struct {
@@ -22,7 +23,7 @@ type EndpointKey struct {
 }
 
 type CloudConfigData struct {
-	Endpoints          map[EndpointKey]EndpointData
-	BlockedUserIds     map[string]bool
-	AllowedIPAddresses map[string]bool
+	Endpoints                   map[EndpointKey]EndpointData
+	BlockedUserIds              map[string]bool
+	IpsExcludedFromRateLimiting map[string]bool
 }

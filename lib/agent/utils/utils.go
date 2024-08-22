@@ -2,10 +2,11 @@ package utils
 
 import (
 	"fmt"
+	"net"
 	"time"
 )
 
-func CheckIfKeyExists[K comparable, V any](m map[K]V, key K) {
+func KeyMustExist[K comparable, V any](m map[K]V, key K) {
 	if _, exists := m[key]; !exists {
 		panic(fmt.Sprintf("Key %v does not exist in map!", key))
 	}
@@ -29,6 +30,24 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
+}
+
+func ArrayContains(array []string, search string) bool {
+	for _, member := range array {
+		if member == search {
+			return true
+		}
+	}
+	return false
+}
+
+func isLocalhost(ip string) bool {
+	parsedIP := net.ParseIP(ip)
+	if parsedIP == nil {
+		return false
+	}
+
+	return parsedIP.IsLoopback()
 }
 
 func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFunction func()) {

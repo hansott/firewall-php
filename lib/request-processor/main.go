@@ -70,7 +70,7 @@ func RequestProcessorOnEvent(eventJson string) (outputJson string) {
 	eventName := utils.MustGetFromMap[string](event, "event")
 	data := utils.MustGetFromMap[map[string]interface{}](event, "data")
 
-	utils.CheckIfKeyExists(eventHandlers, eventName)
+	utils.KeyMustExist(eventHandlers, eventName)
 
 	return eventHandlers[eventName](data)
 }

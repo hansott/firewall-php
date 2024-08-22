@@ -188,7 +188,8 @@ ACTION send_request_init_metadata_event(){
         { "event", "request_init" },
         { "data", {
             { "route", routeAndMethod["route"] },
-            { "method", routeAndMethod["method"] }
+            { "method", routeAndMethod["method"] },
+            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
         }
         }
     };

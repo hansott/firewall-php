@@ -23,7 +23,7 @@ func OnBeforeFunctionExecuted(data map[string]interface{}) string {
 	functionName := utils.MustGetFromMap[string](data, "function_name")
 	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 
-	utils.CheckIfKeyExists(functionExecutedHandlers, functionName)
+	utils.KeyMustExist(functionExecutedHandlers, functionName)
 
 	return functionExecutedHandlers[functionName](parameters)
 }

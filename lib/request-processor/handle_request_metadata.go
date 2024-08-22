@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"main/grpc"
 	"main/log"
 	"main/utils"
@@ -10,19 +11,39 @@ import (
 func OnRequestInit(data map[string]interface{}) string {
 	method := utils.MustGetFromMap[string](data, "method")
 	route := utils.MustGetFromMap[string](data, "route")
+	ip := utils.MustGetFromMap[string](data, "remoteAddress")
 
 	if method == "" || route == "" {
 		return "{\"status\": \"ok\"}"
 	}
 
-	log.Info("[RINIT] Got request metadata: ", method, " ", route)
+	log.Infof("[RINIT] Got request metadata: %s %s (%s)", method, route, ip)
 
 	route = utils.BuildRouteFromURL(route)
 
-	if grpc.IsRequestMonitoredForRateLimiting(method, route) {
-		// If request is monitored for rate limiting, do a sync call via gRPC to see if the request should be aborded or not
-		if !grpc.OnRequestInit(method, route, 10*time.Millisecond) {
-			return "{\"action\": \"exit\", \"message\": \"This request was rate limited by Aikido Security!\", \"response_code\": 429}"
+	endpointData, err := grpc.GetEndpointConfig(method, route)
+	if err != nil {
+		// This endpoint (method + route) has not configuration -> continue
+		return "{\"status\": \"ok\"}"
+	}
+
+	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
+		message := "Your IP address is not allowed to access this resource!"
+		if ip != "" {
+			message += fmt.Sprintf(" (Your IP: %s)", ip)
+		}
+		return fmt.Sprintf(`{"action": "exit", "message": %s, "response_code": 403}`, message)
+	}
+
+	if endpointData.RateLimiting.Enabled {
+		if !utils.IsIpExcludedFromRateLimiting(ip) {
+			// If request is monitored for rate limiting and the IP is not excluded from rate limiting,
+			// do a sync call via gRPC to see if the request should be aborded or not
+			if !grpc.OnRequestInit(method, route, 10*time.Millisecond) {
+				return "{\"action\": \"exit\", \"message\": \"This request was rate limited by Aikido Security!\", \"response_code\": 429}"
+			}
+		} else {
+			log.Infof("IP \"%s\" is excluded from rate limiting!", ip)
 		}
 	}
 
