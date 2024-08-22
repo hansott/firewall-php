@@ -24,6 +24,7 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 			RateLimiting: RateLimiting{
 				Enabled: ep.RateLimiting.Enabled,
 			},
+			AllowedIPAddresses: map[string]bool{},
 		}
 		for _, ip := range ep.AllowedIPAddresses {
 			endpointData.AllowedIPAddresses[ip] = true

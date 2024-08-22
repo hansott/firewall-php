@@ -77,7 +77,7 @@ typedef GoUint8 (*AgentInitFn)(GoString initJson);
 typedef void (*AgentUninitFn)();
 
 typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
-typedef GoString (*RequestProcessorOnEventFn)(GoString eventJson);
+typedef char* (*RequestProcessorOnEventFn)(GoString eventJson);
 typedef void (*RequestProcessorUninitFn)();
 
 

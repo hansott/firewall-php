@@ -21,12 +21,14 @@ var eventHandlers = map[string]HandlerFunction{
 
 //export RequestProcessorInit
 func RequestProcessorInit(initJson string) (initOk bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Warn("Recovered from panic:", r)
-			initOk = false
-		}
-	}()
+	/*
+		defer func() {
+			if r := recover(); r != nil {
+				log.Warn("Recovered from panic:", r)
+				initOk = false
+			}
+		}()
+	*/
 
 	err := json.Unmarshal([]byte(initJson), &globals.InitData)
 	if err != nil {
@@ -51,11 +53,11 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 }
 
 //export RequestProcessorOnEvent
-func RequestProcessorOnEvent(eventJson string) (outputJson string) {
+func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Warn("Recovered from panic:", r)
-			outputJson = "{}"
+			outputJson = C.CString("{}")
 		}
 	}()
 
@@ -72,7 +74,9 @@ func RequestProcessorOnEvent(eventJson string) (outputJson string) {
 
 	utils.KeyMustExist(eventHandlers, eventName)
 
-	return eventHandlers[eventName](data)
+	goString := eventHandlers[eventName](data)
+	cString := C.CString(goString)
+	return cString
 }
 
 //export RequestProcessorUninit

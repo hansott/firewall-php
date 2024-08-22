@@ -1,11 +1,5 @@
 #include "GoWrappers.h"
 
-std::string CppCreateString(GoString g) {
-    std::string s;
-    s.assign(g.p, g.n);
-    return s;
-}
-
 GoString GoCreateString(std::string& s) {
     return GoString { s.c_str(), s.length() };
 }
@@ -15,7 +9,13 @@ json GoRequestProcessorOnEvent(json& event) {
     
     AIKIDO_LOG_DEBUG("Sending event to GO\n");
     
-    std::string outputString = CppCreateString(request_processor_on_event_fn(GoCreateString(eventString)));
+    char* charPtr = request_processor_on_event_fn(GoCreateString(eventString));
+    if (!charPtr) {
+        return json::object();
+    }
+    
+    std::string outputString(charPtr);
+    free(charPtr);
     
     AIKIDO_LOG_DEBUG("Got event reply: %s\n", outputString.c_str());
     
