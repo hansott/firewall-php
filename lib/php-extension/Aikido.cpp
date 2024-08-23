@@ -165,6 +165,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 void* aikido_request_processor_lib_handle = nullptr;
 bool request_processor_loading_failed = false;
 RequestProcessorOnEventFn request_processor_on_event_fn = nullptr;
+RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullptr;
 
 PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RINIT started!\n");
@@ -190,8 +191,10 @@ PHP_RINIT_FUNCTION(aikido) {
 
 		RequestProcessorInitFn request_processor_init_fn = (RequestProcessorInitFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorInit");
 		request_processor_on_event_fn = (RequestProcessorOnEventFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorOnEvent");
+		request_processor_get_blocking_mode_fn = (RequestProcessorGetBlockingModeFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorGetBlockingMode");
 		if (!request_processor_init_fn || 
 			!request_processor_on_event_fn ||
+			!request_processor_get_blocking_mode_fn ||
 			!request_processor_init_fn(GoCreateString(initDataString))) {
 			AIKIDO_LOG_ERROR("Failed to initialize Aikido Request Processor library: %s!\n", dlerror());
 			dlclose(aikido_request_processor_lib_handle);

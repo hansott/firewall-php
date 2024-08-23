@@ -41,6 +41,12 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	for _, ip := range cloudConfigFromAgent.BypassedIps {
 		globals.CloudConfig.BypassedIps[ip] = true
 	}
+
+	if cloudConfigFromAgent.Block {
+		globals.CloudConfig.Block = 1
+	} else {
+		globals.CloudConfig.Block = 0
+	}
 }
 
 func GetEndpointConfig(method string, route string) (EndpointData, error) {

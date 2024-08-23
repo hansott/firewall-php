@@ -78,12 +78,13 @@ typedef void (*AgentUninitFn)();
 
 typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
 typedef char* (*RequestProcessorOnEventFn)(GoString eventJson);
+typedef int (*RequestProcessorGetBlockingModeFn)();
 typedef void (*RequestProcessorUninitFn)();
 
 
 extern void* aikido_request_processor_lib_handle;
 extern RequestProcessorOnEventFn request_processor_on_event_fn;
-
+extern RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn;
 
 #include "GoWrappers.h"
 #include "Utils.h"

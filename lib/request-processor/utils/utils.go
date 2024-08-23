@@ -158,3 +158,9 @@ func GetIpFromRequest(remoteAddress string, xForwardedFor string) string {
 
 	return ""
 }
+
+func GetBlockingMode() int {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+	return globals.CloudConfig.Block
+}

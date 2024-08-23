@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	. "main/aikido_types"
+	"main/config"
 	"main/globals"
 	"main/grpc"
 	"main/log"
@@ -28,18 +29,7 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 		}
 	}()
 
-	err := json.Unmarshal([]byte(initJson), &globals.InitData)
-	if err != nil {
-		panic(fmt.Sprintf("Error parsing JSON: %s", err))
-	}
-
-	if globals.InitData.SAPI != "cli" {
-		log.Init()
-	} else {
-		if err := log.SetLogLevel(globals.InitData.LogLevel); err != nil {
-			panic(fmt.Sprintf("Error setting log level: %s", err))
-		}
-	}
+	config.Init(initJson)
 
 	log.Debugf("Aikido Request Processor v%s started in \"%s\" mode!", globals.Version, globals.InitData.SAPI)
 	log.Debugf("Init data: %s", initJson)
@@ -75,6 +65,16 @@ func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	goString := eventHandlers[eventName](data)
 	cString := C.CString(goString)
 	return cString
+}
+
+/*
+	Returns -1 if the config was not yet pulled from Agent.
+	Otherwise, if blocking was set from cloud, it returns that value.
+	Otherwise, it returns the environment value.
+*/
+//export RequestProcessorGetBlockingMode
+func RequestProcessorGetBlockingMode() int {
+	return utils.GetBlockingMode()
 }
 
 //export RequestProcessorUninit

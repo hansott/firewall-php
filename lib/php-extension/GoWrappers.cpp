@@ -6,6 +6,10 @@ GoString GoCreateString(std::string& s) {
 
 json GoRequestProcessorOnEvent(json& event) {
     std::string eventString = event.dump();
+
+    if (!request_processor_on_event_fn) {
+        return json::object();
+    }
     
     AIKIDO_LOG_DEBUG("Sending event to GO\n");
     
@@ -21,4 +25,19 @@ json GoRequestProcessorOnEvent(json& event) {
     
     json output = json::parse(outputString);
     return output;
+}
+
+/*
+    If the blocking mode is set from agent (different than -1), return that.
+	Otherwise, return the env variable AIKIDO_BLOCKING.
+*/
+bool IsBlockingEnabled() {
+    if (!request_processor_get_blocking_mode_fn) {
+        return false;
+    }
+    int ret = request_processor_get_blocking_mode_fn();
+    if (ret == -1) {
+        return AIKIDO_GLOBAL(blocking);
+    }
+    return ret;
 }

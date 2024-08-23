@@ -6,12 +6,13 @@ import (
 	"main/globals"
 	. "main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 )
 
 func GetAgentInfo() AgentInfo {
 	return AgentInfo{
-		DryMode:   !EnvironmentConfig.Blocking,
+		DryMode:   !utils.IsBlockingEnabled(),
 		Hostname:  Machine.HostName,
 		Version:   Version,
 		IPAddress: Machine.IPAddress,
