@@ -6,7 +6,6 @@ import (
 	"main/ipc/protos"
 	"main/log"
 	"main/utils"
-	"time"
 )
 
 func storeStats() {
@@ -90,25 +89,23 @@ func onUserEvent(id string, username string, ip string) {
 	globals.UsersMutex.Lock()
 	defer globals.UsersMutex.Unlock()
 
-	// if exists, update
 	if _, exists := globals.Users[id]; exists {
 		globals.Users[id] = User{
 			ID:            id,
 			Name:          username,
 			LastIpAddress: ip,
 			FirstSeenAt:   globals.Users[id].FirstSeenAt,
-			LastSeenAt:    time.Now().Unix(),
+			LastSeenAt:    utils.GetTime(),
 		}
 		return
 	}
 
-	// if not exists, create
 	globals.Users[id] = User{
 		ID:            id,
 		Name:          username,
 		LastIpAddress: ip,
-		FirstSeenAt:   time.Now().Unix(),
-		LastSeenAt:    time.Now().Unix(),
+		FirstSeenAt:   utils.GetTime(),
+		LastSeenAt:    utils.GetTime(),
 	}
 
 }

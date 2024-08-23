@@ -4,6 +4,7 @@ import (
 	. "main/aikido_types"
 	"main/globals"
 	"main/log"
+	"main/utils"
 )
 
 func GetHostnamesAndClear() []Hostname {
@@ -58,7 +59,7 @@ func GetStatsAndClear() Stats {
 	stats := Stats{
 		Sinks:     make(map[string]MonitoredSinkStats),
 		StartedAt: globals.StatsData.StartedAt,
-		EndedAt:   GetTime(),
+		EndedAt:   utils.GetTime(),
 		Requests: Requests{
 			Total:   globals.StatsData.Requests,
 			Aborted: globals.StatsData.RequestsAborted,
@@ -69,7 +70,7 @@ func GetStatsAndClear() Stats {
 		},
 	}
 
-	globals.StatsData.StartedAt = GetTime()
+	globals.StatsData.StartedAt = utils.GetTime()
 	globals.StatsData.Requests = 0
 	globals.StatsData.RequestsAborted = 0
 	globals.StatsData.Attacks = 0
@@ -82,7 +83,7 @@ func SendHeartbeatEvent() {
 	heartbeatEvent := Heartbeat{
 		Type:      "heartbeat",
 		Agent:     GetAgentInfo(),
-		Time:      GetTime(),
+		Time:      utils.GetTime(),
 		Stats:     GetStatsAndClear(),
 		Hostnames: GetHostnamesAndClear(),
 		Routes:    GetRoutesAndClear(),

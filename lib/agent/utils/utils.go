@@ -78,3 +78,7 @@ func IsBlockingEnabled() bool {
 	}
 	return *globals.CloudConfig.Block
 }
+
+func GetTime() int64 {
+	return time.Now().UnixMilli()
+}
