@@ -12,7 +12,7 @@ func OnUserEvent(data map[string]interface{}) string {
 	remoteAddress := utils.MustGetFromMap[string](data, "remoteAddress")
 	xForwardedFor := utils.MustGetFromMap[string](data, "xForwardedFor")
 
-	log.Info("[UEVENT] Got user event: %s %s %s %s", id, username, remoteAddress, xForwardedFor)
+	log.Infof("[UEVENT] Got user event: %s %s %s %s", id, username, remoteAddress, xForwardedFor)
 
 	ip := utils.GetIpFromRequest(remoteAddress, xForwardedFor)
 

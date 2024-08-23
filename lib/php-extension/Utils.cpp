@@ -287,13 +287,13 @@ bool send_user_event(std::string id, std::string username) {
         return false;
     }
 
-    std::string ip = extract_server_var(server, "REMOTE_ADDR");
     json inputEvent = {
         { "event", "user_event" },
         { "data", { 
             { "id", id },
             { "username", username },
-            { "ip", ip }
+            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
+            { "xForwardedFor",  extract_server_var(server, "HTTP_X_FORWARDED_FOR") }
         }
         }
     };
