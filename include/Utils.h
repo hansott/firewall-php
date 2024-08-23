@@ -82,3 +82,5 @@ ACTION send_request_shutdown_metadata_event();
 ACTION aikido_execute_output(json event);
 
 json get_context();
+
+bool send_user_event(std::string id, std::string username);

@@ -113,3 +113,19 @@ func GetCloudConfig() {
 	log.Debugf("Got cloud config: %v", cloudConfig)
 	setCloudConfig(cloudConfig)
 }
+
+func OnUserEvent(id string, username string, ip string) {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err := client.OnUser(ctx, &protos.User{Id: id, Username: username, Ip: ip})
+	if err != nil {
+		log.Warnf("Could not send user event %v %v %v: %v", id, username, ip, err)
+	}
+
+	log.Debugf("User event sent via socket (%v %v %v)", id, username, ip)
+}

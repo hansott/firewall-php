@@ -257,8 +257,34 @@ PHP_MINFO_FUNCTION(aikido)
 	php_info_print_table_end();
 }
 
+// Exports the "aikido_set_user" function, to be called from PHP user code.
+// Receives two parameters: id and name (both strings).
+// Returns true if the setting of the user succeeded, false otherwise.
+ZEND_FUNCTION(aikido_set_user) {
+	char *id;
+	size_t id_len;
+	char *name;
+	size_t name_len;
+
+	// parse parameters
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_STRING(id, id_len)
+		Z_PARAM_STRING(name, name_len)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));	
+}
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_aikido_set_user, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
 static const zend_function_entry ext_functions[] = {
+	ZEND_FE(aikido_set_user, arginfo_aikido_set_user)
 	ZEND_FE_END
+	
 };
 
 zend_module_entry aikido_module_entry = {

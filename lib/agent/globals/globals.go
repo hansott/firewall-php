@@ -38,3 +38,9 @@ var RateLimitingMap = make(map[RateLimitingKey]*RateLimitingValue)
 
 // Rate limiting mutex used to sync access across the go routines
 var RateLimitingMutex sync.Mutex
+
+// Users map, which holds the current users and their data
+var Users = map[string]User{}
+
+// Users mutex used to sync access across the go routines
+var UsersMutex sync.Mutex

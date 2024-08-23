@@ -19,6 +19,8 @@ ZEND_END_MODULE_GLOBALS(aikido)
 
 ZEND_EXTERN_MODULE_GLOBALS(aikido)
 
+ZEND_FUNCTION(aikido_set_user);
+
 #define AIKIDO_GLOBAL(v) ZEND_MODULE_GLOBALS_ACCESSOR(aikido, v)
 
 #endif	/* PHP_AIKIDO_H */

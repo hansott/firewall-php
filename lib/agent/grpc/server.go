@@ -44,6 +44,12 @@ func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*proto
 	return getCloudConfig(), nil
 }
 
+func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
+	log.Debugf("Received user event: %s", req.GetId())
+	go onUserEvent(req.GetId(), req.GetUsername(), req.GetIp())
+	return &emptypb.Empty{}, nil
+}
+
 func StartServer(lis net.Listener) {
 	s := grpc.NewServer()
 	protos.RegisterAikidoServer(s, &server{})
