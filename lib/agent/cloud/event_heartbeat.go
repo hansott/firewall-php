@@ -11,16 +11,14 @@ func GetHostnamesAndClear() []Hostname {
 	globals.HostnamesMutex.Lock()
 	defer globals.HostnamesMutex.Unlock()
 
-	hostnames := make([]Hostname, len(globals.Hostnames))
-	i := 0
+	var hostnames []Hostname
 	for domain := range globals.Hostnames {
 		for port := range globals.Hostnames[domain] {
-			hostnames[i] = Hostname{URL: domain, Port: int64(port)}
+			hostnames = append(hostnames, Hostname{URL: domain, Port: int64(port)})
 		}
-		i++
 	}
 
-	globals.Hostnames = map[string]map[int]bool{}
+	globals.Hostnames = make(map[string]map[int]bool)
 	return hostnames
 }
 
@@ -28,14 +26,14 @@ func GetRoutesAndClear() []Route {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
 
-	routes := make([]Route, len(globals.Routes))
+	var routes []Route
 	for method, routeMap := range globals.Routes {
 		for route, hits := range routeMap {
 			routes = append(routes, Route{Path: route, Method: method, Hits: int64(hits)})
 		}
 	}
 
-	globals.Routes = map[string]map[string]int{}
+	globals.Routes = make(map[string]map[string]int)
 	return routes
 }
 
@@ -43,12 +41,12 @@ func GetUsersAndClear() []User {
 	globals.UsersMutex.Lock()
 	defer globals.UsersMutex.Unlock()
 
-	users := make([]User, len(globals.Users))
+	var users []User
 	for _, user := range globals.Users {
 		users = append(users, user)
 	}
 
-	globals.Users = map[string]User{}
+	globals.Users = make(map[string]User)
 	return users
 }
 

@@ -15,24 +15,24 @@ func storeStats() {
 	globals.StatsData.Requests += 1
 }
 
-func storeRoute(req *protos.RequestMetadataShutdown) {
+func storeRoute(method string, route string) {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
 
-	if _, ok := globals.Routes[req.GetMethod()]; !ok {
-		globals.Routes[req.GetMethod()] = make(map[string]int)
+	if _, ok := globals.Routes[method]; !ok {
+		globals.Routes[method] = make(map[string]int)
 	}
-	if _, ok := globals.Routes[req.GetMethod()][req.GetRoute()]; !ok {
-		globals.Routes[req.GetMethod()][req.GetRoute()] = 0
+	if _, ok := globals.Routes[method][route]; !ok {
+		globals.Routes[method][route] = 0
 	}
-	globals.Routes[req.GetMethod()][req.GetRoute()]++
+	globals.Routes[method][route]++
 }
 
-func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
+func updateRateLimitingStatus(method string, route string) {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
-	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
+	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: method, Route: route}]
 	if !exists {
 		return
 	}
@@ -41,15 +41,15 @@ func updateRateLimitingStatus(req *protos.RequestMetadataShutdown) {
 	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
 }
 
-func getRequestStatus(req *protos.RequestMetadataInit) *protos.RequestStatus {
+func getRequestStatus(method string, route string) *protos.RequestStatus {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
 	forwardToServer := true
 
-	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: req.GetMethod(), Route: req.GetRoute()}]
+	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: method, Route: route}]
 	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
-		log.Infof("Rate limited request for (%v) - status (%v)", req, rateLimitingData)
+		log.Infof("Rate limited request for (%s, %s) - status (%v)", method, route, rateLimitingData)
 		forwardToServer = false
 	}
 

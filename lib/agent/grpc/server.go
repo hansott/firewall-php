@@ -19,22 +19,22 @@ type server struct {
 
 func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s:%d", req.GetDomain(), req.GetPort())
-	storeDomain(req)
+	storeDomain(req.GetDomain(), int(req.GetPort()))
 	return &emptypb.Empty{}, nil
 }
 
 func (s *server) OnRequestInit(ctx context.Context, req *protos.RequestMetadataInit) (*protos.RequestStatus, error) {
 	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
 
-	return getRequestStatus(req), nil
+	return getRequestStatus(req.GetMethod(), req.GetRoute()), nil
 }
 
 func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
 	log.Debugf("Received request metadata: %s %s %d", req.GetMethod(), req.GetRoute(), req.GetStatusCode())
 
 	go storeStats()
-	go storeRoute(req)
-	go updateRateLimitingStatus(req)
+	go storeRoute(req.GetMethod(), req.GetRoute())
+	go updateRateLimitingStatus(req.GetMethod(), req.GetRoute())
 
 	return &emptypb.Empty{}, nil
 }
