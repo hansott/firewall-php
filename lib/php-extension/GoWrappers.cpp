@@ -27,6 +27,10 @@ json GoRequestProcessorOnEvent(json& event) {
     return output;
 }
 
+/*
+    If the blocking mode is set from agent (different than -1), return that.
+	Otherwise, return the env variable AIKIDO_BLOCKING.
+*/
 bool IsBlockingEnabled() {
     if (!request_processor_get_blocking_mode_fn) {
         return false;
