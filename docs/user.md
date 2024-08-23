@@ -8,7 +8,7 @@ Here's an example:
 // Get the user from your authentication middleware
 // or wherever you store the user
 if (extension_loaded('aikido')) {
-    aikido_set_user("123", "John Doe");
+    \aikido_set_user("123", "John Doe");
 }
 });
 ```

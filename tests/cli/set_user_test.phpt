@@ -9,7 +9,7 @@ AIKIDO_LOG_LEVEL=INFO
 
 $_SERVER['REMOTE_ADDR'] = '::1';
 
-$a = aikido_set_user("122-sa-2", "username1");
+$a = \aikido_set_user("122-sa-2", "username1");
 
 if ($a == true) {
     echo "User set successfully\n";
