@@ -4,13 +4,14 @@ import (
 	. "main/aikido_types"
 	"main/globals"
 	"main/log"
+	"main/utils"
 )
 
 func SendStartEvent() {
 	startedEvent := Started{
 		Type:  "started",
 		Agent: GetAgentInfo(),
-		Time:  GetTime(),
+		Time:  utils.GetTime(),
 	}
 
 	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, startedEvent)

@@ -279,3 +279,31 @@ ACTION aikido_execute_output(json event) {
 	}
 	return CONTINUE;
 }
+
+bool send_user_event(std::string id, std::string username) {
+    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+    if (!server) {
+        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
+        return false;
+    }
+
+    json inputEvent = {
+        { "event", "user_event" },
+        { "data", { 
+            { "id", id },
+            { "username", username },
+            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
+            { "xForwardedFor",  extract_server_var(server, "HTTP_X_FORWARDED_FOR") }
+        }
+        }
+    };
+
+    try {
+        json response = GoRequestProcessorOnEvent(inputEvent);
+        return true;
+    }
+    catch (const std::exception& e) {
+        AIKIDO_LOG_ERROR("Exception encountered in processing user event: %s\n", e.what());
+    }
+    return false;
+}

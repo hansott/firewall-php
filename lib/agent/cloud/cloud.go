@@ -18,7 +18,7 @@ func Init() {
 	utils.StartPollingRoutine(HeartbeatRoutineChannel, HeartBeatTicker, SendHeartbeatEvent)
 	utils.StartPollingRoutine(ConfigPollingRoutineChannel, ConfigPollingTicker, CheckConfigUpdatedAt)
 
-	globals.StatsData.StartedAt = GetTime()
+	globals.StatsData.StartedAt = utils.GetTime()
 }
 
 func Uninit() {

@@ -18,14 +18,14 @@ var CloudConfigMutex sync.Mutex
 var Machine MachineData
 
 // List of outgoing hostnames and their ports collected from the extensions
-var Hostnames = map[string]map[int]bool{}
+var Hostnames map[string]map[int]bool
 
 // Hostnames mutex used to sync access to hostnames data across the go routines
 var HostnamesMutex sync.Mutex
 
 // List of routes and their methods and count of calls collect from the extensions
 // [method][route] = hits
-var Routes = map[string]map[string]int{}
+var Routes map[string]map[string]int
 
 // Routes mutex used to sync access to routes data across the go routines
 var RoutesMutex sync.Mutex
@@ -38,3 +38,9 @@ var RateLimitingMap = make(map[RateLimitingKey]*RateLimitingValue)
 
 // Rate limiting mutex used to sync access across the go routines
 var RateLimitingMutex sync.Mutex
+
+// Users map, which holds the current users and their data
+var Users map[string]User
+
+// Users mutex used to sync access across the go routines
+var UsersMutex sync.Mutex

@@ -84,3 +84,28 @@ func getCloudConfig() *protos.CloudConfig {
 
 	return cloudConfig
 }
+
+func onUserEvent(id string, username string, ip string) {
+	globals.UsersMutex.Lock()
+	defer globals.UsersMutex.Unlock()
+
+	if _, exists := globals.Users[id]; exists {
+		globals.Users[id] = User{
+			ID:            id,
+			Name:          username,
+			LastIpAddress: ip,
+			FirstSeenAt:   globals.Users[id].FirstSeenAt,
+			LastSeenAt:    utils.GetTime(),
+		}
+		return
+	}
+
+	globals.Users[id] = User{
+		ID:            id,
+		Name:          username,
+		LastIpAddress: ip,
+		FirstSeenAt:   utils.GetTime(),
+		LastSeenAt:    utils.GetTime(),
+	}
+
+}

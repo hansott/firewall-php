@@ -11,6 +11,7 @@ service Aikido {
   rpc OnRequestInit (RequestMetadataInit) returns (RequestStatus);
   rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
+  rpc OnUser(User) returns (google.protobuf.Empty);
 }
 
 message Domain {
@@ -50,4 +51,10 @@ message CloudConfig {
 
 message RequestStatus {
   bool forwardToServer = 1;
+}
+
+message User {
+  string id = 1;
+  string username = 2;
+  string ip = 3;
 }

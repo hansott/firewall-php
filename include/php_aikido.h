@@ -6,7 +6,7 @@
 extern zend_module_entry aikido_module_entry;
 # define phpext_aikido_ptr &aikido_module_entry
 
-# define PHP_AIKIDO_VERSION "1.0.46"
+# define PHP_AIKIDO_VERSION "1.0.47"
 
 # if defined(ZTS) && defined(COMPILE_DL_AIKIDO)
 ZEND_TSRMLS_CACHE_EXTERN()
@@ -18,6 +18,8 @@ ZEND_BEGIN_MODULE_GLOBALS(aikido)
 ZEND_END_MODULE_GLOBALS(aikido)
 
 ZEND_EXTERN_MODULE_GLOBALS(aikido)
+
+ZEND_FUNCTION(aikido_set_user);
 
 #define AIKIDO_GLOBAL(v) ZEND_MODULE_GLOBALS_ACCESSOR(aikido, v)
 

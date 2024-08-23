@@ -26,10 +26,6 @@ func GetAgentInfo() AgentInfo {
 	}
 }
 
-func GetTime() int64 {
-	return time.Now().UnixMilli()
-}
-
 func ResetHeartbeatTicker() {
 	if !globals.CloudConfig.ReceivedAnyStats {
 		HeartBeatTicker.Reset(1 * time.Minute)

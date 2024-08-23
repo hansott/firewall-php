@@ -4,6 +4,7 @@ import (
 	. "main/aikido_types"
 	"main/globals"
 	"main/log"
+	"main/utils"
 )
 
 func GetHostnamesAndClear() []Hostname {
@@ -27,7 +28,7 @@ func GetRoutesAndClear() []Route {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
 
-	routes := make([]Route, 0)
+	routes := make([]Route, len(globals.Routes))
 	for method, routeMap := range globals.Routes {
 		for route, hits := range routeMap {
 			routes = append(routes, Route{Path: route, Method: method, Hits: int64(hits)})
@@ -39,7 +40,16 @@ func GetRoutesAndClear() []Route {
 }
 
 func GetUsersAndClear() []User {
-	return make([]User, 0)
+	globals.UsersMutex.Lock()
+	defer globals.UsersMutex.Unlock()
+
+	users := make([]User, len(globals.Users))
+	for _, user := range globals.Users {
+		users = append(users, user)
+	}
+
+	globals.Users = map[string]User{}
+	return users
 }
 
 func GetStatsAndClear() Stats {
@@ -49,7 +59,7 @@ func GetStatsAndClear() Stats {
 	stats := Stats{
 		Sinks:     make(map[string]MonitoredSinkStats),
 		StartedAt: globals.StatsData.StartedAt,
-		EndedAt:   GetTime(),
+		EndedAt:   utils.GetTime(),
 		Requests: Requests{
 			Total:   globals.StatsData.Requests,
 			Aborted: globals.StatsData.RequestsAborted,
@@ -60,7 +70,7 @@ func GetStatsAndClear() Stats {
 		},
 	}
 
-	globals.StatsData.StartedAt = GetTime()
+	globals.StatsData.StartedAt = utils.GetTime()
 	globals.StatsData.Requests = 0
 	globals.StatsData.RequestsAborted = 0
 	globals.StatsData.Attacks = 0
@@ -73,7 +83,7 @@ func SendHeartbeatEvent() {
 	heartbeatEvent := Heartbeat{
 		Type:      "heartbeat",
 		Agent:     GetAgentInfo(),
-		Time:      GetTime(),
+		Time:      utils.GetTime(),
 		Stats:     GetStatsAndClear(),
 		Hostnames: GetHostnamesAndClear(),
 		Routes:    GetRoutesAndClear(),

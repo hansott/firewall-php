@@ -26,14 +26,13 @@ func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Emp
 func (s *server) OnRequestInit(ctx context.Context, req *protos.RequestMetadataInit) (*protos.RequestStatus, error) {
 	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
 
-	go storeStats()
-
 	return getRequestStatus(req), nil
 }
 
 func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
 	log.Debugf("Received request metadata: %s %s %d", req.GetMethod(), req.GetRoute(), req.GetStatusCode())
 
+	go storeStats()
 	go storeRoute(req)
 	go updateRateLimitingStatus(req)
 
@@ -42,6 +41,12 @@ func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetad
 
 func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*protos.CloudConfig, error) {
 	return getCloudConfig(), nil
+}
+
+func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
+	log.Debugf("Received user event: %s", req.GetId())
+	go onUserEvent(req.GetId(), req.GetUsername(), req.GetIp())
+	return &emptypb.Empty{}, nil
 }
 
 func StartServer(lis net.Listener) {
