@@ -125,6 +125,7 @@ func OnUserEvent(id string, username string, ip string) {
 	_, err := client.OnUser(ctx, &protos.User{Id: id, Username: username, Ip: ip})
 	if err != nil {
 		log.Warnf("Could not send user event %v %v %v: %v", id, username, ip, err)
+		return
 	}
 
 	log.Debugf("User event sent via socket (%v %v %v)", id, username, ip)
