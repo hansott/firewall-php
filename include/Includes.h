@@ -78,7 +78,7 @@ typedef void (*AgentUninitFn)();
 
 typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
 typedef char* (*RequestProcessorOnEventFn)(GoString eventJson);
-typedef bool (*RequestProcessorGetBlockingModeFn)();
+typedef int (*RequestProcessorGetBlockingModeFn)();
 typedef void (*RequestProcessorUninitFn)();
 
 
