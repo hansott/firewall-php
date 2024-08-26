@@ -264,6 +264,16 @@ bool send_user_event(std::string id, std::string username) {
     return false;
 }
 
+bool aikido_echo(std::string s) {
+    AIKIDO_LOG_INFO("Calling 'echo' with '%s' of size '%d'\n", s.c_str(), s.length());
+
+    unsigned int wrote = zend_write(s.c_str(), s.length()); // echo '<message>'
+
+    AIKIDO_LOG_INFO("'echo' wrote '%d'\n", wrote);
+
+    return wrote == s.length();
+}
+
 bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval* params, zval* return_value) {
     zval _function_name;
     zend_string* _function_name_str = zend_string_init(function_name.c_str(), function_name.length(), 0);
@@ -285,7 +295,7 @@ bool aikido_call_user_function(std::string function_name, unsigned int params_nu
     if (!return_value) {
         zval_ptr_dtor(&_temp_return_value);
     }
-    AIKIDO_LOG_DEBUG("Called user function '%s' -> result %d\n", function_name.c_str(), _result);
+    AIKIDO_LOG_INFO("Called user function '%s' -> result %d\n", function_name.c_str(), _result);
     return _result == SUCCESS;
 }
 

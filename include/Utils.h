@@ -85,6 +85,7 @@ json get_context();
 
 bool send_user_event(std::string id, std::string username);
 
+bool aikido_echo(std::string s);
 
 bool aikido_call_user_function(std::string function_name, unsigned int params_number = 0, zval* params = nullptr, zval* return_value = nullptr);
 
