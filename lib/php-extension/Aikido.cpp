@@ -25,7 +25,7 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	std::string log_level = get_env_string("AIKIDO_LOG_LEVEL", "DEBUG");
+	std::string log_level = get_env_string("AIKIDO_LOG_LEVEL", "INFO");
 	std::string token = get_env_string("AIKIDO_TOKEN", "");
 	std::string endpoint = get_env_string("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
 	std::string config_endpoint = get_env_string("AIKIDO_CONFIG_ENDPOINT", "https://runtime.aikido.dev/");
