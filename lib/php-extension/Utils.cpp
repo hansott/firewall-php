@@ -272,10 +272,10 @@ bool aikido_echo(std::string message) {
 
 bool aikido_exit() {
 #if PHP_VERSION_ID >= 80000
-    zend_throw_unwind_exit(); // exit()
-    AIKIDO_LOG_INFO("Called 'exit' -> result 1\n");
+    int _result = zend_eval_stringl("exit();", strlen("exit();"), NULL, "aikido php code (exit action)");
+    AIKIDO_LOG_INFO("Called 'exit' eval -> result %d\n", _result == SUCCESS);
 #endif
-    return true;
+    return _result == SUCCESS;
 }
 
 bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval* params, zval* return_value) {

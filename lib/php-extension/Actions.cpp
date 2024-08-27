@@ -16,7 +16,8 @@ ACTION aikido_execute_output_exit(json event) {
     aikido_call_user_function_one_param("http_response_code", _response_code);
     aikido_call_user_function_one_param("header", "Content-Type: text/plain");
     aikido_echo(_message);
-    aikido_exit();
+    aikido_call_user_function("exit");
+    //aikido_exit();
     return EXIT;
 }
 
