@@ -265,6 +265,7 @@ bool send_user_event(std::string id, std::string username) {
 }
 
 bool aikido_echo(std::string s) {
+    /*
     int size_s = std::snprintf(nullptr, 0, "echo '%s';", s.c_str());
     if (size_s <= 0) {
         throw std::runtime_error("Error during formatting.");
@@ -277,15 +278,14 @@ bool aikido_echo(std::string s) {
     int _result = zend_eval_stringl(php_code.get(), size - 1, NULL, "aikido php code (echo action)");
     AIKIDO_LOG_INFO("Calling 'echo' eval (%s) -> result %d\n", php_code.get(), _result == SUCCESS);
     return _result == SUCCESS;
-    /*
+    */
+    
     AIKIDO_LOG_INFO("Calling 'echo' with '%s' of size '%d'\n", s.c_str(), s.length());
-
+    
     unsigned int wrote = zend_write(s.c_str(), s.length()); // echo '<message>'
 
     AIKIDO_LOG_INFO("'echo' wrote '%d'\n", wrote);
-
     return wrote == s.length();
-    */
 }
 
 bool aikido_exit() {
