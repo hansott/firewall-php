@@ -274,6 +274,12 @@ bool aikido_echo(std::string s) {
     return wrote == s.length();
 }
 
+bool aikido_exit() {
+    int _result = zend_eval_stringl("exit();", strlen("exit();"), NULL, "aikido php code (exit action)");
+    AIKIDO_LOG_INFO("Calling 'exit' eval -> result %d\n", _result == SUCCESS);
+    return _result == SUCCESS;
+}
+
 bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval* params, zval* return_value) {
     zval _function_name;
     zend_string* _function_name_str = zend_string_init(function_name.c_str(), function_name.length(), 0);
@@ -295,7 +301,7 @@ bool aikido_call_user_function(std::string function_name, unsigned int params_nu
     if (!return_value) {
         zval_ptr_dtor(&_temp_return_value);
     }
-    AIKIDO_LOG_INFO("Called user function '%s' -> result %d\n", function_name.c_str(), _result);
+    AIKIDO_LOG_INFO("Called user function '%s' -> result %d\n", function_name.c_str(), _result == SUCCESS);
     return _result == SUCCESS;
 }
 

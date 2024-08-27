@@ -6,7 +6,7 @@
 extern zend_module_entry aikido_module_entry;
 # define phpext_aikido_ptr &aikido_module_entry
 
-# define PHP_AIKIDO_VERSION "1.0.51"
+# define PHP_AIKIDO_VERSION "1.0.52"
 
 # if defined(ZTS) && defined(COMPILE_DL_AIKIDO)
 ZEND_TSRMLS_CACHE_EXTERN()

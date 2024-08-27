@@ -11,7 +11,7 @@ ACTION aikido_execute_output_exit(json event) {
     int _response_code = event["response_code"].get<int>();
     std::string _message = event["message"].get<std::string>();
 
-    aikido_call_user_function("ob_clean");
+    //aikido_call_user_function("ob_clean");
     aikido_call_user_function("header_remove");
     aikido_call_user_function_one_param("http_response_code", _response_code);
     aikido_call_user_function_one_param("header", "Content-Type: text/plain");
@@ -19,7 +19,7 @@ ACTION aikido_execute_output_exit(json event) {
     aikido_echo(_message);
 
 #if PHP_VERSION_ID >= 80000
-    zend_throw_unwind_exit(); // exit
+    aikido_exit();
 #endif
     
     return EXIT;
