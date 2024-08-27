@@ -271,8 +271,10 @@ bool aikido_echo(std::string message) {
 }
 
 bool aikido_exit() {
+#if PHP_VERSION_ID >= 80000
     zend_throw_unwind_exit(); // exit()
     AIKIDO_LOG_INFO("Called 'exit' -> result 1\n");
+#endif
     return true;
 }
 
