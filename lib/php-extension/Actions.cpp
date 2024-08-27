@@ -12,7 +12,7 @@ ACTION aikido_execute_output_exit(json event) {
     std::string _message = event["message"].get<std::string>();
 
     //aikido_call_user_function("ob_clean");
-    aikido_call_user_function("header_remove");
+    //aikido_call_user_function("header_remove");
     aikido_call_user_function_one_param("http_response_code", _response_code);
     aikido_call_user_function_one_param("header", "Content-Type: text/plain");
 
