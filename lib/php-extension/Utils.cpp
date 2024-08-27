@@ -272,6 +272,7 @@ bool aikido_echo(std::string s) {
     size_s += 1;
     auto size = static_cast<size_t>(size_s);
     std::unique_ptr<char[]> php_code(new char[size]);
+    std::snprintf(php_code.get(), size, "echo '%s';", s.c_str());
 
     int _result = zend_eval_stringl(php_code.get(), size - 1, NULL, "aikido php code (echo action)");
     AIKIDO_LOG_INFO("Calling 'echo' eval (%s) -> result %d\n", php_code.get(), _result == SUCCESS);
