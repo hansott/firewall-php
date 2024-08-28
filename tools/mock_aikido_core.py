@@ -1,65 +1,68 @@
 from flask import Flask, request, jsonify
 import sys
+import os
+import json
+import time
 
 app = Flask(__name__)
 
 responses = {
-    "/config": {},
-    "/api/runtime/config": {},
-    "/api/runtime/events": {},
+    "config": {},
+    "configUpdatedAt": {},
 }
 
 events = []
 
 
-def update_response(response_key, response_value):
-    responses[response_key] = response_value
-
-
 @app.route('/config', methods=['GET'])
 def get_config():
-    return jsonify(responses["/config"])
+    return jsonify(responses["configUpdatedAt"])
 
 
 @app.route('/api/runtime/config', methods=['GET'])
 def get_runtime_config():
-    return jsonify(responses["/api/runtime/config"])
+    return jsonify(responses["config"])
 
 
 @app.route('/api/runtime/events', methods=['POST'])
 def post_events():
     print(request.get_json())
     events.append(request.get_json())
-    return jsonify(responses["/api/runtime/events"])
+    return jsonify(responses["config"])
 
 
-@app.route('/mock/set/config', methods=['POST'])
+@app.route('/mock/config', methods=['POST'])
 def mock_set_config():
-    update_response("/config", request.get_json())
+    responses["config"] = request.get_json()
+    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": int(time.time()) }
     return jsonify({})
 
 
-@app.route('/mock/set/api/runtime/config', methods=['POST'])
-def mock_set_runtime_config():
-    update_response("/api/runtime/config", request.get_json())
-    return jsonify({})
-
-
-@app.route('/mock/set/api/runtime/events', methods=['POST'])
-def mock_set_events():
-    update_response("/api/runtime/events", request.get_json())
-    return jsonify({})
-
-
-@app.route('/mock/get/events', methods=['POST'])
+@app.route('/mock/events', methods=['GET'])
 def mock_get_events():
     return jsonify(events)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python mock_server.py <port>")
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: python mock_server.py <port> [config_file]")
         sys.exit(1)
     
     port = int(sys.argv[1])
+    
+    if len(sys.argv) == 3:
+        config_file = sys.argv[2]
+        if os.path.exists(config_file):
+            try:
+                with open(config_file, 'r') as file:
+                    responses["config"] = json.load(file)
+                    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": int(time.time()) }
+                    print(f"Loaded runtime config from {config_file}")
+            except json.JSONDecodeError:
+                print(f"Error: Could not decode JSON from {config_file}")
+                sys.exit(-1)
+        else:
+            print(f"Error: File {config_file} not found")
+            sys.exit(-1)
+    
     app.run(host='127.0.0.1', port=port)
