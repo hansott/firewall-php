@@ -33,8 +33,10 @@ def post_events():
 
 @app.route('/mock/config', methods=['POST'])
 def mock_set_config():
+    configUpdatedAt = int(time.time())
     responses["config"] = request.get_json()
-    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": int(time.time()) }
+    responses["config"]["configUpdatedAt"] = configUpdatedAt
+    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
     return jsonify({})
 
 
@@ -55,8 +57,10 @@ if __name__ == '__main__':
         if os.path.exists(config_file):
             try:
                 with open(config_file, 'r') as file:
+                    configUpdatedAt = int(time.time())
                     responses["config"] = json.load(file)
-                    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": int(time.time()) }
+                    responses["config"]["configUpdatedAt"] = configUpdatedAt
+                    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
                     print(f"Loaded runtime config from {config_file}")
             except json.JSONDecodeError:
                 print(f"Error: Could not decode JSON from {config_file}")

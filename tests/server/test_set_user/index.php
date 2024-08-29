@@ -6,5 +6,4 @@ if ($a == true) {
 } else {
     echo "User set failed\n";
 }
-
 ?>
