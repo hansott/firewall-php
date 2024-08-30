@@ -5,26 +5,14 @@
     "endpoints": [
         {
             "method": "GET",
-            "route": "\/",
-            "forceProtectionOff": false,
-            "graphql": null,
-            "allowedIPAddresses": [],
-            "rateLimiting": {
-                "enabled": true,
-                "maxRequests": 20,
-                "windowSizeInMS": 600000
-            }
-        },
-        {
-            "method": "GET",
             "route": "\/test",
             "forceProtectionOff": false,
             "graphql": null,
             "allowedIPAddresses": [],
             "rateLimiting": {
                 "enabled": true,
-                "maxRequests": 100,
-                "windowSizeInMS": 60000
+                "maxRequests": 30,
+                "windowSizeInMS": 600000
             }
         }
     ],

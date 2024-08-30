@@ -64,9 +64,9 @@ if __name__ == '__main__':
                     print(f"Loaded runtime config from {config_file}")
             except json.JSONDecodeError:
                 print(f"Error: Could not decode JSON from {config_file}")
-                sys.exit(-1)
+                sys.exit(1)
         else:
             print(f"Error: File {config_file} not found")
-            sys.exit(-1)
+            sys.exit(1)
     
     app.run(host='127.0.0.1', port=port)

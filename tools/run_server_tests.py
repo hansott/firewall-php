@@ -58,18 +58,18 @@ def handle_test_scenario(test_dir, test_lib_dir):
         subprocess.run(['python', 'test.py', str(php_port), str(mock_port)], 
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
                        cwd=test_dir,
-                       check=True, timeout=180)
+                       check=True, timeout=600)
 
     except subprocess.CalledProcessError as e:
         print(f"Error in testing scenario {test_name}:")
         print(f"Test output: {e.output}")
 
-        sys.exit(-1)
+        sys.exit(1)
         
     except subprocess.TimeoutExpired:
         print(f"Error in testing scenario {test_name}:")
         print(f"Execution timed out.")
-        sys.exit(-1)
+        sys.exit(1)
         
     finally:
         if php_server_process:

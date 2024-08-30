@@ -3,6 +3,12 @@ import time
 import sys
 from testlib import *
 
+'''
+1. Sets up the allowed IP address config for route '/test'. Checks that requests are blocked.
+2. Changes the config to remote the allowed IP address. Checks that requests are passing.
+3. Changes the config again to enable allowed IP address. Checks that requests are blocked.
+'''
+
 
 def run_test(php_port, mock_port):
     response = php_server_get(php_port, "/test")

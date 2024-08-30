@@ -3,6 +3,12 @@ import time
 import sys
 from testlib import *
 
+'''
+1. Sets up receiveAnyStats to true.
+2. Checks that the 'started' event is valid.
+3. After 1 minute, verifies that the hearbeat events was not yet sent.
+'''
+
 def run_test(php_port, mock_port):
     php_server_get(php_port, "/")
     
