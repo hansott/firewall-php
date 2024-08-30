@@ -36,7 +36,7 @@ def handle_test_scenario(test_dir, test_lib_dir):
 
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
-        mock_aikido_core = subprocess.Popen(['python', 'mock_aikido_core.py', str(mock_port), config_path])
+        mock_aikido_core = subprocess.Popen(['python3', 'mock_aikido_core.py', str(mock_port), config_path])
         time.sleep(2)
 
         print(f"Starting PHP server on port {php_port} for {test_name}...")
