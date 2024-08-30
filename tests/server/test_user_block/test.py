@@ -19,7 +19,7 @@ def run_test(php_port, mock_port):
 
     mock_server_set_config_file(mock_port, "change_config_remove_blocked_user.json")
     
-    time.sleep(120)
+    mock_server_wait_for_new_events(mock_port, 120)
     
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 200)
@@ -27,7 +27,7 @@ def run_test(php_port, mock_port):
     
     mock_server_set_config_file(mock_port, "start_config.json")
     
-    time.sleep(120)
+    mock_server_wait_for_new_events(mock_port, 120)
     
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 403)

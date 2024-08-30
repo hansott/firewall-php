@@ -17,7 +17,7 @@ from testlib import *
 def run_test(php_port, mock_port):
     php_server_get(php_port, "/")
     
-    time.sleep(60 + 10)
+    mock_server_wait_for_new_events(mock_port, 70)
     
     events = mock_server_get_events(mock_port)
     assert_events_length_is(events, 2)

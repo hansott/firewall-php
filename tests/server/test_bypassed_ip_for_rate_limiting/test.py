@@ -16,7 +16,7 @@ def run_test(php_port, mock_port):
         assert_response_code_is(response, 200)
         
     mock_server_set_config_file(mock_port, "change_config_remove_bypassed_ip.json")
-    time.sleep(120)
+    mock_server_wait_for_new_events(mock_port, 120)
 
     for i in range(100):
         response = php_server_get(php_port, "/")
@@ -28,7 +28,7 @@ def run_test(php_port, mock_port):
             assert_reponse_body_contains(response, "This request was rate limited by Aikido Security!")
 
     mock_server_set_config_file(mock_port, "start_config.json")
-    time.sleep(120)  
+    mock_server_wait_for_new_events(mock_port, 120)  
     
     for _ in range(100):
         response = php_server_get(php_port, "/test")

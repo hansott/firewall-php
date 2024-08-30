@@ -93,3 +93,13 @@ def assert_reponse_header_contains(response, header, value):
 
 def assert_reponse_body_contains(response, text):
     assert text in response.text, f"Test '{text}' is not part of response body: {response.text}"
+    
+def mock_server_wait_for_new_events(port, max_wait_time):
+    initial_number_of_events = len(mock_server_get_events(port))
+    while max_wait_time > 0:
+        if len(mock_server_get_events(port)) > initial_number_of_events:
+            return True
+        time.sleep(5)
+        max_wait_time -= 5
+        
+    return False
