@@ -14,6 +14,13 @@ def generate_unique_port():
             used_ports.add(port)
             return port
 
+def load_env_from_json(file_path):
+    if not os.path.exists(file_path):
+        return {}
+
+    with open(file_path) as f:
+        env_vars = json.load(f)
+        return env_vars
 
 def handle_test_scenario(test_dir, test_lib_dir):
     try:
@@ -24,6 +31,7 @@ def handle_test_scenario(test_dir, test_lib_dir):
         test_name = os.path.basename(os.path.normpath(test_dir))
 
         config_path = os.path.join(test_dir, 'start_config.json')
+        env_file_path = os.path.join(test_dir, 'start_env.json')
 
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
@@ -32,11 +40,12 @@ def handle_test_scenario(test_dir, test_lib_dir):
 
         print(f"Starting PHP server on port {php_port} for {test_name}...")
         env = os.environ.copy()
+        env.update(load_env_from_json(env_file_path))
         env.update({
             'AIKIDO_LOG_LEVEL': 'DEBUG',
             'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
-            'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/'
+            'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
         })
         php_server_process = subprocess.Popen(
             ['php', '-S', f'localhost:{php_port}', '-t', test_dir],

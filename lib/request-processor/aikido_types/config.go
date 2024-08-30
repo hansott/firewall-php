@@ -1,9 +1,10 @@
 package aikido_types
 
 type InitConfigData struct {
-	LogLevel   string `json:"log_level"`
-	SAPI       string `json:"sapi"`
-	TrustProxy bool   `json:"trust_proxy"`
+	LogLevel                  string `json:"log_level"`
+	SAPI                      string `json:"sapi"`
+	TrustProxy                bool   `json:"trust_proxy"`
+	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"`
 }
 
 type RateLimiting struct {

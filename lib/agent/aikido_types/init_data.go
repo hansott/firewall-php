@@ -9,11 +9,12 @@ type MachineData struct {
 }
 
 type EnvironmentConfigData struct {
-	Token          string `json:"token,omitempty"`
-	LogLevel       string `json:"log_level,omitempty"`
-	Endpoint       string `json:"endpoint,omitempty"`
-	ConfigEndpoint string `json:"config_endpoint,omitempty"`
-	Blocking       bool   `json:"blocking,omitempty"`
+	Token                     string `json:"token,omitempty"`
+	LogLevel                  string `json:"log_level,omitempty"`
+	Endpoint                  string `json:"endpoint,omitempty"`
+	ConfigEndpoint            string `json:"config_endpoint,omitempty"`
+	Blocking                  bool   `json:"blocking,omitempty"`
+	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"`
 }
 
 type RateLimiting struct {

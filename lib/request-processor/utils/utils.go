@@ -117,14 +117,14 @@ func isLocalhost(ip string) bool {
 }
 
 func IsIpAllowed(allowedIps map[string]bool, ip string) bool {
-	return isLocalhost(ip) || len(allowedIps) == 0 || KeyExists(allowedIps, ip)
+	return (globals.InitData.LocalhostAllowedByDefault && isLocalhost(ip)) || len(allowedIps) == 0 || KeyExists(allowedIps, ip)
 }
 
 func IsIpBypassed(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	return isLocalhost(ip) || KeyExists(globals.CloudConfig.BypassedIps, ip)
+	return (globals.InitData.LocalhostAllowedByDefault && isLocalhost(ip)) || KeyExists(globals.CloudConfig.BypassedIps, ip)
 }
 
 func getIpFromXForwardedFor(value string) string {
