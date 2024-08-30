@@ -23,7 +23,7 @@ func OnUserEvent(data map[string]interface{}) string {
 	go grpc.OnUserEvent(id, username, ip)
 
 	if utils.IsUserBlocked(id) {
-		return `{"action": "exit", "message": "Your are blocked by Aikido Firewall!", "response_code": 403}`
+		return `{"action": "exit", "message": "You are blocked by Aikido Firewall!", "response_code": 403}`
 	}
 
 	return "{}"

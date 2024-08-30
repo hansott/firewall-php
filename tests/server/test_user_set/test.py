@@ -3,6 +3,17 @@ import time
 import sys
 from testlib import *
 
+import requests
+import time
+import sys
+from testlib import *
+
+'''
+1. Sets up a simple config with receivedAnyStats = false (so heartbeat will be sent after 1 minute).
+2. Sends a get request (on the PHP side a user will be set).
+3. Waits for 1 minute and checks if the user is present in the hearbeat request.
+'''
+
 def run_test(php_port, mock_port):
     php_server_get(php_port, "/")
     
