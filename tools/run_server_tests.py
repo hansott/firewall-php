@@ -4,6 +4,7 @@ import subprocess
 import random
 import time
 import sys
+import json
 
 used_ports = set()
 
@@ -31,7 +32,7 @@ def handle_test_scenario(test_dir, test_lib_dir):
         test_name = os.path.basename(os.path.normpath(test_dir))
 
         config_path = os.path.join(test_dir, 'start_config.json')
-        env_file_path = os.path.join(test_dir, 'start_env.json')
+        env_file_path = os.path.join(test_dir, 'env.json')
 
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
@@ -82,25 +83,21 @@ def handle_test_scenario(test_dir, test_lib_dir):
             print(f"Mock server on port {mock_port} stopped.")
 
 
-def main(root_tests_dir, test_lib_dir):
-    test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
-    threads = []
-
-    for test_dir in test_dirs:
-        handle_test_scenario(test_dir, test_lib_dir)
-        #thread = threading.Thread(target=handle_test_scenario, args=(test_dir,test_lib_dir))
-        #threads.append(thread)
-        #thread.start()
-
-    # Wait for all threads to complete.
-    # for thread in threads:
-    #     thread.join()
+def main(root_tests_dir, test_lib_dir, specific_test=None):
+    if specific_test:
+        specific_test = os.path.join(root_tests_dir, specific_test)
+        handle_test_scenario(specific_test, test_lib_dir)
+    else:
+        test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
+        for test_dir in test_dirs:
+            handle_test_scenario(test_dir, test_lib_dir)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python script.py <root_folder_path> <test_lib_dir>")
+        print("Usage: python script.py <root_folder_path> <test_lib_dir> [specific_test]")
         exit(1)
 
     root_folder = os.path.abspath(sys.argv[1])
     test_lib_dir = os.path.abspath(sys.argv[2])
-    main(root_folder, test_lib_dir)
+    specific_test = sys.argv[3] if len(sys.argv) > 3 else None
+    main(root_folder, test_lib_dir, specific_test)

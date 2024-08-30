@@ -366,6 +366,11 @@ jobs:
           php -v
           php -i
 
+      - name: Setup Python
+        run: |
+          pip3 install flask -y
+          python --version
+
       - name: Install DEB
         run: |
           sudo dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}

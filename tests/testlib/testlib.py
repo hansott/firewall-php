@@ -6,14 +6,29 @@ import json
 def localhost_get_request(port, route=""):
     return requests.get(f"http://localhost:{port}{route}")
 
+def localhost_post_request(port, route, data):
+    return requests.post(f"http://localhost:{port}{route}", json=data)
+
 def php_server_get(port, route=""):
     return localhost_get_request(port, route)
 
 def mock_server_get(port, route=""):
     return localhost_get_request(port, route)
 
+def mock_server_post(port, route, data):
+    return localhost_post_request(port, route, data)
+
 def mock_server_get_events(port):
     return mock_server_get(port, "/mock/events").json()
+
+def mock_server_set_config(port, config):
+    return mock_server_post(port, "/mock/config", config)
+
+def mock_server_set_config_file(port, config_file):
+    config = None
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+    return mock_server_post(port, "/mock/config", config)
 
 def assert_events_length_is(events, length):
     assert isinstance(events, list), "Error: Events is not a list."
@@ -73,8 +88,8 @@ def assert_response_code_is(response, status_code):
     assert response.status_code == status_code, f"Status codes are not the same: {response.status_code} vs {status_code}"
     
 def assert_reponse_header_contains(response, header, value):
-    assert header in response.headers, f"Header {header} is not part of response headers: {response.headers}"
-    assert value in response.headers, f"Header {header} does not contain the expected value: {value}"
+    assert header in response.headers, f"Header '{header}' is not part of response headers: {response.headers}"
+    assert value in response.headers[header], f"Header '{header}' does not contain '{value}' but '{response.headers[header]}'"
 
 def assert_reponse_body_contains(response, text):
-    assert text in response.text, f"Header {header} is not part of response headers: {response.headers}"
+    assert text in response.text, f"Test '{text}' is not part of response body: {response.text}"
