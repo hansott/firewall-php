@@ -52,10 +52,13 @@ def assert_event_contains_subset(event, event_subset, dry_mode=False):
     print(f"Search {event_subset} in {event} (dry_mode = {dry_mode})")
     
     if isinstance(event_subset, dict):
+        found_all_keys = True
         for key, value in event_subset.items():
             if key not in event:
                 return result(AssertionError(f"Key '{key}' not found in '{event}'."))
-            return assert_event_contains_subset(event[key], value, dry_mode)
+            if not assert_event_contains_subset(event[key], value, dry_mode):
+                found_all_keys = False
+        return found_all_keys
     elif isinstance(event_subset, list):
         if not isinstance(event, list):
             return result(AssertionError(f"Expected a list in event but found '{event}'."))
