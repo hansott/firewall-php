@@ -317,7 +317,7 @@ jobs:
 
       - name: Run simple server tests
         run: |
-          ls -l /opt/aikido/
+          ls -l /opt/aikido-${{ env.AIKIDO_VERSION }}/
           ls -l /var/log/aikido-${{ env.AIKIDO_VERSION }}/
           cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
           sestatus
