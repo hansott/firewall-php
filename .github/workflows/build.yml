@@ -380,7 +380,7 @@ jobs:
         run: |
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          python ../run_server_tests.py ../tests/server ../tests/testlib
+          python run_server_tests.py ../tests/server ../tests/testlib
           cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
       
       - name: Archive test artifacts

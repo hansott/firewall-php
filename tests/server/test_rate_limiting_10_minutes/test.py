@@ -7,6 +7,7 @@ def run_test(php_port, mock_port):
     for _ in range(5):
         response = php_server_get(php_port, "/")
         assert_response_code_is(response, 200)
+        assert_reponse_body_contains(response, "Something")
         
     for _ in range(5):
         response = php_server_get(php_port, "/")
@@ -17,6 +18,7 @@ def run_test(php_port, mock_port):
     for _ in range(100):
         response = php_server_get(php_port, "/test")
         assert_response_code_is(response, 200)
+        assert_reponse_body_contains(response, "Something")
         
     
 if __name__ == "__main__":

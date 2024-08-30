@@ -4,9 +4,11 @@ import sys
 from testlib import *
 
 def run_test(php_port, mock_port):
-    for _ in range(6):
+    for _ in range(5):
         response = php_server_get(php_port, "/")
         assert_response_code_is(response, 200)
+        
+    sleep(0.5)
         
     for _ in range(5):
         response = php_server_get(php_port, "/")
