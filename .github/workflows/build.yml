@@ -324,6 +324,7 @@ jobs:
       - name: Cat aikido logs
         if: always()
         run: |
+          sestatus
           cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
 
       - name: Archive test artifacts
