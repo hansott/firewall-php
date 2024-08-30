@@ -55,7 +55,7 @@ def handle_test_scenario(test_dir, test_lib_dir):
         time.sleep(2)
 
         print(f"Running test.py for {test_name}...")
-        subprocess.run(['python', 'test.py', str(php_port), str(mock_port)], 
+        subprocess.run(['python3', 'test.py', str(php_port), str(mock_port)], 
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
                        cwd=test_dir,
                        check=True, timeout=600)
