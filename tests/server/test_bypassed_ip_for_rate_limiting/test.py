@@ -12,14 +12,14 @@ from testlib import *
 
 def run_test(php_port, mock_port):
     for _ in range(100):
-        response = php_server_get(php_port, "/")
+        response = php_server_get(php_port, "/test")
         assert_response_code_is(response, 200)
         
     mock_server_set_config_file(mock_port, "change_config_remove_bypassed_ip.json")
     mock_server_wait_for_new_events(mock_port, 120)
 
     for i in range(100):
-        response = php_server_get(php_port, "/")
+        response = php_server_get(php_port, "/test")
         if i < 10:
             assert_response_code_is(response, 200)
         else:

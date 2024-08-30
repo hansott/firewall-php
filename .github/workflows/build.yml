@@ -283,6 +283,7 @@ jobs:
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
           yum -y install python3
           pip3 install flask
+          pip3 install requests
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
