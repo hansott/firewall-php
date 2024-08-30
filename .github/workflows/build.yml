@@ -383,9 +383,9 @@ jobs:
 
       - name: Run CLI Server tests
         run: |
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          sudo export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          python run_server_tests.py ../tests/server ../tests/testlib
+          sudo python run_server_tests.py ../tests/server ../tests/testlib
 
       - name: Print aikido logs
         if: always()
