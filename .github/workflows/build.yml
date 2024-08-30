@@ -321,6 +321,11 @@ jobs:
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib
 
+      - name: Cat aikido logs
+        if: always()
+        run: |
+          cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
