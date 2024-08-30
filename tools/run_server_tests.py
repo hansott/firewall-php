@@ -23,10 +23,10 @@ def handle_test_scenario(test_dir, test_lib_dir):
 
         test_name = os.path.basename(os.path.normpath(test_dir))
 
-        config_path = os.path.join(test_dir, 'config.json')
+        config_path = os.path.join(test_dir, 'start_config.json')
 
         print(f"Running {test_name}...")
-        print(f"Starting mock server on port {mock_port} with config.json for {test_name}...")
+        print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
         mock_aikido_core = subprocess.Popen(['python', 'mock_aikido_core.py', str(mock_port), config_path])
         time.sleep(2)
 

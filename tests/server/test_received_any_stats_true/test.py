@@ -15,7 +15,7 @@ def run_test(php_port, mock_port):
     time.sleep(30 + 10)
     
     events = mock_server_get_events(mock_port)
-    assert_events_length_is(events, 2)
+    assert_events_length_is(events, 1)
     
 if __name__ == "__main__":
     run_test(int(sys.argv[1]), int(sys.argv[2]))

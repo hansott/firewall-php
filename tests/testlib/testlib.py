@@ -68,3 +68,13 @@ def assert_event_contains_subset_file(event, event_subset_file):
 
 def assert_started_event_is_valid(event):
     assert_event_contains_subset(event, {"type": "started", "agent": { "library": "firewall-php" } })
+    
+def assert_response_code_is(response, status_code):
+    assert response.status_code == status_code, f"Status codes are not the same: {response.status_code} vs {status_code}"
+    
+def assert_reponse_header_contains(response, header, value):
+    assert header in response.headers, f"Header {header} is not part of response headers: {response.headers}"
+    assert value in response.headers, f"Header {header} does not contain the expected value: {value}"
+
+def assert_reponse_body_contains(response, text):
+    assert text in response.text, f"Header {header} is not part of response headers: {response.headers}"

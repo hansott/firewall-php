@@ -260,7 +260,7 @@ jobs:
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
 
-  test_centos_php_cli:
+  test_php_centos:
     runs-on: ubuntu-latest
     container:
       image: centos:latest
@@ -312,16 +312,23 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
+      - name: Run CLI Server tests
+        run: |
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          cd tools
+          python ../run_server_tests.py ../tests/server ../tests/testlib
+          cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-test-results-centos-php-${{ matrix.php_version }}
+          name: test-results-php-centos-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
 
-  test_ubuntu_php_cli:
+  test_php_ubuntu:
     runs-on: ${{ matrix.os }}
     needs: [ build_deb ]
     strategy:
@@ -368,12 +375,19 @@ jobs:
           cd ${{ github.workspace }}
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
+
+      - name: Run CLI Server tests
+        run: |
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          cd tools
+          python ../run_server_tests.py ../tests/server ../tests/testlib
+          cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-test-results-ubuntu-php-${{ matrix.php_version }}
+          name: test-results-php-ubuntu-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
