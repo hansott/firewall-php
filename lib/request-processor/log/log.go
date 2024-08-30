@@ -114,7 +114,7 @@ func SetLogLevel(level string) error {
 func Init() {
 	currentTime := time.Now()
 	timeStr := currentTime.Format("20060102150405")
-	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%d-%s.log", os.Getpid(), timeStr)
+	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%s-%d.log", timeStr, os.Getpid())
 
 	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
