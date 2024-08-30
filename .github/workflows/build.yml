@@ -368,7 +368,7 @@ jobs:
 
       - name: Setup Python
         run: |
-          pip3 install flask -y
+          pip3 install flask --no-input
           python --version
 
       - name: Install DEB
