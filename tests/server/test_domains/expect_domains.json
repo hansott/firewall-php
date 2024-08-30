@@ -20,7 +20,7 @@
         },
         {
             "hostname": "www.aikido.dev",
-            "port": 80
+            "port": 81
         }
     ],
     "routes": [
