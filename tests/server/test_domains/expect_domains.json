@@ -1,0 +1,33 @@
+{
+    "type": "heartbeat",
+    "stats": {
+        "requests": {
+            "total": 1
+        }
+    },
+    "hostnames": [
+        {
+            "hostname": "example.com",
+            "port": 443
+        },
+        {
+            "hostname": "httpbin.org",
+            "port": 443
+        },
+        {
+            "hostname": "facebook.com",
+            "port": 443
+        },
+        {
+            "hostname": "www.aikido.dev",
+            "port": 80
+        }
+    ],
+    "routes": [
+        {
+            "path": "/",
+            "method": "GET",
+            "count": 1
+        }
+    ]
+}

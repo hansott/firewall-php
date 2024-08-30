@@ -55,7 +55,7 @@ def assert_event_contains_subset(event, event_subset, dry_mode=False):
         for key, value in event_subset.items():
             if key not in event:
                 return result(AssertionError(f"Key '{key}' not found in '{event}'."))
-            assert_event_contains_subset(event[key], value)
+            assert_event_contains_subset(event[key], value, dry_mode)
     elif isinstance(event_subset, list):
         if not isinstance(event, list):
             return result(AssertionError(f"Expected a list in event but found '{event}'."))

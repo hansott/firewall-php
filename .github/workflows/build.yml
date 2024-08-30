@@ -317,6 +317,10 @@ jobs:
 
       - name: Run simple server tests
         run: |
+          ls -l /opt/aikido/
+          ls -l /var/log/aikido-${{ env.AIKIDO_VERSION }}/
+          cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+          sestatus
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib
@@ -324,14 +328,13 @@ jobs:
       - name: Cat aikido logs
         if: always()
         run: |
-          sestatus
           cat /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
 
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-php-centos-${{ matrix.php_version }}
+          name: test-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
@@ -400,7 +403,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-php-ubuntu-${{ matrix.php_version }}
+          name: test-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-ubuntu-${{ matrix.os }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
