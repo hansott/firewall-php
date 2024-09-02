@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-var InitData InitConfigData
+var EnvironmentConfig EnvironmentConfigData
 
 var CloudConfig CloudConfigData
 var CloudConfigMutex sync.Mutex

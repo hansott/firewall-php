@@ -18,6 +18,7 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h>
 #include <net/if.h>
+#include <random>
 
 #include "ext/standard/info.h"
 #include "GoCGO.h"
@@ -25,7 +26,7 @@
 
 #include "3rdparty/json.hpp"
 
-using namespace std;
+    using namespace std;
 using json = nlohmann::json;
 
 /* For compatibility with older PHP versions */

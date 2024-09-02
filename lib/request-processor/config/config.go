@@ -10,15 +10,19 @@ import (
 func Init(initJson string) {
 	globals.CloudConfig.Block = -1
 
-	err := json.Unmarshal([]byte(initJson), &globals.InitData)
+	err := json.Unmarshal([]byte(initJson), &globals.EnvironmentConfig)
 	if err != nil {
 		panic(fmt.Sprintf("Error parsing JSON: %s", err))
 	}
 
-	if globals.InitData.SAPI != "cli" {
+	if globals.EnvironmentConfig.SocketPath == "" {
+		panic("Socket path not set!")
+	}
+
+	if globals.EnvironmentConfig.SAPI != "cli" {
 		log.Init()
 	} else {
-		if err := log.SetLogLevel(globals.InitData.LogLevel); err != nil {
+		if err := log.SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
 			panic(fmt.Sprintf("Error setting log level: %s", err))
 		}
 	}

@@ -30,9 +30,11 @@ PHP_MINIT_FUNCTION(aikido)
 	std::string endpoint = get_env_string("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
 	std::string config_endpoint = get_env_string("AIKIDO_CONFIG_ENDPOINT", "https://runtime.aikido.dev/");
 	bool blocking = get_env_bool("AIKIDO_BLOCKING", false);
+	bool localhost_allowed_by_default = get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true);
 
 	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
 	AIKIDO_GLOBAL(blocking) = blocking;
+	AIKIDO_GLOBAL(socket_path) = aikido_generate_socket_path();
 
 	AIKIDO_LOG_INFO("MINIT started!\n");
 
@@ -90,12 +92,13 @@ PHP_MINIT_FUNCTION(aikido)
 	}
 
 	json initData = {
-		{ "token", token },
-		{ "endpoint", endpoint },
-		{ "config_endpoint", config_endpoint },
-		{ "log_level", log_level },
-		{ "blocking", blocking }
-	};
+		{"token", token},
+		{"socket_path", AIKIDO_GLOBAL(socket_path)},
+		{"endpoint", endpoint},
+		{"config_endpoint", config_endpoint},
+		{"log_level", log_level},
+		{"blocking", blocking},
+		{"localhost_allowed_by_default", localhost_allowed_by_default}};
 
 	std::string aikido_agent_lib_handle_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-agent.so";
 	aikido_agent_lib_handle = dlopen(aikido_agent_lib_handle_path.c_str(), RTLD_LAZY);
@@ -180,10 +183,11 @@ PHP_RINIT_FUNCTION(aikido) {
 		}
 
 		json initData = {
-			{ "log_level", aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level)) },
-			{ "trust_proxy", get_env_bool("AIKIDO_TRUST_PROXY", true) },
-			{ "sapi", sapi_module.name }
-		};
+			{"log_level", aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level))},
+			{"socket_path", AIKIDO_GLOBAL(socket_path)},
+			{"trust_proxy", get_env_bool("AIKIDO_TRUST_PROXY", true)},
+			{"localhost_allowed_by_default", get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true)},
+			{"sapi", sapi_module.name}};
 
 		std::string initDataString = initData.dump();
 

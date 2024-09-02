@@ -20,6 +20,11 @@ func setConfigFromJson(jsonString []byte) bool {
 
 	log.Infof("Loaded local config: %+v", globals.EnvironmentConfig)
 
+	if globals.EnvironmentConfig.SocketPath == "" {
+		log.Errorf("No socket path set! Aikido agent will not load!")
+		return false
+	}
+
 	if globals.EnvironmentConfig.Token == "" {
 		log.Infof("No token set! Aikido agent will not load!")
 		return false

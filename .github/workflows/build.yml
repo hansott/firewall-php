@@ -260,7 +260,7 @@ jobs:
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
 
-  test_centos_php_cli:
+  test_php_centos:
     runs-on: ubuntu-latest
     container:
       image: centos:latest
@@ -281,6 +281,9 @@ jobs:
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
           yum install -y yum-utils
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
+          yum -y install python3
+          pip3 install flask
+          pip3 install requests
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
@@ -312,16 +315,22 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
+      - name: Run simple server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-test-results-centos-php-${{ matrix.php_version }}
+          name: test-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
 
-  test_ubuntu_php_cli:
+  test_php_ubuntu:
     runs-on: ${{ matrix.os }}
     needs: [ build_deb ]
     strategy:
@@ -359,6 +368,11 @@ jobs:
           php -v
           php -i
 
+      - name: Setup Python
+        run: |
+          sudo pip3 install flask --no-input
+          python --version
+
       - name: Install DEB
         run: |
           sudo dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
@@ -366,14 +380,20 @@ jobs:
       - name: Run CLI tests
         run: |
           cd ${{ github.workspace }}
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
+
+      - name: Run CLI Server tests
+        run: |
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          cd tools
+          sudo python run_server_tests.py ../tests/server ../tests/testlib
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-test-results-ubuntu-php-${{ matrix.php_version }}
+          name: test-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-ubuntu-${{ matrix.os }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*

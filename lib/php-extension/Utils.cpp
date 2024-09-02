@@ -325,3 +325,19 @@ bool aikido_call_user_function_one_param(std::string function_name, std::string 
 
     return ret;
 }
+
+int aikido_get_random_number() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(100000, 999999);
+    return dis(gen);
+}
+
+std::string aikido_generate_socket_path() {
+    std::time_t current_time = std::time(nullptr);
+    char time_str[20];
+    std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
+    std::string socket_file_path = "/run/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-" +
+                                   std::string(time_str) + "-" + std::to_string(aikido_get_random_number()) + ".sock";
+    return socket_file_path;
+}

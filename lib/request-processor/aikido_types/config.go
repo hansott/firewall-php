@@ -1,9 +1,11 @@
 package aikido_types
 
-type InitConfigData struct {
-	LogLevel   string `json:"log_level"`
-	SAPI       string `json:"sapi"`
-	TrustProxy bool   `json:"trust_proxy"`
+type EnvironmentConfigData struct {
+	SocketPath                string `json:"socket_path"`                  // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
+	LogLevel                  string `json:"log_level"`                    // default: 'INFO'
+	SAPI                      string `json:"sapi"`                         // '{php-sapi}'
+	TrustProxy                bool   `json:"trust_proxy"`                  // default: true
+	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"` // default: true
 }
 
 type RateLimiting struct {

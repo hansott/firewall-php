@@ -53,7 +53,7 @@ func StartServer(lis net.Listener) {
 	s := grpc.NewServer()
 	protos.RegisterAikidoServer(s, &server{})
 
-	log.Infof("Server is running on Unix socket %s", globals.SocketPath)
+	log.Infof("Server is running on Unix socket %s", globals.EnvironmentConfig.SocketPath)
 	if err := s.Serve(lis); err != nil {
 		log.Warnf("gRPC server failed to serve: %v", err)
 	}
@@ -63,17 +63,17 @@ func StartServer(lis net.Listener) {
 
 func Init() bool {
 	// Remove the socket file if it already exists
-	if _, err := os.Stat(globals.SocketPath); err == nil {
-		os.RemoveAll(globals.SocketPath)
+	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
+		os.RemoveAll(globals.EnvironmentConfig.SocketPath)
 	}
 
-	lis, err := net.Listen("unix", globals.SocketPath)
+	lis, err := net.Listen("unix", globals.EnvironmentConfig.SocketPath)
 	if err != nil {
 		panic(fmt.Sprintf("failed to listen: %v", err))
 	}
 
 	// Change the permissions of the socket to make it accessible by non-root users
-	if err := os.Chmod(globals.SocketPath, 0777); err != nil {
+	if err := os.Chmod(globals.EnvironmentConfig.SocketPath, 0777); err != nil {
 		panic(fmt.Sprintf("failed to change permissions of Unix socket: %v", err))
 	}
 
@@ -83,8 +83,8 @@ func Init() bool {
 
 func Uninit() {
 	// Remove the socket file if it exists
-	if _, err := os.Stat(globals.SocketPath); err == nil {
-		if err := os.RemoveAll(globals.SocketPath); err != nil {
+	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
+		if err := os.RemoveAll(globals.EnvironmentConfig.SocketPath); err != nil {
 			panic(fmt.Sprintf("failed to remove existing socket: %v", err))
 		}
 	}

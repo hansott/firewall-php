@@ -28,9 +28,11 @@ func GetAgentInfo() AgentInfo {
 
 func ResetHeartbeatTicker() {
 	if !globals.CloudConfig.ReceivedAnyStats {
+		log.Info("Resetting HeartBeatTicker to 1m!")
 		HeartBeatTicker.Reset(1 * time.Minute)
 	} else {
 		if globals.CloudConfig.HeartbeatIntervalInMS >= globals.MinHeartbeatIntervalInMS {
+			log.Infof("Resetting HeartBeatTicker to %dms!", globals.CloudConfig.HeartbeatIntervalInMS)
 			HeartBeatTicker.Reset(time.Duration(globals.CloudConfig.HeartbeatIntervalInMS) * time.Millisecond)
 		}
 	}
@@ -99,9 +101,11 @@ func StoreCloudConfig(response []byte) bool {
 	tempCloudConfig := CloudConfigData{}
 	err := json.Unmarshal(response, &tempCloudConfig)
 	if err != nil {
+		log.Warnf("Failed to unmarshal cloud config!")
 		return false
 	}
 	if tempCloudConfig.ConfigUpdatedAt <= globals.CloudConfig.ConfigUpdatedAt {
+		log.Debugf("ConfigUpdatedAt is the same!")
 		return true
 	}
 	globals.CloudConfig = tempCloudConfig

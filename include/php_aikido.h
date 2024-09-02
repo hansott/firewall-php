@@ -15,6 +15,7 @@ ZEND_TSRMLS_CACHE_EXTERN()
 ZEND_BEGIN_MODULE_GLOBALS(aikido)
     long log_level;
     bool blocking;
+    std::string socket_path;
 ZEND_END_MODULE_GLOBALS(aikido)
 
 ZEND_EXTERN_MODULE_GLOBALS(aikido)

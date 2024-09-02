@@ -117,14 +117,35 @@ func isLocalhost(ip string) bool {
 }
 
 func IsIpAllowed(allowedIps map[string]bool, ip string) bool {
-	return isLocalhost(ip) || len(allowedIps) == 0 || KeyExists(allowedIps, ip)
+	if globals.EnvironmentConfig.LocalhostAllowedByDefault && isLocalhost(ip) {
+		return true
+	}
+
+	if len(allowedIps) == 0 {
+		// No IPs configured in the allow list -> no restrictions
+		return true
+	}
+
+	if KeyExists(allowedIps, ip) {
+		return true
+	}
+
+	return false
 }
 
 func IsIpBypassed(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	return isLocalhost(ip) || KeyExists(globals.CloudConfig.BypassedIps, ip)
+	if globals.EnvironmentConfig.LocalhostAllowedByDefault && isLocalhost(ip) {
+		return true
+	}
+
+	if KeyExists(globals.CloudConfig.BypassedIps, ip) {
+		return true
+	}
+
+	return false
 }
 
 func getIpFromXForwardedFor(value string) string {
@@ -145,7 +166,7 @@ func getIpFromXForwardedFor(value string) string {
 }
 
 func GetIpFromRequest(remoteAddress string, xForwardedFor string) string {
-	if xForwardedFor != "" && globals.InitData.TrustProxy {
+	if xForwardedFor != "" && globals.EnvironmentConfig.TrustProxy {
 		ip := getIpFromXForwardedFor(xForwardedFor)
 		if isIP(ip) {
 			return ip
