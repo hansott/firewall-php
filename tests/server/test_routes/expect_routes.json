@@ -2,21 +2,6 @@
     "type": "heartbeat",
     "routes": [
         {
-            "path": "/api/uuid/:uuid",
-            "method": "GET",
-            "count": 30
-        },
-        {
-            "path": "/api/secret/:secret",
-            "method": "GET",
-            "count": 20
-        },
-        {
-            "path": "/api/info/:number",
-            "method": "GET",
-            "count": 20
-        },
-        {
             "path": "/test",
             "method": "GET",
             "count": 10
@@ -25,6 +10,36 @@
             "path": "/",
             "method": "GET",
             "count": 10
+        },
+        {
+            "path": "/block/:ip",
+            "method": "GET",
+            "count": 10
+        },
+        {
+            "path": "/files/:hash",
+            "method": "GET",
+            "count": 20
+        },
+        {
+            "path": "/posts/:date",
+            "method": "GET",
+            "count": 40
+        },
+        {
+            "path": "/api/secret/:secret",
+            "method": "GET",
+            "count": 20
+        },
+        {
+            "path": "/api/uuid/:uuid",
+            "method": "GET",
+            "count": 30
+        },
+        {
+            "path": "/api/info/:number",
+            "method": "GET",
+            "count": 20
         }
     ]
 }

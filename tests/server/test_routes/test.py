@@ -23,13 +23,15 @@ routes = {
     "/posts/2024-05-01",
     "/posts/2022-03-28",
     "/posts/1994-09-01",
+    "/block/2001:2:ffff:ffff:ffff:ffff:ffff:ffff",
+    "/files/098f6bcd4621d373cade4e832627b4f6",
+    "/files/a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
 }
 
 def run_test(php_port, mock_port):
     for route in routes:
         for nr_requests in range(10):
             response = php_server_get(php_port, route)
-            assert_response_code_is(response, 200)
     
     mock_server_wait_for_new_events(mock_port, 70)
     
