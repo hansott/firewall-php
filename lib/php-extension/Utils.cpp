@@ -333,7 +333,7 @@ int aikido_get_random_number() {
     return dis(gen);
 }
 
-std::string aikido_get_socket_path() {
+std::string aikido_generate_socket_path() {
     std::time_t current_time = std::time(nullptr);
     char time_str[20];
     std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));

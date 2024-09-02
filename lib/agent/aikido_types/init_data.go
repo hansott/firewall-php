@@ -9,13 +9,13 @@ type MachineData struct {
 }
 
 type EnvironmentConfigData struct {
-	Token                     string `json:"token,omitempty"`
-	SocketPath                string `json:"socket_path,omitempty"`
-	LogLevel                  string `json:"log_level,omitempty"`
-	Endpoint                  string `json:"endpoint,omitempty"`
-	ConfigEndpoint            string `json:"config_endpoint,omitempty"`
-	Blocking                  bool   `json:"blocking,omitempty"`
-	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"`
+	SocketPath                string `json:"socket_path"`                            // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
+	Token                     string `json:"token,omitempty"`                        // default: ''
+	LogLevel                  string `json:"log_level,omitempty"`                    // default: 'INFO'
+	Endpoint                  string `json:"endpoint,omitempty"`                     // default: 'https://guard.aikido.dev/'
+	ConfigEndpoint            string `json:"config_endpoint,omitempty"`              // default: 'https://runtime.aikido.dev/'
+	Blocking                  bool   `json:"blocking,omitempty"`                     // default: false
+	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"` // default: true
 }
 
 type RateLimiting struct {
