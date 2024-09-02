@@ -23,8 +23,8 @@ cp -rf opt/aikido-%{version}/* %{buildroot}/opt/aikido-%{version}
 
 echo "Starting the installation process for Aikido PHP Firewall v%{version}..."
 
-sudo mkdir -p /var/log/aikido-%{version}
-sudo chmod 777 /var/log/aikido-%{version}
+mkdir -p /var/log/aikido-%{version}
+chmod 777 /var/log/aikido-%{version}
 
 PHP_VERSION=$(php -v | grep -oP 'PHP \K\d+\.\d+' | head -n 1)
 PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')
@@ -71,20 +71,23 @@ else
     fi
 fi
 
-# Remove the Aikido Socket
-SOCKET_PATH="/run/aikido-%{version}.sock"
+# Remove the Aikido Socket folder
+SOCKET_FOLDER="/run/aikido-%{version}"
 
-if [ -S "$SOCKET_PATH" ]; then
-    echo "Removing $SOCKET_PATH ..."
-    rm "$SOCKET_PATH"
+if [ -d "$SOCKET_FOLDER" ]; then
+    echo "Removing $SOCKET_FOLDER ..."
+    rm -rf "$SOCKET_FOLDER"
     if [ $? -eq 0 ]; then
-        echo "Socket removed successfully."
+        echo "Socket folder removed successfully."
     else
-        echo "Failed to remove the socket."
+        echo "Failed to remove the socket folder."
     fi
 else
-    echo "Socket $SOCKET_PATH does not exist."
+    echo "Socket $SOCKET_FOLDER does not exist."
 fi
+
+mkdir -p /run/aikido-%{version}
+chmod 777 /run/aikido-%{version}
 
 echo "Installation process for Aikido v%{version} completed."
 
@@ -138,7 +141,7 @@ else
     exit 1
 fi
 
-sudo rm -rf /var/log/aikido-%{version}
+rm -rf /var/log/aikido-%{version}
 
 echo "Uninstallation process for Aikido v%{version} completed."
 

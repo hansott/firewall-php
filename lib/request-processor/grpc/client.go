@@ -14,14 +14,12 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-const socketPath = "/run/aikido-" + globals.Version + ".sock"
-
 var conn grpc.ClientConn
 var client protos.AikidoClient
 
 func Init() {
 	conn, err := grpc.Dial(
-		"unix://"+socketPath,
+		"unix://"+globals.EnvironmentConfig.SocketPath,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 

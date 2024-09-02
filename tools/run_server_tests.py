@@ -7,6 +7,7 @@ import sys
 import json
 
 used_ports = set()
+failed_tests = []
 
 def generate_unique_port():
     while True:
@@ -63,13 +64,12 @@ def handle_test_scenario(test_dir, test_lib_dir):
     except subprocess.CalledProcessError as e:
         print(f"Error in testing scenario {test_name}:")
         print(f"Test output: {e.output}")
-
-        sys.exit(1)
+        failed_tests.append([test_name, e.output])
         
     except subprocess.TimeoutExpired:
         print(f"Error in testing scenario {test_name}:")
         print(f"Execution timed out.")
-        sys.exit(1)
+        failed_tests.append([test_name, "Timeout"])
         
     finally:
         if php_server_process:
@@ -89,8 +89,18 @@ def main(root_tests_dir, test_lib_dir, specific_test=None):
         handle_test_scenario(specific_test, test_lib_dir)
     else:
         test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
+        threads = []
+
         for test_dir in test_dirs:
-            handle_test_scenario(test_dir, test_lib_dir)
+            thread = threading.Thread(target=handle_test_scenario, args=(test_dir, test_lib_dir))
+            threads.append(thread)
+            thread.start()
+
+        for thread in threads:
+            thread.join()
+            
+    assert failed_tests == [], f"Found failed tests: {failed_tests}"
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:

@@ -10,6 +10,7 @@ type MachineData struct {
 
 type EnvironmentConfigData struct {
 	Token                     string `json:"token,omitempty"`
+	SocketPath                string `json:"socket_path,omitempty"`
 	LogLevel                  string `json:"log_level,omitempty"`
 	Endpoint                  string `json:"endpoint,omitempty"`
 	ConfigEndpoint            string `json:"config_endpoint,omitempty"`

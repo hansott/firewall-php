@@ -123,7 +123,7 @@ func Init() {
 
 	Logger.SetOutput(logFile)
 
-	if err := SetLogLevel(globals.InitData.LogLevel); err != nil {
+	if err := SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
 		panic(fmt.Sprintf("Error setting log level: %s", err))
 	}
 }

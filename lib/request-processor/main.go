@@ -15,10 +15,10 @@ import (
 var eventHandlers = map[string]HandlerFunction{
 	"before_function_executed": OnBeforeFunctionExecuted,
 	"after_function_executed":  OnAfterFunctionExecuted,
-	"method_executed":   OnMethodExecuted,
-	"request_init":      OnRequestInit,
-	"request_shutdown":  OnRequestShutdown,
-	"user_event":        OnUserEvent,
+	"method_executed":          OnMethodExecuted,
+	"request_init":             OnRequestInit,
+	"request_shutdown":         OnRequestShutdown,
+	"user_event":               OnUserEvent,
 }
 
 //export RequestProcessorInit
@@ -32,10 +32,10 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 
 	config.Init(initJson)
 
-	log.Debugf("Aikido Request Processor v%s started in \"%s\" mode!", globals.Version, globals.InitData.SAPI)
+	log.Debugf("Aikido Request Processor v%s started in \"%s\" mode!", globals.Version, globals.EnvironmentConfig.SAPI)
 	log.Debugf("Init data: %s", initJson)
 
-	if globals.InitData.SAPI != "cli" {
+	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Init()
 	}
 	return true
@@ -81,7 +81,7 @@ func RequestProcessorGetBlockingMode() int {
 //export RequestProcessorUninit
 func RequestProcessorUninit() {
 	log.Debug("Uninit: {}")
-	if globals.InitData.SAPI != "cli" {
+	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Uninit()
 	}
 	log.Debugf("Aikido Request Processor v%s stopped!", globals.Version)

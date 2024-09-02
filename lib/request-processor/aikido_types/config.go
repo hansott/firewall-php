@@ -1,7 +1,8 @@
 package aikido_types
 
-type InitConfigData struct {
+type EnvironmentConfigData struct {
 	LogLevel                  string `json:"log_level"`
+	SocketPath                string `json:"socket_path"`
 	SAPI                      string `json:"sapi"`
 	TrustProxy                bool   `json:"trust_proxy"`
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"`
