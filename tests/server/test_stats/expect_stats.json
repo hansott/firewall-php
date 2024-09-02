@@ -1,0 +1,13 @@
+{
+    "type": "heartbeat",
+    "stats": {
+        "requests": {
+            "total": 3000,
+            "aborted": 0,
+            "attacksDetected": {
+                "total": 0,
+                "blocked": 0
+            }
+        }
+    }
+}
