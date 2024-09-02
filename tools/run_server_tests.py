@@ -7,6 +7,7 @@ import sys
 import json
 
 used_ports = set()
+passed_tests = []
 failed_tests = []
 
 def generate_unique_port():
@@ -23,6 +24,14 @@ def load_env_from_json(file_path):
     with open(file_path) as f:
         env_vars = json.load(f)
         return env_vars
+    
+def print_test_results(s, tests):
+    if not len(tests):
+        return
+    
+    print(s)
+    for t in tests:
+        print("f\t- {t}")
 
 def handle_test_scenario(test_dir, test_lib_dir):
     try:
@@ -60,11 +69,12 @@ def handle_test_scenario(test_dir, test_lib_dir):
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
                        cwd=test_dir,
                        check=True, timeout=600)
+        passed_tests.append(test_name)
 
     except subprocess.CalledProcessError as e:
         print(f"Error in testing scenario {test_name}:")
         print(f"Test output: {e.output}")
-        failed_tests.append([test_name, e.output])
+        failed_tests.append(test_name)
         
     except subprocess.TimeoutExpired:
         print(f"Error in testing scenario {test_name}:")
@@ -99,7 +109,10 @@ def main(root_tests_dir, test_lib_dir, specific_test=None):
         for thread in threads:
             thread.join()
             
+    print_test_results(passed_tests)
+    print_test_results(failed_tests)
     assert failed_tests == [], f"Found failed tests: {failed_tests}"
+    print("All tests passed!")
 
 
 if __name__ == "__main__":
