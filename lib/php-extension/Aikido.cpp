@@ -34,7 +34,7 @@ PHP_MINIT_FUNCTION(aikido)
 
 	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
 	AIKIDO_GLOBAL(blocking) = blocking;
-	AIKIDO_GLOBAL(socket_path) = aikido_get_socket_path();
+	AIKIDO_GLOBAL(socket_path) = aikido_generate_socket_path();
 
 	AIKIDO_LOG_INFO("MINIT started!\n");
 

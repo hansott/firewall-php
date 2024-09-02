@@ -95,4 +95,4 @@ bool aikido_call_user_function_one_param(std::string function_name, long first_p
 
 bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval *return_value = nullptr);
 
-std::string aikido_get_socket_path();
+std::string aikido_generate_socket_path();
