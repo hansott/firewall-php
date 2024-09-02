@@ -317,7 +317,6 @@ jobs:
 
       - name: Run simple server tests
         run: |
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib
 
@@ -381,7 +380,6 @@ jobs:
       - name: Run CLI tests
         run: |
           cd ${{ github.workspace }}
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
       - name: Run CLI Server tests

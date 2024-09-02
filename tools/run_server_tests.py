@@ -109,8 +109,8 @@ def main(root_tests_dir, test_lib_dir, specific_test=None):
         for thread in threads:
             thread.join()
             
-    print_test_results(passed_tests)
-    print_test_results(failed_tests)
+    print_test_results("Passed tests:", passed_tests)
+    print_test_results("Failed tests:", failed_tests)
     assert failed_tests == [], f"Found failed tests: {failed_tests}"
     print("All tests passed!")
 
