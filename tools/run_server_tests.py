@@ -31,7 +31,7 @@ def print_test_results(s, tests):
     
     print(s)
     for t in tests:
-        print("f\t- {t}")
+        print(f"\t- {t}")
 
 def handle_test_scenario(test_dir, test_lib_dir):
     try:
