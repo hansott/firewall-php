@@ -1,4 +1,4 @@
-#include "GoWrappers.h"
+#include "Includes.h"
 
 GoString GoCreateString(std::string& s) {
     return GoString { s.c_str(), s.length() };
@@ -25,6 +25,61 @@ json GoRequestProcessorOnEvent(json& event) {
     
     json output = json::parse(outputString);
     return output;
+}
+
+char* GoContextCallback(int context_id) {
+    if (!server) {
+        return nullptr;
+    }
+    std::string ret;
+    switch (context_id) {
+        case CONTEXT_REMOTE_ADDRESS:
+            ret = extract_server_var("REMOTE_ADDR");
+            break;
+        case CONTEXT_METHOD:
+            ret = extract_server_var("REQUEST_METHOD");
+            break;
+        case CONTEXT_ROUTE:
+            ret = extract_route();
+            break;
+        case CONTEXT_STATUS_CODE:
+            ret = extract_status_code();
+            break;
+        case CONTEXT_BODY:
+            ret = extract_body();
+            break;
+        case CONTEXT_HEADER_X_FORWARDED_FOR:
+            ret = extract_server_var("HTTP_X_FORWARDED_FOR");
+            break;
+        case CONTEXT_COOKIES:
+            ret = extract_server_var("HTTP_COOKIE");
+            break;
+        case CONTEXT_QUERY:
+            ret = extract_server_var("QUERY_STRING");
+            break;
+        case CONTEXT_HTTPS:
+            ret = extract_server_var("HTTPS");
+            break;
+        case CONTEXT_URL:
+            ret = extract_url();
+            break;
+        case CONTEXT_HEADERS:
+            ret = extract_headers();
+            break;
+    }
+
+    if (!ret.length()) {
+        return nullptr;
+    }
+    return strdup(ret.c_str());
+}
+
+bool GoRequestProcessorContextInit() {
+    if (!request_processor_context_init_fn) {
+        return false;
+    }
+
+    return request_processor_context_init_fn(GoContextCallback);
 }
 
 /*

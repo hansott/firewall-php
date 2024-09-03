@@ -71,36 +71,27 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 	return result
 }
 
-func ParseContext(context map[string]interface{}) map[string]interface{} {
-	if context == nil {
-		return map[string]interface{}{}
-	}
+func ParseBody(body string) map[string]interface{} {
 	// first we check if the body is a string, and if it is, we try to parse it as JSON
 	// if it fails, we parse it as form data
-	if body, ok := context["body"].(string); ok {
-		if strings.HasPrefix(body, "{") && strings.HasSuffix(body, "}") {
-			// if the body is a JSON object, we parse it as JSON
-			jsonBody := map[string]interface{}{}
-			err := json.Unmarshal([]byte(body), &jsonBody)
-			if err == nil {
-				context["body"] = jsonBody
-			}
-		} else {
-			context["body"] = ParseFormData(body, "&")
+
+	if strings.HasPrefix(body, "{") && strings.HasSuffix(body, "}") {
+		// if the body is a JSON object, we parse it as JSON
+		jsonBody := map[string]interface{}{}
+		err := json.Unmarshal([]byte(body), &jsonBody)
+		if err == nil {
+			return jsonBody
 		}
 	}
+	return ParseFormData(body, "&")
+}
 
-	// for the query, we always parse it as form data
-	if query, ok := context["query"].(string); ok {
-		context["query"] = ParseFormData(query, "&")
-	}
+func ParseQuery(query string) map[string]interface{} {
+	return ParseFormData(query, "&")
+}
 
-	// for cookies
-	if cookies, ok := context["cookies"].(string); ok {
-		context["cookies"] = ParseFormData(cookies, ";")
-	}
-
-	return context
+func ParseCookies(cookies string) map[string]interface{} {
+	return ParseFormData(cookies, ";")
 }
 
 func isIP(ip string) bool {
@@ -184,6 +175,10 @@ func GetBlockingMode() int {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 	return globals.CloudConfig.Block
+}
+
+func IsBlockingEnabled() bool {
+	return GetBlockingMode() == 1
 }
 
 func IsUserBlocked(userID string) bool {

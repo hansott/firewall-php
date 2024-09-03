@@ -6,6 +6,7 @@
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
+zval* server = nullptr;
 
 #if PHP_VERSION_ID < 80000
 	bool exit_current_request = false;
@@ -167,6 +168,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 
 void* aikido_request_processor_lib_handle = nullptr;
 bool request_processor_loading_failed = false;
+RequestProcessorContextInitFn request_processor_context_init_fn = nullptr;
 RequestProcessorOnEventFn request_processor_on_event_fn = nullptr;
 RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullptr;
 
@@ -194,12 +196,15 @@ PHP_RINIT_FUNCTION(aikido) {
 		AIKIDO_LOG_DEBUG("Initializing Aikido Request Processor...\n");
 
 		RequestProcessorInitFn request_processor_init_fn = (RequestProcessorInitFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorInit");
+		request_processor_context_init_fn = (RequestProcessorContextInitFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorContextInit");
 		request_processor_on_event_fn = (RequestProcessorOnEventFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorOnEvent");
 		request_processor_get_blocking_mode_fn = (RequestProcessorGetBlockingModeFn)dlsym(aikido_request_processor_lib_handle, "RequestProcessorGetBlockingMode");
-		if (!request_processor_init_fn || 
+		if (!request_processor_init_fn ||
+			!request_processor_context_init_fn ||
 			!request_processor_on_event_fn ||
 			!request_processor_get_blocking_mode_fn ||
-			!request_processor_init_fn(GoCreateString(initDataString))) {
+			!request_processor_init_fn(GoCreateString(initDataString)))
+		{
 			AIKIDO_LOG_ERROR("Failed to initialize Aikido Request Processor library: %s!\n", dlerror());
 			dlclose(aikido_request_processor_lib_handle);
 			aikido_request_processor_lib_handle = nullptr;
@@ -209,17 +214,24 @@ PHP_RINIT_FUNCTION(aikido) {
 
 		AIKIDO_LOG_DEBUG("Aikido Request Processor initialized successfully!\n");
 	}
-	
-	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
-	if (server_str){
-		/* Guarantee that "_SERVER" global variable is initialized for the current request */
-		zend_is_auto_global(server_str); 
-		zend_string_release(server_str);
-		if (send_request_init_metadata_event() == EXIT) {
-			#if PHP_VERSION_ID < 80000
-				AIKIDO_LOG_INFO("Marking current request for exit!\n");
-				exit_current_request = true;
-			#endif
+
+	if (!request_processor_loading_failed) {
+		zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
+		if (server_str) {
+			/* Guarantee that "_SERVER" global variable is initialized for the current request */
+			zend_is_auto_global(server_str);
+			zend_string_release(server_str);
+
+			server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+
+			GoRequestProcessorContextInit();
+
+			if (send_request_init_metadata_event() == EXIT) {
+				#if PHP_VERSION_ID < 80000
+					AIKIDO_LOG_INFO("Marking current request for exit!\n");
+					exit_current_request = true;
+				#endif
+			}
 		}
 	}
 	
