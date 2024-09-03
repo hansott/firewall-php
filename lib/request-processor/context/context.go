@@ -7,17 +7,20 @@ import "main/log"
 type CallbackFunction func(int) string
 
 type ContextData struct {
-	Callback     CallbackFunction
-	Method       *string
-	Route        *string
-	StatusCode   *int
-	IP           *string
-	IsIpBypassed *bool
-	UserId       string
-	Body         *map[string]string
-	Query        *map[string]string
-	Cookies      *map[string]string
-	Headers      *map[string]string
+	Callback      CallbackFunction
+	Method        *string
+	Route         *string
+	URL           *string
+	StatusCode    *int
+	IP            *string
+	IsIpBypassed  *bool
+	UserAgent     *string
+	UserId        *string
+	Body          *string
+	BodyParsed    *map[string]string
+	QueryParsed   *map[string]string
+	CookiesParsed *map[string]string
+	HeadersParsed *map[string]string
 }
 
 var Context ContextData
@@ -30,10 +33,10 @@ func Init(callback CallbackFunction) bool {
 	return true
 }
 
-type StoreToCacheFn func()
-
-func GetFromCache[T any](fn StoreToCacheFn, s **T) T {
-	fn()
+func GetFromCache[T any](fetchDataFn func(), s **T) T {
+	if fetchDataFn != nil {
+		fetchDataFn()
+	}
 	if *s == nil {
 		var t T
 		log.Warnf("Error getting from cache. Returning default value %v...", t)
@@ -54,6 +57,10 @@ func GetRoute() string {
 	return GetFromCache(ContextCacheRoute, &Context.Route)
 }
 
+func GetUrl() string {
+	return GetFromCache(ContextCacheUrl, &Context.URL)
+}
+
 func GetStatusCode() int {
 	return GetFromCache(ContextCacheStatusCode, &Context.StatusCode)
 }
@@ -62,22 +69,30 @@ func IsIpBypassed() bool {
 	return GetFromCache(ContextCacheIsIpBypassed, &Context.IsIpBypassed)
 }
 
-func GetBody() map[string]string {
+func GetBodyRaw() string {
 	return GetFromCache(ContextCacheBody, &Context.Body)
 }
 
+func GetBody() map[string]string {
+	return GetFromCache(ContextCacheBody, &Context.BodyParsed)
+}
+
 func GetQuery() map[string]string {
-	return GetFromCache(ContextCacheQuery, &Context.Query)
+	return GetFromCache(ContextCacheQuery, &Context.QueryParsed)
 }
 
 func GetCookies() map[string]string {
-	return GetFromCache(ContextCacheCookies, &Context.Cookies)
+	return GetFromCache(ContextCacheCookies, &Context.CookiesParsed)
 }
 
 func GetHeaders() map[string]string {
-	return GetFromCache(ContextCacheHeaders, &Context.Headers)
+	return GetFromCache(ContextCacheHeaders, &Context.HeadersParsed)
 }
 
-func ContextGetUserId() string {
-	return Context.UserId
+func GetUserAgent() string {
+	return GetFromCache(ContextCacheUserAgent, &Context.UserAgent)
+}
+
+func GetUserId() string {
+	return GetFromCache(nil, &Context.UserId)
 }

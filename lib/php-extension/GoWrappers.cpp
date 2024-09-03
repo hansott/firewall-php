@@ -67,6 +67,9 @@ char* GoContextCallback(int context_id) {
         case CONTEXT_HEADERS:
             ret = extract_headers();
             break;
+        case CONTEXT_HEADER_USER_AGENT:
+            ret = extract_server_var("HTTP_USER_AGENT");
+            break;
     }
 
     if (!ret.length()) {
