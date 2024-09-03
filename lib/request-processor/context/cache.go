@@ -4,20 +4,21 @@ package context
 import "C"
 import (
 	"main/helpers"
+	"main/log"
 	"main/utils"
 	"strconv"
 )
 
 type ParseFunction func(string) map[string]interface{}
 
-func ContextCacheParsedStrings(context_id int, m *map[string]string, parseFunc ParseFunction) {
-	if Context.Query != nil {
+func ContextCacheParsedStrings(context_id int, m **map[string]string, parseFunc ParseFunction) {
+	if *m != nil {
 		return
 	}
 	context_data := Context.Callback(context_id)
 	parsed := parseFunc(context_data)
 	strings := helpers.ExtractStringsFromUserInput(parsed, []helpers.PathPart{})
-	*m = strings
+	*m = &strings
 }
 
 func ContextCacheString(context_id int, m **string) {
@@ -29,19 +30,19 @@ func ContextCacheString(context_id int, m **string) {
 }
 
 func ContextCacheBody() {
-	ContextCacheParsedStrings(C.CONTEXT_BODY, Context.Body, utils.ParseBody)
+	ContextCacheParsedStrings(C.CONTEXT_BODY, &Context.Body, utils.ParseBody)
 }
 
 func ContextCacheQuery() {
-	ContextCacheParsedStrings(C.CONTEXT_QUERY, Context.Query, utils.ParseQuery)
+	ContextCacheParsedStrings(C.CONTEXT_QUERY, &Context.Query, utils.ParseQuery)
 }
 
 func ContextCacheCookies() {
-	ContextCacheParsedStrings(C.CONTEXT_COOKIES, Context.Cookies, utils.ParseCookies)
+	ContextCacheParsedStrings(C.CONTEXT_COOKIES, &Context.Cookies, utils.ParseCookies)
 }
 
 func ContextCacheHeaders() {
-	ContextCacheParsedStrings(C.CONTEXT_HEADERS, Context.Headers, utils.ParseHeaders)
+	ContextCacheParsedStrings(C.CONTEXT_HEADERS, &Context.Headers, utils.ParseHeaders)
 }
 
 func ContextCacheStatusCode() {
@@ -49,9 +50,9 @@ func ContextCacheStatusCode() {
 		return
 	}
 	status_code_str := Context.Callback(C.CONTEXT_STATUS_CODE)
-
 	status_code, err := strconv.Atoi(status_code_str)
 	if err != nil {
+		log.Warnf("Error parsing status code %v: %v", status_code_str, err)
 		return
 	}
 	Context.StatusCode = &status_code

@@ -2,6 +2,7 @@ package context
 
 // #include "../../ContextCallback.c"
 import "C"
+import "main/log"
 
 type CallbackFunction func(int) string
 
@@ -25,54 +26,56 @@ func Init(callback CallbackFunction) bool {
 	Context = ContextData{
 		Callback: callback,
 	}
+	log.Info("Context init called!")
 	return true
 }
 
 type StoreToCacheFn func()
 
-func GetFromCache[T any](fn StoreToCacheFn, s *T) T {
+func GetFromCache[T any](fn StoreToCacheFn, s **T) T {
 	fn()
-	if s == nil {
+	if *s == nil {
 		var t T
+		log.Warnf("Error getting from cache. Returning default value %v...", t)
 		return t
 	}
-	return *s
+	return **s
 }
 
 func GetIp() string {
-	return GetFromCache(ContextCacheIp, Context.IP)
+	return GetFromCache(ContextCacheIp, &Context.IP)
 }
 
 func GetMethod() string {
-	return GetFromCache(ContextCacheMethod, Context.Method)
+	return GetFromCache(ContextCacheMethod, &Context.Method)
 }
 
 func GetRoute() string {
-	return GetFromCache(ContextCacheRoute, Context.Route)
+	return GetFromCache(ContextCacheRoute, &Context.Route)
 }
 
 func GetStatusCode() int {
-	return GetFromCache(ContextCacheStatusCode, Context.StatusCode)
+	return GetFromCache(ContextCacheStatusCode, &Context.StatusCode)
 }
 
 func IsIpBypassed() bool {
-	return GetFromCache(ContextCacheIsIpBypassed, Context.IsIpBypassed)
+	return GetFromCache(ContextCacheIsIpBypassed, &Context.IsIpBypassed)
 }
 
 func GetBody() map[string]string {
-	return GetFromCache(ContextCacheBody, Context.Body)
+	return GetFromCache(ContextCacheBody, &Context.Body)
 }
 
 func GetQuery() map[string]string {
-	return GetFromCache(ContextCacheQuery, Context.Query)
+	return GetFromCache(ContextCacheQuery, &Context.Query)
 }
 
 func GetCookies() map[string]string {
-	return GetFromCache(ContextCacheCookies, Context.Cookies)
+	return GetFromCache(ContextCacheCookies, &Context.Cookies)
 }
 
 func GetHeaders() map[string]string {
-	return GetFromCache(ContextCacheHeaders, Context.Headers)
+	return GetFromCache(ContextCacheHeaders, &Context.Headers)
 }
 
 func ContextGetUserId() string {

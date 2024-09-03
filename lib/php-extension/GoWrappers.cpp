@@ -29,6 +29,7 @@ json GoRequestProcessorOnEvent(json& event) {
 
 char* GoContextCallback(int context_id) {
     if (!server) {
+        AIKIDO_LOG_WARN("_SERVER variables is not initialized!\n");
         return nullptr;
     }
     std::string ret;
@@ -69,8 +70,11 @@ char* GoContextCallback(int context_id) {
     }
 
     if (!ret.length()) {
+        AIKIDO_LOG_WARN("Context callback result is empty!\n");
         return nullptr;
     }
+
+    AIKIDO_LOG_DEBUG("Context callback %d -> %s\n", context_id, ret.c_str());
     return strdup(ret.c_str());
 }
 

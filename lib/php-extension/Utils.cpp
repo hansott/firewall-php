@@ -158,7 +158,7 @@ std::string extract_headers() {
 }
 
 ACTION send_request_init_metadata_event(){
-    json inputEvent = {{"event", "request_init"}, {"data", {}}};
+    json inputEvent = {{"event", "request_init"}};
 
     try {
         json response = GoRequestProcessorOnEvent(inputEvent);
@@ -171,7 +171,7 @@ ACTION send_request_init_metadata_event(){
 }
 
 ACTION send_request_shutdown_metadata_event(){
-    json inputEvent = {{"event", "request_shutdown"}, {"data", {}}};
+    json inputEvent = {{"event", "request_shutdown"}};
 
     try {
         json response = GoRequestProcessorOnEvent(inputEvent);

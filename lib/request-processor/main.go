@@ -93,11 +93,16 @@ func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	}
 
 	eventName := utils.MustGetFromMap[string](event, "event")
-	data := utils.MustGetFromMap[map[string]interface{}](event, "data")
+
+	dataMap := map[string]interface{}{}
+	data := utils.GetFromMap[map[string]interface{}](event, "data")
+	if data != nil {
+		dataMap = *data
+	}
 
 	utils.KeyMustExist(eventHandlers, eventName)
 
-	goString := eventHandlers[eventName](data)
+	goString := eventHandlers[eventName](dataMap)
 	cString := C.CString(goString)
 	return cString
 }
