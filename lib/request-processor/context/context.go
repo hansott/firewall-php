@@ -71,6 +71,10 @@ func GetCookies() map[string]string {
 	return GetFromCache(ContextCacheCookies, Context.Cookies)
 }
 
+func GetHeaders() map[string]string {
+	return GetFromCache(ContextCacheHeaders, Context.Headers)
+}
+
 func ContextGetUserId() string {
 	return Context.UserId
 }

@@ -94,6 +94,15 @@ func ParseCookies(cookies string) map[string]interface{} {
 	return ParseFormData(cookies, ";")
 }
 
+func ParseHeaders(headers string) map[string]interface{} {
+	j := map[string]interface{}{}
+	err := json.Unmarshal([]byte(headers), &j)
+	if err == nil {
+		return map[string]interface{}{}
+	}
+	return j
+}
+
 func isIP(ip string) bool {
 	return net.ParseIP(ip) != nil
 }
