@@ -11,10 +11,10 @@ type Source struct {
 }
 
 var SOURCES = []Source{
-	{"body", context.GetBody},
-	{"query", context.GetQuery},
-	{"headers", context.GetHeaders},
-	{"cookies", context.GetCookies},
+	{"body", context.GetBodyParsed},
+	{"query", context.GetQueryParsed},
+	{"headers", context.GetHeadersParsed},
+	{"cookies", context.GetCookiesParsed},
 }
 
 func CheckContextForPathTraversal(filename string, operation string, checkPathStart bool) *utils.InterceptorResult {

@@ -18,8 +18,11 @@ type ContextData struct {
 	UserId        *string
 	Body          *string
 	BodyParsed    *map[string]string
+	Query         *string
 	QueryParsed   *map[string]string
+	Cookies       *string
 	CookiesParsed *map[string]string
+	Headers       *map[string]interface{}
 	HeadersParsed *map[string]string
 }
 
@@ -68,23 +71,35 @@ func IsIpBypassed() bool {
 	return GetFromCache(ContextCacheIsIpBypassed, &Context.IsIpBypassed)
 }
 
-func GetBodyRaw() string {
+func GetBody() string {
 	return GetFromCache(ContextCacheBody, &Context.Body)
 }
 
-func GetBody() map[string]string {
+func GetBodyParsed() map[string]string {
 	return GetFromCache(ContextCacheBody, &Context.BodyParsed)
 }
 
-func GetQuery() map[string]string {
+func GetQuery() string {
+	return GetFromCache(ContextCacheQuery, &Context.Query)
+}
+
+func GetQueryParsed() map[string]string {
 	return GetFromCache(ContextCacheQuery, &Context.QueryParsed)
 }
 
-func GetCookies() map[string]string {
+func GetCookies() string {
+	return GetFromCache(ContextCacheCookies, &Context.Cookies)
+}
+
+func GetCookiesParsed() map[string]string {
 	return GetFromCache(ContextCacheCookies, &Context.CookiesParsed)
 }
 
-func GetHeaders() map[string]string {
+func GetHeaders() map[string]interface{} {
+	return GetFromCache(ContextCacheHeaders, &Context.Headers)
+}
+
+func GetHeadersParsed() map[string]string {
 	return GetFromCache(ContextCacheHeaders, &Context.HeadersParsed)
 }
 

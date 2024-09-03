@@ -11,17 +11,20 @@ import (
 
 type ParseFunction func(string) map[string]interface{}
 
-func ContextCacheParsedStrings(context_id int, m_str **string, m **map[string]string, parseFunc ParseFunction) {
-	if *m != nil {
+func ContextCacheMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
+	if *stringsPtr != nil {
 		return
 	}
-	context_data := Context.Callback(context_id)
-	if m_str != nil {
-		*m_str = &context_data
+	contextData := Context.Callback(contextId)
+	if rawDataPtr != nil {
+		*rawDataPtr = &contextData
 	}
-	parsed := parseFunc(context_data)
+	parsed := parseFunc(contextData)
+	if parsedPtr != nil {
+		*parsedPtr = &parsed
+	}
 	strings := helpers.ExtractStringsFromUserInput(parsed, []helpers.PathPart{})
-	*m = &strings
+	*stringsPtr = &strings
 }
 
 func ContextCacheString(context_id int, m **string) {
@@ -33,19 +36,19 @@ func ContextCacheString(context_id int, m **string) {
 }
 
 func ContextCacheBody() {
-	ContextCacheParsedStrings(C.CONTEXT_BODY, &Context.Body, &Context.BodyParsed, utils.ParseBody)
+	ContextCacheMap(C.CONTEXT_BODY, &Context.Body, nil, &Context.BodyParsed, utils.ParseBody)
 }
 
 func ContextCacheQuery() {
-	ContextCacheParsedStrings(C.CONTEXT_QUERY, nil, &Context.QueryParsed, utils.ParseQuery)
+	ContextCacheMap(C.CONTEXT_QUERY, &Context.Query, nil, &Context.QueryParsed, utils.ParseQuery)
 }
 
 func ContextCacheCookies() {
-	ContextCacheParsedStrings(C.CONTEXT_COOKIES, nil, &Context.CookiesParsed, utils.ParseCookies)
+	ContextCacheMap(C.CONTEXT_COOKIES, &Context.Cookies, nil, &Context.CookiesParsed, utils.ParseCookies)
 }
 
 func ContextCacheHeaders() {
-	ContextCacheParsedStrings(C.CONTEXT_HEADERS, nil, &Context.HeadersParsed, utils.ParseHeaders)
+	ContextCacheMap(C.CONTEXT_HEADERS, nil, &Context.Headers, &Context.HeadersParsed, utils.ParseHeaders)
 }
 
 func ContextCacheStatusCode() {

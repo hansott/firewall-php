@@ -17,7 +17,10 @@ func GetMetadataProto(metadata map[string]string) []*protos.Metadata {
 func GetHeadersProto() []*protos.Header {
 	var headersProto []*protos.Header
 	for key, value := range context.GetHeaders() {
-		headersProto = append(headersProto, &protos.Header{Key: key, Value: value})
+		valueStr, ok := value.(string)
+		if ok {
+			headersProto = append(headersProto, &protos.Header{Key: key, Value: valueStr})
+		}
 	}
 	return headersProto
 }
@@ -30,7 +33,7 @@ func GetAttackDetectedProto(res utils.InterceptorResult) protos.AttackDetected {
 			UserAgent: context.GetUserAgent(),
 			Url:       context.GetUrl(),
 			Headers:   GetHeadersProto(),
-			Body:      context.GetBodyRaw(),
+			Body:      context.GetBody(),
 			Source:    "php",
 			Route:     context.GetRoute(),
 		},
