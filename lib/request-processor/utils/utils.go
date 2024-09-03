@@ -97,7 +97,7 @@ func ParseCookies(cookies string) map[string]interface{} {
 func ParseHeaders(headers string) map[string]interface{} {
 	j := map[string]interface{}{}
 	err := json.Unmarshal([]byte(headers), &j)
-	if err == nil {
+	if err != nil {
 		return map[string]interface{}{}
 	}
 	return j

@@ -8,40 +8,53 @@ import (
 	"main/utils"
 )
 
-func GetHeaders(grpcRequest *protos.Request) map[string][]string {
+func GetHeaders(protoHeaders []*protos.Header) map[string][]string {
 	headers := map[string][]string{}
+
+	for _, header := range protoHeaders {
+		headers[header.Key] = []string{header.Value}
+	}
 	return headers
 }
 
-func GetRequestInfo(grpcRequest *protos.Request) RequestInfo {
+func GetMetadata(protoMetadata []*protos.Metadata) map[string]string {
+	metas := map[string]string{}
+
+	for _, meta := range protoMetadata {
+		metas[meta.Key] = meta.Value
+	}
+	return metas
+}
+
+func GetRequestInfo(protoRequest *protos.Request) RequestInfo {
 	return RequestInfo{
-		Method:    grpcRequest.Method,
-		IPAddress: grpcRequest.IpAddress,
-		UserAgent: grpcRequest.UserAgent,
-		URL:       grpcRequest.Url,
-		Headers:   GetHeaders(grpcRequest),
-		Body:      grpcRequest.Body,
-		Source:    grpcRequest.Source,
-		Route:     grpcRequest.Route,
+		Method:    protoRequest.Method,
+		IPAddress: protoRequest.IpAddress,
+		UserAgent: protoRequest.UserAgent,
+		URL:       protoRequest.Url,
+		Headers:   GetHeaders(protoRequest.Headers),
+		Body:      protoRequest.Body,
+		Source:    protoRequest.Source,
+		Route:     protoRequest.Route,
 	}
 }
 
-func GetAttackDetails(grpcAttack *protos.Attack) AttackDetails {
+func GetAttackDetails(protoAttack *protos.Attack) AttackDetails {
 	return AttackDetails{
-		Kind:      grpcAttack.Kind,
-		Operation: grpcAttack.Operation,
-		Module:    grpcAttack.Module,
-		Blocked:   grpcAttack.Blocked,
-		Source:    grpcAttack.Source,
-		Path:      grpcAttack.Path,
-		Stack:     grpcAttack.Stack,
-		Payload:   grpcAttack.Payload,
-		//Metadata:  reqAttack.Metadata,
-		User: utils.GetUserById(grpcAttack.UserId),
+		Kind:      protoAttack.Kind,
+		Operation: protoAttack.Operation,
+		Module:    protoAttack.Module,
+		Blocked:   protoAttack.Blocked,
+		Source:    protoAttack.Source,
+		Path:      protoAttack.Path,
+		Stack:     protoAttack.Stack,
+		Payload:   protoAttack.Payload,
+		Metadata:  GetMetadata(protoAttack.Metadata),
+		User:      utils.GetUserById(protoAttack.UserId),
 	}
 }
 
-func SendDetectedAttackEvent(req *protos.AttackDetected) {
+func SendAttackDetectedEvent(req *protos.AttackDetected) {
 	detectedAttackEvent := DetectedAttack{
 		Type:    "detected_attack",
 		Agent:   GetAgentInfo(),

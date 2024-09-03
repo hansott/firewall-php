@@ -10,8 +10,6 @@ type Source struct {
 	CacheGet func() map[string]string
 }
 
-//var SOURCES = []string{"body", "query", "headers", "cookies"}
-
 var SOURCES = []Source{
 	{"body", context.GetBody},
 	{"query", context.GetQuery},

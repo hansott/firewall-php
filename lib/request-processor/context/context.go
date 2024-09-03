@@ -29,7 +29,6 @@ func Init(callback CallbackFunction) bool {
 	Context = ContextData{
 		Callback: callback,
 	}
-	log.Info("Context init called!")
 	return true
 }
 
