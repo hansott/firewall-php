@@ -120,7 +120,7 @@ jobs:
         cd lib/php-extension
         phpize
         cd ../../build
-        CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
+        CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
 
     - name: Version Aikido extension
