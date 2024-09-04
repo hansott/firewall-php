@@ -12,6 +12,9 @@ def localhost_post_request(port, route, data):
 def php_server_get(port, route=""):
     return localhost_get_request(port, route)
 
+def php_server_post(port, route, data):
+    return localhost_post_request(port, route, data)
+
 def mock_server_get(port, route=""):
     return localhost_get_request(port, route)
 

@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"main/cloud"
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
@@ -46,6 +47,11 @@ func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*proto
 func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
 	log.Debugf("Received user event: %s", req.GetId())
 	go onUserEvent(req.GetId(), req.GetUsername(), req.GetIp())
+	return &emptypb.Empty{}, nil
+}
+
+func (s *server) OnAttackDetected(ctx context.Context, req *protos.AttackDetected) (*emptypb.Empty, error) {
+	go cloud.SendAttackDetectedEvent(req)
 	return &emptypb.Empty{}, nil
 }
 

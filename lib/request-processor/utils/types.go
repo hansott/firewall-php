@@ -13,8 +13,8 @@ const (
 )
 
 type InterceptorResult struct {
-	Operation     string
 	Kind          Kind
+	Operation     string
 	Source        string
 	PathToPayload string
 	Metadata      map[string]string

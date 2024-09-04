@@ -16,6 +16,6 @@ go get google.golang.org/grpc
 go test ./...
 go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido-request-processor.so
 cd ../../build
-CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
+CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
 make
 cd ..

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	. "main/aikido_types"
 	"main/globals"
 	"net"
 	"time"
@@ -81,4 +82,19 @@ func IsBlockingEnabled() bool {
 
 func GetTime() int64 {
 	return time.Now().UnixMilli()
+}
+
+func GetUserById(userId string) *User {
+	if userId == "" {
+		return nil
+	}
+
+	globals.UsersMutex.Lock()
+	defer globals.UsersMutex.Unlock()
+
+	user, exists := globals.Users[userId]
+	if !exists {
+		return nil
+	}
+	return &user
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"main/context"
 	"main/grpc"
 	"main/log"
 	"main/utils"
@@ -9,16 +10,13 @@ import (
 )
 
 func OnRequestInit(data map[string]interface{}) string {
-	method := utils.MustGetFromMap[string](data, "method")
-	route := utils.MustGetFromMap[string](data, "route")
-	remoteAddress := utils.MustGetFromMap[string](data, "remoteAddress")
-	xForwardedFor := utils.MustGetFromMap[string](data, "xForwardedFor")
-
+	method := context.GetMethod()
+	route := context.GetRoute()
 	if method == "" || route == "" {
 		return "{}"
 	}
 
-	log.Infof("[RINIT] Got request metadata: %s %s (%s - %s)", method, route, remoteAddress, xForwardedFor)
+	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
 
 	route = utils.BuildRouteFromURL(route)
 
@@ -28,7 +26,7 @@ func OnRequestInit(data map[string]interface{}) string {
 		return "{}"
 	}
 
-	ip := utils.GetIpFromRequest(remoteAddress, xForwardedFor)
+	ip := context.GetIp()
 	log.Infof("[RINIT] Got IP from request: %s", ip)
 
 	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
@@ -40,7 +38,7 @@ func OnRequestInit(data map[string]interface{}) string {
 	}
 
 	if endpointData.RateLimiting.Enabled {
-		if !utils.IsIpBypassed(ip) {
+		if !context.IsIpBypassed() {
 			// If request is monitored for rate limiting and the IP is not bypassed,
 			// do a sync call via gRPC to see if the request should be aborded or not
 			if !grpc.OnRequestInit(method, route, 10*time.Millisecond) {
@@ -55,9 +53,9 @@ func OnRequestInit(data map[string]interface{}) string {
 }
 
 func OnRequestShutdown(data map[string]interface{}) string {
-	method := utils.MustGetFromMap[string](data, "method")
-	route := utils.MustGetFromMap[string](data, "route")
-	status_code := int(utils.MustGetFromMap[float64](data, "status_code"))
+	method := context.GetMethod()
+	route := context.GetRoute()
+	status_code := context.GetStatusCode()
 
 	if method == "" || route == "" || status_code == 0 {
 		return "{}"

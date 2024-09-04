@@ -3,8 +3,10 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"main/attack"
 	"main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 
 	"main/ipc/protos"
@@ -127,4 +129,22 @@ func OnUserEvent(id string, username string, ip string) {
 	}
 
 	log.Debugf("User event sent via socket (%v %v %v)", id, username, ip)
+}
+
+func OnAttackDetected(res utils.InterceptorResult) {
+	if client == nil {
+		return
+	}
+
+	attackDetected := attack.GetAttackDetectedProto(res)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err := client.OnAttackDetected(ctx, &attackDetected)
+	if err != nil {
+		log.Warnf("Could not send attack detected event")
+		return
+	}
+	log.Debugf("Attack detected event sent via socket")
 }

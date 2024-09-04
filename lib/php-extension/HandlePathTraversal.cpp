@@ -20,8 +20,7 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access) {
             { "function_name", "path_accessed" },
             { "parameters", {
                 { "filename", filenameString },
-                { "operation", functionNameString },
-                { "context", get_context()}
+                { "operation", functionNameString }
             } }
         } }
     };
@@ -50,8 +49,7 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access_2) {
             { "parameters", {
                 { "filename", filenameString },
                 { "filename2", filenameString2 },
-                { "operation", functionNameString },
-                { "context", get_context()}
+                { "operation", functionNameString }
             } }
         } }
     };   

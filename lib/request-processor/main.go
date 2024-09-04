@@ -1,15 +1,18 @@
 package main
 
+//#include "../ContextCallback.c"
 import "C"
 import (
 	"encoding/json"
 	"fmt"
 	. "main/aikido_types"
 	"main/config"
+	"main/context"
 	"main/globals"
 	"main/grpc"
 	"main/log"
 	"main/utils"
+	"unsafe"
 )
 
 var eventHandlers = map[string]HandlerFunction{
@@ -41,6 +44,41 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 	return true
 }
 
+var CContextCallback C.ContextCallback
+
+func GoContextCallback(contextId int) string {
+	if CContextCallback == nil {
+		return ""
+	}
+
+	contextData := C.call(CContextCallback, C.int(contextId))
+	if contextData == nil {
+		return ""
+	}
+
+	goContextData := C.GoString(contextData)
+
+	/*
+		In order to pass dynamic strings from the PHP extension (C++), we need a dynamically allocated buffer, that is allocated by the C++ extension.
+		This buffer needs to be freed by the RequestProcessor (Go) once it has finished copying the data.
+	*/
+	C.free(unsafe.Pointer(contextData))
+	return goContextData
+}
+
+//export RequestProcessorContextInit
+func RequestProcessorContextInit(contextCallback C.ContextCallback) (initOk bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered from panic:", r)
+			initOk = false
+		}
+	}()
+
+	CContextCallback = contextCallback
+	return context.Init(GoContextCallback)
+}
+
 //export RequestProcessorOnEvent
 func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	defer func() {
@@ -59,11 +97,16 @@ func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
 	}
 
 	eventName := utils.MustGetFromMap[string](event, "event")
-	data := utils.MustGetFromMap[map[string]interface{}](event, "data")
+
+	dataMap := map[string]interface{}{}
+	data := utils.GetFromMap[map[string]interface{}](event, "data")
+	if data != nil {
+		dataMap = *data
+	}
 
 	utils.KeyMustExist(eventHandlers, eventName)
 
-	goString := eventHandlers[eventName](data)
+	goString := eventHandlers[eventName](dataMap)
 	cString := C.CString(goString)
 	return cString
 }

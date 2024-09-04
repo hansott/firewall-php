@@ -83,3 +83,35 @@ type Heartbeat struct {
 	Agent     AgentInfo  `json:"agent"`
 	Time      int64      `json:"time"`
 }
+
+type RequestInfo struct {
+	Method    string              `json:"method"`
+	IPAddress string              `json:"ipAddress"`
+	UserAgent string              `json:"userAgent"`
+	URL       string              `json:"url"`
+	Headers   map[string][]string `json:"headers"`
+	Body      string              `json:"body"`
+	Source    string              `json:"source"`
+	Route     string              `json:"route"`
+}
+
+type AttackDetails struct {
+	Kind      string            `json:"kind"`
+	Operation string            `json:"operation"`
+	Module    string            `json:"module"`
+	Blocked   bool              `json:"blocked"`
+	Source    string            `json:"source"`
+	Path      string            `json:"path"`
+	Stack     string            `json:"stack"`
+	Payload   string            `json:"payload"`
+	Metadata  map[string]string `json:"metadata"`
+	User      *User             `json:"user"`
+}
+
+type DetectedAttack struct {
+	Type    string        `json:"type"`
+	Request RequestInfo   `json:"request"`
+	Attack  AttackDetails `json:"attack"`
+	Agent   AgentInfo     `json:"agent"`
+	Time    int64         `json:"time"`
+}

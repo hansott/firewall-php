@@ -8,4 +8,8 @@ GoString GoCreateString(std::string& s);
 
 json GoRequestProcessorOnEvent(json& event);
 
+char* GoContextCallback(int, char*);
+
+bool GoRequestProcessorContextInit();
+
 bool IsBlockingEnabled();

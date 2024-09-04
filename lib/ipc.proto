@@ -12,6 +12,7 @@ service Aikido {
   rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
   rpc OnUser(User) returns (google.protobuf.Empty);
+  rpc OnAttackDetected(AttackDetected) returns (google.protobuf.Empty);
 }
 
 message Domain {
@@ -57,4 +58,43 @@ message User {
   string id = 1;
   string username = 2;
   string ip = 3;
+}
+
+message Header {
+  string key = 1;
+  string value = 2;
+}
+
+message Request {
+  string method = 1;
+  string ipAddress = 2;
+  string userAgent = 3;
+  string url = 4;
+  repeated Header headers = 5;
+  string body = 6;
+  string source = 7;
+  string route = 8;
+}
+
+message Metadata {
+  string key = 1;
+  string value = 2;
+}
+
+message Attack {
+  string kind = 1;
+  string operation = 2;
+  string module = 3;
+  bool blocked = 4;
+  string source = 5;
+  string path = 6;
+  string stack = 7;
+  string payload = 8;
+  repeated Metadata metadata = 9;
+  string userId = 10;
+}
+
+message AttackDetected {
+  Request request = 1;
+  Attack attack = 2;
 }

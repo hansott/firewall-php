@@ -91,7 +91,10 @@ bool get_env_bool(const std::string& env_key, bool default_value) {
     return default_value;
 }
 
-std::string extract_server_var(zval *server, const char *var) {
+std::string extract_server_var(const char *var) {
+    if (!server) {
+        return "";
+    }
     zval *data = zend_hash_str_find(Z_ARRVAL_P(server), var, strlen(var));
     if (!data) {
         return "";
@@ -99,29 +102,29 @@ std::string extract_server_var(zval *server, const char *var) {
     return Z_STRVAL_P(data);
 }
 
-json get_route_and_method(zval *server) {
-    std::string route = extract_server_var(server, "REQUEST_URI");
-    std::string method = extract_server_var(server, "REQUEST_METHOD");
-    // Remove query string
+std::string extract_route() {
+    std::string route = extract_server_var("REQUEST_URI");
     size_t pos = route.find("?");
     if (pos != std::string::npos) {
         route = route.substr(0, pos);
     }
-    json result = {
-        {"route", route},
-        {"method", method}
-    };
-    return result;
+    return route;
 }
 
-
-int get_status_code() {
-    int status_code = SG(sapi_headers).http_response_code;
-    return status_code;
+std::string extract_status_code() {
+    return std::to_string(SG(sapi_headers).http_response_code);
 }
 
+bool is_https() {
+    return extract_server_var("HTTPS") != "" ? true : false;
+}
 
-std::string extract_body() {
+std::string extract_url() {
+    return (is_https() ? "https://" : "http://") + extract_server_var("HTTP_HOST") + extract_server_var("REQUEST_URI");
+}
+
+std::string extract_body()
+{
     long maxlen = PHP_STREAM_COPY_ALL;
     zend_string *contents;
     php_stream *stream;
@@ -135,7 +138,7 @@ std::string extract_body() {
     return "";
 }
 
-json extract_headers(zval *server) {
+std::string extract_headers() {
     std::map<std::string, std::string> headers;
     zend_string *key;
     zval *val;
@@ -147,53 +150,15 @@ json extract_headers(zval *server) {
         }
     } ZEND_HASH_FOREACH_END();
 
-  
     json headers_json;
     for (auto const& [key, val] : headers) {
         headers_json[key] = val;
     }
-    return headers_json;
-}
-
-json get_context() {
-    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-    bool https = extract_server_var(server, "HTTPS") != "" ? true : false;
-
-    if (server && Z_TYPE_P(server) == IS_ARRAY) {
-        return {
-            { "https", https },
-            { "url", (https ? "https://" : "http://") + extract_server_var(server, "HTTP_HOST") + extract_server_var(server, "REQUEST_URI") },
-            { "method", extract_server_var(server, "REQUEST_METHOD") },
-            { "query", extract_server_var(server, "QUERY_STRING") },
-            { "headers", extract_headers(server) },
-            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
-            { "cookies", extract_server_var(server, "HTTP_COOKIE") },
-            { "body", extract_body() }
-        };
-    }
-
-    return {};
+    return headers_json.dump();
 }
 
 ACTION send_request_init_metadata_event(){
-    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-    if (!server) {
-        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
-        return CONTINUE;
-    }
-    
-    json routeAndMethod = get_route_and_method(server);
-
-    json inputEvent = {
-        { "event", "request_init" },
-        { "data", {
-            { "route", routeAndMethod["route"] },
-            { "method", routeAndMethod["method"] },
-            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
-            { "xForwardedFor",  extract_server_var(server, "HTTP_X_FORWARDED_FOR") },
-        }
-        }
-    };
+    json inputEvent = {{"event", "request_init"}};
 
     try {
         json response = GoRequestProcessorOnEvent(inputEvent);
@@ -206,23 +171,7 @@ ACTION send_request_init_metadata_event(){
 }
 
 ACTION send_request_shutdown_metadata_event(){
-    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-    if (!server) {
-        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
-        return CONTINUE;
-    }
-    
-    json routeAndMethod = get_route_and_method(server);
-
-    json inputEvent = {
-        { "event", "request_shutdown" },
-        { "data", {
-            { "route", routeAndMethod["route"] },
-            { "method", routeAndMethod["method"] },
-            { "status_code", get_status_code() }
-        }
-        }
-    };
+    json inputEvent = {{"event", "request_shutdown"}};
 
     try {
         json response = GoRequestProcessorOnEvent(inputEvent);
@@ -247,8 +196,8 @@ bool send_user_event(std::string id, std::string username) {
         { "data", { 
             { "id", id },
             { "username", username },
-            { "remoteAddress", extract_server_var(server, "REMOTE_ADDR") },
-            { "xForwardedFor",  extract_server_var(server, "HTTP_X_FORWARDED_FOR") }
+            { "remoteAddress", extract_server_var("REMOTE_ADDR") },
+            { "xForwardedFor",  extract_server_var("HTTP_X_FORWARDED_FOR") }
         }
         }
     };

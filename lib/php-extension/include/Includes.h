@@ -23,6 +23,7 @@
 #include "ext/standard/info.h"
 #include "GoCGO.h"
 #include "php_aikido.h"
+#include "../../ContextCallback.c"
 
 #include "3rdparty/json.hpp"
 
@@ -77,14 +78,18 @@ typedef GoUint8 (*AgentInitFn)(GoString initJson);
 typedef void (*AgentUninitFn)();
 
 typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
+typedef GoUint8 (*RequestProcessorContextInitFn)(ContextCallback);
 typedef char* (*RequestProcessorOnEventFn)(GoString eventJson);
 typedef int (*RequestProcessorGetBlockingModeFn)();
 typedef void (*RequestProcessorUninitFn)();
 
 
 extern void* aikido_request_processor_lib_handle;
+extern RequestProcessorContextInitFn request_processor_context_init_fn;
 extern RequestProcessorOnEventFn request_processor_on_event_fn;
 extern RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn;
+
+extern zval* server;
 
 #include "GoWrappers.h"
 #include "Utils.h"
