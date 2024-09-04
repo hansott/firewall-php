@@ -1,5 +1,5 @@
 --TEST--
-Test the aikido_set_user() function
+Test the \aikido\set_user() function
 
 --ENV--
 AIKIDO_LOG_LEVEL=INFO
@@ -9,7 +9,7 @@ AIKIDO_LOG_LEVEL=INFO
 
 $_SERVER['REMOTE_ADDR'] = '::1';
 
-$a = \aikido_set_user("122-sa-2", "username1");
+$a = \aikido\set_user("122-sa-2", "username1");
 
 if ($a == true) {
     echo "User set successfully\n";
