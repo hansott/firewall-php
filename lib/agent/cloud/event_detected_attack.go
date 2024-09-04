@@ -54,7 +54,35 @@ func GetAttackDetails(protoAttack *protos.Attack) AttackDetails {
 	}
 }
 
+func ShouldSendAttackDetectedEvent() bool {
+	globals.AttackDetectedEventsSentAtMutex.Lock()
+	defer globals.AttackDetectedEventsSentAtMutex.Unlock()
+
+	currentTime := utils.GetTime()
+
+	// Filter out events that are outside the current interval
+	var filteredEvents []int64
+	for _, eventTime := range globals.AttackDetectedEventsSentAt {
+		if eventTime > currentTime-globals.AttackDetectedEventsIntervalInMs {
+			filteredEvents = append(filteredEvents, eventTime)
+		}
+	}
+	globals.AttackDetectedEventsSentAt = filteredEvents
+
+	if len(globals.AttackDetectedEventsSentAt) >= globals.MaxAttackDetectedEventsPerInterval {
+		log.Warnf("Maximum (%d) number of \"detected_attack\" events exceeded for timeframe: %d / %d ms",
+			globals.MaxAttackDetectedEventsPerInterval, len(globals.AttackDetectedEventsSentAt), globals.AttackDetectedEventsIntervalInMs)
+		return false
+	}
+
+	globals.AttackDetectedEventsSentAt = append(globals.AttackDetectedEventsSentAt, currentTime)
+	return true
+}
+
 func SendAttackDetectedEvent(req *protos.AttackDetected) {
+	if !ShouldSendAttackDetectedEvent() {
+		return
+	}
 	detectedAttackEvent := DetectedAttack{
 		Type:    "detected_attack",
 		Agent:   GetAgentInfo(),
@@ -68,5 +96,6 @@ func SendAttackDetectedEvent(req *protos.AttackDetected) {
 		log.Warn("Error in sending detected attack event: ", err)
 		return
 	}
+
 	StoreCloudConfig(response)
 }

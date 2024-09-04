@@ -195,9 +195,7 @@ bool send_user_event(std::string id, std::string username) {
         { "event", "user_event" },
         { "data", { 
             { "id", id },
-            { "username", username },
-            { "remoteAddress", extract_server_var("REMOTE_ADDR") },
-            { "xForwardedFor",  extract_server_var("HTTP_X_FORWARDED_FOR") }
+            { "username", username }
         }
         }
     };
