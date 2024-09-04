@@ -58,6 +58,10 @@ func GoContextCallback(contextId int) string {
 
 	goContextData := C.GoString(contextData)
 
+	/*
+		In order to pass dynamic strings from the PHP extension (C++), we need a dynamically allocated buffer, that is allocated by the C++ extension.
+		This buffer needs to be freed by the RequestProcessor (Go) once it has finished copying the data.
+	*/
 	C.free(unsafe.Pointer(contextData))
 	return goContextData
 }
