@@ -27,6 +27,9 @@ json GoRequestProcessorOnEvent(json& event) {
     return output;
 }
 
+/*
+    Callback wrapper called by the RequestProcessor (GO) whenever it needs data from PHP (C++ extension).
+*/
 char* GoContextCallback(int context_id) {
     if (!server) {
         AIKIDO_LOG_WARN("_SERVER variables is not initialized!\n");

@@ -9,6 +9,14 @@ import (
 	"strconv"
 )
 
+/*
+	Context caching functions are present in this package.
+	These cache data for each request instance.
+	In this way, the code can request data on demand from the request context cache,
+	and if the data it not yet initialized, only than it is requested from PHP (C++ extension) via callback.
+	This allows to copy data from PHP only once per request and only when needed.
+*/
+
 type ParseFunction func(string) map[string]interface{}
 
 func ContextCacheMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
