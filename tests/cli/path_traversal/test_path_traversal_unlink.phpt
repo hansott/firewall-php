@@ -17,4 +17,4 @@ unlink($file);
 ?>
 
 --EXPECTREGEX--
-.*Fatal error: Uncaught Exception: Path traversal detected.*
+.*Fatal error: Uncaught Exception: Aikido firewall has blocked a path traversal attack.*

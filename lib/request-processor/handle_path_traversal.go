@@ -1,6 +1,7 @@
 package main
 
 import (
+	"main/attack"
 	"main/grpc"
 	"main/utils"
 	path_traversal "main/vulnerabilities/path-traversal"
@@ -18,14 +19,14 @@ func OnPathAccessed(parameters map[string]interface{}) string {
 	res := path_traversal.CheckContextForPathTraversal(*filename, *operation, true)
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
-		return `{"action": "throw", "message": "Path traversal detected", "code": -1}`
+		return attack.GetAttackDetectedAction(*res)
 	}
 
 	if filename2 != nil && *filename2 != "" {
 		res = path_traversal.CheckContextForPathTraversal(*filename2, *operation, true)
 		if res != nil {
 			go grpc.OnAttackDetected(*res)
-			return `{"action": "throw", "message": "Path traversal detected", "code": -1}`
+			return attack.GetAttackDetectedAction(*res)
 		}
 	}
 	return "{}"
