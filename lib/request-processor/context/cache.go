@@ -19,7 +19,7 @@ import (
 
 type ParseFunction func(string) map[string]interface{}
 
-func ContextCacheMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
+func ContextSetMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
 	if *stringsPtr != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func ContextCacheMap(contextId int, rawDataPtr **string, parsedPtr **map[string]
 	*stringsPtr = &strings
 }
 
-func ContextCacheString(context_id int, m **string) {
+func ContextSetString(context_id int, m **string) {
 	if *m != nil {
 		return
 	}
@@ -43,23 +43,23 @@ func ContextCacheString(context_id int, m **string) {
 	*m = &temp
 }
 
-func ContextCacheBody() {
-	ContextCacheMap(C.CONTEXT_BODY, &Context.Body, nil, &Context.BodyParsed, utils.ParseBody)
+func ContextSetBody() {
+	ContextSetMap(C.CONTEXT_BODY, &Context.Body, nil, &Context.BodyParsed, utils.ParseBody)
 }
 
-func ContextCacheQuery() {
-	ContextCacheMap(C.CONTEXT_QUERY, &Context.Query, nil, &Context.QueryParsed, utils.ParseQuery)
+func ContextSetQuery() {
+	ContextSetMap(C.CONTEXT_QUERY, &Context.Query, nil, &Context.QueryParsed, utils.ParseQuery)
 }
 
-func ContextCacheCookies() {
-	ContextCacheMap(C.CONTEXT_COOKIES, &Context.Cookies, nil, &Context.CookiesParsed, utils.ParseCookies)
+func ContextSetCookies() {
+	ContextSetMap(C.CONTEXT_COOKIES, &Context.Cookies, nil, &Context.CookiesParsed, utils.ParseCookies)
 }
 
-func ContextCacheHeaders() {
-	ContextCacheMap(C.CONTEXT_HEADERS, nil, &Context.Headers, &Context.HeadersParsed, utils.ParseHeaders)
+func ContextSetHeaders() {
+	ContextSetMap(C.CONTEXT_HEADERS, nil, &Context.Headers, &Context.HeadersParsed, utils.ParseHeaders)
 }
 
-func ContextCacheStatusCode() {
+func ContextSetStatusCode() {
 	if Context.StatusCode != nil {
 		return
 	}
@@ -72,23 +72,23 @@ func ContextCacheStatusCode() {
 	Context.StatusCode = &status_code
 }
 
-func ContextCacheRoute() {
-	ContextCacheString(C.CONTEXT_ROUTE, &Context.Route)
+func ContextSetRoute() {
+	ContextSetString(C.CONTEXT_ROUTE, &Context.Route)
 }
 
-func ContextCacheMethod() {
-	ContextCacheString(C.CONTEXT_METHOD, &Context.Method)
+func ContextSetMethod() {
+	ContextSetString(C.CONTEXT_METHOD, &Context.Method)
 }
 
-func ContextCacheUrl() {
-	ContextCacheString(C.CONTEXT_URL, &Context.URL)
+func ContextSetUrl() {
+	ContextSetString(C.CONTEXT_URL, &Context.URL)
 }
 
-func ContextCacheUserAgent() {
-	ContextCacheString(C.CONTEXT_HEADER_USER_AGENT, &Context.UserAgent)
+func ContextSetUserAgent() {
+	ContextSetString(C.CONTEXT_HEADER_USER_AGENT, &Context.UserAgent)
 }
 
-func ContextCacheIp() {
+func ContextSetIp() {
 	if Context.IP != nil {
 		return
 	}
@@ -98,8 +98,8 @@ func ContextCacheIp() {
 	Context.IP = &ip
 }
 
-func ContextCacheIsIpBypassed() {
-	ContextCacheIp()
+func ContextSetIsIpBypassed() {
+	ContextSetIp()
 	if Context.IsIpBypassed != nil {
 		return
 	}
@@ -111,6 +111,6 @@ func ContextCacheIsIpBypassed() {
 	Context.IsIpBypassed = &isIpBypassed
 }
 
-func ContextCacheUserId(userId string) {
+func ContextSetUserId(userId string) {
 	Context.UserId = &userId
 }

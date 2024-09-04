@@ -25,6 +25,6 @@ func OnUserEvent(data map[string]interface{}) string {
 		return `{"action": "exit", "message": "You are blocked by Aikido Firewall!", "response_code": 403}`
 	}
 
-	context.ContextCacheUserId(id)
+	context.ContextSetUserId(id)
 	return "{}"
 }

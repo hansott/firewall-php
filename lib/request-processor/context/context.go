@@ -48,63 +48,63 @@ func GetFromCache[T any](fetchDataFn func(), s **T) T {
 }
 
 func GetIp() string {
-	return GetFromCache(ContextCacheIp, &Context.IP)
+	return GetFromCache(ContextSetIp, &Context.IP)
 }
 
 func GetMethod() string {
-	return GetFromCache(ContextCacheMethod, &Context.Method)
+	return GetFromCache(ContextSetMethod, &Context.Method)
 }
 
 func GetRoute() string {
-	return GetFromCache(ContextCacheRoute, &Context.Route)
+	return GetFromCache(ContextSetRoute, &Context.Route)
 }
 
 func GetUrl() string {
-	return GetFromCache(ContextCacheUrl, &Context.URL)
+	return GetFromCache(ContextSetUrl, &Context.URL)
 }
 
 func GetStatusCode() int {
-	return GetFromCache(ContextCacheStatusCode, &Context.StatusCode)
+	return GetFromCache(ContextSetStatusCode, &Context.StatusCode)
 }
 
 func IsIpBypassed() bool {
-	return GetFromCache(ContextCacheIsIpBypassed, &Context.IsIpBypassed)
+	return GetFromCache(ContextSetIsIpBypassed, &Context.IsIpBypassed)
 }
 
 func GetBody() string {
-	return GetFromCache(ContextCacheBody, &Context.Body)
+	return GetFromCache(ContextSetBody, &Context.Body)
 }
 
 func GetBodyParsed() map[string]string {
-	return GetFromCache(ContextCacheBody, &Context.BodyParsed)
+	return GetFromCache(ContextSetBody, &Context.BodyParsed)
 }
 
 func GetQuery() string {
-	return GetFromCache(ContextCacheQuery, &Context.Query)
+	return GetFromCache(ContextSetQuery, &Context.Query)
 }
 
 func GetQueryParsed() map[string]string {
-	return GetFromCache(ContextCacheQuery, &Context.QueryParsed)
+	return GetFromCache(ContextSetQuery, &Context.QueryParsed)
 }
 
 func GetCookies() string {
-	return GetFromCache(ContextCacheCookies, &Context.Cookies)
+	return GetFromCache(ContextSetCookies, &Context.Cookies)
 }
 
 func GetCookiesParsed() map[string]string {
-	return GetFromCache(ContextCacheCookies, &Context.CookiesParsed)
+	return GetFromCache(ContextSetCookies, &Context.CookiesParsed)
 }
 
 func GetHeaders() map[string]interface{} {
-	return GetFromCache(ContextCacheHeaders, &Context.Headers)
+	return GetFromCache(ContextSetHeaders, &Context.Headers)
 }
 
 func GetHeadersParsed() map[string]string {
-	return GetFromCache(ContextCacheHeaders, &Context.HeadersParsed)
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
 }
 
 func GetUserAgent() string {
-	return GetFromCache(ContextCacheUserAgent, &Context.UserAgent)
+	return GetFromCache(ContextSetUserAgent, &Context.UserAgent)
 }
 
 func GetUserId() string {
