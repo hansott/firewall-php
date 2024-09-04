@@ -20,6 +20,10 @@ func GetAgentInfo() AgentInfo {
 			Name:    Machine.OS,
 			Version: Machine.OSVersion,
 		},
+		Platform: PlatformInfo{
+			Name:    EnvironmentConfig.PlatformName,
+			Version: EnvironmentConfig.PlatformVersion,
+		},
 		Packages: make(map[string]string, 0),
 		NodeEnv:  "",
 		Library:  "firewall-php",

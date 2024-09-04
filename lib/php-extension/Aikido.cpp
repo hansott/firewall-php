@@ -95,6 +95,8 @@ PHP_MINIT_FUNCTION(aikido)
 	json initData = {
 		{"token", token},
 		{"socket_path", AIKIDO_GLOBAL(socket_path)},
+		{"platform_name", sapi_name},
+		{"platform_version", PHP_VERSION},
 		{"endpoint", endpoint},
 		{"config_endpoint", config_endpoint},
 		{"log_level", log_level},
