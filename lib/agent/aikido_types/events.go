@@ -5,6 +5,11 @@ type OsInfo struct {
 	Version string `json:"version"`
 }
 
+type PlatformInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
 type Hostname struct {
 	URL  string `json:"hostname"`
 	Port int64  `json:"port,omitempty"`
@@ -62,6 +67,7 @@ type AgentInfo struct {
 	Version                   string            `json:"version"`
 	IPAddress                 string            `json:"ipAddress"`
 	OS                        OsInfo            `json:"os"`
+	Platform                  PlatformInfo      `json:"platform"`
 	Packages                  map[string]string `json:"packages"`
 	PreventPrototypePollution bool              `json:"preventedPrototypePollution"`
 	NodeEnv                   string            `json:"nodeEnv"`

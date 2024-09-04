@@ -1,6 +1,7 @@
 package attack
 
 import (
+	"fmt"
 	"main/context"
 	"main/ipc/protos"
 	"main/utils"
@@ -51,4 +52,16 @@ func GetAttackDetectedProto(res utils.InterceptorResult) protos.AttackDetected {
 			UserId:    context.GetUserId(),
 		},
 	}
+}
+
+func BuildAttackDetectedMessage(result utils.InterceptorResult) string {
+	return fmt.Sprintf("Aikido firewall has blocked %s: %s(...) originating from %s%s",
+		utils.GetDisplayNameForAttackKind(result.Kind),
+		result.Operation,
+		result.Source,
+		utils.EscapeHTML(result.PathToPayload))
+}
+
+func GetAttackDetectedAction(result utils.InterceptorResult) string {
+	return fmt.Sprintf(`{"action": "throw", "message": "%s", "code": -1}`, BuildAttackDetectedMessage(result))
 }

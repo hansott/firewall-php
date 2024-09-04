@@ -44,3 +44,9 @@ var Users = make(map[string]User)
 
 // Users mutex used to sync access across the go routines
 var UsersMutex sync.Mutex
+
+// Users map, which holds the current users and their data
+var AttackDetectedEventsSentAt []int64
+
+// Users mutex used to sync access across the go routines
+var AttackDetectedEventsSentAtMutex sync.Mutex

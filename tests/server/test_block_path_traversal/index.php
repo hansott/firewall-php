@@ -1,6 +1,6 @@
 <?php
     
-aikido_set_user("12345", "Tudor");
+\aikido\set_user("12345", "Tudor");
 
 // Read the raw POST body
 $requestBody = file_get_contents('php://input');

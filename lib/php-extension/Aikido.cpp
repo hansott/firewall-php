@@ -95,6 +95,8 @@ PHP_MINIT_FUNCTION(aikido)
 	json initData = {
 		{"token", token},
 		{"socket_path", AIKIDO_GLOBAL(socket_path)},
+		{"platform_name", sapi_name},
+		{"platform_version", PHP_VERSION},
 		{"endpoint", endpoint},
 		{"config_endpoint", config_endpoint},
 		{"log_level", log_level},
@@ -273,10 +275,10 @@ PHP_MINFO_FUNCTION(aikido)
 	php_info_print_table_end();
 }
 
-// Exports the "aikido_set_user" function, to be called from PHP user code.
+// Exports the "\aikido\set_user" function, to be called from PHP user code.
 // Receives two parameters: id and name (both strings).
 // Returns true if the setting of the user succeeded, false otherwise.
-ZEND_FUNCTION(aikido_set_user) {
+ZEND_FUNCTION(set_user) {
 	char *id;
 	size_t id_len;
 	char *name;
@@ -296,11 +298,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_aikido_set_user, 0, 2, _IS_BOOL,
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-
 static const zend_function_entry ext_functions[] = {
-	ZEND_FE(aikido_set_user, arginfo_aikido_set_user)
+	ZEND_NS_FE("aikido", set_user, arginfo_aikido_set_user)
 	ZEND_FE_END
-	
 };
 
 zend_module_entry aikido_module_entry = {

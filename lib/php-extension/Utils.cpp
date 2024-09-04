@@ -13,7 +13,7 @@ void aikido_log_init() {
     std::time_t current_time = std::time(nullptr);
     char time_str[20];
     std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
-    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + ".log";
+    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + "-" + std::to_string(getpid()) + ".log";
     log_file = fopen(log_file_path.c_str(), "w");
 }
 
@@ -195,9 +195,7 @@ bool send_user_event(std::string id, std::string username) {
         { "event", "user_event" },
         { "data", { 
             { "id", id },
-            { "username", username },
-            { "remoteAddress", extract_server_var("REMOTE_ADDR") },
-            { "xForwardedFor",  extract_server_var("HTTP_X_FORWARDED_FOR") }
+            { "username", username }
         }
         }
     };

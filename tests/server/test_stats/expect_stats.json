@@ -2,7 +2,7 @@
     "type": "heartbeat",
     "stats": {
         "requests": {
-            "total": 3000,
+            "total": 300,
             "aborted": 0,
             "attacksDetected": {
                 "total": 0,
