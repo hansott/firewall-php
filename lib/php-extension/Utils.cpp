@@ -13,7 +13,7 @@ void aikido_log_init() {
     std::time_t current_time = std::time(nullptr);
     char time_str[20];
     std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
-    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + "-" + std::to_string(pid) + ".log";
+    std::string log_file_path = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + time_str + "-" + std::to_string(getpid()) + ".log";
     log_file = fopen(log_file_path.c_str(), "w");
 }
 
