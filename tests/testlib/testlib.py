@@ -97,11 +97,11 @@ def assert_started_event_is_valid(event):
 def assert_response_code_is(response, status_code):
     assert response.status_code == status_code, f"Status codes are not the same: {response.status_code} vs {status_code}"
     
-def assert_reponse_header_contains(response, header, value):
+def assert_response_header_contains(response, header, value):
     assert header in response.headers, f"Header '{header}' is not part of response headers: {response.headers}"
     assert value in response.headers[header], f"Header '{header}' does not contain '{value}' but '{response.headers[header]}'"
 
-def assert_reponse_body_contains(response, text):
+def assert_response_body_contains(response, text):
     assert text in response.text, f"Test '{text}' is not part of response body: {response.text}"
     
 def mock_server_wait_for_new_events(port, max_wait_time):

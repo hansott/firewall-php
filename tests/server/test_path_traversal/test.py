@@ -12,7 +12,7 @@ from testlib import *
 def check_path_traversal(response_code, response_body=""):
     response = php_server_post(php_port, "/testDetection", {"folder": "../../../.."})
     assert_response_code_is(response, response_code)
-    (response, response_body)
+    assert_response_body_contains(response, response_body)
     
     mock_server_wait_for_new_events(mock_port, 5)
     
