@@ -33,6 +33,10 @@ def mock_server_set_config_file(port, config_file):
         config = json.load(f)
     return mock_server_post(port, "/mock/config", config)
 
+def apply_config(port, config_file):
+    mock_server_set_config_file(port, config_file)
+    time.sleep(120)
+
 def assert_events_length_is(events, length):
     assert isinstance(events, list), "Error: Events is not a list."
     assert len(events) == length, f"Error: The events list does not contain exactly {length} elements."

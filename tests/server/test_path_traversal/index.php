@@ -11,8 +11,8 @@ $data = json_decode($requestBody, true);
 // Check if 'folder' exists and get its value
 if (isset($data['folder'])) {
     $f = $data['folder'] . '/file';
-    echo "Opening fileFolder: " . $f;
     fopen($f, 'r');
+    echo "File opened!";
 } else {
     echo "Field 'folder' is not present in the JSON data.";
 }

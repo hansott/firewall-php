@@ -16,18 +16,14 @@ def run_test(php_port, mock_port):
     assert_reponse_header_contains(response, "Content-Type", "text")
     assert_reponse_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ::1)")
 
-    mock_server_set_config_file(mock_port, "change_config_remove_allowed_ip.json")
-    
-    mock_server_wait_for_new_events(mock_port, 120)
-    
+    apply_config(mock_port, "change_config_remove_allowed_ip.json")
+        
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 200)
     assert_reponse_body_contains(response, "Something")
     
-    mock_server_set_config_file(mock_port, "start_config.json")
-    
-    mock_server_wait_for_new_events(mock_port, 120)
-    
+    apply_config(mock_port, "start_config.json")
+        
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 403)
     assert_reponse_header_contains(response, "Content-Type", "text")

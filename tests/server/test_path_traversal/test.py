@@ -9,9 +9,10 @@ from testlib import *
 3. Waits for the heartbeat event and validates the reporting.
 '''
 
-def run_test(php_port, mock_port):
+def check_path_traversal(response_code, response_body=""):
     response = php_server_post(php_port, "/testDetection", {"folder": "../../../.."})
-    assert_response_code_is(response, 500)
+    assert_response_code_is(response, response_code)
+    (response, response_body)
     
     mock_server_wait_for_new_events(mock_port, 5)
     
@@ -19,6 +20,15 @@ def run_test(php_port, mock_port):
     assert_events_length_is(events, 2)
     assert_started_event_is_valid(events[0])
     assert_event_contains_subset_file(events[1], "expect_detection.json")
+
+def run_test(php_port, mock_port):
+    check_path_traversal(500)
+    
+    apply_config(mock_port, "change_config_disable_blocking.json")
+    check_path_traversal(200, "File opened!")
+    
+    apply_config(mock_port, "change_config_enable_blocking.json")
+    check_path_traversal(500)
     
 if __name__ == "__main__":
     run_test(int(sys.argv[1]), int(sys.argv[2]))
