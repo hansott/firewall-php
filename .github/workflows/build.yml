@@ -221,7 +221,7 @@ jobs:
             ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
 
   build_deb:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [ build_rpm ]
     steps:
       - name: Checkout repository
