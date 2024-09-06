@@ -1,17 +1,5 @@
 {
     "type": "heartbeat",
-    "stats": {
-        "requests": {
-            "total": 1
-        }
-    },
-    "routes": [
-        {
-            "path": "/",
-            "method": "GET",
-            "count": 1
-        }
-    ],
     "users": [
         {
             "id": "12345",
