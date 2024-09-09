@@ -1,31 +1,26 @@
 package shell_injection
 
 import (
+	"main/context"
 	"main/utils"
 	"testing"
 )
 
 func TestCheckContextForShellInjection(t *testing.T) {
 
-	context := map[string]interface{}{
-
-		"cookies":       map[string]interface{}{},
-		"headers":       map[string]interface{}{},
-		"remoteAddress": "ip",
-		"method":        "POST",
-		"url":           "url",
-		"query":         map[string]interface{}{},
-		"body": map[string]interface{}{
-			"domain": "www.example`whoami`.com",
-		},
-		"routeParams": map[string]interface{}{},
-		"source":      "express",
-		"route":       "/",
-	}
-
 	t.Run("it detects shell injection", func(t *testing.T) {
+		context.LoadForTests(map[string]string{
+			"remoteAddress": "ip",
+			"method":        "POST",
+			"url":           "url",
+			"body": context.GetJsonString(map[string]interface{}{
+				"domain": "www.example`whoami`.com",
+			}),
+			"source": "express",
+			"route":  "/",
+		})
 		operation := "child_process.exec"
-		result := CheckContextForShellInjection("binary --domain www.example`whoami`.com", operation, context)
+		result := CheckContextForShellInjection("binary --domain www.example`whoami`.com", operation)
 
 		if result == nil {
 			t.Errorf("expected result, got nil")
@@ -54,22 +49,18 @@ func TestCheckContextForShellInjection(t *testing.T) {
 
 	t.Run("it detects shell injection from route params", func(t *testing.T) {
 		operation := "child_process.exec"
-		context := map[string]interface{}{
-			"cookies":       map[string]interface{}{},
-			"headers":       map[string]interface{}{},
+		context.LoadForTests(map[string]string{
 			"remoteAddress": "ip",
 			"method":        "POST",
 			"url":           "url",
-			"query":         map[string]interface{}{},
-			"body":          map[string]interface{}{},
-			"routeParams": map[string]interface{}{
+			"body": context.GetJsonString(map[string]interface{}{
 				"domain": "www.example`whoami`.com",
-			},
+			}),
 			"source": "express",
 			"route":  "/",
-		}
+		})
 
-		result := CheckContextForShellInjection("binary --domain www.example`whoami`.com", operation, context)
+		result := CheckContextForShellInjection("binary --domain www.example`whoami`.com", operation)
 
 		if result == nil {
 			t.Errorf("expected result, got nil")
@@ -81,7 +72,7 @@ func TestCheckContextForShellInjection(t *testing.T) {
 		if result.Kind != utils.Kind("shell_injection") {
 			t.Errorf("expected kind, got %v", result.Kind)
 		}
-		if result.Source != "routeParams" {
+		if result.Source != "body" {
 			t.Errorf("expected source, got %v", result.Source)
 		}
 		if result.PathToPayload != ".domain" {
