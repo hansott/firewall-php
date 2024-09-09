@@ -27,7 +27,8 @@ def get_runtime_config():
 @app.route('/api/runtime/events', methods=['POST'])
 def post_events():
     print("Got event: ", request.get_json())
-    events.append(request.get_json())
+    if request.get_json():
+        events.append(request.get_json())
     return jsonify(responses["config"])
 
 
