@@ -25,7 +25,7 @@ def run_test():
     check_shell_injection(500, "", 1, "expect_detection_blocked.json")
     
     apply_config("change_config_disable_blocking.json")
-    check_shell_injection(200, "File opened!", 2, "expect_detection_not_blocked.json")
+    check_shell_injection(200, "Shell executed!", 2, "expect_detection_not_blocked.json")
     
     apply_config("start_config.json")
     check_shell_injection(500, "", 3, "expect_detection_blocked.json")
