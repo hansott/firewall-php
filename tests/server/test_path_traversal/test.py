@@ -4,9 +4,9 @@ import sys
 from testlib import *
 
 '''
-1. Sets up a simple config.
-2. Sends multiple requests to different routes.
-3. Waits for the heartbeat event and validates the reporting.
+1. Sets up a simple config and env AIKIDO_BLOCKING=1.
+2. Sends an attack request to a route, that will cause sending a detection event.
+3. Checks that the detection event was submitted and is valid.
 '''
 
 def check_path_traversal(response_code, response_body=""):
@@ -27,7 +27,7 @@ def run_test(php_port, mock_port):
     apply_config(mock_port, "change_config_disable_blocking.json")
     check_path_traversal(200, "File opened!")
     
-    apply_config(mock_port, "change_config_enable_blocking.json")
+    apply_config(mock_port, "start_config.json")
     check_path_traversal(500)
     
 if __name__ == "__main__":

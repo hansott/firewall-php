@@ -6,5 +6,5 @@
     "blockedUserIds": [],
     "allowedIPAddresses": [],
     "receivedAnyStats": false,
-    "block": false
+    "block": true
 }
