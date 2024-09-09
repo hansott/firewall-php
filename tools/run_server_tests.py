@@ -5,6 +5,7 @@ import random
 import time
 import sys
 import json
+import argparse
 
 used_ports = set()
 passed_tests = []
@@ -33,7 +34,7 @@ def print_test_results(s, tests):
     for t in tests:
         print(f"\t- {t}")
 
-def handle_test_scenario(test_dir, test_lib_dir):
+def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark):
     try:
         # Generate unique ports for mock server and PHP server.
         mock_port = generate_unique_port()
@@ -64,11 +65,20 @@ def handle_test_scenario(test_dir, test_lib_dir):
         )
         time.sleep(5)
 
-        print(f"Running test.py for {test_name}...")
-        subprocess.run(['python3', 'test.py', str(php_port), str(mock_port)], 
+        test_script_name = "test.py"
+        test_script_cwd = test_dir
+        if benchmark:
+            print(f"Running benchmark for {test_name}...")
+            test_script_name = "benchmark.py"
+            test_script_cwd = root_tests_dir
+        else:
+            print(f"Running test.py for {test_name}...")
+            
+        subprocess.run(['python3', test_script_name, str(php_port), str(mock_port)], 
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
-                       cwd=test_dir,
+                       cwd=test_script_cwd,
                        check=True, timeout=600)
+        
         passed_tests.append(test_name)
 
     except subprocess.CalledProcessError as e:
@@ -93,16 +103,16 @@ def handle_test_scenario(test_dir, test_lib_dir):
             print(f"Mock server on port {mock_port} stopped.")
 
 
-def main(root_tests_dir, test_lib_dir, specific_test=None):
+def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False):
     if specific_test:
-        specific_test = os.path.join(root_tests_dir, specific_test)
-        handle_test_scenario(specific_test, test_lib_dir)
+        specific_test = os.path.join(root_tests_dir, specific_test, benchmark)
+        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir)
     else:
         test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
         threads = []
 
         for test_dir in test_dirs:
-            thread = threading.Thread(target=handle_test_scenario, args=(test_dir, test_lib_dir))
+            thread = threading.Thread(target=handle_test_scenario, args=(root_tests_dir, test_dir, test_lib_dir, benchmark))
             threads.append(thread)
             thread.start()
 
@@ -116,11 +126,16 @@ def main(root_tests_dir, test_lib_dir, specific_test=None):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python script.py <root_folder_path> <test_lib_dir> [specific_test]")
-        exit(1)
+    parser = argparse.ArgumentParser(description="Script for running PHP server tests with Aikido Firewall installed.")
+    parser.add_argument('root_folder_path', type=str, help='Path to the root folder of the tests to be ran.')
+    parser.add_argument('test_lib_dir', type=str, help='Directory for the test libraries.')
+    parser.add_argument('--test', type=str, default=None, help='Run a single test from the root folder.')
+    parser.add_argument('--benchmark', action='store_true', help='Enable benchmarking.')
 
-    root_folder = os.path.abspath(sys.argv[1])
-    test_lib_dir = os.path.abspath(sys.argv[2])
-    specific_test = sys.argv[3] if len(sys.argv) > 3 else None
-    main(root_folder, test_lib_dir, specific_test)
+    # Parse arguments
+    args = parser.parse_args()
+
+    # Extract values from parsed arguments
+    root_folder = os.path.abspath(args.root_folder_path)
+    test_lib_dir = os.path.abspath(args.test_lib_dir)
+    main(root_folder, test_lib_dir, args.test, args.benchmark)
