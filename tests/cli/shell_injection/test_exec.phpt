@@ -19,4 +19,4 @@ echo "\n";
 ?>
 
 --EXPECTREGEX--
-.*Fatal error: Uncaught Exception: Shell injection detected in.*
+.*Fatal error: Uncaught Exception: Aikido firewall has blocked a shell injection.*

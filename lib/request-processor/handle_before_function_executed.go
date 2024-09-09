@@ -7,8 +7,8 @@ import (
 
 var PreFunctionExecutedHandlers = map[string]HandlerFunction{
 	"curl_exec":      OnPreFunctionExecutedCurl,
-	"shell_executed": OnPreFunctionExecutedShell, // exec, shell_exec, system, passthru, popen, proc_open
-	"path_accessed":  OnPrePathAccessed,          // basename, chgrp, chmod, chown, clearstatcache, copy, dirname ...
+	"shell_executed": OnPreShellExecuted, // exec, shell_exec, system, passthru, popen, proc_open
+	"path_accessed":  OnPrePathAccessed,  // basename, chgrp, chmod, chown, clearstatcache, copy, dirname ...
 }
 
 func OnBeforeFunctionExecuted(data map[string]interface{}) string {

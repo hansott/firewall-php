@@ -8,7 +8,7 @@ import (
 	shell_injection "main/vulnerabilities/shell-injection"
 )
 
-func OnPreFunctionExecutedShell(parameters map[string]interface{}) string {
+func OnPreShellExecuted(parameters map[string]interface{}) string {
 	cmd := utils.GetFromMap[string](parameters, "cmd")
 	operation := utils.GetFromMap[string](parameters, "operation")
 	if cmd == nil {
