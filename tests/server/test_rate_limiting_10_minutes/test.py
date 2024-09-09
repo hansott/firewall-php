@@ -13,7 +13,7 @@ def run_test(php_port, mock_port):
     for i in range(30):
         response = php_server_get(php_port, "/test")
         assert_response_code_is(response, 200)
-        assert_reponse_body_contains(response, "Something")
+        assert_response_body_contains(response, "Something")
         
         if i != 0 and i % 10 == 0:
             time.sleep(60)
@@ -21,8 +21,8 @@ def run_test(php_port, mock_port):
     for _ in range(10):
         response = php_server_get(php_port, "/test")
         assert_response_code_is(response, 429)
-        assert_reponse_header_contains(response, "Content-Type", "text")
-        assert_reponse_body_contains(response, "This request was rate limited by Aikido Security!")
+        assert_response_header_contains(response, "Content-Type", "text")
+        assert_response_body_contains(response, "This request was rate limited by Aikido Security!")
     
     
 if __name__ == "__main__":

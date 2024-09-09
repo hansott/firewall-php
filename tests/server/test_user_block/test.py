@@ -14,21 +14,21 @@ from testlib import *
 def run_test(php_port, mock_port):
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 403)
-    assert_reponse_header_contains(response, "Content-Type", "text")
-    assert_reponse_body_contains(response, "You are blocked by Aikido Firewall!")
+    assert_response_header_contains(response, "Content-Type", "text")
+    assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
 
     apply_config(mock_port, "change_config_remove_blocked_user.json")
         
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 200)
-    assert_reponse_body_contains(response, "User set successfully")
+    assert_response_body_contains(response, "User set successfully")
     
     apply_config(mock_port, "start_config.json")
         
     response = php_server_get(php_port, "/test")
     assert_response_code_is(response, 403)
-    assert_reponse_header_contains(response, "Content-Type", "text")
-    assert_reponse_body_contains(response, "You are blocked by Aikido Firewall!")
+    assert_response_header_contains(response, "Content-Type", "text")
+    assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
     
     
 if __name__ == "__main__":
