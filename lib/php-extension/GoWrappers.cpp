@@ -93,7 +93,12 @@ char* GoContextCallback(int context_id) {
         return nullptr;
     }
 
-    AIKIDO_LOG_DEBUG("Context callback %s -> %s\n", ctx.c_str(), ret.c_str());
+    if (ret.length() > 10000) {
+        AIKIDO_LOG_DEBUG("Context callback %s -> (Result too large to print)\n", ctx.c_str());
+    }
+    else {
+        AIKIDO_LOG_DEBUG("Context callback %s -> %s\n", ctx.c_str(), ret.c_str());
+    }
     return strdup(ret.c_str());
 }
 
