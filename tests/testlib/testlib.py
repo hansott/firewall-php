@@ -4,10 +4,14 @@ import sys
 import json
 
 def localhost_get_request(port, route=""):
-    return requests.get(f"http://localhost:{port}{route}")
+    r = requests.get(f"http://localhost:{port}{route}")
+    time.sleep(0.01)
+    return r
 
 def localhost_post_request(port, route, data):
-    return requests.post(f"http://localhost:{port}{route}", json=data)
+    r = requests.post(f"http://localhost:{port}{route}", json=data)
+    time.sleep(0.01)
+    return r
 
 def php_server_get(port, route=""):
     return localhost_get_request(port, route)

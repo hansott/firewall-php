@@ -20,7 +20,6 @@ def run_test(php_port, mock_port):
         for nr_requests in range(100):
             response = php_server_get(php_port, route)
             assert_response_code_is(response, 200)
-            time.sleep(0.1)
     
     mock_server_wait_for_new_events(mock_port, 70)
     

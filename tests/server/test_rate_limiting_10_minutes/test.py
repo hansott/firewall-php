@@ -15,7 +15,6 @@ def run_test(php_port, mock_port):
         assert_response_code_is(response, 200)
         assert_reponse_body_contains(response, "Something")
         
-        time.sleep(0.1)
         if i != 0 and i % 10 == 0:
             time.sleep(60)
         
