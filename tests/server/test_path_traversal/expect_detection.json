@@ -26,7 +26,6 @@
     "attack": {
         "kind": "path_traversal",
         "operation": "fopen",
-        "blocked": true,
         "source": "body",
         "path": ".folder",
         "payload": "../../../..",
