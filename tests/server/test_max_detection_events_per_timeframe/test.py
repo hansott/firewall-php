@@ -9,15 +9,15 @@ from testlib import *
 3. Checks that there are no more than 100 detection events submited.
 '''
 
-def run_test(php_port, mock_port):
+def run_test():
     for _ in range(200):
-        response = php_server_post(php_port, "/testDetection", {"folder": "../../../.."})
+        response = php_server_post("/testDetection", {"folder": "../../../.."})
         assert_response_code_is(response, 500)   
         time.sleep(0.01)
         
     time.sleep(5)
         
-    events = mock_server_get_events(mock_port)
+    events = mock_server_get_events()
     assert_events_length_is(events, 101)
     assert_started_event_is_valid(events[0])
     for e in events[1:101]:
@@ -25,4 +25,5 @@ def run_test(php_port, mock_port):
 
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

@@ -9,9 +9,9 @@ from testlib import *
 3. Send another more 10 request. Checks that they all are rate limited.
 '''
 
-def run_test(php_port, mock_port):
+def run_test():
     for i in range(30):
-        response = php_server_get(php_port, "/test")
+        response = php_server_get("/test")
         assert_response_code_is(response, 200)
         assert_response_body_contains(response, "Something")
         
@@ -19,11 +19,12 @@ def run_test(php_port, mock_port):
             time.sleep(60)
         
     for _ in range(10):
-        response = php_server_get(php_port, "/test")
+        response = php_server_get("/test")
         assert_response_code_is(response, 429)
         assert_response_header_contains(response, "Content-Type", "text")
         assert_response_body_contains(response, "This request was rate limited by Aikido Security!")
     
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

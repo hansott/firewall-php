@@ -14,15 +14,16 @@ from testlib import *
 3. Waits for 1 minute and checks if the user is present in the hearbeat request.
 '''
 
-def run_test(php_port, mock_port):
-    php_server_get(php_port, "/")
+def run_test():
+    php_server_get("/")
     
-    mock_server_wait_for_new_events(mock_port, 70)
+    mock_server_wait_for_new_events(70)
     
-    events = mock_server_get_events(mock_port)
+    events = mock_server_get_events()
     assert_events_length_is(events, 2)
     assert_started_event_is_valid(events[0])
     assert_event_contains_subset_file(events[1], "expect_user.json")
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()
