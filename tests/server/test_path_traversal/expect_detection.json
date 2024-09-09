@@ -33,8 +33,5 @@
         "metadata": {
             "filename": "../../../../file"
         }
-    },
-    "agent": {
-        "dryMode": false
     }
 }
