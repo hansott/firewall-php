@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"main/context"
 	"main/globals"
 	"net"
 	"net/url"
@@ -194,4 +195,25 @@ func IsUserBlocked(userID string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 	return KeyExists(globals.CloudConfig.BlockedUserIds, userID)
+}
+
+func ArrayContains(array []string, search string) bool {
+	for _, member := range array {
+		if member == search {
+			return true
+		}
+	}
+	return false
+}
+
+type Source struct {
+	Name     string
+	CacheGet func() map[string]string
+}
+
+var SOURCES = []Source{
+	{"body", context.GetBodyParsed},
+	{"query", context.GetQueryParsed},
+	{"headers", context.GetHeadersParsed},
+	{"cookies", context.GetCookiesParsed},
 }

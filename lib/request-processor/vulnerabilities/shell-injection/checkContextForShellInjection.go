@@ -1,28 +1,28 @@
-package path_traversal
+package shell_injection
 
 import (
 	"main/utils"
 )
 
-func CheckContextForPathTraversal(filename string, operation string, checkPathStart bool) *utils.InterceptorResult {
+func CheckContextForShellInjection(command string, operation string, context utils.Context) *utils.InterceptorResult {
 	for _, source := range utils.SOURCES {
 		mapss := source.CacheGet()
 
 		for str, path := range mapss {
-			if detectPathTraversal(filename, str, checkPathStart) {
+			if detectShellInjection(command, str) {
 				return &utils.InterceptorResult{
 					Operation:     operation,
-					Kind:          utils.Path_traversal,
+					Kind:          utils.Shell_injection,
 					Source:        source.Name,
 					PathToPayload: path,
 					Metadata: map[string]string{
-						"filename": filename,
+						"command": command,
 					},
 					Payload: str,
 				}
 			}
 		}
-
 	}
+
 	return nil
 }

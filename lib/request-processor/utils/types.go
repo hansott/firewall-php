@@ -42,3 +42,5 @@ func (i InterceptorResult) ToString() string {
 	json, _ := json.Marshal(i)
 	return string(json)
 }
+
+type Context map[string]interface{}

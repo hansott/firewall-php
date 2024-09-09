@@ -8,12 +8,8 @@ import (
 var functionExecutedHandlers = map[string]HandlerFunction{
 	"curl_exec": OnBeforeFunctionExecutedCurl,
 
-	"exec":       OnFunctionExecutedShell,
-	"shell_exec": OnFunctionExecutedShell,
-	"system":     OnFunctionExecutedShell,
-	"passthru":   OnFunctionExecutedShell,
-	"popen":      OnFunctionExecutedShell,
-	"proc_open":  OnFunctionExecutedShell,
+	// exec, shell_exec, system, passthru, popen, proc_open
+	"function_shell_executed": OnFunctionExecutedShell,
 
 	// basename, chgrp, chmod, chown, clearstatcache, copy, dirname, disk_free_space ...
 	"path_accessed": OnPathAccessed,
