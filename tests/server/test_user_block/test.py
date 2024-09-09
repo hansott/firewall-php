@@ -11,29 +11,26 @@ from testlib import *
 5. Repeats steps 1-3.
 '''
 
-def run_test(php_port, mock_port):
-    response = php_server_get(php_port, "/test")
+def run_test():
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
-    assert_reponse_header_contains(response, "Content-Type", "text")
-    assert_reponse_body_contains(response, "You are blocked by Aikido Firewall!")
+    assert_response_header_contains(response, "Content-Type", "text")
+    assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
 
-    mock_server_set_config_file(mock_port, "change_config_remove_blocked_user.json")
-    
-    time.sleep(120)
-    
-    response = php_server_get(php_port, "/test")
+    apply_config("change_config_remove_blocked_user.json")
+        
+    response = php_server_get("/test")
     assert_response_code_is(response, 200)
-    assert_reponse_body_contains(response, "User set successfully")
+    assert_response_body_contains(response, "User set successfully")
     
-    mock_server_set_config_file(mock_port, "start_config.json")
-    
-    time.sleep(120)
-    
-    response = php_server_get(php_port, "/test")
+    apply_config("start_config.json")
+        
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
-    assert_reponse_header_contains(response, "Content-Type", "text")
-    assert_reponse_body_contains(response, "You are blocked by Aikido Firewall!")
+    assert_response_header_contains(response, "Content-Type", "text")
+    assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
     
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

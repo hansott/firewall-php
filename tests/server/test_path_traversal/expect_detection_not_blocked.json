@@ -1,0 +1,40 @@
+{
+    "type": "detected_attack",
+    "request": {
+        "method": "POST",
+        "ipAddress": "::1",
+        "headers": {
+            "accept": [
+                "*/*"
+            ],
+            "accept_encoding": [
+                "gzip, deflate"
+            ],
+            "connection": [
+                "keep-alive"
+            ],
+            "content_length": [
+                "25"
+            ],
+            "content_type": [
+                "application/json"
+            ]
+        },
+        "body": "{\"folder\": \"../../../..\"}",
+        "route": "/testDetection"
+    },
+    "attack": {
+        "kind": "path_traversal",
+        "operation": "fopen",
+        "blocked": false,
+        "source": "body",
+        "path": ".folder",
+        "payload": "../../../..",
+        "metadata": {
+            "filename": "../../../../file"
+        }
+    },
+    "agent": {
+        "dryMode": true
+    }
+}

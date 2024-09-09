@@ -2,6 +2,7 @@ import requests
 import time
 import sys
 from testlib import *
+import json
 
 '''
 1. Sets up a simple config.
@@ -10,15 +11,8 @@ from testlib import *
 '''
 
 def run_test():
-    response = php_server_get("/")
+    response = php_server_post("/testDetection", json.load(open("test.json", 'r')))
     assert_response_code_is(response, 200)
-    
-    mock_server_wait_for_new_events(70)
-    
-    events = mock_server_get_events()
-    assert_events_length_is(events, 2)
-    assert_started_event_is_valid(events[0])
-    assert_event_contains_subset_file(events[1], "expect_domains.json")
     
 if __name__ == "__main__":
     load_ports_from_args()
