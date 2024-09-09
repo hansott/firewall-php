@@ -10,9 +10,10 @@ import json
 3. Waits for the heartbeat event and validates it.
 '''
 
-def run_test(php_port, mock_port):
-    response = php_server_post(php_port, "/testDetection", json.load(open("test.json", 'r')))
+def run_test():
+    response = php_server_post("/testDetection", json.load(open("test.json", 'r')))
     assert_response_code_is(response, 200)
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

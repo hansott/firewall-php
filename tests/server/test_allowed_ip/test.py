@@ -10,25 +10,26 @@ from testlib import *
 '''
 
 
-def run_test(php_port, mock_port):
-    response = php_server_get(php_port, "/test")
+def run_test():
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ::1)")
 
-    apply_config(mock_port, "change_config_remove_allowed_ip.json")
+    apply_config("change_config_remove_allowed_ip.json")
         
-    response = php_server_get(php_port, "/test")
+    response = php_server_get("/test")
     assert_response_code_is(response, 200)
     assert_response_body_contains(response, "Something")
     
-    apply_config(mock_port, "start_config.json")
+    apply_config("start_config.json")
         
-    response = php_server_get(php_port, "/test")
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ::1)")
     
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

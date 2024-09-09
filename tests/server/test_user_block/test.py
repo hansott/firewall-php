@@ -11,25 +11,26 @@ from testlib import *
 5. Repeats steps 1-3.
 '''
 
-def run_test(php_port, mock_port):
-    response = php_server_get(php_port, "/test")
+def run_test():
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
 
-    apply_config(mock_port, "change_config_remove_blocked_user.json")
+    apply_config("change_config_remove_blocked_user.json")
         
-    response = php_server_get(php_port, "/test")
+    response = php_server_get("/test")
     assert_response_code_is(response, 200)
     assert_response_body_contains(response, "User set successfully")
     
-    apply_config(mock_port, "start_config.json")
+    apply_config("start_config.json")
         
-    response = php_server_get(php_port, "/test")
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "You are blocked by Aikido Firewall!")
     
     
 if __name__ == "__main__":
-    run_test(int(sys.argv[1]), int(sys.argv[2]))
+    load_ports_from_args()
+    run_test()

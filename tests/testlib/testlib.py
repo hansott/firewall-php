@@ -2,6 +2,15 @@ import requests
 import time
 import sys
 import json
+ 
+php_port = 0
+mock_port = 0
+
+def load_ports_from_args():
+    global php_port, mock_port
+    php_port = int(sys.argv[1])
+    mock_port = int(sys.argv[2])
+    print(f"Loaded ports: php_port={php_port}, mock_port={mock_port}")
 
 def localhost_get_request(port, route=""):
     r = requests.get(f"http://localhost:{port}{route}")
@@ -13,37 +22,37 @@ def localhost_post_request(port, route, data):
     time.sleep(0.01)
     return r
 
-def php_server_get(port, route=""):
-    return localhost_get_request(port, route)
+def php_server_get(route=""):
+    return localhost_get_request(php_port, route)
 
-def php_server_post(port, route, data):
-    return localhost_post_request(port, route, data)
+def php_server_post(route, data):
+    return localhost_post_request(php_port, route, data)
 
-def mock_server_get(port, route=""):
-    return localhost_get_request(port, route)
+def mock_server_get(route=""):
+    return localhost_get_request(mock_port, route)
 
-def mock_server_post(port, route, data):
-    return localhost_post_request(port, route, data)
+def mock_server_post(route, data):
+    return localhost_post_request(mock_port, route, data)
 
-def mock_server_get_events(port):
-    return mock_server_get(port, "/mock/events").json()
+def mock_server_get_events():
+    return mock_server_get("/mock/events").json()
 
-def mock_server_set_config(port, config):
-    return mock_server_post(port, "/mock/config", config)
+def mock_server_set_config(config):
+    return mock_server_post("/mock/config", config)
 
-def mock_server_set_config_file(port, config_file):
+def mock_server_set_config_file(config_file):
     config = None
     with open(config_file, 'r') as f:
         config = json.load(f)
-    return mock_server_post(port, "/mock/config", config)
+    return mock_server_post("/mock/config", config)
 
-def apply_config(port, config_file):
-    mock_server_set_config_file(port, config_file)
+def apply_config(config_file):
+    mock_server_set_config_file(config_file)
     time.sleep(120)
 
 def assert_events_length_is(events, length):
     assert isinstance(events, list), "Error: Events is not a list."
-    assert len(events) == length, f"Error: The events list does not contain exactly {length} elements."
+    assert len(events) == length, f"Error: Events list contains {len(events)} elements and not {length} elements."
 
 def assert_event_contains_subset(event, event_subset, dry_mode=False):
     """
@@ -108,10 +117,10 @@ def assert_response_header_contains(response, header, value):
 def assert_response_body_contains(response, text):
     assert text in response.text, f"Test '{text}' is not part of response body: {response.text}"
     
-def mock_server_wait_for_new_events(port, max_wait_time):
-    initial_number_of_events = len(mock_server_get_events(port))
+def mock_server_wait_for_new_events(max_wait_time):
+    initial_number_of_events = len(mock_server_get_events())
     while max_wait_time > 0:
-        if len(mock_server_get_events(port)) > initial_number_of_events:
+        if len(mock_server_get_events()) > initial_number_of_events:
             return True
         time.sleep(5)
         max_wait_time -= 5
