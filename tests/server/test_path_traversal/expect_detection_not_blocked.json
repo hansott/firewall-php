@@ -26,11 +26,15 @@
     "attack": {
         "kind": "path_traversal",
         "operation": "fopen",
+        "blocked": false,
         "source": "body",
         "path": ".folder",
         "payload": "../../../..",
         "metadata": {
             "filename": "../../../../file"
         }
+    },
+    "agent": {
+        "dryMode": true
     }
 }

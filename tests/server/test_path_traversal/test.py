@@ -9,7 +9,7 @@ from testlib import *
 3. Checks that the detection event was submitted and is valid.
 '''
 
-def check_path_traversal(response_code, response_body, event_id):
+def check_path_traversal(response_code, response_body, event_id, expected_json):
     response = php_server_post("/testDetection", {"folder": "../../../.."})
     assert_response_code_is(response, response_code)
     assert_response_body_contains(response, response_body)
@@ -19,16 +19,16 @@ def check_path_traversal(response_code, response_body, event_id):
     events = mock_server_get_events()
     assert_events_length_is(events, event_id + 1)
     assert_started_event_is_valid(events[0])
-    assert_event_contains_subset_file(events[event_id], "expect_detection.json")
+    assert_event_contains_subset_file(events[event_id], expected_json)
 
 def run_test():
-    check_path_traversal(500, "", 1)
+    check_path_traversal(500, "", 1, "expect_detection_blocked.json")
     
     apply_config("change_config_disable_blocking.json")
-    check_path_traversal(200, "File opened!", 2)
+    check_path_traversal(200, "File opened!", 2, "expect_detection_not_blocked.json")
     
     apply_config("start_config.json")
-    check_path_traversal(500, "", 3)
+    check_path_traversal(500, "", 3, "expect_detection_blocked.json")
     
 if __name__ == "__main__":
     load_ports_from_args()
