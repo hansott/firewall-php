@@ -7,7 +7,7 @@ import (
 	path_traversal "main/vulnerabilities/path-traversal"
 )
 
-func OnPathAccessed(parameters map[string]interface{}) string {
+func OnPrePathAccessed(parameters map[string]interface{}) string {
 	filename := utils.GetFromMap[string](parameters, "filename")
 	filename2 := utils.GetFromMap[string](parameters, "filename2")
 	operation := utils.GetFromMap[string](parameters, "operation")

@@ -1,11 +1,12 @@
 package path_traversal
 
 import (
+	"main/context"
 	"main/utils"
 )
 
 func CheckContextForPathTraversal(filename string, operation string, checkPathStart bool) *utils.InterceptorResult {
-	for _, source := range utils.SOURCES {
+	for _, source := range context.SOURCES {
 		mapss := source.CacheGet()
 
 		for str, path := range mapss {

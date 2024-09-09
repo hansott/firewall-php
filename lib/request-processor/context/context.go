@@ -75,7 +75,7 @@ func GetBody() string {
 	return GetFromCache(ContextSetBody, &Context.Body)
 }
 
-func GetBodyParsed() map[string]string {
+func GetParsedBody() map[string]string {
 	return GetFromCache(ContextSetBody, &Context.BodyParsed)
 }
 
@@ -83,7 +83,7 @@ func GetQuery() string {
 	return GetFromCache(ContextSetQuery, &Context.Query)
 }
 
-func GetQueryParsed() map[string]string {
+func GetParsedQuery() map[string]string {
 	return GetFromCache(ContextSetQuery, &Context.QueryParsed)
 }
 
@@ -91,7 +91,7 @@ func GetCookies() string {
 	return GetFromCache(ContextSetCookies, &Context.Cookies)
 }
 
-func GetCookiesParsed() map[string]string {
+func GetParsedCookies() map[string]string {
 	return GetFromCache(ContextSetCookies, &Context.CookiesParsed)
 }
 
@@ -99,7 +99,7 @@ func GetHeaders() map[string]interface{} {
 	return GetFromCache(ContextSetHeaders, &Context.Headers)
 }
 
-func GetHeadersParsed() map[string]string {
+func GetParsedHeaders() map[string]string {
 	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
 }
 

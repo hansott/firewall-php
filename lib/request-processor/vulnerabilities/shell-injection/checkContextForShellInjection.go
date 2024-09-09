@@ -1,11 +1,12 @@
 package shell_injection
 
 import (
+	"main/context"
 	"main/utils"
 )
 
-func CheckContextForShellInjection(command string, operation string, context utils.Context) *utils.InterceptorResult {
-	for _, source := range utils.SOURCES {
+func CheckContextForShellInjection(command string, operation string) *utils.InterceptorResult {
+	for _, source := range context.SOURCES {
 		mapss := source.CacheGet()
 
 		for str, path := range mapss {

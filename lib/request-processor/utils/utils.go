@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"main/context"
 	"main/globals"
 	"net"
 	"net/url"
@@ -204,16 +203,4 @@ func ArrayContains(array []string, search string) bool {
 		}
 	}
 	return false
-}
-
-type Source struct {
-	Name     string
-	CacheGet func() map[string]string
-}
-
-var SOURCES = []Source{
-	{"body", context.GetBodyParsed},
-	{"query", context.GetQueryParsed},
-	{"headers", context.GetHeadersParsed},
-	{"cookies", context.GetCookiesParsed},
 }

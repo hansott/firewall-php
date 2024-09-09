@@ -6,7 +6,7 @@ import (
 	"main/utils"
 )
 
-func OnBeforeFunctionExecutedCurl(parameters map[string]interface{}) string {
+func OnPreFunctionExecutedCurl(parameters map[string]interface{}) string {
 	url := utils.GetFromMap[string](parameters, "url")
 	if url == nil {
 		return "{}"
