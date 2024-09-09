@@ -9,7 +9,7 @@ import (
 func TestCheckContextForShellInjection(t *testing.T) {
 
 	t.Run("it detects shell injection", func(t *testing.T) {
-		context.LoadForTests(map[string]string{
+		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
 			"method":        "POST",
 			"url":           "url",
@@ -49,7 +49,7 @@ func TestCheckContextForShellInjection(t *testing.T) {
 
 	t.Run("it detects shell injection from route params", func(t *testing.T) {
 		operation := "child_process.exec"
-		context.LoadForTests(map[string]string{
+		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
 			"method":        "POST",
 			"url":           "url",

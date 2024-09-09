@@ -9,7 +9,7 @@ import (
 func TestCheckContextForPathTraversal(t *testing.T) {
 
 	t.Run("it detects path traversal from body parameter", func(t *testing.T) {
-		context.LoadForTests(map[string]string{
+		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
 			"method":        "POST",
 			"url":           "url",
@@ -46,14 +46,14 @@ func TestCheckContextForPathTraversal(t *testing.T) {
 	})
 
 	t.Run("it does not flag safe operation", func(t *testing.T) {
-		context.LoadForTests(map[string]string{
+		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
 			"method":        "POST",
 			"url":           "url",
 		})
 
 		operation := "path.normalize"
-		context.LoadForTests(map[string]string{
+		context.LoadForUnitTests(map[string]string{
 			"url":    "/_next/static/RjAvHy_jB1ciRT_xBrSyI/_ssgManifest.js",
 			"method": "GET",
 			"headers": context.GetJsonString(map[string]interface{}{

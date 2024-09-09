@@ -9,7 +9,7 @@ import (
 
 var TestContext map[string]string
 
-func TestCallback(context_id int) string {
+func UnitTestsCallback(context_id int) string {
 	switch context_id {
 	case C.CONTEXT_REMOTE_ADDRESS:
 		return TestContext["remoteAddress"]
@@ -39,8 +39,8 @@ func TestCallback(context_id int) string {
 	return ""
 }
 
-func LoadForTests(context map[string]string) {
-	Context.Callback = TestCallback
+func LoadForUnitTests(context map[string]string) {
+	Context.Callback = UnitTestsCallback
 	TestContext = context
 }
 
