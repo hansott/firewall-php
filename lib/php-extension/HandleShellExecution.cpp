@@ -15,9 +15,10 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	inputEvent = {
 		{ "event", "before_function_executed" },
 		{ "data", {
-			{ "function_name", functionNameString },
+			{ "function_name", "shell_executed" },
 			{ "parameters", {
-				{ "cmd", cmdString }
+				{ "cmd", cmdString },
+				{ "operation", functionNameString }
 			} }
 		} }
 	};

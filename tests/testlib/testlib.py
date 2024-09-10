@@ -69,8 +69,12 @@ def assert_event_contains_subset(event, event_subset, dry_mode=False):
             return False
         raise assertion_error
     
-    print(f"Search {event_subset} in {event} (dry_mode = {dry_mode})")
-    
+    print(f"Searching {event_subset} in {event} (dry_mode = {dry_mode})...")
+
+    if not event:
+        print(f"Event is None!")
+        return False
+        
     if isinstance(event_subset, dict):
         found_all_keys = True
         for key, value in event_subset.items():

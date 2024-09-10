@@ -16,6 +16,9 @@ def run_test():
         assert_response_code_is(response, 200)
         
     time.sleep(10)
+    
+    for _ in range(5):
+        response = php_server_get("/")
         
     for _ in range(5):
         response = php_server_get("/")

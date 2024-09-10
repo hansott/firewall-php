@@ -195,3 +195,12 @@ func IsUserBlocked(userID string) bool {
 	defer globals.CloudConfigMutex.Unlock()
 	return KeyExists(globals.CloudConfig.BlockedUserIds, userID)
 }
+
+func ArrayContains(array []string, search string) bool {
+	for _, member := range array {
+		if member == search {
+			return true
+		}
+	}
+	return false
+}

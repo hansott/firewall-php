@@ -5,7 +5,7 @@ import (
 	"main/utils"
 )
 
-var afterFunctionExecutedHandlers = map[string]HandlerFunction{
+var PostFunctionExecutedHandlers = map[string]HandlerFunction{
 	"curl_exec": OnAfterFunctionExecutedCurl,
 }
 
@@ -13,7 +13,7 @@ func OnAfterFunctionExecuted(data map[string]interface{}) string {
 	functionName := utils.MustGetFromMap[string](data, "function_name")
 	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 
-	utils.KeyMustExist(afterFunctionExecutedHandlers, functionName)
+	utils.KeyMustExist(PostFunctionExecutedHandlers, functionName)
 
-	return afterFunctionExecutedHandlers[functionName](parameters)
+	return PostFunctionExecutedHandlers[functionName](parameters)
 }

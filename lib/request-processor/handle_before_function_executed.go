@@ -5,25 +5,17 @@ import (
 	"main/utils"
 )
 
-var functionExecutedHandlers = map[string]HandlerFunction{
-	"curl_exec": OnBeforeFunctionExecutedCurl,
-
-	"exec":       OnFunctionExecutedShell,
-	"shell_exec": OnFunctionExecutedShell,
-	"system":     OnFunctionExecutedShell,
-	"passthru":   OnFunctionExecutedShell,
-	"popen":      OnFunctionExecutedShell,
-	"proc_open":  OnFunctionExecutedShell,
-
-	// basename, chgrp, chmod, chown, clearstatcache, copy, dirname, disk_free_space ...
-	"path_accessed": OnPathAccessed,
+var PreFunctionExecutedHandlers = map[string]HandlerFunction{
+	"curl_exec":      OnPreFunctionExecutedCurl,
+	"shell_executed": OnPreShellExecuted, // exec, shell_exec, system, passthru, popen, proc_open
+	"path_accessed":  OnPrePathAccessed,  // basename, chgrp, chmod, chown, clearstatcache, copy, dirname ...
 }
 
 func OnBeforeFunctionExecuted(data map[string]interface{}) string {
 	functionName := utils.MustGetFromMap[string](data, "function_name")
 	parameters := utils.MustGetFromMap[map[string]interface{}](data, "parameters")
 
-	utils.KeyMustExist(functionExecutedHandlers, functionName)
+	utils.KeyMustExist(PreFunctionExecutedHandlers, functionName)
 
-	return functionExecutedHandlers[functionName](parameters)
+	return PreFunctionExecutedHandlers[functionName](parameters)
 }

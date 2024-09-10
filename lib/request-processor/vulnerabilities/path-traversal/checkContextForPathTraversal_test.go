@@ -1,31 +1,24 @@
 package path_traversal
 
 import (
+	"main/context"
 	"main/utils"
 	"testing"
 )
 
 func TestCheckContextForPathTraversal(t *testing.T) {
 
-	unsafeContext := map[string]interface{}{
+	t.Run("it detects path traversal from body parameter", func(t *testing.T) {
+		context.LoadForUnitTests(map[string]string{
+			"remoteAddress": "ip",
+			"method":        "POST",
+			"url":           "url",
+			"body":          context.GetJsonString(map[string]interface{}{"path": "../file"}),
+			"source":        "express",
+		})
 
-		"cookies":       map[string]interface{}{},
-		"headers":       map[string]interface{}{},
-		"remoteAddress": "ip",
-		"method":        "POST",
-		"url":           "url",
-		"query":         map[string]interface{}{},
-		"body":          map[string]interface{}{},
-		"routeParams": map[string]interface{}{
-			"path": "../file",
-		},
-		"source": "express",
-		"route":  nil,
-	}
-
-	t.Run("it detects path traversal from route parameter", func(t *testing.T) {
 		operation := "operation"
-		result := CheckContextForPathTraversal("../file/test.txt", operation, unsafeContext, true)
+		result := CheckContextForPathTraversal("../file/test.txt", operation, true)
 
 		if result == nil {
 			t.Errorf("expected result, got nil")
@@ -37,7 +30,7 @@ func TestCheckContextForPathTraversal(t *testing.T) {
 		if result.Kind != utils.Kind("path_traversal") {
 			t.Errorf("expected kind, got %v", result.Kind)
 		}
-		if result.Source != "routeParams" {
+		if result.Source != "body" {
 			t.Errorf("expected source, got %v", result.Source)
 		}
 		if result.PathToPayload != ".path" {
@@ -53,11 +46,17 @@ func TestCheckContextForPathTraversal(t *testing.T) {
 	})
 
 	t.Run("it does not flag safe operation", func(t *testing.T) {
+		context.LoadForUnitTests(map[string]string{
+			"remoteAddress": "ip",
+			"method":        "POST",
+			"url":           "url",
+		})
+
 		operation := "path.normalize"
-		safeContext := map[string]interface{}{
+		context.LoadForUnitTests(map[string]string{
 			"url":    "/_next/static/RjAvHy_jB1ciRT_xBrSyI/_ssgManifest.js",
 			"method": "GET",
-			"headers": map[string]interface{}{
+			"headers": context.GetJsonString(map[string]interface{}{
 				"host":               "localhost:3000",
 				"connection":         "keep-alive",
 				"pragma":             "no-cache",
@@ -78,17 +77,13 @@ func TestCheckContextForPathTraversal(t *testing.T) {
 				"x-forwarded-port":   "3000",
 				"x-forwarded-proto":  "http",
 				"x-forwarded-for":    "127.0.0.1",
-			},
-			"route":         nil,
-			"query":         map[string]interface{}{},
+			}),
 			"source":        "http.createServer",
-			"routeParams":   map[string]interface{}{},
-			"cookies":       map[string]interface{}{"Phpstorm-8262f4a6": "6a1925f9-2f0e-45ea-8336-a6988d56b1aa"},
-			"body":          nil,
+			"cookies":       context.GetJsonString(map[string]interface{}{"Phpstorm-8262f4a6": "6a1925f9-2f0e-45ea-8336-a6988d56b1aa"}),
 			"remoteAddress": "127.0.0.1",
-		}
+		})
 
-		result := CheckContextForPathTraversal("../../web/spec-extension/cookies", operation, safeContext, true)
+		result := CheckContextForPathTraversal("../../web/spec-extension/cookies", operation, true)
 		if result != nil {
 			t.Errorf("expected nil, got %v", result)
 		}
