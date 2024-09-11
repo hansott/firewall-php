@@ -10,6 +10,7 @@ type ContextData struct {
 	Callback      CallbackFunction
 	Method        *string
 	Route         *string
+	RouteParsed   *string
 	URL           *string
 	StatusCode    *int
 	IP            *string
@@ -57,6 +58,10 @@ func GetMethod() string {
 
 func GetRoute() string {
 	return GetFromCache(ContextSetRoute, &Context.Route)
+}
+
+func GetParsedRoute() string {
+	return GetFromCache(ContextSetParsedRoute, &Context.RouteParsed)
 }
 
 func GetUrl() string {

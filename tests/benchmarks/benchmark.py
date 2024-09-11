@@ -6,7 +6,7 @@ import json
 
 
 def run_benchmark():
-    for _ in range(1):
+    for _ in range(1000):
         response = php_server_post("/" + generate_random_string(20), {})
         assert_response_code_is(response, 200)
     

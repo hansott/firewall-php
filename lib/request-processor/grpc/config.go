@@ -61,6 +61,13 @@ func GetEndpointConfig(method string, route string) (EndpointData, error) {
 	return endpointData, nil
 }
 
+func AreEndpointsConfigured() bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	return len(globals.CloudConfig.Endpoints) != 0
+}
+
 func startCloudConfigRoutine() {
 	GetCloudConfig()
 

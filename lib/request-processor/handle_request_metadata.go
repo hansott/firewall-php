@@ -18,7 +18,11 @@ func OnRequestInit(data map[string]interface{}) string {
 
 	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
 
-	route = utils.BuildRouteFromURL(route)
+	if !grpc.AreEndpointsConfigured() {
+		return "{}"
+	}
+
+	route = context.GetParsedRoute()
 
 	endpointData, err := grpc.GetEndpointConfig(method, route)
 	if err != nil {
@@ -52,24 +56,27 @@ func OnRequestInit(data map[string]interface{}) string {
 	return "{}"
 }
 
-func OnRequestShutdown(data map[string]interface{}) string {
+func OnRequestShutdownImpl(data map[string]interface{}) {
 	method := context.GetMethod()
 	route := context.GetRoute()
 	status_code := context.GetStatusCode()
 
 	if method == "" || route == "" || status_code == 0 {
-		return "{}"
+		return
 	}
 
 	log.Info("[RSHUTDOWN] Got request metadata: ", method, " ", route, " ", status_code)
 
-	route = utils.BuildRouteFromURL(route)
+	route = context.GetParsedRoute()
 
 	if !utils.ShouldDiscoverRoute(status_code, route, method) {
-		return "{}"
+		return
 	}
 
 	go grpc.OnRequestShutdown(method, route, status_code, 10*time.Millisecond)
+}
 
+func OnRequestShutdown(data map[string]interface{}) string {
+	go OnRequestShutdownImpl(data)
 	return "{}"
 }

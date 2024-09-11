@@ -76,6 +76,11 @@ func ContextSetRoute() {
 	ContextSetString(C.CONTEXT_ROUTE, &Context.Route)
 }
 
+func ContextSetParsedRoute() {
+	parsedRoute := utils.BuildRouteFromURL(GetRoute())
+	Context.RouteParsed = &parsedRoute
+}
+
 func ContextSetMethod() {
 	ContextSetString(C.CONTEXT_METHOD, &Context.Method)
 }
