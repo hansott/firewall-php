@@ -210,7 +210,8 @@ jobs:
           cd ~/rpmbuild/SOURCES
           tar czvf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}.tar.gz *
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
-          rpmbuild --define "debug_package %{nil}" -ba ~/rpmbuild/SPECS/aikido.spec
+          rpmbuild -ba ~/rpmbuild/SPECS/aikido.spec
+          ls -l ~/rpmbuild/RPMS/x86_64/
 
       - name: Check rpm dependencies
         run: |
