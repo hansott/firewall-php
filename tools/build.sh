@@ -19,7 +19,7 @@ cd ../../build
 CXX=g++ CXXFLAGS="-fPIC -g -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
 make
 
-objcopy --only-keep-debug ./.libs/aikido.so ./.libs/aikido.so.debug
-strip --strip-debug ./.libs/aikido.so
+objcopy --only-keep-debug ./modules/aikido.so ./modules/aikido.so.debug
+strip --strip-debug ./modules/aikido.so
 
 cd ..

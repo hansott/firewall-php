@@ -8,6 +8,7 @@
 unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(curl_exec),
 
+	/* Shell execution */
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(exec,                handle_shell_execution),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(shell_exec,          handle_shell_execution),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(system,              handle_shell_execution),
@@ -15,7 +16,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(popen,               handle_shell_execution),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(proc_open,           handle_shell_execution),
 	
-	/* Path traversal */
+	/* Path access */
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(basename,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chdir,             	  handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chgrp,	              handle_file_path_access),
@@ -133,8 +134,6 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
 			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
-
-			AIKIDO_LOG_DEBUG("End Calling handler for \"%s\"!\n", scope_name.c_str());
 
 			if (!inputEvent.empty()) {
 				json outputEvent = GoRequestProcessorOnEvent(inputEvent);
