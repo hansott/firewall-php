@@ -21,7 +21,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chgrp,	              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chmod,                handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chown,                handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(copy,                 handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(copy,                 handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(dirname,              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(disk_free_space,      handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(disk_total_space,     handle_file_path_access),
@@ -39,7 +39,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(fileperms,            handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(filesize,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(filetype,             handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(fnmatch,              handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(fnmatch,              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(fopen,                handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(is_dir,               handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(is_executable,        handle_file_path_access),
@@ -51,22 +51,22 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(is_writeable,         handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(lchgrp,               handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(lchown,               handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(link,                 handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(link,                 handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(linkinfo,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(lstat,                handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(mkdir,                handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(move_uploaded_file,   handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(move_uploaded_file,   handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(opendir,              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(parse_ini_file,       handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(pathinfo,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(readfile,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(readlink,             handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(realpath,             handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(rename,               handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(rename,               handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(rmdir,                handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(scandir,              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(stat,                 handle_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(symlink,              handle_file_path_access_2),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(symlink,              handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(touch,                handle_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(unlink,               handle_file_path_access),
 
@@ -87,7 +87,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 	bool caughtException = false;
 
 	if (request_processor_on_event_fn) {
-		try {
+		//try {
 			zend_execute_data *exec_data = EG(current_execute_data);
 			zend_function *func = exec_data->func;
 			zend_class_entry* executed_scope = zend_get_executed_scope();
@@ -134,6 +134,8 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
 
+			AIKIDO_LOG_DEBUG("End Calling handler for \"%s\"!\n", scope_name.c_str());
+
 			if (!inputEvent.empty()) {
 				json outputEvent = GoRequestProcessorOnEvent(inputEvent);
 				if (IsBlockingEnabled() && aikido_execute_output(outputEvent) == BLOCK) {
@@ -142,11 +144,12 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 					return;
 				}
 			}
-		}
+		/*}
 		catch (const std::exception& e) {
 			caughtException = true;
 			AIKIDO_LOG_ERROR("Exception encountered in generic handler: %s\n", e.what());
 		}
+		*/
 	}
 	
 	if (original_handler) {

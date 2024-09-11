@@ -2,23 +2,55 @@ import requests
 import time
 import sys
 import json
+import os
+import random
+import string
+import datetime
  
+test_name = ""
 php_port = 0
 mock_port = 0
+benchmark_total_time = 0
+benchmark_nr_requests = 0
 
-def load_ports_from_args():
-    global php_port, mock_port
+def load_test_args():
+    global test_name, php_port, mock_port
+    test_name = os.path.dirname(os.path.abspath(sys.argv[0]))
     php_port = int(sys.argv[1])
     mock_port = int(sys.argv[2])
-    print(f"Loaded ports: php_port={php_port}, mock_port={mock_port}")
+    print(f"Loaded test args: test_name={test_name}, php_port={php_port}, mock_port={mock_port}")
 
 def localhost_get_request(port, route=""):
+    global benchmark_total_time, benchmark_nr_requests
+    
+    start_time = datetime.datetime.now()
+
     r = requests.get(f"http://localhost:{port}{route}")
+
+    end_time = datetime.datetime.now()    
+    delta = end_time - start_time
+    elapsed_ms = delta.total_seconds() * 1000
+    
+    benchmark_total_time += elapsed_ms
+    benchmark_nr_requests += 1
+    
     time.sleep(0.01)
     return r
 
 def localhost_post_request(port, route, data):
+    global benchmark_total_time, benchmark_nr_requests
+    
+    start_time = datetime.datetime.now()
+    
     r = requests.post(f"http://localhost:{port}{route}", json=data)
+    
+    end_time = datetime.datetime.now()    
+    delta = end_time - start_time
+    elapsed_ms = delta.total_seconds() * 1000
+    
+    benchmark_total_time += elapsed_ms
+    benchmark_nr_requests += 1
+    
     time.sleep(0.01)
     return r
 
@@ -130,3 +162,27 @@ def mock_server_wait_for_new_events(max_wait_time):
         max_wait_time -= 5
         
     return False
+
+
+def generate_random_string(length):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def generate_json(size_kb):
+    data = {}
+    size_bytes = size_kb * 1024  # Convert megabytes to bytes
+    current_size = 0
+
+    while current_size < size_bytes:
+        key = generate_random_string(random.randint(5, 20))
+        value = generate_random_string(random.randint(5, 30))
+
+        data[key] = value
+
+        current_size = len(json.dumps(data))
+
+    return json.dumps(data)
+
+def store_benchmark_results():
+    print(f"Total time: {benchmark_total_time}ms")
+    print(f"Nr. requests: {benchmark_nr_requests}")
+    print(f"Avg time: {benchmark_total_time * 1. / benchmark_nr_requests}ms")

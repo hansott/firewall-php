@@ -10,12 +10,16 @@ protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
 cd agent
 go get google.golang.org/grpc
 go test ./...
-go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido-agent.so
+go build -ldflags "-s -w" -buildmode=c-shared  -o ../../build/aikido-agent.so
 cd ../request-processor
 go get google.golang.org/grpc
 go test ./...
-go build -gcflags "all=-N -l" -buildmode=c-shared  -o ../../build/aikido-request-processor.so
+go build -ldflags "-s -w" -buildmode=c-shared  -o ../../build/aikido-request-processor.so
 cd ../../build
-CXX=g++ CXXFLAGS="-fPIC -g -O0 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
+CXX=g++ CXXFLAGS="-fPIC -g -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
 make
+
+objcopy --only-keep-debug ./.libs/aikido.so ./.libs/aikido.so.debug
+strip --strip-debug ./.libs/aikido.so
+
 cd ..

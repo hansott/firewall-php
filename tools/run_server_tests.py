@@ -60,7 +60,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark):
             'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
         })
         php_server_process = subprocess.Popen(
-            ['php', '-S', f'localhost:{php_port}', '-t', test_dir],
+            ['valgrind', 'php', '-S', f'localhost:{php_port}', '-t', test_dir],
             env=env
         )
         time.sleep(5)
@@ -105,8 +105,8 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark):
 
 def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False):
     if specific_test:
-        specific_test = os.path.join(root_tests_dir, specific_test, benchmark)
-        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir)
+        specific_test = os.path.join(root_tests_dir, specific_test)
+        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, benchmark)
     else:
         test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
         threads = []

@@ -21,5 +21,5 @@ def run_test():
     assert_event_contains_subset_file(events[1], "expect_domains.json")
     
 if __name__ == "__main__":
-    load_ports_from_args()
+    load_test_args()
     run_test()
