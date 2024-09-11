@@ -122,14 +122,11 @@ jobs:
         cd ../../build
         CXX=g++ CXXFLAGS="-fPIC -g -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
-        objcopy --only-keep-debug modules/aikido.so modules/aikido.so.debug
-        strip --strip-debug modules/aikido.so
 
     - name: Version Aikido extension
       run: |
         cd ${{ github.workspace }}/build/modules
         mv aikido.so ${{ env.AIKIDO_ARTIFACT }}.so
-        mv aikido.so.debug ${{ env.AIKIDO_ARTIFACT }}.so.debug
         
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
@@ -139,7 +136,6 @@ jobs:
         if-no-files-found: error
         path: |
           ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
-          ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so.debug
           ${{ github.workspace }}/tests/*.diff
 
   build_rpm:
