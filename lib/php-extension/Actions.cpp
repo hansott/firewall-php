@@ -20,7 +20,7 @@ ACTION aikido_execute_output_exit(json event) {
     return EXIT;
 }
 
-ACTION aikido_execute_output(std::string event) {
+ACTION aikido_execute_output(std::string& event) {
     if (event.empty()) {
         return CONTINUE;
     }

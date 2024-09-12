@@ -58,7 +58,7 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
 	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
 
 	eventId = EVENT_POST_OUTGOING_REQUEST;
-	eventCache.outgoingRequestPort = Z_LVAL(retval);
+	eventCache.outgoingRequestPort = std::to_string(Z_LVAL(retval));
 	
 	zval_dtor(&retval);
 	zval_dtor(&params[0]);

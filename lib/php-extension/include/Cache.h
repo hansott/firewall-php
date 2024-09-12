@@ -21,7 +21,7 @@ public:
     std::string cmd;
 
     std::string outgoingRequestUrl;
-    int outgoingRequestPort;
+    std::string outgoingRequestPort;
 
     EventCache() = default;
     void Reset();
