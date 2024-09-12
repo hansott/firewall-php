@@ -21,7 +21,7 @@ func OnPreFunctionExecutedCurl() string {
 func OnAfterFunctionExecutedCurl() string {
 	url := context.GetOutgoingRequestUrl()
 	port := context.GetOutgoingRequestPort()
-	if url == "" || port == 0 {
+	if url == "" {
 		return ""
 	}
 	domain := utils.GetDomain(url)
