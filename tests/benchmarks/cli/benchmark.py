@@ -36,7 +36,7 @@ def execute_php_script(test_name, php_script):
                             capture_output=True, text=True)
     
     # Remove the temporary file
-    # os.remove('temp_script.php')
+    os.remove(f'{test_name}.php')
     
     return result.stdout
 
