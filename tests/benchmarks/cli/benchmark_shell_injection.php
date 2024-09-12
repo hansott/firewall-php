@@ -10,7 +10,7 @@ $executionTimes = [];
 
 // Warmup phase
 for ($i = 0; $i < $warmupIterations; $i++) {
-    // <insert PHP code here>
+    passthru("time");
 }
 
 // Loop through the iterations
@@ -18,7 +18,7 @@ for ($i = 0; $i < $iterations; $i++) {
     // Start time
     $startTime = microtime(true);
 
-    // <insert PHP code here>
+    passthru("time");
 
     // End time
     $endTime = microtime(true);
