@@ -59,8 +59,13 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
             'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
         })
+        
+        php_server_process_cmd = ['php', '-S', f'localhost:{php_port}', '-t', test_dir]
+        if valgrind:
+            php_server_process_cmd = ['valgrind', f'--supressions={test_lib_dir}/valgrind.supp'] + php_server_process_cmd
+            
         php_server_process = subprocess.Popen(
-            ['php', '-S', f'localhost:{php_port}', '-t', test_dir],
+            php_server_process_cmd,
             env=env
         )
         time.sleep(5)
