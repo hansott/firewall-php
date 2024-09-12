@@ -69,7 +69,7 @@ def main(directory):
                 
                 # Execute the new PHP script and print the output
                 output = execute_php_script(benchmark_test_name, new_php_script)
-                print(f"Output for {benchmark_test_name}:\n{output}\n")
+                print(f"{benchmark_test_name} - {output}")
 
 if __name__ == "__main__":
     main(sys.argv[1])

@@ -14,9 +14,9 @@ benchmarks = []
 
 def load_test_args():
     global test_name, php_port, mock_port
-    test_name = os.path.dirname(os.path.abspath(sys.argv[0]))
     php_port = int(sys.argv[1])
     mock_port = int(sys.argv[2])
+    test_name = sys.argv[3]
     print(f"Loaded test args: test_name={test_name}, php_port={php_port}, mock_port={mock_port}")
 
 def localhost_get_request(port, route="", benchmark=False):
@@ -179,7 +179,22 @@ def generate_json(size_kb):
 
     return json.dumps(data)
 
-def store_benchmark_results():
+def is_aikido_installed():
+    for entry in os.listdir("/opt"):
+        if entry.startswith("aikido"):
+            return True
+    return False
+
+def benchmark_warmup():
+    for _ in range(1000):
+        php_server_post("/test", {})
+
+def benchmark_store_results():
     global benchmarks
     benchmarks.sort()
-    print(f"p50: {benchmarks[int(len(benchmarks)/2)]}ms")
+    benchmark_suffix = "without_aikido"
+    if is_aikido_installed():
+        benchmark_suffix = "with_aikido"
+    with open(f"{test_name}_{benchmark_suffix}.txt", "w") as f:
+        f.write(f"p50 - {benchmarks[int(len(benchmarks)/2)]} ms")
+

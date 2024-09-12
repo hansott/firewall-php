@@ -10,7 +10,7 @@ $executionTimes = [];
 
 // Warmup phase
 for ($i = 0; $i < $warmupIterations; $i++) {
-    passthru("time");
+    basename("benchmark_path_traversal/php_code_to_test.php");
 }
 
 // Loop through the iterations
@@ -18,7 +18,7 @@ for ($i = 0; $i < $iterations; $i++) {
     // Start time
     $startTime = hrtime(true);
 
-    passthru("time");
+    basename("benchmark_path_traversal/php_code_to_test.php");
 
     // End time
     $endTime = hrtime(true);
