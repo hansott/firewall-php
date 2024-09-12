@@ -28,7 +28,7 @@ ACTION aikido_execute_output(std::string event) {
     json eventJson = json::parse(event);
     if (eventJson["action"] == "throw")
         return aikido_execute_output_throw(eventJson);
-    if (eveventJsonent["action"] == "exit")
+    if (eventJson["action"] == "exit")
         return aikido_execute_output_exit(eventJson);
     return CONTINUE;
 }

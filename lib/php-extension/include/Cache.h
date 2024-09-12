@@ -15,7 +15,7 @@ class EventCache {
 public:
     std::string functionName;
 
-    std::string filename1;
+    std::string filename;
     std::string filename2;
 
     std::string cmd;

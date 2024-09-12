@@ -10,8 +10,7 @@ import datetime
 test_name = ""
 php_port = 0
 mock_port = 0
-benchmark_total_time = 0
-benchmark_nr_requests = 0
+benchmarks = []
 
 def load_test_args():
     global test_name, php_port, mock_port
@@ -20,8 +19,8 @@ def load_test_args():
     mock_port = int(sys.argv[2])
     print(f"Loaded test args: test_name={test_name}, php_port={php_port}, mock_port={mock_port}")
 
-def localhost_get_request(port, route=""):
-    global benchmark_total_time, benchmark_nr_requests
+def localhost_get_request(port, route="", benchmark=False):
+    global benchmarks
     
     start_time = datetime.datetime.now()
 
@@ -31,14 +30,13 @@ def localhost_get_request(port, route=""):
     delta = end_time - start_time
     elapsed_ms = delta.total_seconds() * 1000
     
-    benchmark_total_time += elapsed_ms
-    benchmark_nr_requests += 1
-    
-    time.sleep(0.01)
+    if benchmark:
+        benchmarks.append(elapsed_ms)
+
     return r
 
-def localhost_post_request(port, route, data):
-    global benchmark_total_time, benchmark_nr_requests
+def localhost_post_request(port, route, data, benchmark=False):
+    global benchmarks
     
     start_time = datetime.datetime.now()
     
@@ -48,23 +46,22 @@ def localhost_post_request(port, route, data):
     delta = end_time - start_time
     elapsed_ms = delta.total_seconds() * 1000
     
-    benchmark_total_time += elapsed_ms
-    benchmark_nr_requests += 1
+    if benchmark:
+        benchmarks.append(elapsed_ms)
     
-    time.sleep(0.01)
     return r
 
-def php_server_get(route=""):
-    return localhost_get_request(php_port, route)
+def php_server_get(route="", benchmark=False):
+    return localhost_get_request(php_port, route, benchmark)
 
-def php_server_post(route, data):
-    return localhost_post_request(php_port, route, data)
+def php_server_post(route, data, benchmark=False):
+    return localhost_post_request(php_port, route, data, benchmark)
 
 def mock_server_get(route=""):
-    return localhost_get_request(mock_port, route)
+    return localhost_get_request(mock_port, route, False)
 
 def mock_server_post(route, data):
-    return localhost_post_request(mock_port, route, data)
+    return localhost_post_request(mock_port, route, data, False)
 
 def mock_server_get_events():
     return mock_server_get("/mock/events").json()
@@ -183,6 +180,6 @@ def generate_json(size_kb):
     return json.dumps(data)
 
 def store_benchmark_results():
-    print(f"Total time: {benchmark_total_time}ms")
-    print(f"Nr. requests: {benchmark_nr_requests}")
-    print(f"Avg time: {benchmark_total_time * 1. / benchmark_nr_requests}ms")
+    global benchmarks
+    benchmarks.sort()
+    print(f"p50: {benchmarks[int(len(benchmarks)/2)]}ms")
