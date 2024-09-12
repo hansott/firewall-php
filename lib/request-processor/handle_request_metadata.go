@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func OnRequestInit(data map[string]interface{}) string {
+func OnRequestInit() string {
 	method := context.GetMethod()
 	route := context.GetRoute()
 	if method == "" || route == "" {
@@ -56,11 +56,7 @@ func OnRequestInit(data map[string]interface{}) string {
 	return "{}"
 }
 
-func OnRequestShutdownImpl(data map[string]interface{}) {
-	method := context.GetMethod()
-	route := context.GetRoute()
-	status_code := context.GetStatusCode()
-
+func OnRequestShutdownReporting(method string, route string, status_code int) {
 	if method == "" || route == "" || status_code == 0 {
 		return
 	}
@@ -76,7 +72,10 @@ func OnRequestShutdownImpl(data map[string]interface{}) {
 	go grpc.OnRequestShutdown(method, route, status_code, 10*time.Millisecond)
 }
 
-func OnRequestShutdown(data map[string]interface{}) string {
-	go OnRequestShutdownImpl(data)
-	return "{}"
+func OnRequestShutdown() string {
+	method := context.GetMethod()
+	route := context.GetRoute()
+	status_code := context.GetStatusCode()
+	go OnRequestShutdownReporting(method, route, status_code)
+	return ""
 }

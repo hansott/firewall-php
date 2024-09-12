@@ -1,6 +1,6 @@
 package context
 
-// #include "../../ContextCallback.c"
+// #include "../../API.h"
 import "C"
 import (
 	"main/helpers"
@@ -116,6 +116,10 @@ func ContextSetIsIpBypassed() {
 	Context.IsIpBypassed = &isIpBypassed
 }
 
-func ContextSetUserId(userId string) {
-	Context.UserId = &userId
+func ContextSetUserId() {
+	ContextSetString(C.CONTEXT_USER_ID, &Context.UserId)
+}
+
+func ContextSetUserName() {
+	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
 }

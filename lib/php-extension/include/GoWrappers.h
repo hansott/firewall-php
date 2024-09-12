@@ -2,13 +2,13 @@
 
 #include "Includes.h"
 
-std::string CppCreateString(GoString g);
+std::string CppCreateString(GoString);
 
-GoString GoCreateString(std::string& s);
+GoString GoCreateString(std::string&);
 
-json GoRequestProcessorOnEvent(json& event);
+bool GoRequestProcessorOnEvent(EVENT_ID, std::string&);
 
-char* GoContextCallback(int, char*);
+char *GoContextCallback(int, char *);
 
 bool GoRequestProcessorContextInit();
 

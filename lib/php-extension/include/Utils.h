@@ -80,7 +80,7 @@ ACTION send_request_init_metadata_event();
 
 ACTION send_request_shutdown_metadata_event();
 
-ACTION aikido_execute_output(json event);
+ACTION aikido_execute_output(std::string& event);
 
 std::string extract_server_var(const char *var);
 
@@ -93,8 +93,6 @@ std::string extract_status_code();
 std::string extract_url();
 
 std::string extract_headers();
-
-bool send_user_event(std::string id, std::string username);
 
 bool aikido_echo(std::string s);
 

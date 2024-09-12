@@ -1,6 +1,6 @@
 #include "HandleUrls.h"
 #include "Utils.h"
-
+#include "Cache.h"
 
 AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
     zval *curlHandle = NULL;
@@ -25,17 +25,9 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
 	// Call curl_getinfo to extract the URL
 	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
 
-	std::string urlString(Z_STRVAL(retval));
-	inputEvent = {
-		{ "event", "before_function_executed" },
-		{ "data", {
-			{ "function_name", "curl_exec" },
-			{ "parameters", {
-				{ "url", urlString }
-			} }
-		} }
-	};
-		
+	eventId = EVENT_PRE_OUTGOING_REQUEST;
+	eventCache.outgoingRequestUrl = Z_STRVAL(retval);
+
 	zval_dtor(&retval);
 	zval_dtor(&params[0]);
 	zval_dtor(&params[1]);
@@ -65,8 +57,8 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
 	// Call curl_getinfo to extract the PORT
 	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
 
-	inputEvent["event"] = "after_function_executed";
-	inputEvent["data"]["parameters"]["port"] = Z_LVAL(retval);
+	eventId = EVENT_POST_OUTGOING_REQUEST;
+	eventCache.outgoingRequestPort = Z_LVAL(retval);
 	
 	zval_dtor(&retval);
 	zval_dtor(&params[0]);

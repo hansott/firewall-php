@@ -4,27 +4,24 @@ GoString GoCreateString(std::string& s) {
     return GoString { s.c_str(), s.length() };
 }
 
-json GoRequestProcessorOnEvent(json& event) {
-    std::string eventString = event.dump();
-
+bool GoRequestProcessorOnEvent(EVENT_ID event_id, std::string &output) {
     if (!request_processor_on_event_fn) {
-        return json::object();
+        return false;
     }
     
     AIKIDO_LOG_DEBUG("Sending event to GO\n");
-    
-    char* charPtr = request_processor_on_event_fn(GoCreateString(eventString));
+
+    char *charPtr = request_processor_on_event_fn(event_id);
     if (!charPtr) {
-        return json::object();
+        return true;
     }
-    
-    std::string outputString(charPtr);
+
+    AIKIDO_LOG_DEBUG("Got event reply: %s\n", charPtr);
+
+    output = charPtr;
     free(charPtr);
     
-    AIKIDO_LOG_DEBUG("Got event reply: %s\n", outputString.c_str());
-    
-    json output = json::parse(outputString);
-    return output;
+    return true;
 }
 
 /*

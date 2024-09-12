@@ -7,16 +7,16 @@ import (
 	"main/utils"
 )
 
-func OnUserEvent(data map[string]interface{}) string {
-	id := utils.MustGetFromMap[string](data, "id")
-	username := utils.MustGetFromMap[string](data, "username")
+func OnUserEvent() string {
+	id := context.GetUserId()
+	username := context.GetUserName()
 
 	ip := context.GetIp()
 
 	log.Infof("[UEVENT] Got user event: %s %s %s", id, username, ip)
 
 	if id == "" || username == "" || ip == "" {
-		return "{}"
+		return ""
 	}
 
 	go grpc.OnUserEvent(id, username, ip)
@@ -25,6 +25,5 @@ func OnUserEvent(data map[string]interface{}) string {
 		return `{"action": "exit", "message": "You are blocked by Aikido Firewall!", "response_code": 403}`
 	}
 
-	context.ContextSetUserId(id)
-	return "{}"
+	return ""
 }

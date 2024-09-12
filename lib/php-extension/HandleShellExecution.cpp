@@ -1,5 +1,6 @@
 #include "HandleShellExecution.h"
 #include "Utils.h"
+#include "Cache.h"
 
 AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 	zend_string *cmd = NULL;
@@ -13,18 +14,7 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
 		return;
 	}
 
-	std::string cmdString(ZSTR_VAL(cmd));
+	eventCache.cmd = ZSTR_VAL(cmd);
 
-	std::string functionNameString(AIKIDO_GET_FUNCTION_NAME());
-
-	inputEvent = {
-		{ "event", "before_function_executed" },
-		{ "data", {
-			{ "function_name", "shell_executed" },
-			{ "parameters", {
-				{ "cmd", cmdString },
-				{ "operation", functionNameString }
-			} }
-		} }
-	};
+	eventId = EVENT_PRE_SHELL_EXECUTED;
 }

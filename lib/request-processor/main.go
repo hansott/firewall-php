@@ -1,10 +1,8 @@
 package main
 
-//#include "../ContextCallback.c"
+//#include "../API.h"
 import "C"
 import (
-	"encoding/json"
-	"fmt"
 	. "main/aikido_types"
 	"main/config"
 	"main/context"
@@ -15,13 +13,14 @@ import (
 	"unsafe"
 )
 
-var eventHandlers = map[string]HandlerFunction{
-	"before_function_executed": OnBeforeFunctionExecuted,
-	"after_function_executed":  OnAfterFunctionExecuted,
-	"method_executed":          OnMethodExecuted,
-	"request_init":             OnRequestInit,
-	"request_shutdown":         OnRequestShutdown,
-	"user_event":               OnUserEvent,
+var eventHandlers = map[int]HandlerFunction{
+	C.EVENT_PRE_REQUEST:           OnRequestInit,
+	C.EVENT_POST_REQUEST:          OnRequestShutdown,
+	C.EVENT_PRE_USER:              OnUserEvent,
+	C.EVENT_PRE_OUTGOING_REQUEST:  OnPreFunctionExecutedCurl,
+	C.EVENT_POST_OUTGOING_REQUEST: OnAfterFunctionExecutedCurl,
+	C.EVENT_PRE_SHELL_EXECUTED:    OnPreShellExecuted,
+	C.EVENT_PRE_PATH_ACCESSED:     OnPrePathAccessed,
 }
 
 //export RequestProcessorInit
@@ -80,35 +79,21 @@ func RequestProcessorContextInit(contextCallback C.ContextCallback) (initOk bool
 }
 
 //export RequestProcessorOnEvent
-func RequestProcessorOnEvent(eventJson string) (outputJson *C.char) {
+func RequestProcessorOnEvent(eventId int) (outputJson *C.char) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Warn("Recovered from panic:", r)
-			outputJson = C.CString("{}")
+			outputJson = nil
 		}
 	}()
 
-	log.Debug("OnEvent: ", eventJson)
+	log.Debug("OnEvent: ", eventId)
 
-	var event map[string]interface{}
-	err := json.Unmarshal([]byte(eventJson), &event)
-	if err != nil {
-		panic(fmt.Sprintf("Error parsing JSON: %s", err))
+	goString := eventHandlers[eventId]()
+	if goString == "" {
+		return nil
 	}
-
-	eventName := utils.MustGetFromMap[string](event, "event")
-
-	dataMap := map[string]interface{}{}
-	data := utils.GetFromMap[map[string]interface{}](event, "data")
-	if data != nil {
-		dataMap = *data
-	}
-
-	utils.KeyMustExist(eventHandlers, eventName)
-
-	goString := eventHandlers[eventName](dataMap)
-	cString := C.CString(goString)
-	return cString
+	return C.CString(goString)
 }
 
 /*

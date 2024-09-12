@@ -2,28 +2,28 @@ package main
 
 import (
 	"main/attack"
+	"main/context"
 	"main/grpc"
-	"main/utils"
 	path_traversal "main/vulnerabilities/path-traversal"
 )
 
-func OnPrePathAccessed(parameters map[string]interface{}) string {
-	filename := utils.GetFromMap[string](parameters, "filename")
-	filename2 := utils.GetFromMap[string](parameters, "filename2")
-	operation := utils.GetFromMap[string](parameters, "operation")
+func OnPrePathAccessed() string {
+	filename := context.GetFilename()
+	filename2 := context.GetFilename2()
+	operation := context.GetFunctionName()
 
-	if filename == nil || operation == nil {
+	if filename == "" || operation == "" {
 		return "{}"
 	}
 
-	res := path_traversal.CheckContextForPathTraversal(*filename, *operation, true)
+	res := path_traversal.CheckContextForPathTraversal(filename, operation, true)
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
 		return attack.GetAttackDetectedAction(*res)
 	}
 
-	if filename2 != nil && *filename2 != "" {
-		res = path_traversal.CheckContextForPathTraversal(*filename2, *operation, true)
+	if filename2 != "" {
+		res = path_traversal.CheckContextForPathTraversal(filename2, operation, true)
 		if res != nil {
 			go grpc.OnAttackDetected(*res)
 			return attack.GetAttackDetectedAction(*res)

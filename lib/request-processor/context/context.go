@@ -1,8 +1,11 @@
 package context
 
-// #include "../../ContextCallback.c"
+// #include "../../API.h"
 import "C"
-import "main/log"
+import (
+	"main/log"
+	"strconv"
+)
 
 type CallbackFunction func(int) string
 
@@ -17,6 +20,7 @@ type ContextData struct {
 	IsIpBypassed  *bool
 	UserAgent     *string
 	UserId        *string
+	UserName      *string
 	Body          *string
 	BodyParsed    *map[string]string
 	Query         *string
@@ -113,5 +117,41 @@ func GetUserAgent() string {
 }
 
 func GetUserId() string {
-	return GetFromCache(nil, &Context.UserId)
+	return GetFromCache(ContextSetUserId, &Context.UserId)
+}
+
+func GetUserName() string {
+	return GetFromCache(ContextSetUserName, &Context.UserName)
+}
+
+func GetFunctionName() string {
+	return Context.Callback(C.FUNCTION_NAME)
+}
+
+func GetOutgoingRequestUrl() string {
+	return Context.Callback(C.OUTGOING_REQUEST_URL)
+}
+
+func GetOutgoingRequestPort() int {
+	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
+	if portStr == "" {
+		return 0
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return 0
+	}
+	return port
+}
+
+func GetCmd() string {
+	return Context.Callback(C.CMD)
+}
+
+func GetFilename() string {
+	return Context.Callback(C.FILENAME)
+}
+
+func GetFilename2() string {
+	return Context.Callback(C.FILENAME2)
 }

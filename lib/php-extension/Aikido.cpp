@@ -2,6 +2,8 @@
 #include "Includes.h"
 #include "Utils.h"
 #include "Handle.h"
+#include "Cache.h"
+#include "HandleUsers.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
@@ -177,7 +179,10 @@ RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullp
 PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RINIT started!\n");
 
-	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed) {
+	requestCache.Reset();
+
+	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed)
+	{
 		std::string aikido_request_processor_lib_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-request-processor.so";
 		aikido_request_processor_lib_handle = dlopen(aikido_request_processor_lib_path.c_str(), RTLD_LAZY);
 		if (!aikido_request_processor_lib_handle) {

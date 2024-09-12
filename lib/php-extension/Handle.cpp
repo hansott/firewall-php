@@ -2,6 +2,7 @@
 #include "HandleShellExecution.h"
 #include "HandlePathTraversal.h"
 #include "HandlePDO.h"
+#include "Cache.h"
 
 #include "Utils.h"
 
@@ -84,11 +85,14 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 	zif_handler original_handler = nullptr;
 	aikido_handler post_handler = nullptr;
 
-	json inputEvent;
+	std::string outputEvent;
 	bool caughtException = false;
 
+	eventCache.Reset();
+	eventCache.functionName = AIKIDO_GET_FUNCTION_NAME();
+
 	if (request_processor_on_event_fn) {
-		//try {
+		try {
 			zend_execute_data *exec_data = EG(current_execute_data);
 			zend_function *func = exec_data->func;
 			zend_class_entry* executed_scope = zend_get_executed_scope();
@@ -133,31 +137,34 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 			AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
-			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
+			EVENT_ID eventId = NO_EVENT_ID;
+			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
 
-			if (!inputEvent.empty()) {
-				json outputEvent = GoRequestProcessorOnEvent(inputEvent);
+			if (eventId != NO_EVENT_ID) {
+				std::string outputEvent;
+				GoRequestProcessorOnEvent(eventId, outputEvent);
 				if (IsBlockingEnabled() && aikido_execute_output(outputEvent) == BLOCK) {
 					// exit generic handler and do not call the original handler
 					// thus blocking the execution 
 					return;
 				}
 			}
-		/*}
+		}
 		catch (const std::exception& e) {
 			caughtException = true;
 			AIKIDO_LOG_ERROR("Exception encountered in generic handler: %s\n", e.what());
 		}
-		*/
 	}
-	
+
 	if (original_handler) {
 		original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
 		if (!caughtException && post_handler) {
-			post_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, inputEvent);
-			if (!inputEvent.empty()) {
-				GoRequestProcessorOnEvent(inputEvent);
+			EVENT_ID eventId = NO_EVENT_ID;
+			post_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
+			if (eventId != NO_EVENT_ID) {
+				std::string outputEvent;
+				GoRequestProcessorOnEvent(eventId, outputEvent);
 			}
 		}
 	}
