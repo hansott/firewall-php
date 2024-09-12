@@ -160,7 +160,7 @@ std::string extract_headers() {
 ACTION send_request_init_metadata_event(){
     try {
         std::string outputEvent;
-        GoRequestProcessorOnEvent(EVENT_POST_REQUEST, outputEvent);
+        GoRequestProcessorOnEvent(EVENT_PRE_REQUEST, outputEvent);
         return aikido_execute_output(outputEvent);
     }
     catch (const std::exception& e) {

@@ -19,6 +19,7 @@ func OnRequestInit() string {
 	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
 
 	if !grpc.AreEndpointsConfigured() {
+		log.Debugf("[RINIT] No endpoints configured! Skipping checks...")
 		return "{}"
 	}
 
@@ -26,12 +27,11 @@ func OnRequestInit() string {
 
 	endpointData, err := grpc.GetEndpointConfig(method, route)
 	if err != nil {
-		// This endpoint (method + route) has not configuration -> continue
+		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
 		return "{}"
 	}
 
 	ip := context.GetIp()
-	log.Infof("[RINIT] Got IP from request: %s", ip)
 
 	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
 		message := "Your IP address is not allowed to access this resource!"
@@ -73,9 +73,6 @@ func OnRequestShutdownReporting(method string, route string, status_code int) {
 }
 
 func OnRequestShutdown() string {
-	method := context.GetMethod()
-	route := context.GetRoute()
-	status_code := context.GetStatusCode()
-	go OnRequestShutdownReporting(method, route, status_code)
+	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode())
 	return ""
 }

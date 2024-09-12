@@ -54,7 +54,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark):
         env = os.environ.copy()
         env.update(load_env_from_json(env_file_path))
         env.update({
-            'AIKIDO_LOG_LEVEL': 'ERROR',
+            'AIKIDO_LOG_LEVEL': 'DEBUG',
             'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
             'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
