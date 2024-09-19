@@ -429,6 +429,36 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           sudo python run_server_tests.py ../tests/server ../tests/testlib
+
+      - name: Run CLI benchmarks with Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks with Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Uninstall Aikido
+        run: |
+          rpm -e aikido-php-firewall
+
+      - name: Run CLI benchmarks without Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks without Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Get benchmark result
+        run: |
+          cd tools
+          python3 benchmark_report.py ../tests/benchmarks/cli
+          python3 benchmark_report.py ../tests/benchmarks/server
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
@@ -438,4 +468,12 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+      
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
