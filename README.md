@@ -44,7 +44,7 @@ Prerequisites:
 
 #### AWS Elastic beanstalk
 
-Create a new file in .ebextensions/01_aikido_php_firewall.config with the following content:
+Create a new file in `.ebextensions/01_aikido_php_firewall.config` with the following content:
 ```
 commands:
   aikido-php-firewall:
