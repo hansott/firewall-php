@@ -438,11 +438,11 @@ jobs:
       - name: Run server benchmarks with Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
       - name: Uninstall Aikido
         run: |
-          rpm -e aikido-php-firewall
+          sudo dpkg -r aikido-php-firewall
 
       - name: Run CLI benchmarks without Aikido
         run: |
@@ -452,7 +452,7 @@ jobs:
       - name: Run server benchmarks without Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
       - name: Get benchmark result
         run: |
