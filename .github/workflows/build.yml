@@ -273,8 +273,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
 
       - name: Setup PHP
         run: |
@@ -348,22 +346,11 @@ jobs:
           cd tools
           python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
-      - name: Store benchmark result in repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get benchmark result
         run: |
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
           python3 benchmark_report.py ../tests/benchmarks/server
-          cd ..
-          cp -f ./tests/benchmarks/cli/benchmark_results.md ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
-          cp -f ./tests/benchmarks/server/benchmark_results.md ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git add ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git commit -m "Added benchmark results via GitHub Actions"
-          git push
 
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
@@ -373,6 +360,15 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
             
 
   test_php_ubuntu:
@@ -386,8 +382,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -460,22 +454,11 @@ jobs:
           cd tools
           sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
-      - name: Store benchmark result in repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Store benchmark result
         run: |
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
           python3 benchmark_report.py ../tests/benchmarks/server
-          cd ..
-          cp -f ./tests/benchmarks/cli/benchmark_results.md ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
-          cp -f ./tests/benchmarks/server/benchmark_results.md ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git add ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
-          git commit -m "Added benchmark results via GitHub Actions"
-          git push
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
@@ -485,3 +468,12 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+      
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-ubuntu-${{ matrix.os }}-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
