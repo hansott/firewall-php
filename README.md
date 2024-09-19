@@ -1,6 +1,7 @@
 ![Aikido Zen for PHP](https://raw.githubusercontent.com/AikidoSec/firewall-php/refs/heads/readme-and-docs/docs/banner.svg)
 
 # Zen, in-app firewall for PHP | by Aikido
+
 Zen, your in-app firewall for peace of mind – at runtime.
 
 Zen is an embedded Web Application Firewall that autonomously protects your PHP apps against common and critical attacks.
@@ -26,16 +27,45 @@ Zen operates autonomously on the same server as your PHP app to:
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
 Prerequisites:
 * Ensure you have sudo privileges on your system.
-* Check that you have a supported PHP version installed (PHP version >= PHP 7.3).
-* Make sure to use the appropriate commands for your system.
+* Check that you have a supported PHP version installed (PHP version >= 7.3).
+* Make sure to use the appropriate commands for your system or cloud provider.
 
-### For Red Hat-based Systems (RHEL, CentOS, Fedora)
+### Manual installation
 
-`rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
-
-### For Debian-based Systems (Debian, Ubuntu)
+#### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
 `rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
+
+#### For Debian-based Systems (Debian, Ubuntu)
+
+`dpkg -i https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.deb`
+
+### Cloud providers
+
+#### AWS Elastic beanstalk
+
+Create a new file in .ebextensions/01_aikido_php_firewall.config with the following content:
+```
+commands:
+  aikido-php-firewall:
+    command: "rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm"
+    ignoreErrors: true
+
+files: 
+  "/opt/elasticbeanstalk/tasks/bundlelogs.d/aikido-php-firewall.conf" :
+    mode: "000755"
+    owner: root
+    group: root
+    content: |
+      /var/log/aikido-*/*.log
+
+  "/opt/elasticbeanstalk/tasks/taillogs.d/aikido-php-firewall.conf" :
+    mode: "000755"
+    owner: root
+    group: root
+    content: |
+      /var/log/aikido-*/*.log
+```
 
 ## Supported libraries and frameworks
 
