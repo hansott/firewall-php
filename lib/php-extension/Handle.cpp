@@ -138,6 +138,13 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
 			EVENT_ID eventId = NO_EVENT_ID;
+			/*
+				The handler for a specific PHP function that we hook can set an event ID
+				to be sent to the Go libary (request processor).
+				This will notify the Go library that an event has happend in the PHP layer.
+				The event ID is initialy empty and it's only sent to Go only if the C++ handler
+				for the currently hooked function sets it.
+			*/
 			handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
 
 			if (eventId != NO_EVENT_ID) {
@@ -161,6 +168,13 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 
 		if (!caughtException && post_handler) {
 			EVENT_ID eventId = NO_EVENT_ID;
+			/*
+				The handler for a specific PHP function that we hook can set an event ID
+				to be sent to the Go libary (request processor).
+				This will notify the Go library that an event has happend in the PHP layer.
+				The event ID is initialy empty and it's only sent to Go only if the C++ handler
+				for the currently hooked function sets it.
+			*/
 			post_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
 			if (eventId != NO_EVENT_ID) {
 				std::string outputEvent;
