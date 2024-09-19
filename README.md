@@ -1,10 +1,6 @@
 ![Aikido Zen for PHP](https://raw.githubusercontent.com/AikidoSec/firewall-php/refs/heads/readme-and-docs/docs/banner.svg)
 
-# Zen, in-app firewall for Python 3  | by Aikido
-![Code Style : Black](https://img.shields.io/badge/code%20style-black-black?style=flat-square)
-[![Unit tests](https://github.com/AikidoSec/firewall-python/actions/workflows/unit-test.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/build.yml) 
-[![End to end tests](https://github.com/AikidoSec/firewall-php/actions/workflows/end2end.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/build.yml)
-
+# Zen, in-app firewall for PHP | by Aikido
 Zen, your in-app firewall for peace of mind – at runtime.
 
 Zen is an embedded Web Application Firewall that autonomously protects your PHP apps against common and critical attacks.
@@ -25,31 +21,45 @@ Zen operates autonomously on the same server as your PHP app to:
 
 * ✅ Secure your app like a classic web application firewall (WAF), but with none of the infrastructure or cost.
 
+## Installation
+
+Zen for PHP comes as a single package that needs to be installed on the system to be protected.
+Prerequisites:
+* Ensure you have sudo privileges on your system.
+* Check that you have a supported PHP version installed (PHP version >= PHP 7.3).
+* Make sure to use the appropriate commands for your system.
+
+### For Red Hat-based Systems (RHEL, CentOS, Fedora)
+
+`rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
+
+### For Debian-based Systems (Debian, Ubuntu)
+
+`rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
+
 ## Supported libraries and frameworks
 
 ### PHP versions
 
-Zen for PHP works for:
-* ✅ PHP 7.3
-* ✅ PHP 7.4
-* ✅ PHP 8.0
-* ✅ PHP 8.1
-* ✅ PHP 8.1
-* ✅ PHP 8.3
-* ✅ PHP 8.4
+Zen for PHP 7.3+ works for:
 
 ### Web frameworks
 
 * To be added
 
 ### Database drivers
-* ✅ [`mysqlclient`](https://pypi.org/project/mysqlclient/) ^1.5
-* ✅ [`PyMySQL`](https://pypi.org/project/PyMySQL/) ^0.9
-* ✅ [`pymongo`](https://pypi.org/project/pymongo/) ^3.10
-* ✅ [`psycopg2`](https://pypi.org/project/psycopg2) ^2.9.2
-* ✅ [`psycopg`](https://pypi.org/project/psycopg) ^3.1
-* ✅ [`asyncpg`](https://pypi.org/project/asyncpg) ^0.27
-* ✅ [`motor`](https://pypi.org/project/motor/) (See `pymongo` version)
+* ✅ [`PDO`](https://www.php.net/manual/en/book.pdo.php)
+    * ✅ [`MySQL`](https://www.php.net/manual/en/ref.pdo-mysql.php)
+    * ✅ [`Oracle`](https://www.php.net/manual/en/ref.pdo-oci.php)
+    * ✅ [`PostgreSQL`](https://www.php.net/manual/en/ref.pdo-pgsql.php)
+    * ✅ [`ODBC and DB2`](https://www.php.net/manual/en/ref.pdo-odbc.php)
+    * ✅ [`Firebird`](https://www.php.net/manual/en/ref.pdo-firebird.php)
+    * ✅ [`Microsoft SQL Server`](https://www.php.net/manual/en/ref.pdo-dblib.php)
+    * ✅ [`SQLite`](https://www.php.net/manual/en/ref.pdo-sqlite.php)
+* 🚧 [`MySQLi`](https://www.php.net/manual/en/book.mysqli.php)
+
+### Outgoing requests drivers
+* ✅ [`cURL`](https://www.php.net/manual/en/book.curl.php)
 
 ## Reporting to your Aikido Security dashboard
 
@@ -89,7 +99,7 @@ See [benchmarks](tests/benchmarks/) folder for more.
 
 ## Bug bounty program
 
-Our bug bounty program is public and can be found by all registered Intigriti users [here](https://app.intigriti.com/researcher/programs/aikido/aikidoruntime)
+Our bug bounty program is public and can be found by all registered Intigriti users here (to be added).
 
 ## Contributing
 
