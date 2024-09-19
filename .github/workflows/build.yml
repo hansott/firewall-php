@@ -473,7 +473,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: benchmark-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          name: benchmark-results-ubuntu-${{ matrix.os }}-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
           path: |
             ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
             ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
