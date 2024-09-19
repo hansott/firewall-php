@@ -347,6 +347,8 @@ jobs:
           python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
       - name: Store benchmark result in repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
@@ -454,6 +456,8 @@ jobs:
           sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
       - name: Store benchmark result in repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
