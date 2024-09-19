@@ -10,7 +10,7 @@ Zen protects your PHP apps by preventing user input containing dangerous strings
 
 ## Features
 
-Zen will autonomously protect your Python applications from the inside against:
+Zen will autonomously protect your PHP applications from the inside against:
 
 * 🛡️ [NoSQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
 * 🛡️ [SQL injection attacks]([https://www.aikido.dev/blog/web-application-security-vulnerabilities](https://owasp.org/www-community/attacks/SQL_Injection))
