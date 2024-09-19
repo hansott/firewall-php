@@ -1,4 +1,4 @@
-![Aikido Zen for PHP 7 / 8](https://raw.githubusercontent.com/AikidoSec/firewall-python/main/docs/banner.svg)
+![Aikido Zen for PHP](https://raw.githubusercontent.com/AikidoSec/firewall-php/main/docs/banner.svg)
 
 # Zen, in-app firewall for Python 3  | by Aikido
 [![Codecov](https://img.shields.io/codecov/c/github/AikidoSec/firewall-python?style=flat-square&token=AJK9LU35GY)](https://app.codecov.io/gh/aikidosec/firewall-python) 
