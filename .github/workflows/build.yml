@@ -353,12 +353,13 @@ jobs:
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
           python3 benchmark_report.py ../tests/benchmarks/server
-          cp -f ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md ${{ github.workspace }}/docs/benchmark-operations--${{ matrix.os }}-php-${{ matrix.php_version }}
-          cp -f ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md ${{ github.workspace }}/docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
+          cd ..
+          cp -f ./tests/benchmarks/cli/benchmark_results.md ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
+          cp -f ./tests/benchmarks/server/benchmark_results.md ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ${{ github.workspace }}/docs/benchmark-operations--${{ matrix.os }}-php-${{ matrix.php_version }}
-          git add ${{ github.workspace }}/docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
+          git add ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
+          git add ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
           git commit -m "Added benchmark results via GitHub Actions"
           git push
 
@@ -462,12 +463,13 @@ jobs:
           cd tools
           python3 benchmark_report.py ../tests/benchmarks/cli
           python3 benchmark_report.py ../tests/benchmarks/server
-          cp -f ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md ${{ github.workspace }}/docs/benchmark-operations--${{ matrix.os }}-php-${{ matrix.php_version }}
-          cp -f ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md ${{ github.workspace }}/docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
+          cd ..
+          cp -f ./tests/benchmarks/cli/benchmark_results.md ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
+          cp -f ./tests/benchmarks/server/benchmark_results.md ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add ${{ github.workspace }}/docs/benchmark-operations--${{ matrix.os }}-php-${{ matrix.php_version }}
-          git add ${{ github.workspace }}/docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
+          git add ./docs/benchmark-operations-${{ matrix.os }}-php-${{ matrix.php_version }}
+          git add ./docs/benchmark-requests-${{ matrix.os }}-php-${{ matrix.php_version }}
           git commit -m "Added benchmark results via GitHub Actions"
           git push
       
