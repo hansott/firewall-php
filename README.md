@@ -1,11 +1,9 @@
 ![Aikido Zen for PHP](https://raw.githubusercontent.com/AikidoSec/firewall-php/refs/heads/readme-and-docs/docs/banner.svg)
 
 # Zen, in-app firewall for Python 3  | by Aikido
-[![Codecov](https://img.shields.io/codecov/c/github/AikidoSec/firewall-python?style=flat-square&token=AJK9LU35GY)](https://app.codecov.io/gh/aikidosec/firewall-python) 
-[![PyPI Package](https://img.shields.io/pypi/v/aikido_zen?style=flat-square)](https://pypi.org/project/aikido_zen/)
 ![Code Style : Black](https://img.shields.io/badge/code%20style-black-black?style=flat-square)
-[![Unit tests](https://github.com/AikidoSec/firewall-python/actions/workflows/unit-test.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/unit-test.yml) 
-[![End to end tests](https://github.com/AikidoSec/firewall-python/actions/workflows/end2end.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/end2end.yml)
+[![Unit tests](https://github.com/AikidoSec/firewall-python/actions/workflows/unit-test.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/build.yml) 
+[![End to end tests](https://github.com/AikidoSec/firewall-php/actions/workflows/end2end.yml/badge.svg)](https://github.com/AikidoSec/firewall-python/actions/workflows/build.yml)
 
 Zen, your in-app firewall for peace of mind – at runtime.
 
