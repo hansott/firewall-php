@@ -75,7 +75,9 @@ Zen for PHP 7.3+ works for:
 
 ### Web frameworks
 
-* <To be added>
+* ✅ [`Laravel`](https://laravel.com/)
+* ✅ [`Symphony`](https://symfony.com/)
+* ✅ [`CodeIgniter`](https://codeigniter.com/)
 
 ### Database drivers
 * ✅ [`PDO`](https://www.php.net/manual/en/book.pdo.php)
