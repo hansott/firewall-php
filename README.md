@@ -75,7 +75,7 @@ Zen for PHP 7.3+ works for:
 
 ### Web frameworks
 
-* To be added
+* <To be added>
 
 ### Database drivers
 * ✅ [`PDO`](https://www.php.net/manual/en/book.pdo.php)
@@ -87,9 +87,17 @@ Zen for PHP 7.3+ works for:
     * ✅ [`Microsoft SQL Server`](https://www.php.net/manual/en/ref.pdo-dblib.php)
     * ✅ [`SQLite`](https://www.php.net/manual/en/ref.pdo-sqlite.php)
 * 🚧 [`MySQLi`](https://www.php.net/manual/en/book.mysqli.php)
+* 🚧 [`MongoDB`](https://www.php.net/manual/en/set.mongodb.php)
+* 🚧 [`Oracle OCI8`](https://www.php.net/manual/en/book.oci8.php)
+* 🚧 [`PostgreSQL`](https://www.php.net/manual/en/book.pgsql.php)
+* 🚧 [`SQLite3`](https://www.php.net/manual/en/book.sqlite3.php)
 
-### Outgoing requests drivers
+### Outgoing requests libraries
 * ✅ [`cURL`](https://www.php.net/manual/en/book.curl.php)
+* ✅ [`GuzzleHttp`](https://docs.guzzlephp.org/en/stable/)
+* 🚧 [`file_get_contents`](https://www.php.net/manual/en/function.file-get-contents.php)
+* 🚧 [`HTTP_Request2`](https://pear.php.net/package/http_request2)
+* 🚧 [`Symfony\HTTPClient`](https://symfony.com/doc/current/http_client.html)
 
 ## Reporting to your Aikido Security dashboard
 
@@ -123,13 +131,13 @@ See [Reporting to Aikido](#reporting-to-your-aikido-security-dashboard) to learn
 
 ## Benchmarks 
 
-To be added
+<To be added>
 
 See [benchmarks](tests/benchmarks/) folder for more.
 
 ## Bug bounty program
 
-Our bug bounty program is public and can be found by all registered Intigriti users here (to be added).
+Our bug bounty program is public and can be found by all registered Intigriti users at: https://app.intigriti.com/researcher/programs/aikido/aikidoruntime
 
 ## Contributing
 
