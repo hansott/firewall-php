@@ -1,4 +1,4 @@
-![Aikido Zen for PHP](https://raw.githubusercontent.com/AikidoSec/firewall-php/refs/heads/readme-and-docs/docs/banner.svg)
+![Zen by Aikido for PHP](./docs/banner.svg)
 
 # Zen, in-app firewall for PHP | by Aikido
 
