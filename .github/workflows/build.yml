@@ -285,6 +285,7 @@ jobs:
           yum -y install python3
           pip3 install flask
           pip3 install requests
+          pip3 install pandas
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
@@ -345,6 +346,12 @@ jobs:
           cd tools
           python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
 
+      - name: Get benchmark result
+        run: |
+          cd tools
+          python3 benchmark_report.py ../tests/benchmarks/cli
+          python3 benchmark_report.py ../tests/benchmarks/server
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
@@ -353,7 +360,16 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
+            
 
   test_php_ubuntu:
     runs-on: ${{ matrix.os }}
@@ -396,6 +412,7 @@ jobs:
       - name: Setup Python
         run: |
           sudo pip3 install flask --no-input
+          sudo pip3 install pandas --no-input
           python --version
 
       - name: Install DEB
