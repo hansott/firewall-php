@@ -16,15 +16,15 @@ for ($i = 0; $i < $warmupIterations; $i++) {
 // Loop through the iterations
 for ($i = 0; $i < $iterations; $i++) {
     // Start time
-    $startTime = hrtime(true);
+    $startTime = microtime(true);
 
     // <insert PHP code here>
 
     // End time
-    $endTime = hrtime(true);
+    $endTime = microtime(true);
 
     // Calculate the elapsed time in milliseconds
-    $executionTime = ($endTime - $startTime);
+    $executionTime = ($endTime - $startTime) * 1000;
 
     // Store execution time in array
     $executionTimes[] = $executionTime;
@@ -47,5 +47,17 @@ function calculateMedian($arr) {
 
 // Calculate and print the median (P50)
 $p50 = calculateMedian($executionTimes);
-echo "p50 - " . $p50 . " ns";
+
+if (isset($argv[1])) {
+    $filename = $argv[1];
+    $file = fopen($filename, 'w');
+    if ($file) {
+        fwrite($file, "p50 - " . $p50 . " ms\n");
+        fclose($file);
+    } else {
+        echo "Unable to open the file: $filename";
+    }
+} else {
+    echo "Please provide a filename as the first argument.";
+}
 ?>

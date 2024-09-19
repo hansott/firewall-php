@@ -321,6 +321,16 @@ jobs:
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib
 
+      - name: Run CLI benchmarks with Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks with Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()

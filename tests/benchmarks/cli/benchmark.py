@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import testlib
 
 def read_php_code(file_path):
     """
@@ -29,16 +30,20 @@ def execute_php_script(test_name, php_script):
     # Write the script to a temporary file
     with open(f'{test_name}.php', 'w') as file:
         file.write(php_script)
+        
+    if testlib.is_aikido_installed():
+        filename = f"{test_name}_with_aikido.txt"
+    else:
+        filename = f"{test_name}_without_aikido.txt"
     
     # Execute the script and capture the output
-    result = subprocess.run(['php', f'{test_name}.php'], 
+    result = subprocess.run(['php', f'{test_name}.php', filename], 
                             env=dict(os.environ, AIKIDO_LOG_LEVEL="ERROR"),
-                            capture_output=True, text=True)
+                            capture_output=False, text=True)
     
     # Remove the temporary file
     os.remove(f'{test_name}.php')
     
-    return result.stdout
 
 def main(directory):
     """
@@ -67,9 +72,8 @@ def main(directory):
                 # Generate the new PHP script
                 new_php_script = generate_php_script(baseline_php_script, php_code_to_insert)
                 
-                # Execute the new PHP script and print the output
-                output = execute_php_script(benchmark_test_name, new_php_script)
-                print(f"{benchmark_test_name} - {output}")
+                # Execute the new PHP script
+                execute_php_script(benchmark_test_name, new_php_script)
 
 if __name__ == "__main__":
     main(sys.argv[1])
