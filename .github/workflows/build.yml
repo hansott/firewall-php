@@ -120,7 +120,7 @@ jobs:
         cd lib/php-extension
         phpize
         cd ../../build
-        CXX=g++ CXXFLAGS="-fPIC -g -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
+        CXX=g++ CXXFLAGS="-fPIC -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
 
     - name: Version Aikido extension
@@ -327,6 +327,20 @@ jobs:
           PYTHONPATH=../../testlib python3 benchmark.py .
 
       - name: Run server benchmarks with Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Uninstall Aikido
+        run: |
+          rpm -e aikido-php-firewall
+
+      - name: Run CLI benchmarks without Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks without Aikido
         run: |
           cd tools
           python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
