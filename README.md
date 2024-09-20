@@ -13,7 +13,7 @@ Zen protects your PHP apps by preventing user input containing dangerous strings
 Zen will autonomously protect your PHP applications from the inside against:
 
 * 🛡️ [NoSQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
-* 🛡️ [SQL injection attacks]([https://www.aikido.dev/blog/web-application-security-vulnerabilities](https://owasp.org/www-community/attacks/SQL_Injection))
+* 🛡️ [SQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
 * 🛡️ [Command injection attacks](https://owasp.org/www-community/attacks/Command_Injection)
 * 🛡️ [Path traversal attacks](https://owasp.org/www-community/attacks/Path_Traversal)
 * 🛡️ [Server-side request forgery (SSRF)](./docs/ssrf.md)
@@ -131,11 +131,19 @@ To block requests, set the `AIKIDO_BLOCKING` environment variable to `true`.
 
 See [Reporting to Aikido](#reporting-to-your-aikido-security-dashboard) to learn how to send events to Aikido.
 
-## Benchmarks 
+## Benchmarks
 
-<To be added>
+Zen for PHP benchmarks are splitted into 2 categories:
+* Benchmarks for PHP operations that are monitored by Zen
+* Benchmarks for PHP requests protected by Zen
 
-See [benchmarks](tests/benchmarks/) folder for more.
+We do automated benchmarks on each new version and we store the result in the repo. If you need some specific benchmarks for (OS, PHP version) pairs, check the [benchmarks](docs/benchmarks/) folder.
+
+The benchmarking times displayed in this readme are computed with PHP 8.1 on the latest Ubuntu version.
+
+### Benchmarks for PHP operations
+
+### Benchmarks for PHP requests
 
 ## Bug bounty program
 
