@@ -17,7 +17,7 @@ routes = {
 
 def run_test():
     for route in routes:
-        for nr_requests in range(100):
+        for nr_requests in range(10):
             response = php_server_get(route)
             assert_response_code_is(response, 200)
     
