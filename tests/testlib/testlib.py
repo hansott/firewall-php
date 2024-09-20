@@ -32,7 +32,8 @@ def localhost_get_request(port, route="", benchmark=False):
     
     if benchmark:
         benchmarks.append(elapsed_ms)
-
+        
+    time.sleep(0.001)
     return r
 
 def localhost_post_request(port, route, data, benchmark=False):
@@ -49,6 +50,7 @@ def localhost_post_request(port, route, data, benchmark=False):
     if benchmark:
         benchmarks.append(elapsed_ms)
     
+    time.sleep(0.001)
     return r
 
 def php_server_get(route="", benchmark=False):
