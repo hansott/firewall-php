@@ -69,15 +69,12 @@ files:
 
 ## Supported libraries and frameworks
 
-### PHP versions
-
 Zen for PHP 7.3+ works for:
 
 ### Web frameworks
 
-* ✅ [`Laravel`](https://laravel.com/)
-* ✅ [`Symphony`](https://symfony.com/)
-* ✅ [`CodeIgniter`](https://codeigniter.com/)
+Zen for PHP is Web-framework agnostic, meaning that it will work on any PHP Web framework that you want to use.
+Zen for PHP can do this because the monitored functions are hooked at the PHP-core level.
 
 ### Database drivers
 * ✅ [`PDO`](https://www.php.net/manual/en/book.pdo.php)
