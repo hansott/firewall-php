@@ -356,7 +356,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
@@ -365,7 +365,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: benchmark-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
           path: |
             ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
             ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
@@ -464,7 +464,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-ubuntu-${{ matrix.os }}-php-${{ matrix.php_version }}
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
@@ -473,7 +473,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: benchmark-results-ubuntu-${{ matrix.os }}-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
           path: |
             ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
             ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
