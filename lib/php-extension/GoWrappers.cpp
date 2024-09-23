@@ -119,11 +119,15 @@ char* GoContextCallback(int callback_id) {
         break;
     case SQL_QUERY:
         ctx = "SQL_QUERY";
-        ret = eventCache.sql_query;
+        ret = eventCache.sqlQuery;
         break;
     case SQL_DIALECT:
         ctx = "SQL_DIALECT";
-        ret = eventCache.sql_dialect;
+        ret = eventCache.sqlDialect;
+        break;
+    case MODULE:
+        ctx = "MODULE";
+        ret = eventCache.moduleName;
         break;
     }
 

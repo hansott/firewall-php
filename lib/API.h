@@ -47,6 +47,8 @@ enum CALLBACK_ID {
     SQL_QUERY,
     SQL_DIALECT,
 
+    MODULE,
+
     MAX_CALLBACK_ID
 };
 

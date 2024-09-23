@@ -5,7 +5,6 @@ import (
 	"main/context"
 	"main/grpc"
 	"main/log"
-	"main/utils"
 	sql_injection "main/vulnerabilities/sql-injection"
 )
 
@@ -16,9 +15,8 @@ func OnPreSqlQueryExecuted() string {
 	if query == "" || dialect == "" {
 		return ""
 	}
-	dialect_class := utils.GetSqlDialectFromString(dialect)
 	log.Info("Got PDO query: ", query, " dialect: ", dialect)
-	res := sql_injection.CheckContextForSqlInjection(query, operation, dialect_class)
+	res := sql_injection.CheckContextForSqlInjection(query, operation, dialect)
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
 		return attack.GetAttackDetectedAction(*res)

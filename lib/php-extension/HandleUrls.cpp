@@ -26,6 +26,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
 	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
 
 	eventId = EVENT_PRE_OUTGOING_REQUEST;
+	eventCache.moduleName = "curl";
 	eventCache.outgoingRequestUrl = Z_STRVAL(retval);
 
 	zval_dtor(&retval);

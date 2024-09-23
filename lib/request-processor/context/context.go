@@ -163,3 +163,7 @@ func GetSqlQuery() string {
 func GetSqlDialect() string {
 	return Context.Callback(C.SQL_DIALECT)
 }
+
+func GetModule() string {
+	return Context.Callback(C.MODULE)
+}

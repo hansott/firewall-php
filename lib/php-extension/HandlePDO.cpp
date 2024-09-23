@@ -20,14 +20,15 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 	}
 
 	eventId = EVENT_PRE_SQL_QUERY_EXECUTED;
-	eventCache.sql_query = ZSTR_VAL(query);
-	eventCache.sql_dialect = "unknown";
+	eventCache.moduleName = "PDO";
+	eventCache.sqlQuery = ZSTR_VAL(query);
+	eventCache.sqlDialect = "unknown";
 	
 	zval retval;
 	if (aikido_call_user_function_one_param("getAttribute", PDO_ATTR_DRIVER_NAME, &retval, pdo_object)) {
 		if (Z_TYPE(retval) == IS_STRING)
 		{
-			eventCache.sql_dialect = Z_STRVAL_P(&retval);
+			eventCache.sqlDialect = Z_STRVAL_P(&retval);
 		}
     }
 

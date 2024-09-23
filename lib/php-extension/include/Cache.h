@@ -14,6 +14,7 @@ public:
 class EventCache {
 public:
     std::string functionName;
+    std::string moduleName;
 
     std::string filename;
     std::string filename2;
@@ -23,8 +24,8 @@ public:
     std::string outgoingRequestUrl;
     std::string outgoingRequestPort;
     
-    std::string sql_query;
-    std::string sql_dialect;
+    std::string sqlQuery;
+    std::string sqlDialect;
 
     EventCache() = default;
     void Reset();

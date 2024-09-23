@@ -1,0 +1,47 @@
+{
+    "type": "detected_attack",
+    "request": {
+        "method": "POST",
+        "ipAddress": "::1",
+        "headers": {
+            "accept": [
+                "*/*"
+            ],
+            "accept_encoding": [
+                "gzip, deflate"
+            ],
+            "connection": [
+                "keep-alive"
+            ],
+            "content_type": [
+                "application/json"
+            ]
+        },
+        "body": "{\"userId\": \"1 OR 1=1\"}",
+        "source": "php",
+        "route": "/testDetection"
+    },
+    "attack": {
+        "kind": "sql_injection",
+        "operation": "query",
+        "module": "PDO",
+        "blocked": false,
+        "source": "body",
+        "path": ".userId",
+        "stack": "",
+        "payload": "1 OR 1=1",
+        "metadata": {
+            "dialect": "sqlite",
+            "sql": "SELECT * FROM users WHERE id = 1 OR 1=1"
+        },
+        "user": {
+            "id": "12345",
+            "name": "Tudor",
+            "lastIpAddress": "::1"
+        }
+    },
+    "agent": {
+        "dryMode": true,
+        "library": "firewall-php"
+    }
+}
