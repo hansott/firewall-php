@@ -23,7 +23,7 @@
 #include "ext/standard/info.h"
 #include "GoCGO.h"
 #include "php_aikido.h"
-#include "../../ContextCallback.c"
+#include "../../API.h"
 
 #include "3rdparty/json.hpp"
 
@@ -39,9 +39,9 @@ using json = nlohmann::json;
 
 
 
-#define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent)
+#define AIKIDO_HANDLER_FUNCTION(name) void name(INTERNAL_FUNCTION_PARAMETERS, EVENT_ID& eventId)
 
-typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, json& inputEvent);
+typedef void (*aikido_handler)(INTERNAL_FUNCTION_PARAMETERS, EVENT_ID &eventId);
 
 struct PHP_HANDLERS {
     aikido_handler handler;
@@ -79,7 +79,7 @@ typedef void (*AgentUninitFn)();
 
 typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
 typedef GoUint8 (*RequestProcessorContextInitFn)(ContextCallback);
-typedef char* (*RequestProcessorOnEventFn)(GoString eventJson);
+typedef char* (*RequestProcessorOnEventFn)(GoInt eventId);
 typedef int (*RequestProcessorGetBlockingModeFn)();
 typedef void (*RequestProcessorUninitFn)();
 

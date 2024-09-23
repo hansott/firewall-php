@@ -2,37 +2,66 @@ import requests
 import time
 import sys
 import json
+import os
+import random
+import string
+import datetime
  
+test_name = ""
 php_port = 0
 mock_port = 0
+benchmarks = []
 
-def load_ports_from_args():
-    global php_port, mock_port
+def load_test_args():
+    global test_name, php_port, mock_port
     php_port = int(sys.argv[1])
     mock_port = int(sys.argv[2])
-    print(f"Loaded ports: php_port={php_port}, mock_port={mock_port}")
+    test_name = sys.argv[3]
+    print(f"Loaded test args: test_name={test_name}, php_port={php_port}, mock_port={mock_port}")
 
-def localhost_get_request(port, route=""):
+def localhost_get_request(port, route="", benchmark=False):
+    global benchmarks
+    
+    start_time = datetime.datetime.now()
+
     r = requests.get(f"http://localhost:{port}{route}")
-    time.sleep(0.01)
+
+    end_time = datetime.datetime.now()    
+    delta = end_time - start_time
+    elapsed_ms = delta.total_seconds() * 1000
+    
+    if benchmark:
+        benchmarks.append(elapsed_ms)
+
     return r
 
-def localhost_post_request(port, route, data):
+def localhost_post_request(port, route, data, benchmark=False):
+    global benchmarks
+    
+    start_time = datetime.datetime.now()
+    
     r = requests.post(f"http://localhost:{port}{route}", json=data)
-    time.sleep(0.01)
+    
+    end_time = datetime.datetime.now()    
+    delta = end_time - start_time
+    elapsed_ms = delta.total_seconds() * 1000
+    
+    if benchmark:
+        benchmarks.append(elapsed_ms)
+    
     return r
 
-def php_server_get(route=""):
-    return localhost_get_request(php_port, route)
+def php_server_get(route="", benchmark=False):
+    return localhost_get_request(php_port, route, benchmark)
 
-def php_server_post(route, data):
-    return localhost_post_request(php_port, route, data)
+def php_server_post(route, data, benchmark=False):
+    return localhost_post_request(php_port, route, data, benchmark)
 
 def mock_server_get(route=""):
-    return localhost_get_request(mock_port, route)
+    return localhost_get_request(mock_port, route, False)
 
 def mock_server_post(route, data):
-    return localhost_post_request(mock_port, route, data)
+    return localhost_post_request(mock_port, route, data, False)
 
 def mock_server_get_events():
     return mock_server_get("/mock/events").json()
@@ -130,3 +159,42 @@ def mock_server_wait_for_new_events(max_wait_time):
         max_wait_time -= 5
         
     return False
+
+
+def generate_random_string(length):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def generate_json(size_kb):
+    data = {}
+    size_bytes = size_kb * 1024  # Convert megabytes to bytes
+    current_size = 0
+
+    while current_size < size_bytes:
+        key = generate_random_string(random.randint(5, 20))
+        value = generate_random_string(random.randint(5, 30))
+
+        data[key] = value
+
+        current_size = len(json.dumps(data))
+
+    return json.dumps(data)
+
+def is_aikido_installed():
+    for entry in os.listdir("/opt"):
+        if entry.startswith("aikido"):
+            return True
+    return False
+
+def benchmark_warmup():
+    for _ in range(1000):
+        php_server_post("/test", {})
+
+def benchmark_store_results():
+    global benchmarks
+    benchmarks.sort()
+    benchmark_suffix = "without_aikido"
+    if is_aikido_installed():
+        benchmark_suffix = "with_aikido"
+    with open(f"{test_name}_{benchmark_suffix}.txt", "w") as f:
+        f.write(f"p50 - {benchmarks[int(len(benchmarks)/2)]} ms")
+

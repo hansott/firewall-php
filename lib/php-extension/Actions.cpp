@@ -20,8 +20,15 @@ ACTION aikido_execute_output_exit(json event) {
     return EXIT;
 }
 
-ACTION aikido_execute_output(json event) {
-    if (event["action"] == "throw") return aikido_execute_output_throw(event);
-	if (event["action"] == "exit")  return aikido_execute_output_exit(event);
-	return CONTINUE;
+ACTION aikido_execute_output(std::string& event) {
+    if (event.empty()) {
+        return CONTINUE;
+    }
+
+    json eventJson = json::parse(event);
+    if (eventJson["action"] == "throw")
+        return aikido_execute_output_throw(eventJson);
+    if (eventJson["action"] == "exit")
+        return aikido_execute_output_exit(eventJson);
+    return CONTINUE;
 }

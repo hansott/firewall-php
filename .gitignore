@@ -29,3 +29,4 @@ libphp-extension/ndDb2pJ5Px
 *.deb
 lib/agent/aikido_config.json
 tests/testlib/__pycache__/*.pyc
+tests/benchmarks/server/*.txt

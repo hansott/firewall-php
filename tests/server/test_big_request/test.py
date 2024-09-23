@@ -15,5 +15,5 @@ def run_test():
     assert_response_code_is(response, 200)
     
 if __name__ == "__main__":
-    load_ports_from_args()
+    load_test_args()
     run_test()

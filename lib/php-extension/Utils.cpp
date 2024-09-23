@@ -158,11 +158,10 @@ std::string extract_headers() {
 }
 
 ACTION send_request_init_metadata_event(){
-    json inputEvent = {{"event", "request_init"}};
-
     try {
-        json response = GoRequestProcessorOnEvent(inputEvent);
-        return aikido_execute_output(response);
+        std::string outputEvent;
+        GoRequestProcessorOnEvent(EVENT_PRE_REQUEST, outputEvent);
+        return aikido_execute_output(outputEvent);
     }
     catch (const std::exception& e) {
         AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
@@ -171,44 +170,15 @@ ACTION send_request_init_metadata_event(){
 }
 
 ACTION send_request_shutdown_metadata_event(){
-    json inputEvent = {{"event", "request_shutdown"}};
-
     try {
-        json response = GoRequestProcessorOnEvent(inputEvent);
-        return aikido_execute_output(response);
+        std::string outputEvent;
+        GoRequestProcessorOnEvent(EVENT_POST_REQUEST, outputEvent);
+        return aikido_execute_output(outputEvent);
     }
     catch (const std::exception& e) {
         AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
     }
     return CONTINUE;
-}
-
-
-bool send_user_event(std::string id, std::string username) {
-    zval *server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-    if (!server) {
-        AIKIDO_LOG_WARN("\"_SERVER\" variable not found!\n");
-        return false;
-    }
-
-    json inputEvent = {
-        { "event", "user_event" },
-        { "data", { 
-            { "id", id },
-            { "username", username }
-        }
-        }
-    };
-
-    try {
-        json response = GoRequestProcessorOnEvent(inputEvent);
-        aikido_execute_output(response);
-        return true;
-    }
-    catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing user event: %s\n", e.what());
-    }
-    return false;
 }
 
 bool aikido_echo(std::string message) {

@@ -1,6 +1,6 @@
 package aikido_types
 
-type HandlerFunction func(map[string]interface{}) string
+type HandlerFunction func() string
 
 type Method struct {
 	ClassName  string

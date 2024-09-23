@@ -1,103 +1,134 @@
 #include "Includes.h"
+#include "Cache.h"
 
 GoString GoCreateString(std::string& s) {
     return GoString { s.c_str(), s.length() };
 }
 
-json GoRequestProcessorOnEvent(json& event) {
-    std::string eventString = event.dump();
-
+bool GoRequestProcessorOnEvent(EVENT_ID event_id, std::string &output) {
     if (!request_processor_on_event_fn) {
-        return json::object();
+        return false;
     }
     
     AIKIDO_LOG_DEBUG("Sending event to GO\n");
-    
-    char* charPtr = request_processor_on_event_fn(GoCreateString(eventString));
+
+    char *charPtr = request_processor_on_event_fn(event_id);
     if (!charPtr) {
-        return json::object();
+        return true;
     }
-    
-    std::string outputString(charPtr);
+
+    AIKIDO_LOG_DEBUG("Got event reply: %s\n", charPtr);
+
+    output = charPtr;
     free(charPtr);
     
-    AIKIDO_LOG_DEBUG("Got event reply: %s\n", outputString.c_str());
-    
-    json output = json::parse(outputString);
-    return output;
+    return true;
 }
 
 /*
     Callback wrapper called by the RequestProcessor (GO) whenever it needs data from PHP (C++ extension).
 */
-char* GoContextCallback(int context_id) {
+char* GoContextCallback(int callback_id) {
     if (!server) {
         AIKIDO_LOG_WARN("_SERVER variables is not initialized!\n");
         return nullptr;
     }
     std::string ctx;
     std::string ret;
-    switch (context_id) {
-        case CONTEXT_REMOTE_ADDRESS:
-            ctx = "REMOTE_ADDRESS";
-            ret = extract_server_var("REMOTE_ADDR");
-            break;
-        case CONTEXT_METHOD:
-            ctx = "METHOD";
-            ret = extract_server_var("REQUEST_METHOD");
-            break;
-        case CONTEXT_ROUTE:
-            ctx = "ROUTE";
-            ret = extract_route();
-            break;
-        case CONTEXT_STATUS_CODE:
-            ctx = "STATUS_CODE";
-            ret = extract_status_code();
-            break;
-        case CONTEXT_BODY:
-            ctx = "BODY";
-            ret = extract_body();
-            break;
-        case CONTEXT_HEADER_X_FORWARDED_FOR:
-            ctx = "HEADER_X_FORWARDED_FOR";
-            ret = extract_server_var("HTTP_X_FORWARDED_FOR");
-            break;
-        case CONTEXT_COOKIES:
-            ctx = "COOKIES";
-            ret = extract_server_var("HTTP_COOKIE");
-            break;
-        case CONTEXT_QUERY:
-            ctx = "QUERY";
-            ret = extract_server_var("QUERY_STRING");
-            break;
-        case CONTEXT_HTTPS:
-            ctx = "HTTPS";
-            ret = extract_server_var("HTTPS");
-            break;
-        case CONTEXT_URL:
-            ctx = "URL";
-            ret = extract_url();
-            break;
-        case CONTEXT_HEADERS:
-            ctx = "HEADERS";
-            ret = extract_headers();
-            break;
-        case CONTEXT_HEADER_USER_AGENT:
-            ctx = "USER_AGENT";
-            ret = extract_server_var("HTTP_USER_AGENT");
-            break;
+    switch (callback_id)
+    {
+    case CONTEXT_REMOTE_ADDRESS:
+        ctx = "REMOTE_ADDRESS";
+        ret = extract_server_var("REMOTE_ADDR");
+        break;
+    case CONTEXT_METHOD:
+        ctx = "METHOD";
+        ret = extract_server_var("REQUEST_METHOD");
+        break;
+    case CONTEXT_ROUTE:
+        ctx = "ROUTE";
+        ret = extract_route();
+        break;
+    case CONTEXT_STATUS_CODE:
+        ctx = "STATUS_CODE";
+        ret = extract_status_code();
+        break;
+    case CONTEXT_BODY:
+        ctx = "BODY";
+        ret = extract_body();
+        break;
+    case CONTEXT_HEADER_X_FORWARDED_FOR:
+        ctx = "HEADER_X_FORWARDED_FOR";
+        ret = extract_server_var("HTTP_X_FORWARDED_FOR");
+        break;
+    case CONTEXT_COOKIES:
+        ctx = "COOKIES";
+        ret = extract_server_var("HTTP_COOKIE");
+        break;
+    case CONTEXT_QUERY:
+        ctx = "QUERY";
+        ret = extract_server_var("QUERY_STRING");
+        break;
+    case CONTEXT_HTTPS:
+        ctx = "HTTPS";
+        ret = extract_server_var("HTTPS");
+        break;
+    case CONTEXT_URL:
+        ctx = "URL";
+        ret = extract_url();
+        break;
+    case CONTEXT_HEADERS:
+        ctx = "HEADERS";
+        ret = extract_headers();
+        break;
+    case CONTEXT_HEADER_USER_AGENT:
+        ctx = "USER_AGENT";
+        ret = extract_server_var("HTTP_USER_AGENT");
+        break;
+    case CONTEXT_USER_ID:
+        ctx = "USER_ID";
+        ret = requestCache.userId;
+        break;
+    case CONTEXT_USER_NAME:
+        ctx = "USER_NAME";
+        ret = requestCache.userName;
+        break;
+    case FUNCTION_NAME:
+        ctx = "FUNCTION_NAME";
+        ret = eventCache.functionName;
+        break;
+    case OUTGOING_REQUEST_URL:
+        ctx = "OUTGOING_REQUEST_URL";
+        ret = eventCache.outgoingRequestUrl;
+        break;
+    case OUTGOING_REQUEST_PORT:
+        ctx = "OUTGOING_REQUEST_PORT";
+        ret = eventCache.outgoingRequestPort;
+        break;
+    case CMD:
+        ctx = "CMD";
+        ret = eventCache.cmd;
+        break;
+    case FILENAME:
+        ctx = "FILENAME";
+        ret = eventCache.filename;
+        break;
+    case FILENAME2:
+        ctx = "FILENAME2";
+        ret = eventCache.filename2;
+        break;
     }
 
     if (!ret.length()) {
-        AIKIDO_LOG_DEBUG("Context callback %s -> NULL\n", ctx.c_str());
+        AIKIDO_LOG_DEBUG("Callback %s -> NULL\n", ctx.c_str());
         return nullptr;
     }
 
     if (ret.length() > 10000) {
-        AIKIDO_LOG_DEBUG("Context callback %s -> (Result too large to print)\n", ctx.c_str());
+        AIKIDO_LOG_DEBUG("Callback %s -> (Result too large to print)\n", ctx.c_str());
     }
     else {
-        AIKIDO_LOG_DEBUG("Context callback %s -> %s\n", ctx.c_str(), ret.c_str());
+        AIKIDO_LOG_DEBUG("Callback %s -> %s\n", ctx.c_str(), ret.c_str());
     }
     return strdup(ret.c_str());
 }

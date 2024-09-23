@@ -31,5 +31,5 @@ def run_test():
     check_shell_injection(500, "", 3, "expect_detection_blocked.json")
     
 if __name__ == "__main__":
-    load_ports_from_args()
+    load_test_args()
     run_test()

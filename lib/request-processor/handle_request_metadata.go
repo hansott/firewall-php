@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func OnRequestInit(data map[string]interface{}) string {
+func OnRequestInit() string {
 	method := context.GetMethod()
 	route := context.GetRoute()
 	if method == "" || route == "" {
@@ -18,16 +18,20 @@ func OnRequestInit(data map[string]interface{}) string {
 
 	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
 
-	route = utils.BuildRouteFromURL(route)
+	if !grpc.AreEndpointsConfigured() {
+		log.Debugf("[RINIT] No endpoints configured! Skipping checks...")
+		return "{}"
+	}
+
+	route = context.GetParsedRoute()
 
 	endpointData, err := grpc.GetEndpointConfig(method, route)
 	if err != nil {
-		// This endpoint (method + route) has not configuration -> continue
+		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
 		return "{}"
 	}
 
 	ip := context.GetIp()
-	log.Infof("[RINIT] Got IP from request: %s", ip)
 
 	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
 		message := "Your IP address is not allowed to access this resource!"
@@ -52,24 +56,23 @@ func OnRequestInit(data map[string]interface{}) string {
 	return "{}"
 }
 
-func OnRequestShutdown(data map[string]interface{}) string {
-	method := context.GetMethod()
-	route := context.GetRoute()
-	status_code := context.GetStatusCode()
-
+func OnRequestShutdownReporting(method string, route string, status_code int) {
 	if method == "" || route == "" || status_code == 0 {
-		return "{}"
+		return
 	}
 
 	log.Info("[RSHUTDOWN] Got request metadata: ", method, " ", route, " ", status_code)
 
-	route = utils.BuildRouteFromURL(route)
+	route = context.GetParsedRoute()
 
 	if !utils.ShouldDiscoverRoute(status_code, route, method) {
-		return "{}"
+		return
 	}
 
 	go grpc.OnRequestShutdown(method, route, status_code, 10*time.Millisecond)
+}
 
-	return "{}"
+func OnRequestShutdown() string {
+	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode())
+	return ""
 }

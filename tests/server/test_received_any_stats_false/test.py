@@ -22,5 +22,5 @@ def run_test():
     assert_event_contains_subset(events[1], {"type": "heartbeat" })
     
 if __name__ == "__main__":
-    load_ports_from_args()
+    load_test_args()
     run_test()
