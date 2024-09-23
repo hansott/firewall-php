@@ -44,6 +44,7 @@ func GetAttackDetectedProto(res utils.InterceptorResult) protos.AttackDetected {
 		Attack: &protos.Attack{
 			Kind:      string(res.Kind),
 			Operation: res.Operation,
+			Module:    context.GetModule(),
 			Blocked:   utils.IsBlockingEnabled(),
 			Source:    res.Source,
 			Path:      res.PathToPayload,

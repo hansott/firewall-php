@@ -10,7 +10,7 @@ bool GoRequestProcessorOnEvent(EVENT_ID event_id, std::string &output) {
         return false;
     }
     
-    AIKIDO_LOG_DEBUG("Sending event to GO\n");
+    AIKIDO_LOG_DEBUG("Sending event %s\n", get_event_name(event_id));
 
     char *charPtr = request_processor_on_event_fn(event_id);
     if (!charPtr) {
@@ -116,6 +116,18 @@ char* GoContextCallback(int callback_id) {
     case FILENAME2:
         ctx = "FILENAME2";
         ret = eventCache.filename2;
+        break;
+    case SQL_QUERY:
+        ctx = "SQL_QUERY";
+        ret = eventCache.sqlQuery;
+        break;
+    case SQL_DIALECT:
+        ctx = "SQL_DIALECT";
+        ret = eventCache.sqlDialect;
+        break;
+    case MODULE:
+        ctx = "MODULE";
+        ret = eventCache.moduleName;
         break;
     }
 

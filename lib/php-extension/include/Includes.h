@@ -21,6 +21,7 @@
 #include <random>
 
 #include "ext/standard/info.h"
+#include "ext/pdo/php_pdo_driver.h"
 #include "GoCGO.h"
 #include "php_aikido.h"
 #include "../../API.h"

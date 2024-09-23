@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"main/globals"
+	"main/vulnerabilities/sql-injection/dialects"
 	"net"
 	"net/url"
 	"strings"
@@ -203,4 +204,18 @@ func ArrayContains(array []string, search string) bool {
 		}
 	}
 	return false
+}
+
+func GetSqlDialectFromString(dialect string) dialects.SQLDialect {
+	dialect = strings.ToLower(dialect)
+	switch dialect {
+	case "mysql":
+		return dialects.SQLDialectMySQL{}
+	case "sqlite":
+		return dialects.SQLDialectSQLite{}
+	case "postgres":
+		return dialects.SQLDialectPostgres{}
+	default:
+		return dialects.SQLDialectMySQL{} // default -> MySQL
+	}
 }
