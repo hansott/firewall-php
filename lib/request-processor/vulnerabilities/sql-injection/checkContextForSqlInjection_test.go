@@ -3,14 +3,12 @@ package sql_injection
 import (
 	"main/context"
 	"main/utils"
-	"main/vulnerabilities/sql-injection/dialects"
 	"testing"
 )
 
 func TestCheckContextForSqlInjection(t *testing.T) {
 	sql := "SELECT * FROM users WHERE id = '1' OR 1=1; -- '"
 	operation := "mysql.query"
-	dialect := dialects.SQLDialectMySQL{}
 	context.LoadForUnitTests(map[string]string{
 		"remoteAddress": "ip",
 		"method":        "POST",
@@ -20,7 +18,7 @@ func TestCheckContextForSqlInjection(t *testing.T) {
 		"route":         "/",
 	})
 
-	result := CheckContextForSqlInjection(sql, operation, dialect)
+	result := CheckContextForSqlInjection(sql, operation, "mysql")
 
 	if result == nil {
 		t.Errorf("Expected result, got nil")
