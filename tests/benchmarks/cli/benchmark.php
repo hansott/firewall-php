@@ -1,4 +1,7 @@
 <?php
+
+// <insert PHP setup code here>
+
 // Number of warmup iterations
 $warmupIterations = 1000;
 
@@ -60,4 +63,7 @@ if (isset($argv[1])) {
 } else {
     echo "Please provide a filename as the first argument.";
 }
+
+// <insert PHP destroy code here>
+
 ?>
