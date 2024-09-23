@@ -16,6 +16,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 
 	/*
 		Get the current pdo object for which the query function was called, using the "getThis" PHP helper function.
+		https://github.com/php/php-src/blob/5dd8bb0fa884efba40117a83d198f3847922c0a3/Zend/zend_API.h#L526
 	*/
 	zval *pdo_object = getThis();
 	if (!pdo_object) {
