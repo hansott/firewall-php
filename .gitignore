@@ -30,3 +30,6 @@ libphp-extension/ndDb2pJ5Px
 lib/agent/aikido_config.json
 tests/testlib/__pycache__/*.pyc
 tests/benchmarks/server/*.txt
+tests/benchmarks/cli/*.txt
+tests/benchmarks/cli/benchmark_results.md
+tests/benchmarks/server/benchmark_results.md

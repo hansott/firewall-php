@@ -13,7 +13,7 @@ Zen protects your PHP apps by preventing user input containing dangerous strings
 Zen will autonomously protect your PHP applications from the inside against:
 
 * 🛡️ [NoSQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
-* 🛡️ [SQL injection attacks]([https://www.aikido.dev/blog/web-application-security-vulnerabilities](https://owasp.org/www-community/attacks/SQL_Injection))
+* 🛡️ [SQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
 * 🛡️ [Command injection attacks](https://owasp.org/www-community/attacks/Command_Injection)
 * 🛡️ [Path traversal attacks](https://owasp.org/www-community/attacks/Path_Traversal)
 * 🛡️ [Server-side request forgery (SSRF)](./docs/ssrf.md)
@@ -69,15 +69,12 @@ files:
 
 ## Supported libraries and frameworks
 
-### PHP versions
-
 Zen for PHP 7.3+ works for:
 
 ### Web frameworks
 
-* ✅ [`Laravel`](https://laravel.com/)
-* ✅ [`Symphony`](https://symfony.com/)
-* ✅ [`CodeIgniter`](https://codeigniter.com/)
+Zen for PHP is Web-framework agnostic, meaning that it will work on any PHP Web framework that you want to use.
+Zen for PHP can do this because the monitored functions are hooked at the PHP-core level.
 
 ### Database drivers
 * ✅ [`PDO`](https://www.php.net/manual/en/book.pdo.php)
@@ -131,11 +128,33 @@ To block requests, set the `AIKIDO_BLOCKING` environment variable to `true`.
 
 See [Reporting to Aikido](#reporting-to-your-aikido-security-dashboard) to learn how to send events to Aikido.
 
-## Benchmarks 
+## Benchmarks
 
-<To be added>
+Zen for PHP benchmarks are splitted into 2 categories:
+* Benchmarks for PHP operations that are monitored by Zen
+* Benchmarks for PHP requests protected by Zen
 
-See [benchmarks](tests/benchmarks/) folder for more.
+We do automated benchmarks on each new version and we store the result in the repo. If you need some specific benchmarks for (OS, PHP version) pairs, check the [benchmarks](docs/benchmarks/) folder.
+
+The benchmarking times displayed in this readme are computed with PHP 8.1 on the latest Ubuntu version.
+
+### Benchmarks for PHP operations
+
+| Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
+|---|---|---|---|
+| Shell Execution | 1.2529 | 1.3359 | 0.0830 ms |
+| Path Access | 0.0010 | 0.0029 | 0.0019 ms |
+| Outgoing Request | 0.4101 | 0.4561 | 0.0460 ms |
+
+### Benchmarks for PHP requests
+
+| Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
+|---|---|---|---|
+| Request With Outgoing Request | 1.6970 | 1.9680 | 0.2710 ms |
+| Request With Rate Limiting Enabled | 1.2150 | 1.6380 | 0.4230 ms |
+| Request With User Setting | 1.1760 | 1.3920 | 0.2160 ms |
+| Request With Shell Execution | 2.4890 | 2.7150 | 0.2260 ms |
+| Request With No Monitored Operations | 1.2030 | 1.3440 | 0.1410 ms |
 
 ## Bug bounty program
 

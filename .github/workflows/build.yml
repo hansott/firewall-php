@@ -120,7 +120,7 @@ jobs:
         cd lib/php-extension
         phpize
         cd ../../build
-        CXX=g++ CXXFLAGS="-fPIC -g -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
+        CXX=g++ CXXFLAGS="-fPIC -O2 -I../lib/php-extension/include" LDFLAGS="-lstdc++" ../lib/php-extension/configure
         make
 
     - name: Version Aikido extension
@@ -285,6 +285,7 @@ jobs:
           yum -y install python3
           pip3 install flask
           pip3 install requests
+          pip3 install pandas
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
@@ -321,15 +322,55 @@ jobs:
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib
 
+      - name: Run CLI benchmarks with Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks with Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Uninstall Aikido
+        run: |
+          rpm -e aikido-php-firewall
+
+      - name: Run CLI benchmarks without Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks without Aikido
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Get benchmark result
+        run: |
+          cd tools
+          python3 benchmark_report.py ../tests/benchmarks/cli
+          python3 benchmark_report.py ../tests/benchmarks/server
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-centos-aikido-${{ env.AIKIDO_VERSION }}-php-${{ matrix.php_version }}
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+            
+
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
+            
 
   test_php_ubuntu:
     runs-on: ${{ matrix.os }}
@@ -372,6 +413,7 @@ jobs:
       - name: Setup Python
         run: |
           sudo pip3 install flask --no-input
+          sudo pip3 install pandas --no-input
           python --version
 
       - name: Install DEB
@@ -388,13 +430,51 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           sudo python run_server_tests.py ../tests/server ../tests/testlib
+
+      - name: Run CLI benchmarks with Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks with Aikido
+        run: |
+          cd tools
+          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Uninstall Aikido
+        run: |
+          sudo dpkg -r aikido-php-firewall
+
+      - name: Run CLI benchmarks without Aikido
+        run: |
+          cd tests/benchmarks/cli/
+          PYTHONPATH=../../testlib python3 benchmark.py .
+
+      - name: Run server benchmarks without Aikido
+        run: |
+          cd tools
+          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+
+      - name: Store benchmark result
+        run: |
+          cd tools
+          python3 benchmark_report.py ../tests/benchmarks/cli
+          python3 benchmark_report.py ../tests/benchmarks/server
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-ubuntu-aikido-${{ env.AIKIDO_VERSION }}-ubuntu-${{ matrix.os }}-php-${{ matrix.php_version }}
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+      
+      - name: Archive benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
+          path: |
+            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
