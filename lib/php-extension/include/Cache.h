@@ -22,6 +22,9 @@ public:
 
     std::string outgoingRequestUrl;
     std::string outgoingRequestPort;
+    
+    std::string sql_query;
+    std::string sql_dialect;
 
     EventCache() = default;
     void Reset();

@@ -14,13 +14,14 @@ import (
 )
 
 var eventHandlers = map[int]HandlerFunction{
-	C.EVENT_PRE_REQUEST:           OnRequestInit,
-	C.EVENT_POST_REQUEST:          OnRequestShutdown,
-	C.EVENT_PRE_USER:              OnUserEvent,
-	C.EVENT_PRE_OUTGOING_REQUEST:  OnPreFunctionExecutedCurl,
-	C.EVENT_POST_OUTGOING_REQUEST: OnAfterFunctionExecutedCurl,
-	C.EVENT_PRE_SHELL_EXECUTED:    OnPreShellExecuted,
-	C.EVENT_PRE_PATH_ACCESSED:     OnPrePathAccessed,
+	C.EVENT_PRE_REQUEST:            OnRequestInit,
+	C.EVENT_POST_REQUEST:           OnRequestShutdown,
+	C.EVENT_PRE_USER:               OnUserEvent,
+	C.EVENT_PRE_OUTGOING_REQUEST:   OnPreFunctionExecutedCurl,
+	C.EVENT_POST_OUTGOING_REQUEST:  OnAfterFunctionExecutedCurl,
+	C.EVENT_PRE_SHELL_EXECUTED:     OnPreShellExecuted,
+	C.EVENT_PRE_PATH_ACCESSED:      OnPrePathAccessed,
+	C.EVENT_PRE_EXECUTED_PDO_QUERY: OnPreExecutedPdoQuery,
 }
 
 //export RequestProcessorInit

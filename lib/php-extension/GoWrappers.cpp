@@ -117,6 +117,14 @@ char* GoContextCallback(int callback_id) {
         ctx = "FILENAME2";
         ret = eventCache.filename2;
         break;
+    case SQL_QUERY:
+        ctx = "SQL_QUERY";
+        ret = eventCache.sql_query;
+        break;
+    case SQL_DIALECT:
+        ctx = "SQL_DIALECT";
+        ret = eventCache.sql_dialect;
+        break;
     }
 
     if (!ret.length()) {

@@ -155,3 +155,11 @@ func GetFilename() string {
 func GetFilename2() string {
 	return Context.Callback(C.FILENAME2)
 }
+
+func GetSqlQuery() string {
+	return Context.Callback(C.SQL_QUERY)
+}
+
+func GetSqlDialect() string {
+	return Context.Callback(C.SQL_DIALECT)
+}
