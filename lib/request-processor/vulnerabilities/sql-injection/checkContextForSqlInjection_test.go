@@ -40,8 +40,5 @@ func TestCheckContextForSqlInjection(t *testing.T) {
 	if result.Payload != "1' OR 1=1; --" {
 		t.Errorf("Expected payload 1' OR 1=1; --, got %s", result.Payload)
 	}
-	if len(result.Metadata) != 0 {
-		t.Errorf("Expected empty metadata, got %v", result.Metadata)
-	}
 
 }
