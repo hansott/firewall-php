@@ -9,7 +9,7 @@ import (
 	sql_injection "main/vulnerabilities/sql-injection"
 )
 
-func OnPreExecutedPdoQuery() string {
+func OnPreSqlQueryExecuted() string {
 	query := context.GetSqlQuery()
 	dialect := context.GetSqlDialect()
 	operation := context.GetFunctionName()

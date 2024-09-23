@@ -21,7 +21,7 @@ var eventHandlers = map[int]HandlerFunction{
 	C.EVENT_POST_OUTGOING_REQUEST:  OnAfterFunctionExecutedCurl,
 	C.EVENT_PRE_SHELL_EXECUTED:     OnPreShellExecuted,
 	C.EVENT_PRE_PATH_ACCESSED:      OnPrePathAccessed,
-	C.EVENT_PRE_EXECUTED_PDO_QUERY: OnPreExecutedPdoQuery,
+	C.EVENT_PRE_SQL_QUERY_EXECUTED: OnPreSqlQueryExecuted,
 }
 
 //export RequestProcessorInit
@@ -87,8 +87,6 @@ func RequestProcessorOnEvent(eventId int) (outputJson *C.char) {
 			outputJson = nil
 		}
 	}()
-
-	log.Debug("OnEvent: ", eventId)
 
 	goString := eventHandlers[eventId]()
 	if goString == "" {

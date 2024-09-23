@@ -10,7 +10,7 @@ bool GoRequestProcessorOnEvent(EVENT_ID event_id, std::string &output) {
         return false;
     }
     
-    AIKIDO_LOG_DEBUG("Sending event to GO\n");
+    AIKIDO_LOG_DEBUG("Sending event %s\n", get_event_name(event_id));
 
     char *charPtr = request_processor_on_event_fn(event_id);
     if (!charPtr) {

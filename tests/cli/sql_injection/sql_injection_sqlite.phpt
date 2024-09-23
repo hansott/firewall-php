@@ -1,7 +1,7 @@
 --TEST--
 Test SQLite database operations
 
---INI--
+--ENV--
 AIKIDO_LOG_LEVEL=INFO
 AIKIDO_BLOCKING=1
 
@@ -21,6 +21,7 @@ try {
 
     // Simulate user input
     $unsafeInput = "1 OR 1=1";
+    $_SERVER['HTTP_USER'] = $unsafeInput;
 
     // Vulnerable query
     $result = $pdo->query("SELECT * FROM users WHERE id = $unsafeInput");

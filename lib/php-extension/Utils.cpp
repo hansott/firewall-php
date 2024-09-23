@@ -261,3 +261,25 @@ std::string aikido_generate_socket_path() {
                                    std::string(time_str) + "-" + std::to_string(aikido_get_random_number()) + ".sock";
     return socket_file_path;
 }
+
+const char *get_event_name(EVENT_ID event) {
+    switch (event) {
+        case EVENT_PRE_REQUEST:
+            return "PreRequest";
+        case EVENT_POST_REQUEST:
+            return "PostRequest";
+        case EVENT_PRE_USER:
+            return "PreUser";
+        case EVENT_PRE_OUTGOING_REQUEST:
+            return "PreOutgoingRequests";
+        case EVENT_POST_OUTGOING_REQUEST:
+            return "PostOutgoingRequests";
+        case EVENT_PRE_SHELL_EXECUTED:
+            return "PreShellExecuted";
+        case EVENT_PRE_PATH_ACCESSED:
+            return "PrePathAccessed";
+        case EVENT_PRE_SQL_QUERY_EXECUTED:
+            return "PreSqlQueryExecuted";
+    }
+    return "Unknown";
+}

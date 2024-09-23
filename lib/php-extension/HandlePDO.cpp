@@ -19,7 +19,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 		return;
 	}
 
-	eventId = EVENT_PRE_EXECUTED_PDO_QUERY;
+	eventId = EVENT_PRE_SQL_QUERY_EXECUTED;
 	eventCache.sql_query = ZSTR_VAL(query);
 	eventCache.sql_dialect = "unknown";
 	
