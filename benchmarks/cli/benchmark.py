@@ -48,7 +48,7 @@ def execute_php_script(test_name, php_script):
                             env=dict(os.environ, AIKIDO_LOG_LEVEL="ERROR"))
     
     # Remove the temporary file
-    os.remove(f'{test_name}.php')
+    # os.remove(f'{test_name}.php')
     
 
 def main(directory):

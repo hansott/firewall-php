@@ -21,8 +21,8 @@ def dataframe_to_markdown(df, output_file):
     with open(output_file, 'w') as f:
         f.write('| ' + ' | '.join(df.columns) + ' |\n')
         f.write('|' + '---|' * len(df.columns) + '\n')
-        for _, row in df.iterrows():
-            f.write('| ' + ' | '.join(f'{x:.4f}' if isinstance(x, float) else str(x) for x in row) + ' ms |\n')
+        for _, row in df.iterrows():            
+            f.write('| ' + ' | '.join(f'{x:.4f}' if isinstance(x, float) else str(x) for x in row) + ' |\n')
 
 def main(folder_path):
     benchmarks = {}
@@ -51,10 +51,10 @@ def main(folder_path):
         difference_pct = (difference_ms / without_aikido) * 100 if without_aikido != 0 else 0
         rows.append({
             'Benchmark': test_name,
-            'Avg. time w/o Zen': without_aikido,
-            'Avg. time w/ Zen': with_aikido,
-            'Delta': difference_ms,
-            'Delta %': difference_pct,
+            'Avg. time w/o Zen': without_aikido + ' ms',
+            'Avg. time w/ Zen': with_aikido + ' ms',
+            'Delta': difference_ms + ' ms',
+            'Delta %': difference_pct + ' %',
         })
 
     df = pd.DataFrame(rows)
