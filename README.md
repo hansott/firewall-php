@@ -142,9 +142,10 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 
 | Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
 |---|---|---|---|
-| Shell Execution | 1.2529 | 1.3359 | 0.0830 ms |
-| Path Access | 0.0010 | 0.0029 | 0.0019 ms |
-| Outgoing Request | 0.4101 | 0.4561 | 0.0460 ms |
+| Shell Execution | 1.3330 | 1.3709 | 0.0379 ms |
+| Path Access | 0.0010 | 0.0041 | 0.0031 ms |
+| Outgoing Request | 0.0949 | 0.1261 | 0.0312 ms |
+| Sql Query | 0.0138 | 0.0169 | 0.0031 ms |
 
 ### Benchmarks for PHP requests
 
