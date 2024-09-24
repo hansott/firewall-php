@@ -324,13 +324,13 @@ jobs:
 
       - name: Run CLI benchmarks with Aikido
         run: |
-          cd tests/benchmarks/cli/
-          PYTHONPATH=../../testlib python3 benchmark.py .
+          cd benchmarks/cli/
+          PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
       - name: Run server benchmarks with Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
 
       - name: Uninstall Aikido
         run: |
@@ -338,19 +338,19 @@ jobs:
 
       - name: Run CLI benchmarks without Aikido
         run: |
-          cd tests/benchmarks/cli/
-          PYTHONPATH=../../testlib python3 benchmark.py .
+          cd benchmarks/cli/
+          PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
       - name: Run server benchmarks without Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
 
       - name: Get benchmark result
         run: |
           cd tools
-          python3 benchmark_report.py ../tests/benchmarks/cli
-          python3 benchmark_report.py ../tests/benchmarks/server
+          python3 benchmark_report.py ../benchmarks/cli
+          python3 benchmark_report.py ../benchmarks/server
 
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
@@ -368,8 +368,8 @@ jobs:
         with:
           name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
           path: |
-            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
-            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
+            ${{ github.workspace }}/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/benchmarks/server/benchmark_results.md
             
 
   test_php_ubuntu:
@@ -433,13 +433,13 @@ jobs:
 
       - name: Run CLI benchmarks with Aikido
         run: |
-          cd tests/benchmarks/cli/
-          PYTHONPATH=../../testlib python3 benchmark.py .
+          cd benchmarks/cli/
+          PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
       - name: Run server benchmarks with Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
 
       - name: Uninstall Aikido
         run: |
@@ -447,19 +447,19 @@ jobs:
 
       - name: Run CLI benchmarks without Aikido
         run: |
-          cd tests/benchmarks/cli/
-          PYTHONPATH=../../testlib python3 benchmark.py .
+          cd benchmarks/cli/
+          PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
       - name: Run server benchmarks without Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../tests/benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
 
       - name: Store benchmark result
         run: |
           cd tools
-          python3 benchmark_report.py ../tests/benchmarks/cli
-          python3 benchmark_report.py ../tests/benchmarks/server
+          python3 benchmark_report.py ../benchmarks/cli
+          python3 benchmark_report.py ../benchmarks/server
       
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
@@ -476,5 +476,5 @@ jobs:
         with:
           name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
           path: |
-            ${{ github.workspace }}/tests/benchmarks/cli/benchmark_results.md
-            ${{ github.workspace }}/tests/benchmarks/server/benchmark_results.md
+            ${{ github.workspace }}/benchmarks/cli/benchmark_results.md
+            ${{ github.workspace }}/benchmarks/server/benchmark_results.md
