@@ -131,8 +131,8 @@ See [Reporting to Aikido](#reporting-to-your-aikido-security-dashboard) to learn
 ## Benchmarks
 
 Zen for PHP benchmarks are splitted into 2 categories:
-* Benchmarks for PHP operations that are monitored by Zen
-* Benchmarks for PHP requests protected by Zen
+* Benchmarks for single PHP operations (function calls) that are monitored by Zen
+* Benchmarks for round-trip requests to PHP apps protected by Zen
 
 We do automated benchmarks on each new version and we store the result in the repo. If you need some specific benchmarks for (OS, PHP version) pairs, check the [benchmarks](docs/benchmarks/) folder.
 
@@ -142,20 +142,18 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 
 | Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
 |---|---|---|---|
-| Shell Execution | 1.3311 | 1.3788 | 0.0477 ms |
-| Path Access | 0.0129 | 0.0210 | 0.0081 ms |
-| Outgoing Request | 0.0989 | 0.1299 | 0.0310 ms |
+| Shell Execution | 1.3139 | 1.3509 | 0.0370 ms |
+| Path Access | 0.0129 | 0.0160 | 0.0031 ms |
+| Outgoing Request | 0.1030 | 0.1321 | 0.0291 ms |
 | Sql Query | 0.0138 | 0.0169 | 0.0031 ms |
 
 ### Benchmarks for PHP requests
 
 | Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
 |---|---|---|---|
-| Request With Outgoing Request | 1.8890 | 2.1570 | 0.2680 ms |
-| Request With Rate Limiting Enabled | 1.2490 | 1.6490 | 0.4000 ms |
-| Request With User Setting | 1.2260 | 1.4980 | 0.2720 ms |
-| Request With Shell Execution | 2.5740 | 2.8490 | 0.2750 ms |
-| Request With No Monitored Operations | 1.2350 | 1.4640 | 0.2290 ms |
+| Request With Rate Limiting Enabled | 1.2310 | 1.6480 | 0.4170 ms |
+| Request With User Setting | 1.2230 | 1.4430 | 0.2200 ms |
+| Request Simple | 1.2370 | 1.3730 | 0.1360 ms |
 
 ## Bug bounty program
 
