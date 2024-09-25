@@ -48,12 +48,13 @@ def main(folder_path):
         without_aikido = times.get('without_aikido', 0)
         with_aikido = times.get('with_aikido', 0)
         difference_ms = with_aikido - without_aikido
-        #difference_pct = (difference_ms / without_aikido) * 100 if without_aikido != 0 else 0
+        # difference_pct = (difference_ms / without_aikido) * 100 if without_aikido != 0 else 0
         rows.append({
             'Benchmark': test_name,
             'Avg. time w/o Zen': without_aikido,
             'Avg. time w/ Zen': with_aikido,
-            'Delta': difference_ms
+            'Delta': difference_ms,
+            # 'Delta %': difference_pct,
         })
 
     df = pd.DataFrame(rows)

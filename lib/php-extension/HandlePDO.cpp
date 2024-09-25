@@ -1,50 +1,40 @@
 #include "HandlePDO.h"
-
-AIKIDO_HANDLER_FUNCTION(handle_pre_pdo___construct) {
-	char *data_source;
-	size_t data_source_len;
-	char *colon;
-
-	ZEND_PARSE_PARAMETERS_START(1, -1)
-		Z_PARAM_STRING(data_source, data_source_len)
-	ZEND_PARSE_PARAMETERS_END();
-
-	std::string data_source_string(data_source, data_source_len);
-
-	/*
-	inputEvent = {
-		{ "event", "method_executed" },
-		{ "data", {
-			{ "class_name", "pdo" },
-			{ "method_name", "__construct" },
-			{ "parameters", {
-				{ "data_source", data_source_string }
-			} }
-		} }
-	};
-	*/
-}
+#include "Utils.h"
+#include "Cache.h"
 
 AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
-	char *query;
-	size_t query_len;
+	zend_string *query = NULL;
 
-	ZEND_PARSE_PARAMETERS_START(1,-1)
-		Z_PARAM_STRING(query, query_len)
+	ZEND_PARSE_PARAMETERS_START(0,-1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_STR(query)
 	ZEND_PARSE_PARAMETERS_END();
 
-	std::string query_string(query, query_len);
+	if (!query) {
+		return;
+	}
 
 	/*
-	inputEvent = {
-		{ "event", "method_executed" },
-		{ "data", {
-			{ "class_name", "pdo" },
-			{ "method_name", "query" },
-			{ "parameters", {
-				{ "query",  query_string }
-			} }
-		} }
-	};
+		Get the current pdo object for which the query function was called, using the "getThis" PHP helper function.
+		https://github.com/php/php-src/blob/5dd8bb0fa884efba40117a83d198f3847922c0a3/Zend/zend_API.h#L526
 	*/
+	zval *pdo_object = getThis();
+	if (!pdo_object) {
+		return;
+	}
+
+	eventId = EVENT_PRE_SQL_QUERY_EXECUTED;
+	eventCache.moduleName = "PDO";
+	eventCache.sqlQuery = ZSTR_VAL(query);
+	eventCache.sqlDialect = "unknown";
+	
+	zval retval;
+	if (aikido_call_user_function_one_param("getAttribute", PDO_ATTR_DRIVER_NAME, &retval, pdo_object)) {
+		if (Z_TYPE(retval) == IS_STRING)
+		{
+			eventCache.sqlDialect = Z_STRVAL_P(&retval);
+		}
+    }
+
+    zval_ptr_dtor(&retval);	
 }

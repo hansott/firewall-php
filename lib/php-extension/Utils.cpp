@@ -197,7 +197,8 @@ bool aikido_exit() {
 #endif
 }
 
-bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval* params, zval* return_value) {
+bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval *params, zval *return_value, zval *object)
+{
     zval _function_name;
     zend_string* _function_name_str = zend_string_init(function_name.c_str(), function_name.length(), 0);
     if (!_function_name_str) {
@@ -211,7 +212,7 @@ bool aikido_call_user_function(std::string function_name, unsigned int params_nu
         _return_value = &_temp_return_value;
     }
 
-    int _result = call_user_function(EG(function_table), nullptr, &_function_name, _return_value, params_number, params);
+    int _result = call_user_function(EG(function_table), object, &_function_name, _return_value, params_number, params);
 
     zend_string_release(_function_name_str);
 
@@ -222,13 +223,15 @@ bool aikido_call_user_function(std::string function_name, unsigned int params_nu
     return _result == SUCCESS;
 }
 
-bool aikido_call_user_function_one_param(std::string function_name, long first_param, zval* return_value) {
+bool aikido_call_user_function_one_param(std::string function_name, long first_param, zval *return_value, zval *object)
+{
     zval _params[1];
     ZVAL_LONG(&_params[0], first_param);
-    return aikido_call_user_function(function_name, 1, _params, return_value);
+    return aikido_call_user_function(function_name, 1, _params, return_value, object);
 }
 
-bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval* return_value) {
+bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval *return_value, zval *object)
+{
     zval _params[1];
     zend_string* _first_param = zend_string_init(first_param.c_str(), first_param.length(), 0);
     if (!_first_param) {
@@ -236,7 +239,7 @@ bool aikido_call_user_function_one_param(std::string function_name, std::string 
     }
     ZVAL_STR(&_params[0], _first_param);
 
-    bool ret = aikido_call_user_function(function_name, 1, _params, return_value);
+    bool ret = aikido_call_user_function(function_name, 1, _params, return_value, object);
 
     zend_string_release(_first_param);
 
@@ -257,4 +260,26 @@ std::string aikido_generate_socket_path() {
     std::string socket_file_path = "/run/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-" +
                                    std::string(time_str) + "-" + std::to_string(aikido_get_random_number()) + ".sock";
     return socket_file_path;
+}
+
+const char *get_event_name(EVENT_ID event) {
+    switch (event) {
+        case EVENT_PRE_REQUEST:
+            return "PreRequest";
+        case EVENT_POST_REQUEST:
+            return "PostRequest";
+        case EVENT_PRE_USER:
+            return "PreUser";
+        case EVENT_PRE_OUTGOING_REQUEST:
+            return "PreOutgoingRequests";
+        case EVENT_POST_OUTGOING_REQUEST:
+            return "PostOutgoingRequests";
+        case EVENT_PRE_SHELL_EXECUTED:
+            return "PreShellExecuted";
+        case EVENT_PRE_PATH_ACCESSED:
+            return "PrePathAccessed";
+        case EVENT_PRE_SQL_QUERY_EXECUTED:
+            return "PreSqlQueryExecuted";
+    }
+    return "Unknown";
 }
