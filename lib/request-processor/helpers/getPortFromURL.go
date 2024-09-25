@@ -20,7 +20,6 @@ func GetPortFromURL(u *url.URL) int {
 		return 443
 	case "http":
 		return 80
-	default:
-		return 0 // Equivalent to 'undefined' in Go
 	}
+	return 0
 }
