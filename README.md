@@ -142,20 +142,20 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 
 | Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
 |---|---|---|---|
-| Shell Execution | 1.3330 | 1.3709 | 0.0379 ms |
-| Path Access | 0.0010 | 0.0041 | 0.0031 ms |
-| Outgoing Request | 0.0949 | 0.1261 | 0.0312 ms |
+| Shell Execution | 1.3311 | 1.3788 | 0.0477 ms |
+| Path Access | 0.0129 | 0.0210 | 0.0081 ms |
+| Outgoing Request | 0.0989 | 0.1299 | 0.0310 ms |
 | Sql Query | 0.0138 | 0.0169 | 0.0031 ms |
 
 ### Benchmarks for PHP requests
 
 | Benchmark | Avg. time w/o Zen | Avg. time w/ Zen | Delta |
 |---|---|---|---|
-| Request With Outgoing Request | 1.6970 | 1.9680 | 0.2710 ms |
-| Request With Rate Limiting Enabled | 1.2150 | 1.6380 | 0.4230 ms |
-| Request With User Setting | 1.1760 | 1.3920 | 0.2160 ms |
-| Request With Shell Execution | 2.4890 | 2.7150 | 0.2260 ms |
-| Request With No Monitored Operations | 1.2030 | 1.3440 | 0.1410 ms |
+| Request With Outgoing Request | 1.8890 | 2.1570 | 0.2680 ms |
+| Request With Rate Limiting Enabled | 1.2490 | 1.6490 | 0.4000 ms |
+| Request With User Setting | 1.2260 | 1.4980 | 0.2720 ms |
+| Request With Shell Execution | 2.5740 | 2.8490 | 0.2750 ms |
+| Request With No Monitored Operations | 1.2350 | 1.4640 | 0.2290 ms |
 
 ## Bug bounty program
 
