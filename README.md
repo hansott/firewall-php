@@ -94,7 +94,7 @@ Zen for PHP can do this because the monitored functions are hooked at the PHP-co
 ### Outgoing requests libraries
 * ✅ [`cURL`](https://www.php.net/manual/en/book.curl.php)
 * ✅ [`GuzzleHttp`](https://docs.guzzlephp.org/en/stable/)
-* 🚧 [`file_get_contents`](https://www.php.net/manual/en/function.file-get-contents.php)
+* ✅ [`file_get_contents`](https://www.php.net/manual/en/function.file-get-contents.php)
 * 🚧 [`HTTP_Request2`](https://pear.php.net/package/http_request2)
 * 🚧 [`Symfony\HTTPClient`](https://symfony.com/doc/current/http_client.html)
 
