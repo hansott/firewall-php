@@ -1,0 +1,47 @@
+{
+    "type": "detected_attack",
+    "request": {
+        "method": "POST",
+        "ipAddress": "::1",
+        "headers": {
+            "accept": [
+                "*/*"
+            ],
+            "accept_encoding": [
+                "gzip, deflate"
+            ],
+            "connection": [
+                "keep-alive"
+            ],
+            "content_type": [
+                "application/json"
+            ]
+        },
+        "body": "{\"url\": \"http://127.0.0.1:8081\"}",
+        "source": "php",
+        "route": "/testDetection"
+    },
+    "attack": {
+        "kind": "ssrf",
+        "operation": "file_get_contents",
+        "module": "",
+        "blocked": true,
+        "source": "body",
+        "path": ".url",
+        "stack": "",
+        "payload": "http://127.0.0.1:8081",
+        "metadata": {
+            "hostname": "127.0.0.1",
+            "port": "8081"
+        },
+        "user": {
+            "id": "12345",
+            "name": "Tudor",
+            "lastIpAddress": "::1"
+        }
+    },
+    "agent": {
+        "dryMode": false,
+        "library": "firewall-php"
+    }
+}
