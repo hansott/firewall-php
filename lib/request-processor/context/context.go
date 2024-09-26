@@ -3,37 +3,45 @@ package context
 // #include "../../API.h"
 import "C"
 import (
+	"main/helpers"
 	"main/log"
-	"strconv"
+	"main/utils"
 )
 
 type CallbackFunction func(int) string
 
 type ContextData struct {
-	Callback      CallbackFunction
-	Method        *string
-	Route         *string
-	RouteParsed   *string
-	URL           *string
-	StatusCode    *int
-	IP            *string
-	IsIpBypassed  *bool
-	UserAgent     *string
-	UserId        *string
-	UserName      *string
-	Body          *string
-	BodyParsed    *map[string]string
-	Query         *string
-	QueryParsed   *map[string]string
-	Cookies       *string
-	CookiesParsed *map[string]string
-	Headers       *map[string]interface{}
-	HeadersParsed *map[string]string
+	Callback                  CallbackFunction
+	Method                    *string
+	Route                     *string
+	RouteParsed               *string
+	URL                       *string
+	StatusCode                *int
+	IP                        *string
+	IsIpBypassed              *bool
+	UserAgent                 *string
+	UserId                    *string
+	UserName                  *string
+	Body                      *string
+	BodyParsed                *map[string]string
+	Query                     *string
+	QueryParsed               *map[string]string
+	Cookies                   *string
+	CookiesParsed             *map[string]string
+	Headers                   *map[string]interface{}
+	HeadersParsed             *map[string]string
+	OutgoingRequestHostname   *string
+	OutgoingRequestPort       *int
+	OutgoingRequestResolvedIp *string
+	PartialInterceptorResult  *utils.InterceptorResult
 }
 
 var Context ContextData
 
 func Init(callback CallbackFunction) bool {
+	if callback == nil {
+		callback = Context.Callback
+	}
 	Context = ContextData{
 		Callback: callback,
 	}
@@ -124,24 +132,29 @@ func GetUserName() string {
 	return GetFromCache(ContextSetUserName, &Context.UserName)
 }
 
-func GetFunctionName() string {
-	return Context.Callback(C.FUNCTION_NAME)
-}
-
-func GetOutgoingRequestUrl() string {
-	return Context.Callback(C.OUTGOING_REQUEST_URL)
+func GetOutgoingRequestHostname() string {
+	return GetFromCache(ContextSetOutgoingRequestHostnameAndPort, &Context.OutgoingRequestHostname)
 }
 
 func GetOutgoingRequestPort() int {
 	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
-	if portStr == "" {
-		return 0
+	port := helpers.ParsePort(portStr)
+	if port != 0 {
+		return port
 	}
-	port, err := strconv.Atoi(portStr)
-	if err != nil {
-		return 0
-	}
-	return port
+	return GetFromCache(ContextSetOutgoingRequestHostnameAndPort, &Context.OutgoingRequestPort)
+}
+
+func GetOutgoingRequestResolvedIp() string {
+	return Context.Callback(C.OUTGOING_REQUEST_RESOLVED_IP)
+}
+
+func GetPartialInterceptorResult() *utils.InterceptorResult {
+	return Context.PartialInterceptorResult
+}
+
+func GetFunctionName() string {
+	return Context.Callback(C.FUNCTION_NAME)
 }
 
 func GetCmd() string {

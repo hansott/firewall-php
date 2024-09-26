@@ -18,8 +18,8 @@ AIKIDO_HANDLER_FUNCTION(handle_file_path_access) {
     // if filename starts with http:// or https://, it's a URL so we treat it as an outgoing request
      if (strncmp(ZSTR_VAL(filename), "http://", 7) == 0 || 
          strncmp(ZSTR_VAL(filename), "https://", 8) == 0) {
-        eventCache.outgoingRequestUrl = ZSTR_VAL(filename);
         eventId = EVENT_PRE_OUTGOING_REQUEST;
+        eventCache.outgoingRequestUrl = ZSTR_VAL(filename);
     }
     else {
         eventId = EVENT_PRE_PATH_ACCESSED;

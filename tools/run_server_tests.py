@@ -34,7 +34,7 @@ def print_test_results(s, tests):
     for t in tests:
         print(f"\t- {t}")
 
-def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valgrind):
+def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valgrind, debug):
     try:
         # Generate unique ports for mock server and PHP server.
         mock_port = generate_unique_port()
@@ -54,7 +54,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
         env = os.environ.copy()
         env.update(load_env_from_json(env_file_path))
         env.update({
-            'AIKIDO_LOG_LEVEL': 'ERROR',
+            'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
             'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
             'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
@@ -108,12 +108,10 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
             print(f"Mock server on port {mock_port} stopped.")
 
 
-def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False, valgrind=False):
-    
-    
+def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False, valgrind=False, debug=False):
     if specific_test:
         specific_test = os.path.join(root_tests_dir, specific_test)
-        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, benchmark, valgrind)
+        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, benchmark, valgrind, debug)
     else:
         run_parallel = True
         if benchmark or valgrind:
@@ -123,7 +121,7 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False, valg
         threads = []
         
         for test_dir in test_dirs:
-            args = (root_tests_dir, test_dir, test_lib_dir, benchmark, valgrind)
+            args = (root_tests_dir, test_dir, test_lib_dir, benchmark, valgrind, debug)
             if run_parallel:
                 thread = threading.Thread(target=handle_test_scenario, args=args)
                 threads.append(thread)
@@ -148,6 +146,7 @@ if __name__ == "__main__":
     parser.add_argument('--test', type=str, default=None, help='Run a single test from the root folder.')
     parser.add_argument('--benchmark', action='store_true', help='Enable benchmarking.')
     parser.add_argument('--valgrind', action='store_true', help='Enable valgrind.')
+    parser.add_argument('--debug', action='store_true', help='Enable debugging logs.')
 
     # Parse arguments
     args = parser.parse_args()
@@ -155,4 +154,4 @@ if __name__ == "__main__":
     # Extract values from parsed arguments
     root_folder = os.path.abspath(args.root_folder_path)
     test_lib_dir = os.path.abspath(args.test_lib_dir)
-    main(root_folder, test_lib_dir, args.test, args.benchmark, args.valgrind)
+    main(root_folder, test_lib_dir, args.test, args.benchmark, args.valgrind, args.debug)

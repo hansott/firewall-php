@@ -18,6 +18,9 @@ def load_test_args():
     mock_port = int(sys.argv[2])
     test_name = sys.argv[3]
     print(f"Loaded test args: test_name={test_name}, php_port={php_port}, mock_port={mock_port}")
+    
+def get_mock_port():
+    return mock_port
 
 def localhost_get_request(port, route="", benchmark=False):
     global benchmarks
@@ -200,3 +203,16 @@ def benchmark_store_results():
     with open(f"{test_name}_{benchmark_suffix}.txt", "w") as f:
         f.write(f"p50 - {benchmarks[int(len(benchmarks)/2)]} ms")
 
+def add_to_hosts_file(hostname, ip):
+    hosts_file = '/etc/hosts'
+    entry = f"{ip}\t{hostname}\n"
+
+    with open(hosts_file, 'r') as file:
+        content = file.read()
+        if entry.strip() in content:
+            print(f"The entry '{entry.strip()}' already exists in the hosts file.")
+            return
+
+    with open(hosts_file, 'a') as file:
+        file.write(entry)
+        print(f"Added '{entry.strip()}' to the hosts file.")

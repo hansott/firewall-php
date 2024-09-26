@@ -23,6 +23,7 @@ public:
 
     std::string outgoingRequestUrl;
     std::string outgoingRequestPort;
+    std::string outgoingRequestResolvedIp;
     
     std::string sqlQuery;
     std::string sqlDialect;

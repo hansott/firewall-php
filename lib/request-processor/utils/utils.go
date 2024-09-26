@@ -6,7 +6,6 @@ import (
 	"main/globals"
 	"main/vulnerabilities/sql-injection/dialects"
 	"net"
-	"net/url"
 	"strings"
 )
 
@@ -49,14 +48,6 @@ func FixURL(url string) string {
 		return strings.Replace(url, "http:/", "http://", 1)
 	}
 	return url
-}
-
-func GetDomain(rawurl string) string {
-	parsedURL, err := url.Parse(FixURL(rawurl))
-	if err != nil {
-		return ""
-	}
-	return parsedURL.Hostname()
 }
 
 func ParseFormData(data string, separator string) map[string]interface{} {

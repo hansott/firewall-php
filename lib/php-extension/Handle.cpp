@@ -149,6 +149,9 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			if (eventId != NO_EVENT_ID) {
 				std::string outputEvent;
 				GoRequestProcessorOnEvent(eventId, outputEvent);
+				if (IsBlockingEnabled()) {
+					aikido_execute_output(outputEvent);
+				}
 			}
 		}
 	}

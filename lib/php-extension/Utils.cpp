@@ -271,9 +271,9 @@ const char *get_event_name(EVENT_ID event) {
         case EVENT_PRE_USER:
             return "PreUser";
         case EVENT_PRE_OUTGOING_REQUEST:
-            return "PreOutgoingRequests";
+            return "PreOutgoingRequest";
         case EVENT_POST_OUTGOING_REQUEST:
-            return "PostOutgoingRequests";
+            return "PostOutgoingRequest";
         case EVENT_PRE_SHELL_EXECUTED:
             return "PreShellExecuted";
         case EVENT_PRE_PATH_ACCESSED:
@@ -282,4 +282,30 @@ const char *get_event_name(EVENT_ID event) {
             return "PreSqlQueryExecuted";
     }
     return "Unknown";
+}
+
+std::string aikido_call_user_function_curl_getinfo(zval* curl_handle, int curl_info_option) {
+    zval retval;
+    zval params[2];
+
+    ZVAL_COPY(&params[0], curl_handle);
+    ZVAL_LONG(&params[1], curl_info_option);
+
+    std::string result = "";
+    if (aikido_call_user_function("curl_getinfo", 2, params, &retval)){
+        switch (Z_TYPE(retval)) {
+            case IS_LONG:
+                result = std::to_string(Z_LVAL(retval));
+                break;
+            case IS_STRING:
+                result = Z_STRVAL(retval);
+                break;
+        }
+    }
+    
+    zval_dtor(&params[0]);
+    zval_dtor(&params[1]);
+    zval_dtor(&retval);
+
+    return result;
 }

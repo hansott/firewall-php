@@ -16,22 +16,11 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
         ZEND_PARSE_PARAMETERS_END();
     #endif
 
-	// Prepare parameters for curl_getinfo php call
-	zval retval;
-	zval params[2];
-	ZVAL_COPY(&params[0], curlHandle);
-	ZVAL_LONG(&params[1], CURLINFO_EFFECTIVE_URL);
-
-	// Call curl_getinfo to extract the URL
-	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
-
+	eventCache.outgoingRequestUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
+	if (eventCache.outgoingRequestUrl.empty()) return;
+	
 	eventId = EVENT_PRE_OUTGOING_REQUEST;
 	eventCache.moduleName = "curl";
-	eventCache.outgoingRequestUrl = Z_STRVAL(retval);
-
-	zval_dtor(&retval);
-	zval_dtor(&params[0]);
-	zval_dtor(&params[1]);
 }
 
 
@@ -49,19 +38,8 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
 		ZEND_PARSE_PARAMETERS_END();
 	#endif
 
-	// Prepare parameters for curl_getinfo php call
-	zval retval;
-	zval params[2];
-	ZVAL_COPY(&params[0], curlHandle);
-	ZVAL_LONG(&params[1], CURLINFO_PRIMARY_PORT);
-
-	// Call curl_getinfo to extract the PORT
-	if (!aikido_call_user_function("curl_getinfo", 2, params, &retval)) return;
-
 	eventId = EVENT_POST_OUTGOING_REQUEST;
-	eventCache.outgoingRequestPort = std::to_string(Z_LVAL(retval));
-	
-	zval_dtor(&retval);
-	zval_dtor(&params[0]);
-	zval_dtor(&params[1]);
+	eventCache.moduleName = "curl";
+	eventCache.outgoingRequestResolvedIp = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_IP);
+	eventCache.outgoingRequestPort = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_PORT);
 }

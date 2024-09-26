@@ -5,40 +5,41 @@ import (
 	"main/context"
 	"main/grpc"
 	"main/log"
-	"main/utils"
 	ssrf "main/vulnerabilities/ssrf"
 )
 
 func OnPreFunctionExecutedCurl() string {
-	url := context.GetOutgoingRequestUrl()
+	hostname := context.GetOutgoingRequestHostname()
+	port := context.GetOutgoingRequestPort()
 	operation := context.GetFunctionName()
 
-	if url == "" {
-		return "{}"
-	}
-
-	res := ssrf.CheckContextForSSRF(url, operation)
+	res := ssrf.CheckContextForSSRF(hostname, port, operation)
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
 		return attack.GetAttackDetectedAction(*res)
 	}
 
-	domain := utils.GetDomain(url)
-	log.Info("[BEFORE] Got domain: ", domain)
+	log.Info("[BEFORE] Got domain: ", hostname)
 	//TODO: check if domain is blacklisted
 	return ""
 }
 
 func OnAfterFunctionExecutedCurl() string {
-	url := context.GetOutgoingRequestUrl()
+	hostname := context.GetOutgoingRequestHostname()
 	port := context.GetOutgoingRequestPort()
-	if url == "" {
+	resolvedIp := context.GetOutgoingRequestResolvedIp()
+	if hostname == "" {
 		return ""
 	}
-	domain := utils.GetDomain(url)
-	log.Info("[AFTER] Got domain: ", domain, " port: ", port)
 
-	go grpc.OnDomain(domain, port)
+	log.Info("[AFTER] Got domain: ", hostname, " port: ", port)
 
+	go grpc.OnDomain(hostname, port)
+
+	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)
+	if res != nil {
+		go grpc.OnAttackDetected(*res)
+		return attack.GetAttackDetectedAction(*res)
+	}
 	return ""
 }

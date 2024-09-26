@@ -20,7 +20,9 @@ Zen will autonomously protect your PHP applications from the inside against:
 
 Zen operates autonomously on the same server as your PHP app to:
 
-* ✅ Secure your app like a classic web application firewall (WAF), but with none of the infrastructure or cost.
+✅ Secure your app like a classic web application firewall (WAF), but with none of the infrastructure or cost.
+✅ Rate limit specific API endpoints by IP or by user
+✅ Allow you to block specific users manually
 
 ## Installation
 
@@ -93,10 +95,11 @@ Zen for PHP can do this because the monitored functions are hooked at the PHP-co
 
 ### Outgoing requests libraries
 * ✅ [`cURL`](https://www.php.net/manual/en/book.curl.php)
-* ✅ [`GuzzleHttp`](https://docs.guzzlephp.org/en/stable/)
+  * Including wrappers, when configured to use cURL as adapter:
+    * ✅ [`GuzzleHttp`](https://docs.guzzlephp.org/en/stable/)
+    * ✅ [`HTTP_Request2`](https://pear.php.net/package/http_request2)
+    * ✅ [`Symfony\HTTPClient`](https://symfony.com/doc/current/http_client.html)
 * ✅ [`file_get_contents`](https://www.php.net/manual/en/function.file-get-contents.php)
-* 🚧 [`HTTP_Request2`](https://pear.php.net/package/http_request2)
-* 🚧 [`Symfony\HTTPClient`](https://symfony.com/doc/current/http_client.html)
 
 ## Reporting to your Aikido Security dashboard
 
