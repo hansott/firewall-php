@@ -13,27 +13,24 @@
             "connection": [
                 "keep-alive"
             ],
-            "content_length": [
-                "52"
-            ],
             "content_type": [
                 "application/json"
             ]
         },
+        "body": "{\"url\": \"http://127.0.0.1:8081\"}",
         "source": "php",
         "route": "/testDetection"
     },
     "attack": {
         "kind": "ssrf",
-        "operation": "curl_exec",
-        "module": "curl",
+        "operation": "file_get_contents",
         "blocked": false,
         "source": "body",
         "path": ".url",
-        "stack": "",
+        "payload": "http://127.0.0.1:8081",
         "metadata": {
-            "hostname": "app.example.local",
-            "resolvedIp": "127.0.0.1"
+            "hostname": "127.0.0.1",
+            "port": "8081"
         },
         "user": {
             "id": "12345",

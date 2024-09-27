@@ -6,7 +6,6 @@ import (
 	"main/helpers"
 	"main/log"
 	"main/utils"
-	"net/url"
 	"strconv"
 )
 
@@ -123,30 +122,6 @@ func ContextSetUserId() {
 
 func ContextSetUserName() {
 	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
-}
-
-func ContextSetOutgoingRequestHostnameAndPort() {
-	if Context.OutgoingRequestHostname != nil {
-		return
-	}
-
-	urlStr := Context.Callback(C.OUTGOING_REQUEST_URL)
-	urlParsed, err := url.Parse(urlStr)
-	if err != nil {
-		return
-	}
-	hostnameFromURL := urlParsed.Hostname()
-	portFromURL := helpers.ParsePort(urlParsed.Port())
-
-	Context.OutgoingRequestHostname = &hostnameFromURL
-
-	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
-	port := helpers.ParsePort(portStr)
-	if port != 0 {
-		Context.OutgoingRequestPort = &port
-		return
-	}
-	Context.OutgoingRequestPort = &portFromURL
 }
 
 func ContextSetPartialInterceptorResult(interceptorResult utils.InterceptorResult) {

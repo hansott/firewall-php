@@ -6,6 +6,7 @@ import (
 	"main/helpers"
 	"main/log"
 	"main/utils"
+	"net/url"
 )
 
 type CallbackFunction func(int) string
@@ -132,17 +133,29 @@ func GetUserName() string {
 	return GetFromCache(ContextSetUserName, &Context.UserName)
 }
 
-func GetOutgoingRequestHostname() string {
-	return GetFromCache(ContextSetOutgoingRequestHostnameAndPort, &Context.OutgoingRequestHostname)
-}
+func GetHostNameAndPort(urlCallbackOption int) (string, int) {
+	urlStr := Context.Callback(urlCallbackOption)
+	urlParsed, err := url.Parse(urlStr)
+	if err != nil {
+		return "", 0
+	}
+	hostname := urlParsed.Hostname()
+	portFromURL := helpers.GetPortFromURL(urlParsed)
 
-func GetOutgoingRequestPort() int {
 	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
 	port := helpers.ParsePort(portStr)
-	if port != 0 {
-		return port
+	if port == 0 {
+		port = portFromURL
 	}
-	return GetFromCache(ContextSetOutgoingRequestHostnameAndPort, &Context.OutgoingRequestPort)
+	return hostname, port
+}
+
+func GetOutgoingRequestHostnameAndPort() (string, int) {
+	return GetHostNameAndPort(C.OUTGOING_REQUEST_URL)
+}
+
+func GetOutgoingRequestEffectiveHostnameAndPort() (string, int) {
+	return GetHostNameAndPort(C.OUTGOING_REQUEST_EFFECTIVE_URL)
 }
 
 func GetOutgoingRequestResolvedIp() string {

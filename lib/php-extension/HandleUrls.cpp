@@ -40,6 +40,7 @@ AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
 
 	eventId = EVENT_POST_OUTGOING_REQUEST;
 	eventCache.moduleName = "curl";
-	eventCache.outgoingRequestResolvedIp = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_IP);
+	eventCache.outgoingRequestEffectiveUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
 	eventCache.outgoingRequestPort = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_PORT);
+	eventCache.outgoingRequestResolvedIp = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_IP);
 }

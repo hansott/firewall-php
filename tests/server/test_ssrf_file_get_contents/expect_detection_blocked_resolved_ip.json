@@ -22,8 +22,8 @@
     },
     "attack": {
         "kind": "ssrf",
-        "operation": "curl_exec",
-        "module": "curl",
+        "operation": "file_get_contents",
+        "module": "",
         "blocked": true,
         "source": "body",
         "path": ".url",

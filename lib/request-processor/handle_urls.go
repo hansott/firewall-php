@@ -9,8 +9,7 @@ import (
 )
 
 func OnPreFunctionExecutedCurl() string {
-	hostname := context.GetOutgoingRequestHostname()
-	port := context.GetOutgoingRequestPort()
+	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	operation := context.GetFunctionName()
 
 	res := ssrf.CheckContextForSSRF(hostname, port, operation)
@@ -24,9 +23,9 @@ func OnPreFunctionExecutedCurl() string {
 	return ""
 }
 
-func OnAfterFunctionExecutedCurl() string {
-	hostname := context.GetOutgoingRequestHostname()
-	port := context.GetOutgoingRequestPort()
+func OnPostFunctionExecutedCurl() string {
+	hostname, port := context.GetOutgoingRequestHostnameAndPort()
+	effectiveHostname, effectivePort := context.GetOutgoingRequestEffectiveHostnameAndPort()
 	resolvedIp := context.GetOutgoingRequestResolvedIp()
 	if hostname == "" {
 		return ""
@@ -35,6 +34,11 @@ func OnAfterFunctionExecutedCurl() string {
 	log.Info("[AFTER] Got domain: ", hostname, " port: ", port)
 
 	go grpc.OnDomain(hostname, port)
+	if effectiveHostname != hostname {
+		// After the request was made, if effective hostname is different that the initially requested one (redirects, ...)
+		// than report it also to the agent
+		go grpc.OnDomain(effectiveHostname, effectivePort)
+	}
 
 	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)
 	if res != nil {

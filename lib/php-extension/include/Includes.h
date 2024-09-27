@@ -28,7 +28,7 @@
 
 #include "3rdparty/json.hpp"
 
-    using namespace std;
+using namespace std;
 using json = nlohmann::json;
 
 /* For compatibility with older PHP versions */

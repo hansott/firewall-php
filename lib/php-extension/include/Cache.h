@@ -22,6 +22,7 @@ public:
     std::string cmd;
 
     std::string outgoingRequestUrl;
+    std::string outgoingRequestEffectiveUrl;
     std::string outgoingRequestPort;
     std::string outgoingRequestResolvedIp;
     

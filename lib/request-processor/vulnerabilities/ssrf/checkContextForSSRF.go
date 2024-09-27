@@ -22,9 +22,15 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 
 				if containsPrivateIPAddress(hostname) {
 					return &interceptorResult
-				} else {
-					context.ContextSetPartialInterceptorResult(interceptorResult)
 				}
+
+				resolvedIp := TryResolveHostnameToPrivateIp(hostname)
+				if resolvedIp != "" {
+					interceptorResult.Metadata["resolvedIp"] = resolvedIp
+					return &interceptorResult
+				}
+
+				context.ContextSetPartialInterceptorResult(interceptorResult)
 			}
 		}
 	}
