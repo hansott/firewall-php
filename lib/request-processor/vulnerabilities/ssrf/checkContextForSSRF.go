@@ -2,7 +2,9 @@ package ssrf
 
 import (
 	"main/context"
+	"main/helpers"
 	"main/utils"
+	"net"
 )
 
 func CheckContextForSSRF(hostname string, port int, operation string) *utils.InterceptorResult {
@@ -24,9 +26,10 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 					return &interceptorResult
 				}
 
-				resolvedIp := TryResolveHostnameToPrivateIp(hostname)
-				if resolvedIp != "" {
-					interceptorResult.Metadata["resolvedIp"] = resolvedIp
+				resolvedIps, _ := net.LookupHost(hostname)
+				resolvedPrivateIp := helpers.TryGetResolvedPrivateIp(resolvedIps)
+				if resolvedPrivateIp != "" {
+					interceptorResult.Metadata["resolvedIp"] = resolvedPrivateIp
 					return &interceptorResult
 				}
 
