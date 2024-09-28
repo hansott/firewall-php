@@ -5,6 +5,7 @@ import (
 	"main/context"
 	"main/grpc"
 	"main/log"
+	"main/utils"
 	ssrf "main/vulnerabilities/ssrf"
 )
 
@@ -33,14 +34,19 @@ func OnPostFunctionExecutedCurl() string {
 
 	log.Info("[AFTER] Got domain: ", hostname, " port: ", port)
 
+	var res *utils.InterceptorResult = nil
 	go grpc.OnDomain(hostname, port)
 	if effectiveHostname != hostname {
 		// After the request was made, if effective hostname is different that the initially requested one (redirects, ...)
-		// than report it also to the agent
+		// -> check for SSRF
+		// -> report it to the agent
+		res = ssrf.CheckEffectiveHostnameForSSRF(effectiveHostname)
 		go grpc.OnDomain(effectiveHostname, effectivePort)
 	}
 
-	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)
+	if res == nil {
+		res = ssrf.CheckResolvedIpForSSRF(resolvedIp)
+	}
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
 		return attack.GetAttackDetectedAction(*res)

@@ -4,7 +4,6 @@ import (
 	"main/context"
 	"main/helpers"
 	"main/utils"
-	"net"
 )
 
 func CheckContextForSSRF(hostname string, port int, operation string) *utils.InterceptorResult {
@@ -26,8 +25,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 					return &interceptorResult
 				}
 
-				resolvedIps, _ := net.LookupHost(hostname)
-				resolvedPrivateIp := helpers.TryGetResolvedPrivateIp(resolvedIps)
+				resolvedPrivateIp := helpers.TryResolveToPrivateIp(hostname)
 				if resolvedPrivateIp != "" {
 					interceptorResult.Metadata["resolvedIp"] = resolvedPrivateIp
 					return &interceptorResult
@@ -40,11 +38,37 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 	return nil
 }
 
+func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorResult {
+	interceptorResult := context.GetPartialInterceptorResult()
+	if interceptorResult == nil {
+		// The initially requested hostname was not found in the user input -> no SSRF
+		return nil
+	}
+
+	resolvedPrivateIp := helpers.TryResolveToPrivateIp(effectiveHostname)
+	if resolvedPrivateIp == "" {
+		// Effective hostname did not resolve to private IP -> no SSRF
+		return nil
+	}
+
+	// After redirects the effective hostname resolved to a private IP -> SSRF
+	interceptorResult.Metadata["effectiveHostname"] = effectiveHostname
+	interceptorResult.Metadata["resolvedIp"] = resolvedPrivateIp
+	return interceptorResult
+}
+
 func CheckResolvedIpForSSRF(resolvedIp string) *utils.InterceptorResult {
 	interceptorResult := context.GetPartialInterceptorResult()
-	if interceptorResult != nil && isPrivateIP(resolvedIp) {
-		interceptorResult.Metadata["resolvedIp"] = resolvedIp
-		return interceptorResult
+	if interceptorResult == nil {
+		// The initially requested hostname was not found in the user input -> no SSRF
+		return nil
 	}
-	return nil
+
+	if !isPrivateIP(resolvedIp) {
+		// The resolved IP address is not private -> no SSRF
+		return nil
+	}
+
+	interceptorResult.Metadata["resolvedIp"] = resolvedIp
+	return interceptorResult
 }
