@@ -23,10 +23,12 @@
     },
     "attack": {
         "kind": "ssrf",
-        "operation": "file_get_contents",
+        "operation": "curl_exec",
+        "module": "curl",
         "blocked": false,
         "source": "body",
         "path": ".url",
+        "stack": "",
         "payload": "http://127.0.0.1:8081",
         "metadata": {
             "hostname": "127.0.0.1",

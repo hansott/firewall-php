@@ -17,22 +17,20 @@
                 "application/json"
             ]
         },
-        "body": "{\"url\": \"http://127.0.0.1:8081\"}",
         "source": "php",
         "route": "/testDetection"
     },
     "attack": {
         "kind": "ssrf",
-        "operation": "file_get_contents",
-        "module": "",
+        "operation": "curl_exec",
+        "module": "curl",
         "blocked": true,
         "source": "body",
         "path": ".url",
         "stack": "",
-        "payload": "http://127.0.0.1:8081",
         "metadata": {
-            "hostname": "127.0.0.1",
-            "port": "8081"
+            "hostname": "app.example.local",
+            "resolvedIp": "127.0.0.1"
         },
         "user": {
             "id": "12345",
