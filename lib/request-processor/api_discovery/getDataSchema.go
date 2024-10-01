@@ -1,0 +1,67 @@
+package api_discovery
+
+import (
+	. "main/aikido_types"
+	"reflect"
+)
+
+const maxDepth = 20
+const maxProperties = 100
+
+// GetDataSchema returns the schema of the given data as a DataSchema
+func GetDataSchema(data interface{}, depth int) *DataSchema {
+	// If the data is not an object (or an array), return the type
+	if data == nil {
+		return &DataSchema{Type: "null"}
+	}
+
+	dataType := reflect.TypeOf(data)
+
+	switch dataType.Kind() {
+	case reflect.Slice, reflect.Array:
+		// If the data is an array/slice, return an array schema
+		v := reflect.ValueOf(data)
+		if v.Len() > 0 {
+			return &DataSchema{
+				Type:  "array",
+				Items: GetDataSchema(v.Index(0).Interface(), depth+1),
+			}
+		} else {
+			return &DataSchema{Type: "array"}
+		}
+	case reflect.Map:
+		// Create an object schema with properties
+		schema := DataSchema{
+			Type:       "object",
+			Properties: make(map[string]*DataSchema),
+		}
+
+		// Traverse properties if within depth
+		if depth < maxDepth {
+			keys := reflect.ValueOf(data).MapKeys()
+			for i, key := range keys {
+				if i >= maxProperties {
+					break
+				}
+				value := reflect.ValueOf(data).MapIndex(key).Interface()
+				schema.Properties[key.String()] = GetDataSchema(value, depth+1)
+			}
+		}
+
+		return &schema
+
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return &DataSchema{Type: "number"}
+
+	case reflect.Float32, reflect.Float64:
+		return &DataSchema{Type: "number"}
+
+	case reflect.Bool:
+		return &DataSchema{Type: "boolean"}
+
+	default:
+		// If the data is not an object or array, return its type
+		return &DataSchema{Type: dataType.Kind().String()}
+	}
+}

@@ -12,29 +12,30 @@ import (
 type CallbackFunction func(int) string
 
 type ContextData struct {
-	Callback                  CallbackFunction
-	Method                    *string
-	Route                     *string
-	RouteParsed               *string
-	URL                       *string
-	StatusCode                *int
-	IP                        *string
-	IsIpBypassed              *bool
-	UserAgent                 *string
-	UserId                    *string
-	UserName                  *string
-	Body                      *string
-	BodyParsed                *map[string]string
-	Query                     *string
-	QueryParsed               *map[string]string
-	Cookies                   *string
-	CookiesParsed             *map[string]string
-	Headers                   *map[string]interface{}
-	HeadersParsed             *map[string]string
-	OutgoingRequestHostname   *string
-	OutgoingRequestPort       *int
-	OutgoingRequestResolvedIp *string
-	PartialInterceptorResult  *utils.InterceptorResult
+	Callback                       CallbackFunction
+	Method                         *string
+	Route                          *string
+	RouteParsed                    *string
+	URL                            *string
+	StatusCode                     *int
+	IP                             *string
+	IsIpBypassed                   *bool
+	UserAgent                      *string
+	UserId                         *string
+	UserName                       *string
+	BodyRaw                        *string
+	BodyParsed                     *map[string]interface{}
+	BodyParsedWithPathToPayload    *map[string]string
+	QueryParsed                    *map[string]interface{}
+	QueryParsedWithPathToPayload   *map[string]string
+	CookiesParsed                  *map[string]interface{}
+	CookiesParsedWithPathToPayload *map[string]string
+	HeadersParsed                  *map[string]interface{}
+	HeadersParsedWithPathToPayload *map[string]string
+	OutgoingRequestHostname        *string
+	OutgoingRequestPort            *int
+	OutgoingRequestResolvedIp      *string
+	PartialInterceptorResult       *utils.InterceptorResult
 }
 
 var Context ContextData
@@ -89,36 +90,40 @@ func IsIpBypassed() bool {
 	return GetFromCache(ContextSetIsIpBypassed, &Context.IsIpBypassed)
 }
 
-func GetBody() string {
-	return GetFromCache(ContextSetBody, &Context.Body)
+func GetBodyRaw() string {
+	return GetFromCache(ContextSetBody, &Context.BodyRaw)
 }
 
-func GetParsedBody() map[string]string {
+func GetBodyParsed() map[string]interface{} {
 	return GetFromCache(ContextSetBody, &Context.BodyParsed)
 }
 
-func GetQuery() string {
-	return GetFromCache(ContextSetQuery, &Context.Query)
-}
-
-func GetParsedQuery() map[string]string {
+func GetQueryParsed() map[string]interface{} {
 	return GetFromCache(ContextSetQuery, &Context.QueryParsed)
 }
 
-func GetCookies() string {
-	return GetFromCache(ContextSetCookies, &Context.Cookies)
-}
-
-func GetParsedCookies() map[string]string {
+func GetCookiesParsed() map[string]interface{} {
 	return GetFromCache(ContextSetCookies, &Context.CookiesParsed)
 }
 
-func GetHeaders() map[string]interface{} {
-	return GetFromCache(ContextSetHeaders, &Context.Headers)
+func GetHeadersParsed() map[string]interface{} {
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
 }
 
-func GetParsedHeaders() map[string]string {
-	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
+func GetBodyParsedWithPathToPayload() map[string]string {
+	return GetFromCache(ContextSetBody, &Context.BodyParsedWithPathToPayload)
+}
+
+func GetQueryParsedWithPathToPayload() map[string]string {
+	return GetFromCache(ContextSetQuery, &Context.QueryParsedWithPathToPayload)
+}
+
+func GetCookiesParsedWithPathToPayload() map[string]string {
+	return GetFromCache(ContextSetCookies, &Context.CookiesParsedWithPathToPayload)
+}
+
+func GetHeadersParsedWithPathToPayload() map[string]string {
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsedWithPathToPayload)
 }
 
 func GetUserAgent() string {

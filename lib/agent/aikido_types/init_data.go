@@ -18,6 +18,7 @@ type EnvironmentConfigData struct {
 	ConfigEndpoint            string `json:"config_endpoint,omitempty"`              // default: 'https://runtime.aikido.dev/'
 	Blocking                  bool   `json:"blocking,omitempty"`                     // default: false
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"` // default: true
+	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: false
 }
 
 type RateLimiting struct {

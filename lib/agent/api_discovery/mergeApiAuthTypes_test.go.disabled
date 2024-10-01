@@ -1,0 +1,73 @@
+package api_discovery
+
+import (
+	. "main/aikido_types"
+	"main/utils"
+	"reflect"
+	"testing"
+)
+
+// TestMergeApiAuthTypes tests the mergeApiAuthTypes function.
+func TestMergeApiAuthTypes(t *testing.T) {
+	// Test case 1: Merge two valid arrays
+	result := mergeApiAuthTypes(
+		[]APIAuthType{
+			{Type: "http", Scheme: utils.StringPointer("bearer")},
+			{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
+		},
+		[]APIAuthType{
+			{Type: "http", Scheme: utils.StringPointer("bearer")},
+			{Type: "http", Scheme: utils.StringPointer("basic")},
+			{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key-v2")},
+		},
+	)
+
+	expected := []APIAuthType{
+		{Type: "http", Scheme: utils.StringPointer("bearer")},
+		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
+		{Type: "http", Scheme: utils.StringPointer("basic")},
+		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key-v2")},
+	}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+
+	// Test case 2: Both arguments are nil, should return nil
+	result = mergeApiAuthTypes(nil, nil)
+	if result != nil {
+		t.Errorf("Expected nil, but got %v", result)
+	}
+
+	// Test case 3: Existing array is provided, newAuth is nil
+	result = mergeApiAuthTypes(
+		[]APIAuthType{
+			{Type: "http", Scheme: utils.StringPointer("bearer")},
+		},
+		nil,
+	)
+
+	expected = []APIAuthType{
+		{Type: "http", Scheme: utils.StringPointer("bearer")},
+	}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+
+	// Test case 4: Existing array is nil, newAuth is provided
+	result = mergeApiAuthTypes(
+		nil,
+		[]APIAuthType{
+			{Type: "http", Scheme: utils.StringPointer("digest")},
+		},
+	)
+
+	expected = []APIAuthType{
+		{Type: "http", Scheme: utils.StringPointer("digest")},
+	}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}

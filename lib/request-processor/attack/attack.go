@@ -19,7 +19,7 @@ func GetMetadataProto(metadata map[string]string) []*protos.Metadata {
 /* Convert headers map to protobuf structure to be sent via gRPC to the Agent */
 func GetHeadersProto() []*protos.Header {
 	var headersProto []*protos.Header
-	for key, value := range context.GetHeaders() {
+	for key, value := range context.GetHeadersParsed() {
 		valueStr, ok := value.(string)
 		if ok {
 			headersProto = append(headersProto, &protos.Header{Key: key, Value: valueStr})
@@ -37,7 +37,7 @@ func GetAttackDetectedProto(res utils.InterceptorResult) protos.AttackDetected {
 			UserAgent: context.GetUserAgent(),
 			Url:       context.GetUrl(),
 			Headers:   GetHeadersProto(),
-			Body:      context.GetBody(),
+			Body:      context.GetBodyRaw(),
 			Source:    "php",
 			Route:     context.GetRoute(),
 		},
