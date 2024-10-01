@@ -21,6 +21,7 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "http", Scheme: utils.StringPointer("bearer")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
@@ -30,12 +31,7 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "http", Scheme: utils.StringPointer("basic")},
 	}, GetApiAuthType())
-
-	context.LoadForUnitTests(map[string]string{
-		"headers": context.GetJsonString(map[string]interface{}{
-			"authorization": "Basic base64",
-		}),
-	})
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
@@ -45,6 +41,7 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("Authorization")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 }
 
 // Test for detecting API keys
@@ -59,6 +56,7 @@ func TestDetectApiKeys(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
@@ -68,6 +66,7 @@ func TestDetectApiKeys(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("api-key")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 }
 
 // Test for detecting auth cookies
@@ -80,6 +79,7 @@ func TestDetectAuthCookies(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "apiKey", In: utils.StringPointer("cookie"), Name: utils.StringPointer("api-key")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"cookies": "session=test",
@@ -87,6 +87,7 @@ func TestDetectAuthCookies(t *testing.T) {
 	assert.Equal([]APIAuthType{
 		{Type: "apiKey", In: utils.StringPointer("cookie"), Name: utils.StringPointer("session")},
 	}, GetApiAuthType())
+	context.UnloadForUnitTests()
 }
 
 // Test for no authentication
@@ -95,11 +96,13 @@ func TestNoAuth(t *testing.T) {
 
 	context.LoadForUnitTests(map[string]string{})
 	assert.Empty(GetApiAuthType())
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{}),
 	})
 	assert.Empty(GetApiAuthType())
+	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
@@ -107,4 +110,5 @@ func TestNoAuth(t *testing.T) {
 		}),
 	})
 	assert.Empty(GetApiAuthType())
+	context.UnloadForUnitTests()
 }

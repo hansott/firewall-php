@@ -44,6 +44,10 @@ func LoadForUnitTests(context map[string]string) {
 	TestContext = context
 }
 
+func UnloadForUnitTests() {
+	Context = ContextData{}
+}
+
 func GetJsonString(m map[string]interface{}) string {
 	jsonStr, err := json.Marshal(m)
 	if err != nil {

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	. "main/aikido_types"
+	"main/api_discovery"
 	"main/context"
 	"main/grpc"
 	"main/log"
@@ -58,23 +60,23 @@ func OnRequestInit() string {
 	return "{}"
 }
 
-func OnRequestShutdownReporting(method string, route string, status_code int) {
-	if method == "" || route == "" || status_code == 0 {
+func OnRequestShutdownReporting(method string, route string, statusCode int, apiSpec *APISpec) {
+	if method == "" || route == "" || statusCode == 0 {
 		return
 	}
 
-	log.Info("[RSHUTDOWN] Got request metadata: ", method, " ", route, " ", status_code)
+	log.Info("[RSHUTDOWN] Got request metadata: ", method, " ", route, " ", statusCode)
 
 	route = context.GetParsedRoute()
 
-	if !utils.ShouldDiscoverRoute(status_code, route, method) {
+	if !utils.ShouldDiscoverRoute(statusCode, route, method) {
 		return
 	}
 
-	go grpc.OnRequestShutdown(method, route, status_code, 10*time.Millisecond)
+	go grpc.OnRequestShutdown(method, route, statusCode, 10*time.Millisecond)
 }
 
 func OnRequestShutdown() string {
-	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode())
+	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode(), api_discovery.GetApiInfo())
 	return ""
 }

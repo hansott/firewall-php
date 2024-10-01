@@ -19,20 +19,18 @@ type APIAuthType struct {
 type DataSchema struct {
 	Type       string                 `json:"type"`                 // Type of this property, e.g., "string", "number", "object", "array", "null"
 	Properties map[string]*DataSchema `json:"properties,omitempty"` // Map of properties for an object containing the DataSchema for each property
-
-	// Data schema for the items of an array
-	Items *DataSchema `json:"items,omitempty"`
-}
-
-type APISpec struct {
-	Body  *APIBodyInfo
-	Query *DataSchema
-	Auth  []APIAuthType
+	Items      *DataSchema            `json:"items,omitempty"`      // Data schema for the items of an array
 }
 
 type APIBodyInfo struct {
-	Type   string
-	Schema *DataSchema
+	Type   string      `json:"type"`
+	Schema *DataSchema `json:"schema,omitempty"`
+}
+
+type APISpec struct {
+	Body  *APIBodyInfo  `json:"body,omitempty"`
+	Query *DataSchema   `json:"query,omitempty"`
+	Auth  []APIAuthType `json:"auth,omitempty"`
 }
 
 const (

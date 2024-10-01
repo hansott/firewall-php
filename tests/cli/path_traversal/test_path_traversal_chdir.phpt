@@ -12,7 +12,7 @@ $_SERVER['HTTP_USER'] = '../file';
 
 $file = '../file/test.txt';
     
-chdir($file, 0);
+chdir($file);
 
 ?>
 

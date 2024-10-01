@@ -20,6 +20,10 @@ import (
 type ParseFunction func(string) map[string]interface{}
 
 func ContextSetMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
+	if stringsPtr != nil && *stringsPtr != nil {
+		return
+	}
+
 	contextData := Context.Callback(contextId)
 	if rawDataPtr != nil {
 		*rawDataPtr = &contextData

@@ -6,13 +6,9 @@ import (
 	"main/globals"
 )
 
-/**
- * Get body data type and schema from context.
- * Returns nil if the body is not an object or if the body type could not be determined.
- */
-func GetApiInfo() (*APISpec, error) {
+func GetApiInfo() *APISpec {
 	if !globals.EnvironmentConfig.CollectApiSchema {
-		return nil, nil
+		return nil
 	}
 
 	var bodyInfo *APIBodyInfo
@@ -26,7 +22,7 @@ func GetApiInfo() (*APISpec, error) {
 	if body != nil && isObject(body) && len(body) > 0 {
 		bodyType := getBodyDataType(headers)
 		if bodyType == Undefined {
-			return nil, nil
+			return nil
 		}
 
 		bodySchema := GetDataSchema(body, 0)
@@ -39,22 +35,21 @@ func GetApiInfo() (*APISpec, error) {
 
 	// Check query data
 	if query != nil && isObject(query) && len(query) > 0 {
-		querySchema := GetDataSchema(query, 0)
-		queryInfo = querySchema
+		queryInfo = GetDataSchema(query, 0)
 	}
 
 	// Get Auth Info
 	authInfo := GetApiAuthType()
 
 	if bodyInfo == nil && queryInfo == nil && authInfo == nil {
-		return nil, nil
+		return nil
 	}
 
 	return &APISpec{
 		Body:  bodyInfo,
 		Query: queryInfo,
 		Auth:  authInfo,
-	}, nil
+	}
 }
 
 func isObject(data interface{}) bool {
