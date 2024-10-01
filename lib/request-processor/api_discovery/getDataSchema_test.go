@@ -21,31 +21,31 @@ func compareSchemas(t *testing.T, got, expected *protos.DataSchema) {
 func TestGetDataSchema(t *testing.T) {
 	t.Run("it works", func(t *testing.T) {
 		compareSchemas(t, GetDataSchema("test", 0), &protos.DataSchema{
-			Type: "string",
+			Type: []string{"string"},
 		})
 
 		compareSchemas(t, GetDataSchema([]string{"test"}, 0), &protos.DataSchema{
-			Type: "array",
+			Type: []string{"array"},
 			Items: &protos.DataSchema{
-				Type: "string",
+				Type: []string{"string"},
 			},
 		})
 
 		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": "abc"}, 0), &protos.DataSchema{
-			Type: "object",
+			Type: []string{"object"},
 			Properties: map[string]*protos.DataSchema{
-				"test": {Type: "string"},
+				"test": {Type: []string{"string"}},
 			},
 		})
 
 		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": 123, "arr": []int{1, 2, 3}}, 0), &protos.DataSchema{
-			Type: "object",
+			Type: []string{"object"},
 			Properties: map[string]*protos.DataSchema{
-				"test": {Type: "number"},
+				"test": {Type: []string{"number"}},
 				"arr": {
-					Type: "array",
+					Type: []string{"array"},
 					Items: &protos.DataSchema{
-						Type: "number",
+						Type: []string{"number"},
 					},
 				},
 			},
@@ -56,19 +56,19 @@ func TestGetDataSchema(t *testing.T) {
 			"arr":  []interface{}{map[string]interface{}{"sub": true}},
 			"x":    nil,
 		}, 0), &protos.DataSchema{
-			Type: "object",
+			Type: []string{"object"},
 			Properties: map[string]*protos.DataSchema{
-				"test": {Type: "number"},
+				"test": {Type: []string{"number"}},
 				"arr": {
-					Type: "array",
+					Type: []string{"array"},
 					Items: &protos.DataSchema{
-						Type: "object",
+						Type: []string{"object"},
 						Properties: map[string]*protos.DataSchema{
-							"sub": {Type: "boolean"},
+							"sub": {Type: []string{"boolean"}},
 						},
 					},
 				},
-				"x": {Type: "null"},
+				"x": {Type: []string{"null"}},
 			},
 		})
 
@@ -82,18 +82,18 @@ func TestGetDataSchema(t *testing.T) {
 			},
 			"arr": []interface{}{},
 		}, 0), &protos.DataSchema{
-			Type: "object",
+			Type: []string{"object"},
 			Properties: map[string]*protos.DataSchema{
 				"test": {
-					Type: "object",
+					Type: []string{"object"},
 					Properties: map[string]*protos.DataSchema{
 						"x": {
-							Type: "object",
+							Type: []string{"object"},
 							Properties: map[string]*protos.DataSchema{
 								"y": {
-									Type: "object",
+									Type: []string{"object"},
 									Properties: map[string]*protos.DataSchema{
-										"z": {Type: "number"},
+										"z": {Type: []string{"number"}},
 									},
 								},
 							},
@@ -101,7 +101,7 @@ func TestGetDataSchema(t *testing.T) {
 					},
 				},
 				"arr": {
-					Type:  "array",
+					Type:  []string{"array"},
 					Items: nil,
 				},
 			},
@@ -123,15 +123,15 @@ func TestGetDataSchema(t *testing.T) {
 		obj := generateTestObjectWithDepth(10)
 		schema := GetDataSchema(obj, 0)
 		schemaJson, _ := json.Marshal(schema)
-		if !json.Valid([]byte(schemaJson)) || !strings.Contains(string(schemaJson), `"type":"string"`) {
-			t.Error("Expected schema to contain 'type: string'")
+		if !json.Valid([]byte(schemaJson)) || !strings.Contains(string(schemaJson), `"type":["string"]`) {
+			t.Errorf("Expected schema to contain 'type: string'! Got %s", string(schemaJson))
 		}
 
 		obj2 := generateTestObjectWithDepth(21)
 		schema2 := GetDataSchema(obj2, 0)
 		schema2Json, _ := json.Marshal(schema2)
 		schema2JsonStr := string(schema2Json)
-		if strings.Contains(schema2JsonStr, `"type":"string"`) {
+		if strings.Contains(schema2JsonStr, `"type":["string"]`) {
 			t.Errorf("Expected schema to not contain 'type: string' for depth beyond limit! Got %s", schema2JsonStr)
 		}
 	})

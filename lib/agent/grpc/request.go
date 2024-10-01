@@ -2,6 +2,7 @@ package grpc
 
 import (
 	. "main/aikido_types"
+	"main/api_discovery"
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
@@ -15,17 +16,24 @@ func storeStats() {
 	globals.StatsData.Requests += 1
 }
 
-func storeRoute(method string, route string) {
+func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
 
-	if _, ok := globals.Routes[method]; !ok {
-		globals.Routes[method] = make(map[string]int)
+	if _, ok := globals.Routes[route]; !ok {
+		globals.Routes[route] = make(map[string]*Route)
 	}
-	if _, ok := globals.Routes[method][route]; !ok {
-		globals.Routes[method][route] = 0
+	routeData, ok := globals.Routes[route][method]
+	if !ok {
+		routeData = &Route{Path: route, Method: method}
+		globals.Routes[route][method] = routeData
 	}
-	globals.Routes[method][route]++
+
+	routeData.Hits++
+
+	routeData.ApiSpec.Body.Schema = api_discovery.MergeDataSchemas(routeData.ApiSpec.Body.Schema, apiSpec.Body.Schema)
+	routeData.ApiSpec.Query = api_discovery.MergeDataSchemas(routeData.ApiSpec.Query, apiSpec.Query)
+	routeData.ApiSpec.Auth = api_discovery.MergeApiAuthTypes(routeData.ApiSpec.Auth, apiSpec.Auth)
 }
 
 func updateRateLimitingStatus(method string, route string) {

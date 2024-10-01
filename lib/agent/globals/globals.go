@@ -25,7 +25,7 @@ var HostnamesMutex sync.Mutex
 
 // List of routes and their methods and count of calls collect from the extensions
 // [method][route] = hits
-var Routes = make(map[string]map[string]int)
+var Routes = make(map[string]map[string]*Route)
 
 // Routes mutex used to sync access to routes data across the go routines
 var RoutesMutex sync.Mutex

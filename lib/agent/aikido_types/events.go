@@ -1,5 +1,7 @@
 package aikido_types
 
+import "main/ipc/protos"
+
 type OsInfo struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
@@ -16,9 +18,10 @@ type Hostname struct {
 }
 
 type Route struct {
-	Path   string `json:"path"`
-	Method string `json:"method"`
-	Hits   int64  `json:"count"`
+	Path    string          `json:"path"`
+	Method  string          `json:"method"`
+	Hits    int64           `json:"count"`
+	ApiSpec *protos.APISpec `json:"apispec"`
 }
 
 type User struct {

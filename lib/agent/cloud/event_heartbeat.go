@@ -27,13 +27,16 @@ func GetRoutesAndClear() []Route {
 	defer globals.RoutesMutex.Unlock()
 
 	var routes []Route
-	for method, routeMap := range globals.Routes {
-		for route, hits := range routeMap {
-			routes = append(routes, Route{Path: route, Method: method, Hits: int64(hits)})
+	for _, methodsMap := range globals.Routes {
+		for _, routeData := range methodsMap {
+			if routeData.Hits == 0 {
+				continue
+			}
+			routes = append(routes, *routeData)
+			routeData.Hits = 0
 		}
 	}
 
-	globals.Routes = make(map[string]map[string]int)
 	return routes
 }
 

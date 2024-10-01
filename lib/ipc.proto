@@ -109,18 +109,17 @@ message APIAuthType {
 }
 
 message DataSchema {
-  string type = 1;
+  repeated string type = 1;
   map<string, DataSchema> properties = 2;
   DataSchema items = 3;
+  optional bool optional = 4;
 }
 
-// Define the APIBodyInfo message
 message APIBodyInfo {
   string type = 1;
-  DataSchema schema = 2; // Optional schema
+  DataSchema schema = 2;
 }
 
-// Define the APISpec message
 message APISpec {
   APIBodyInfo body = 1;
   DataSchema query = 2;
