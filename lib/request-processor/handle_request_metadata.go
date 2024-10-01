@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	. "main/aikido_types"
 	"main/api_discovery"
 	"main/context"
 	"main/grpc"
+	"main/ipc/protos"
 	"main/log"
 	"main/utils"
 	"time"
@@ -60,7 +60,7 @@ func OnRequestInit() string {
 	return "{}"
 }
 
-func OnRequestShutdownReporting(method string, route string, statusCode int, apiSpec *APISpec) {
+func OnRequestShutdownReporting(method string, route string, statusCode int, apiSpec *protos.APISpec) {
 	if method == "" || route == "" || statusCode == 0 {
 		return
 	}
@@ -73,7 +73,7 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, api
 		return
 	}
 
-	go grpc.OnRequestShutdown(method, route, statusCode, 10*time.Millisecond)
+	go grpc.OnRequestShutdown(method, route, statusCode, 10*time.Millisecond, apiSpec)
 }
 
 func OnRequestShutdown() string {

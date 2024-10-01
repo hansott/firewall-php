@@ -3,13 +3,13 @@ package api_discovery
 import (
 	"encoding/json"
 	"fmt"
-	. "main/aikido_types"
+	"main/ipc/protos"
 	"strings"
 	"testing"
 )
 
 // Helper function for comparing two DataSchema structs
-func compareSchemas(t *testing.T, got, expected *DataSchema) {
+func compareSchemas(t *testing.T, got, expected *protos.DataSchema) {
 	gotJson, _ := json.Marshal(got)
 	expectedJson, _ := json.Marshal(expected)
 
@@ -20,31 +20,31 @@ func compareSchemas(t *testing.T, got, expected *DataSchema) {
 
 func TestGetDataSchema(t *testing.T) {
 	t.Run("it works", func(t *testing.T) {
-		compareSchemas(t, GetDataSchema("test", 0), &DataSchema{
+		compareSchemas(t, GetDataSchema("test", 0), &protos.DataSchema{
 			Type: "string",
 		})
 
-		compareSchemas(t, GetDataSchema([]string{"test"}, 0), &DataSchema{
+		compareSchemas(t, GetDataSchema([]string{"test"}, 0), &protos.DataSchema{
 			Type: "array",
-			Items: &DataSchema{
+			Items: &protos.DataSchema{
 				Type: "string",
 			},
 		})
 
-		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": "abc"}, 0), &DataSchema{
+		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": "abc"}, 0), &protos.DataSchema{
 			Type: "object",
-			Properties: map[string]*DataSchema{
+			Properties: map[string]*protos.DataSchema{
 				"test": {Type: "string"},
 			},
 		})
 
-		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": 123, "arr": []int{1, 2, 3}}, 0), &DataSchema{
+		compareSchemas(t, GetDataSchema(map[string]interface{}{"test": 123, "arr": []int{1, 2, 3}}, 0), &protos.DataSchema{
 			Type: "object",
-			Properties: map[string]*DataSchema{
+			Properties: map[string]*protos.DataSchema{
 				"test": {Type: "number"},
 				"arr": {
 					Type: "array",
-					Items: &DataSchema{
+					Items: &protos.DataSchema{
 						Type: "number",
 					},
 				},
@@ -55,15 +55,15 @@ func TestGetDataSchema(t *testing.T) {
 			"test": 123,
 			"arr":  []interface{}{map[string]interface{}{"sub": true}},
 			"x":    nil,
-		}, 0), &DataSchema{
+		}, 0), &protos.DataSchema{
 			Type: "object",
-			Properties: map[string]*DataSchema{
+			Properties: map[string]*protos.DataSchema{
 				"test": {Type: "number"},
 				"arr": {
 					Type: "array",
-					Items: &DataSchema{
+					Items: &protos.DataSchema{
 						Type: "object",
-						Properties: map[string]*DataSchema{
+						Properties: map[string]*protos.DataSchema{
 							"sub": {Type: "boolean"},
 						},
 					},
@@ -81,18 +81,18 @@ func TestGetDataSchema(t *testing.T) {
 				},
 			},
 			"arr": []interface{}{},
-		}, 0), &DataSchema{
+		}, 0), &protos.DataSchema{
 			Type: "object",
-			Properties: map[string]*DataSchema{
+			Properties: map[string]*protos.DataSchema{
 				"test": {
 					Type: "object",
-					Properties: map[string]*DataSchema{
+					Properties: map[string]*protos.DataSchema{
 						"x": {
 							Type: "object",
-							Properties: map[string]*DataSchema{
+							Properties: map[string]*protos.DataSchema{
 								"y": {
 									Type: "object",
-									Properties: map[string]*DataSchema{
+									Properties: map[string]*protos.DataSchema{
 										"z": {Type: "number"},
 									},
 								},

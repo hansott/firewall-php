@@ -29,6 +29,7 @@ message RequestMetadataShutdown {
   string method = 1;
   string route = 2;
   int32 statusCode = 3;
+  APISpec apiSpec = 4;
 }
 
 message RateLimiting {
@@ -97,4 +98,31 @@ message Attack {
 message AttackDetected {
   Request request = 1;
   Attack attack = 2;
+}
+
+message APIAuthType {
+	string type = 1;
+	string scheme = 2;
+	string in = 3;
+	string name = 4;
+	string bearerFormat = 5;
+}
+
+message DataSchema {
+  string type = 1;
+  map<string, DataSchema> properties = 2;
+  DataSchema items = 3;
+}
+
+// Define the APIBodyInfo message
+message APIBodyInfo {
+  string type = 1;
+  DataSchema schema = 2; // Optional schema
+}
+
+// Define the APISpec message
+message APISpec {
+  APIBodyInfo body = 1;
+  DataSchema query = 2;
+  repeated APIAuthType auth = 3;
 }

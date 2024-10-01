@@ -78,7 +78,7 @@ func OnRequestInit(method string, route string, timeout time.Duration) bool {
 }
 
 /* Send request metadata (route, method & status code) to Aikido Agent via gRPC */
-func OnRequestShutdown(method string, route string, statusCode int, timeout time.Duration) {
+func OnRequestShutdown(method string, route string, statusCode int, timeout time.Duration, apiSpec *protos.APISpec) {
 	if client == nil {
 		return
 	}
@@ -86,7 +86,7 @@ func OnRequestShutdown(method string, route string, statusCode int, timeout time
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode)})
+	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode), ApiSpec: apiSpec})
 	if err != nil {
 		log.Warnf("Could not send request metadata %v %v %v: %v", method, route, statusCode, err)
 		return

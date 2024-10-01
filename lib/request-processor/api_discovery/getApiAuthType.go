@@ -1,9 +1,8 @@
 package api_discovery
 
 import (
-	. "main/aikido_types"
 	"main/context"
-	"main/utils"
+	"main/ipc/protos"
 	"strings"
 )
 
@@ -30,8 +29,8 @@ var commonAuthCookieNames = append([]string{
 
 // GetApiAuthType returns the authentication type of the API request.
 // Returns nil if the authentication type could not be determined.
-func GetApiAuthType() []APIAuthType {
-	var result []APIAuthType
+func GetApiAuthType() []*protos.APIAuthType {
+	var result []*protos.APIAuthType
 
 	headers := context.GetHeadersParsed()
 
@@ -40,7 +39,7 @@ func GetApiAuthType() []APIAuthType {
 	if authHeaderExists {
 		authHeaderType := getAuthorizationHeaderType(authHeader)
 		if authHeaderType != nil {
-			result = append(result, *authHeaderType)
+			result = append(result, authHeaderType)
 		}
 	}
 
@@ -49,7 +48,7 @@ func GetApiAuthType() []APIAuthType {
 }
 
 // getAuthorizationHeaderType returns the authentication type from the Authorization header.
-func getAuthorizationHeaderType(authHeader string) *APIAuthType {
+func getAuthorizationHeaderType(authHeader string) *protos.APIAuthType {
 	if len(authHeader) == 0 {
 		return nil
 	}
@@ -59,9 +58,9 @@ func getAuthorizationHeaderType(authHeader string) *APIAuthType {
 			authType := parts[0]
 			if isHTTPAuthScheme(authType) {
 				scheme := strings.ToLower(authType)
-				return &APIAuthType{
+				return &protos.APIAuthType{
 					Type:   "http",
-					Scheme: &scheme,
+					Scheme: scheme,
 				}
 			}
 		}
@@ -69,25 +68,25 @@ func getAuthorizationHeaderType(authHeader string) *APIAuthType {
 
 	// Default to apiKey if the auth type is not recognized
 	name := "Authorization"
-	return &APIAuthType{
+	return &protos.APIAuthType{
 		Type: "apiKey",
-		In:   utils.StringPointer("header"),
-		Name: &name,
+		In:   ("header"),
+		Name: name,
 	}
 }
 
 // findApiKeys searches for API keys in headers and cookies.
-func findApiKeys() []APIAuthType {
-	var result []APIAuthType
+func findApiKeys() []*protos.APIAuthType {
+	var result []*protos.APIAuthType
 
 	headers := context.GetHeadersParsed()
 	cookies := context.GetCookiesParsed()
 	for header_index, header := range commonApiKeyHeaderNames {
 		if value, exists := headers[header]; exists && value != "" {
-			result = append(result, APIAuthType{
+			result = append(result, &protos.APIAuthType{
 				Type: "apiKey",
-				In:   utils.StringPointer("header"),
-				Name: &commonApiKeyHeaderNames[header_index],
+				In:   "header",
+				Name: commonApiKeyHeaderNames[header_index],
 			})
 		}
 	}
@@ -97,10 +96,10 @@ func findApiKeys() []APIAuthType {
 			lowerCookieName := strings.ToLower(cookieName)
 			if contains(commonAuthCookieNames, lowerCookieName) {
 				cookieNameCopy := cookieName
-				result = append(result, APIAuthType{
+				result = append(result, &protos.APIAuthType{
 					Type: "apiKey",
-					In:   utils.StringPointer("cookie"),
-					Name: &cookieNameCopy,
+					In:   "cookie",
+					Name: cookieNameCopy,
 				})
 			}
 		}

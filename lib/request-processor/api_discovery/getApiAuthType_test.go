@@ -1,9 +1,8 @@
 package api_discovery
 
 import (
-	. "main/aikido_types"
 	"main/context"
-	"main/utils"
+	"main/ipc/protos"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,8 +17,8 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 			"authorization": "Bearer token",
 		}),
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "http", Scheme: utils.StringPointer("bearer")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "http", Scheme: "bearer"},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 
@@ -28,8 +27,8 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 			"authorization": "Basic base64",
 		}),
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "http", Scheme: utils.StringPointer("basic")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "http", Scheme: "basic"},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 
@@ -38,8 +37,8 @@ func TestDetectAuthorizationHeader(t *testing.T) {
 			"authorization": "custom",
 		}),
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("Authorization")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "apiKey", In: "header", Name: "Authorization"},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 }
@@ -53,8 +52,8 @@ func TestDetectApiKeys(t *testing.T) {
 			"x-api-key": "token",
 		}),
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "apiKey", In: ("header"), Name: ("x-api-key")},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 
@@ -63,8 +62,8 @@ func TestDetectApiKeys(t *testing.T) {
 			"api-key": "token",
 		}),
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("api-key")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "apiKey", In: ("header"), Name: ("api-key")},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 }
@@ -76,16 +75,16 @@ func TestDetectAuthCookies(t *testing.T) {
 	context.LoadForUnitTests(map[string]string{
 		"cookies": "api-key=token",
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "apiKey", In: utils.StringPointer("cookie"), Name: utils.StringPointer("api-key")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "apiKey", In: ("cookie"), Name: ("api-key")},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 
 	context.LoadForUnitTests(map[string]string{
 		"cookies": "session=test",
 	})
-	assert.Equal([]APIAuthType{
-		{Type: "apiKey", In: utils.StringPointer("cookie"), Name: utils.StringPointer("session")},
+	assert.Equal([]*protos.APIAuthType{
+		{Type: "apiKey", In: ("cookie"), Name: ("session")},
 	}, GetApiAuthType())
 	context.UnloadForUnitTests()
 }

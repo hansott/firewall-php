@@ -2,7 +2,6 @@ package api_discovery
 
 import (
 	. "main/aikido_types"
-	"main/utils"
 	"reflect"
 	"testing"
 )
@@ -12,21 +11,21 @@ func TestMergeApiAuthTypes(t *testing.T) {
 	// Test case 1: Merge two valid arrays
 	result := mergeApiAuthTypes(
 		[]APIAuthType{
-			{Type: "http", Scheme: utils.StringPointer("bearer")},
-			{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
+			{Type: "http", Scheme: ("bearer")},
+			{Type: "apiKey", In: ("header"), Name: ("x-api-key")},
 		},
 		[]APIAuthType{
-			{Type: "http", Scheme: utils.StringPointer("bearer")},
-			{Type: "http", Scheme: utils.StringPointer("basic")},
-			{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key-v2")},
+			{Type: "http", Scheme: ("bearer")},
+			{Type: "http", Scheme: ("basic")},
+			{Type: "apiKey", In: ("header"), Name: ("x-api-key-v2")},
 		},
 	)
 
 	expected := []APIAuthType{
-		{Type: "http", Scheme: utils.StringPointer("bearer")},
-		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key")},
-		{Type: "http", Scheme: utils.StringPointer("basic")},
-		{Type: "apiKey", In: utils.StringPointer("header"), Name: utils.StringPointer("x-api-key-v2")},
+		{Type: "http", Scheme: ("bearer")},
+		{Type: "apiKey", In: ("header"), Name: ("x-api-key")},
+		{Type: "http", Scheme: ("basic")},
+		{Type: "apiKey", In: ("header"), Name: ("x-api-key-v2")},
 	}
 
 	if !reflect.DeepEqual(result, expected) {
@@ -42,13 +41,13 @@ func TestMergeApiAuthTypes(t *testing.T) {
 	// Test case 3: Existing array is provided, newAuth is nil
 	result = mergeApiAuthTypes(
 		[]APIAuthType{
-			{Type: "http", Scheme: utils.StringPointer("bearer")},
+			{Type: "http", Scheme: ("bearer")},
 		},
 		nil,
 	)
 
 	expected = []APIAuthType{
-		{Type: "http", Scheme: utils.StringPointer("bearer")},
+		{Type: "http", Scheme: ("bearer")},
 	}
 
 	if !reflect.DeepEqual(result, expected) {
@@ -59,12 +58,12 @@ func TestMergeApiAuthTypes(t *testing.T) {
 	result = mergeApiAuthTypes(
 		nil,
 		[]APIAuthType{
-			{Type: "http", Scheme: utils.StringPointer("digest")},
+			{Type: "http", Scheme: ("digest")},
 		},
 	)
 
 	expected = []APIAuthType{
-		{Type: "http", Scheme: utils.StringPointer("digest")},
+		{Type: "http", Scheme: ("digest")},
 	}
 
 	if !reflect.DeepEqual(result, expected) {

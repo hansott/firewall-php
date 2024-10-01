@@ -4,15 +4,16 @@ import (
 	. "main/aikido_types"
 	"main/context"
 	"main/globals"
+	"main/ipc/protos"
 )
 
-func GetApiInfo() *APISpec {
+func GetApiInfo() *protos.APISpec {
 	if !globals.EnvironmentConfig.CollectApiSchema {
 		return nil
 	}
 
-	var bodyInfo *APIBodyInfo
-	var queryInfo *DataSchema
+	var bodyInfo *protos.APIBodyInfo
+	var queryInfo *protos.DataSchema
 
 	body := context.GetBodyParsed()
 	headers := context.GetHeadersParsed()
@@ -27,7 +28,7 @@ func GetApiInfo() *APISpec {
 
 		bodySchema := GetDataSchema(body, 0)
 
-		bodyInfo = &APIBodyInfo{
+		bodyInfo = &protos.APIBodyInfo{
 			Type:   bodyType,
 			Schema: bodySchema,
 		}
@@ -45,7 +46,7 @@ func GetApiInfo() *APISpec {
 		return nil
 	}
 
-	return &APISpec{
+	return &protos.APISpec{
 		Body:  bodyInfo,
 		Query: queryInfo,
 		Auth:  authInfo,

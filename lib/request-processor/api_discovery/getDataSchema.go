@@ -1,7 +1,7 @@
 package api_discovery
 
 import (
-	. "main/aikido_types"
+	"main/ipc/protos"
 	"reflect"
 )
 
@@ -9,10 +9,10 @@ const maxDepth = 20
 const maxProperties = 100
 
 // GetDataSchema returns the schema of the given data as a DataSchema
-func GetDataSchema(data interface{}, depth int) *DataSchema {
+func GetDataSchema(data interface{}, depth int) *protos.DataSchema {
 	// If the data is not an object (or an array), return the type
 	if data == nil {
-		return &DataSchema{Type: "null"}
+		return &protos.DataSchema{Type: "null"}
 	}
 
 	dataType := reflect.TypeOf(data)
@@ -22,18 +22,18 @@ func GetDataSchema(data interface{}, depth int) *DataSchema {
 		// If the data is an array/slice, return an array schema
 		v := reflect.ValueOf(data)
 		if v.Len() > 0 {
-			return &DataSchema{
+			return &protos.DataSchema{
 				Type:  "array",
 				Items: GetDataSchema(v.Index(0).Interface(), depth+1),
 			}
 		} else {
-			return &DataSchema{Type: "array"}
+			return &protos.DataSchema{Type: "array"}
 		}
 	case reflect.Map:
 		// Create an object schema with properties
-		schema := DataSchema{
+		schema := protos.DataSchema{
 			Type:       "object",
-			Properties: make(map[string]*DataSchema),
+			Properties: make(map[string]*protos.DataSchema),
 		}
 
 		// Traverse properties if within depth
@@ -52,16 +52,16 @@ func GetDataSchema(data interface{}, depth int) *DataSchema {
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return &DataSchema{Type: "number"}
+		return &protos.DataSchema{Type: "number"}
 
 	case reflect.Float32, reflect.Float64:
-		return &DataSchema{Type: "number"}
+		return &protos.DataSchema{Type: "number"}
 
 	case reflect.Bool:
-		return &DataSchema{Type: "boolean"}
+		return &protos.DataSchema{Type: "boolean"}
 
 	default:
 		// If the data is not an object or array, return its type
-		return &DataSchema{Type: dataType.Kind().String()}
+		return &protos.DataSchema{Type: dataType.Kind().String()}
 	}
 }
