@@ -112,7 +112,7 @@ message DataSchema {
   repeated string type = 1;
   map<string, DataSchema> properties = 2;
   DataSchema items = 3;
-  optional bool optional = 4;
+  bool optional = 4;
 }
 
 message APIBodyInfo {

@@ -2,7 +2,6 @@ package api_discovery
 
 import (
 	"main/ipc/protos"
-	"main/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,11 +18,11 @@ func TestMergeDataSchemas(t *testing.T) {
 		Properties: map[string]*protos.DataSchema{
 			"test": {
 				Type:     []string{"string"},
-				Optional: utils.BoolPointer(true),
+				Optional: true,
 			},
 			"test2": {
 				Type:     []string{"string"},
-				Optional: utils.BoolPointer(true),
+				Optional: true,
 			},
 		},
 	}
@@ -43,11 +42,11 @@ func TestMergeDataSchemas(t *testing.T) {
 				Properties: map[string]*protos.DataSchema{
 					"a": {
 						Type:     []string{"number"},
-						Optional: utils.BoolPointer(true),
+						Optional: true,
 					},
 					"b": {
 						Type:     []string{"number"},
-						Optional: utils.BoolPointer(true),
+						Optional: true,
 					},
 				},
 			},
@@ -72,7 +71,7 @@ func TestMergeDataSchemas(t *testing.T) {
 					},
 					"b": {
 						Type:     []string{"number"},
-						Optional: utils.BoolPointer(true),
+						Optional: true,
 					},
 				},
 			},

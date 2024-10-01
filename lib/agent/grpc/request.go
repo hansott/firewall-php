@@ -31,6 +31,9 @@ func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 
 	routeData.Hits++
 
+	if apiSpec == nil {
+		return
+	}
 	routeData.ApiSpec.Body.Schema = api_discovery.MergeDataSchemas(routeData.ApiSpec.Body.Schema, apiSpec.Body.Schema)
 	routeData.ApiSpec.Query = api_discovery.MergeDataSchemas(routeData.ApiSpec.Query, apiSpec.Query)
 	routeData.ApiSpec.Auth = api_discovery.MergeApiAuthTypes(routeData.ApiSpec.Auth, apiSpec.Auth)

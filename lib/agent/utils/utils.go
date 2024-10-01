@@ -98,13 +98,3 @@ func GetUserById(userId string) *User {
 	}
 	return &user
 }
-
-// StringPointer is a helper function to return a pointer to a string value.
-func StringPointer(s string) *string {
-	return &s
-}
-
-// BoolPointer is a helper function to return a pointer to a bool value.
-func BoolPointer(b bool) *bool {
-	return &b
-}

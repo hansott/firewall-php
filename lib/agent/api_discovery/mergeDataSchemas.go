@@ -26,15 +26,13 @@ func MergeDataSchemas(first *protos.DataSchema, second *protos.DataSchema) *prot
 			} else {
 				result.Properties[key] = secondProp
 				// Mark as optional since it's only present in the second schema
-				opt := true
-				result.Properties[key].Optional = &opt
+				result.Properties[key].Optional = true
 			}
 		}
 
 		for key := range first.Properties {
 			if _, ok := second.Properties[key]; !ok {
-				opt := true
-				result.Properties[key].Optional = &opt
+				result.Properties[key].Optional = true
 			}
 		}
 	}
