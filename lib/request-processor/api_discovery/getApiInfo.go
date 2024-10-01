@@ -5,10 +5,12 @@ import (
 	"main/context"
 	"main/globals"
 	"main/ipc/protos"
+	"main/log"
 )
 
 func GetApiInfo() *protos.APISpec {
 	if !globals.EnvironmentConfig.CollectApiSchema {
+		log.Debug("AIKIDO_FEATURE_COLLECT_API_SCHEMA is not enabled -> no API schema!")
 		return nil
 	}
 
@@ -23,6 +25,7 @@ func GetApiInfo() *protos.APISpec {
 	if body != nil && isObject(body) && len(body) > 0 {
 		bodyType := getBodyDataType(headers)
 		if bodyType == Undefined {
+			log.Debug("Body type is undefined -> no API schema!")
 			return nil
 		}
 
@@ -43,6 +46,7 @@ func GetApiInfo() *protos.APISpec {
 	authInfo := GetApiAuthType()
 
 	if bodyInfo == nil && queryInfo == nil && authInfo == nil {
+		log.Debug("All sub-schemas are empty -> no API schema!")
 		return nil
 	}
 

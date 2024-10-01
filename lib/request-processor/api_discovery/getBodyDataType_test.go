@@ -27,16 +27,16 @@ func TestGetBodyDataType(t *testing.T) {
 		headers  map[string]interface{}
 		expected string
 	}{
-		{"JSON content-type", map[string]interface{}{"content-type": "application/json"}, "json"},
-		{"API JSON content-type", map[string]interface{}{"content-type": "application/vnd.api+json"}, "json"},
-		{"CSP report content-type", map[string]interface{}{"content-type": "application/csp-report"}, "json"},
-		{"X JSON content-type", map[string]interface{}{"content-type": "application/x-json"}, "json"},
-		{"Form-urlencoded content-type", map[string]interface{}{"content-type": "application/x-www-form-urlencoded"}, "form-urlencoded"},
-		{"Multipart form-data content-type", map[string]interface{}{"content-type": "multipart/form-data"}, "form-data"},
-		{"XML content-type", map[string]interface{}{"content-type": "text/xml"}, "xml"},
-		{"HTML content-type", map[string]interface{}{"content-type": "text/html"}, ""},
-		{"Multiple content-types", map[string]interface{}{"content-type": "application/json"}, "json"},
-		{"Nonexistent content-type", map[string]interface{}{"x-test": "abc"}, ""},
+		{"JSON content_type", map[string]interface{}{"content_type": "application/json"}, "json"},
+		{"API JSON content_type", map[string]interface{}{"content_type": "application/vnd.api+json"}, "json"},
+		{"CSP report content_type", map[string]interface{}{"content_type": "application/csp-report"}, "json"},
+		{"X JSON content_type", map[string]interface{}{"content_type": "application/x-json"}, "json"},
+		{"Form-urlencoded content_type", map[string]interface{}{"content_type": "application/x-www-form-urlencoded"}, "form-urlencoded"},
+		{"Multipart form-data content_type", map[string]interface{}{"content_type": "multipart/form-data"}, "form-data"},
+		{"XML content_type", map[string]interface{}{"content_type": "text/xml"}, "xml"},
+		{"HTML content_type", map[string]interface{}{"content_type": "text/html"}, ""},
+		{"Multiple content_types", map[string]interface{}{"content_type": "application/json"}, "json"},
+		{"Nonexistent content_type", map[string]interface{}{"x-test": "abc"}, ""},
 		{"Null input", nil, ""},
 		{"Empty headers", map[string]interface{}{}, ""},
 	}

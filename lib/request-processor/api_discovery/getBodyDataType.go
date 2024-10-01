@@ -11,7 +11,7 @@ func getBodyDataType(headers map[string]interface{}) string {
 		return Undefined
 	}
 
-	contentType, exists := headers["content-type"].(string)
+	contentType, exists := headers["content_type"].(string)
 	if !exists {
 		return Undefined
 	}

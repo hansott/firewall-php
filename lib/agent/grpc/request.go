@@ -25,7 +25,10 @@ func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 	}
 	routeData, ok := globals.Routes[route][method]
 	if !ok {
-		routeData = &Route{Path: route, Method: method}
+		routeData = &Route{Path: route, Method: method,
+			ApiSpec: &protos.APISpec{
+				Body: &protos.APIBodyInfo{},
+			}}
 		globals.Routes[route][method] = routeData
 	}
 

@@ -7,7 +7,13 @@ import (
 
 // mergeDataSchemas merges two DataSchema objects.
 func MergeDataSchemas(first *protos.DataSchema, second *protos.DataSchema) *protos.DataSchema {
-	// Cannot merge different types
+	if first == nil {
+		return second
+	}
+	if second == nil {
+		return first
+	}
+
 	if !isSameType(first.Type, second.Type) {
 		return mergeTypes(first, second)
 	}

@@ -73,6 +73,7 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, api
 		return
 	}
 
+	log.Info("[RSHUTDOWN] Got API spec: ", apiSpec)
 	go grpc.OnRequestShutdown(method, route, statusCode, 10*time.Millisecond, apiSpec)
 }
 
