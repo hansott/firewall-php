@@ -1,0 +1,188 @@
+{
+    "type": "heartbeat",
+    "routes": [
+        {
+            "path": "/api/v1/orders",
+            "method": "POST",
+            "count": 2,
+            "apispec": {
+                "body": {
+                    "schema": {
+                        "type": [
+                            "object"
+                        ],
+                        "properties": {
+                            "items": {
+                                "type": [
+                                    "array"
+                                ],
+                                "items": {
+                                    "type": [
+                                        "object"
+                                    ],
+                                    "properties": {
+                                        "details": {
+                                            "type": [
+                                                "object"
+                                            ],
+                                            "properties": {
+                                                "color": {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                },
+                                                "size": {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "itemId": {
+                                            "type": [
+                                                "string"
+                                            ]
+                                        },
+                                        "price": {
+                                            "type": [
+                                                "number"
+                                            ]
+                                        },
+                                        "quantity": {
+                                            "type": [
+                                                "number"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "optional": true
+                            },
+                            "orderId": {
+                                "type": [
+                                    "string"
+                                ],
+                                "optional": true
+                            },
+                            "orderPlaced": {
+                                "type": [
+                                    "boolean"
+                                ],
+                                "optional": true
+                            },
+                            "paymentMethod": {
+                                "type": [
+                                    "object"
+                                ],
+                                "properties": {
+                                    "cardNumber": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "expiryDate": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "provider": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "type": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    }
+                                },
+                                "optional": true
+                            },
+                            "shippingAddress": {
+                                "type": [
+                                    "object"
+                                ],
+                                "properties": {
+                                    "city": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "country": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "state": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "street": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    },
+                                    "zip": {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    }
+                                },
+                                "optional": true
+                            },
+                            "total": {
+                                "type": [
+                                    "number"
+                                ],
+                                "optional": true
+                            }
+                        }
+                    }
+                },
+                "query": {
+                    "type": [
+                        "object"
+                    ],
+                    "properties": {
+                        "orderId": {
+                            "type": [
+                                "string"
+                            ],
+                            "optional": true
+                        },
+                        "status": {
+                            "type": [
+                                "string"
+                            ]
+                        },
+                        "userId": {
+                            "type": [
+                                "string"
+                            ]
+                        }
+                    }
+                },
+                "auth": [
+                    {
+                        "type": "http",
+                        "scheme": "bearer"
+                    },
+                    {
+                        "type": "apiKey",
+                        "in": "header",
+                        "name": "x-api-key"
+                    }
+                ]
+            }
+        }
+    ],
+    "agent": {
+        "dryMode": true,
+        "library": "firewall-php"
+    }
+}

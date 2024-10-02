@@ -75,6 +75,10 @@ func getAuthorizationHeaderType(authHeader string) *protos.APIAuthType {
 	}
 }
 
+func getPhpHttpHeaderEquivalent(apiKey string) string {
+	return strings.ReplaceAll(apiKey, "-", "_")
+}
+
 // findApiKeys searches for API keys in headers and cookies.
 func findApiKeys() []*protos.APIAuthType {
 	var result []*protos.APIAuthType
@@ -82,7 +86,7 @@ func findApiKeys() []*protos.APIAuthType {
 	headers := context.GetHeadersParsed()
 	cookies := context.GetCookiesParsed()
 	for header_index, header := range commonApiKeyHeaderNames {
-		if value, exists := headers[header]; exists && value != "" {
+		if value, exists := headers[getPhpHttpHeaderEquivalent(header)]; exists && value != "" {
 			result = append(result, &protos.APIAuthType{
 				Type: "apiKey",
 				In:   "header",
@@ -95,11 +99,10 @@ func findApiKeys() []*protos.APIAuthType {
 		for cookieName := range cookies {
 			lowerCookieName := strings.ToLower(cookieName)
 			if contains(commonAuthCookieNames, lowerCookieName) {
-				cookieNameCopy := cookieName
 				result = append(result, &protos.APIAuthType{
 					Type: "apiKey",
 					In:   "cookie",
-					Name: cookieNameCopy,
+					Name: cookieName,
 				})
 			}
 		}

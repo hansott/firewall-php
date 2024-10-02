@@ -49,7 +49,7 @@ func TestDetectApiKeys(t *testing.T) {
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
-			"x-api-key": "token",
+			"x_api_key": "token",
 		}),
 	})
 	assert.Equal([]*protos.APIAuthType{
@@ -59,7 +59,7 @@ func TestDetectApiKeys(t *testing.T) {
 
 	context.LoadForUnitTests(map[string]string{
 		"headers": context.GetJsonString(map[string]interface{}{
-			"api-key": "token",
+			"api_key": "token",
 		}),
 	})
 	assert.Equal([]*protos.APIAuthType{
