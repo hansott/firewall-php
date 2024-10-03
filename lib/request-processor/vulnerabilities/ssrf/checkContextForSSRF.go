@@ -2,7 +2,6 @@ package ssrf
 
 import (
 	"main/context"
-	"main/helpers"
 	"main/utils"
 )
 
@@ -23,12 +22,19 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 				}
 
 				if containsPrivateIPAddress(hostname) {
+					interceptorResult.Metadata["isPrivateIp"] = "true"
 					return &interceptorResult
 				}
 
-				resolvedPrivateIp := helpers.TryResolveToPrivateIp(hostname)
-				if resolvedPrivateIp != "" {
-					interceptorResult.Metadata["resolvedIp"] = resolvedPrivateIp
+				resolvedIpStatus := getResolvedIpStatusForHostname(hostname)
+				if resolvedIpStatus != nil {
+					interceptorResult.Metadata["resolvedIp"] = resolvedIpStatus.ip
+					if resolvedIpStatus.isIMDS {
+						interceptorResult.Metadata["isIMDSIp"] = "true"
+					}
+					if resolvedIpStatus.isPrivate {
+						interceptorResult.Metadata["isPrivateIp"] = "true"
+					}
 					return &interceptorResult
 				}
 
@@ -39,6 +45,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 	return nil
 }
 
+/* This is called after the request is made to check for SSRF in the effectiveHostname - hostname optained after redirects from the PHP library that made the request (curl) */
 func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorResult {
 	interceptorResult := context.GetPartialInterceptorResult()
 	if interceptorResult == nil {
@@ -46,18 +53,22 @@ func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorR
 		return nil
 	}
 
-	resolvedPrivateIp := helpers.TryResolveToPrivateIp(effectiveHostname)
-	if resolvedPrivateIp == "" {
-		// Effective hostname did not resolve to private IP -> no SSRF
-		return nil
+	interceptorResult.Metadata["effectiveHostname"] = effectiveHostname
+	resolvedIpStatus := getResolvedIpStatusForHostname(effectiveHostname)
+	if resolvedIpStatus != nil {
+		interceptorResult.Metadata["resolvedIp"] = resolvedIpStatus.ip
+		if resolvedIpStatus.isIMDS {
+			interceptorResult.Metadata["isIMDSIp"] = "true"
+		}
+		if resolvedIpStatus.isPrivate {
+			interceptorResult.Metadata["isPrivateIp"] = "true"
+		}
 	}
 
-	// After redirects the effective hostname resolved to a private IP -> SSRF
-	interceptorResult.Metadata["effectiveHostname"] = effectiveHostname
-	interceptorResult.Metadata["resolvedIp"] = resolvedPrivateIp
-	return interceptorResult
+	return nil
 }
 
+/* This is called after the request is made to check for SSRF in the resolvedIP - IP optained from the PHP library that made the request (curl) */
 func CheckResolvedIpForSSRF(resolvedIp string) *utils.InterceptorResult {
 	interceptorResult := context.GetPartialInterceptorResult()
 	if interceptorResult == nil {
@@ -71,5 +82,6 @@ func CheckResolvedIpForSSRF(resolvedIp string) *utils.InterceptorResult {
 	}
 
 	interceptorResult.Metadata["resolvedIp"] = resolvedIp
+	interceptorResult.Metadata["isPrivateIp"] = "true"
 	return interceptorResult
 }

@@ -16,19 +16,28 @@ var trustedHosts = map[string]struct{}{
 	"metadata.goog":            {},
 }
 
-func IsIMDSIPAddress(ip string) bool {
+func isIMDSIPAddress(ip string) bool {
 	if _, exists := IMDSAddresses[ip]; exists {
 		return true
 	}
 	return false
 }
 
-func IsTrustedHostname(hostname string) bool {
+func isTrustedHostname(hostname string) bool {
 	// Check if the hostname is in the trusted hosts map
 	_, exists := trustedHosts[hostname]
 	return exists
 }
 
-func ResolvesToIMDSIp(hostname string, resolvedIps string) {
+func TryGetIMDSIp(hostname string, resolvedIps []string) string {
+	if isTrustedHostname(hostname) {
+		return ""
+	}
 
+	for _, ip := range resolvedIps {
+		if isIMDSIPAddress(ip) {
+			return ip
+		}
+	}
+	return ""
 }
