@@ -47,19 +47,19 @@ func ContextSetString(context_id int, m **string) {
 }
 
 func ContextSetBody() {
-	ContextSetMap(C.CONTEXT_BODY, &Context.BodyRaw, &Context.BodyParsed, &Context.BodyParsedWithPathToPayload, utils.ParseBody)
+	ContextSetMap(C.CONTEXT_BODY, &Context.BodyRaw, &Context.BodyParsed, &Context.BodyParsedFlattened, utils.ParseBody)
 }
 
 func ContextSetQuery() {
-	ContextSetMap(C.CONTEXT_QUERY, nil, &Context.QueryParsed, &Context.QueryParsedWithPathToPayload, utils.ParseQuery)
+	ContextSetMap(C.CONTEXT_QUERY, nil, &Context.QueryParsed, &Context.QueryParsedFlattened, utils.ParseQuery)
 }
 
 func ContextSetCookies() {
-	ContextSetMap(C.CONTEXT_COOKIES, nil, &Context.CookiesParsed, &Context.CookiesParsedWithPathToPayload, utils.ParseCookies)
+	ContextSetMap(C.CONTEXT_COOKIES, nil, &Context.CookiesParsed, &Context.CookiesParsedFlattened, utils.ParseCookies)
 }
 
 func ContextSetHeaders() {
-	ContextSetMap(C.CONTEXT_HEADERS, nil, &Context.HeadersParsed, &Context.HeadersParsedWithPathToPayload, utils.ParseHeaders)
+	ContextSetMap(C.CONTEXT_HEADERS, nil, &Context.HeadersParsed, &Context.HeadersParsedFlattened, utils.ParseHeaders)
 }
 
 func ContextSetStatusCode() {
@@ -127,6 +127,17 @@ func ContextSetUserName() {
 	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
 }
 
+/*
+A partial interceptor result in stored when user-provided information was matched in the content
+of the currently called PHP function.
+We store this information because we cannot emit a detection at this point.
+We will use this after the PHP function call ends, because at that point we have more information
+that could help us emit a detection, combined with the partial interceptor result that was stored
+before the function call.
+A partial interceptor result stores the payload that matched the user input, the path to it, the
+PHP function that was called, ..., basically the data needed for reporting if this actually turns into
+a detection at a later stage.
+*/
 func ContextSetPartialInterceptorResult(interceptorResult utils.InterceptorResult) {
 	Context.PartialInterceptorResult = &interceptorResult
 }

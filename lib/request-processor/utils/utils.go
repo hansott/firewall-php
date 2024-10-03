@@ -40,16 +40,6 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 	return *value
 }
 
-func FixURL(url string) string {
-	if !strings.HasPrefix(url, "https://") && strings.HasPrefix(url, "https:/") {
-		return strings.Replace(url, "https:/", "https://", 1)
-	}
-	if !strings.HasPrefix(url, "http://") && strings.HasPrefix(url, "http:/") {
-		return strings.Replace(url, "http:/", "http://", 1)
-	}
-	return url
-}
-
 func ParseFormData(data string, separator string) map[string]interface{} {
 	result := map[string]interface{}{}
 	parts := strings.Split(data, separator)

@@ -38,7 +38,7 @@ enum CALLBACK_ID
     FUNCTION_NAME,
 
     OUTGOING_REQUEST_URL,
-    OUTGOING_REQUEST_EFFECTIVE_URL,
+    OUTGOING_REQUEST_EFFECTIVE_URL, // Effective URL after redirects (the final URL were the request was actually made)
     OUTGOING_REQUEST_PORT,
     OUTGOING_REQUEST_RESOLVED_IP,
 

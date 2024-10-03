@@ -33,6 +33,10 @@ func TestFindHostnameInUserInput(t *testing.T) {
 		{"http://localhost:8080", "localhost", 8080, true},
 		{"http://localhost:8080", "localhost", 0, true},
 		{"http://localhost:8080", "localhost", 4321, false},
+		{"https://example.com", "example.com", 443, true},
+		{"https://example.com", "google.com", 443, false},
+		{"http://wikipedia.com", "wikipedia.com", 80, true},
+		{"http://aikido.dev:9090/", "aikido.dev", 9090, true},
 	}
 
 	for _, test := range tests {

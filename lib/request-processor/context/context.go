@@ -12,30 +12,32 @@ import (
 type CallbackFunction func(int) string
 
 type ContextData struct {
-	Callback                       CallbackFunction
-	Method                         *string
-	Route                          *string
-	RouteParsed                    *string
-	URL                            *string
-	StatusCode                     *int
-	IP                             *string
-	IsIpBypassed                   *bool
-	UserAgent                      *string
-	UserId                         *string
-	UserName                       *string
-	BodyRaw                        *string
-	BodyParsed                     *map[string]interface{}
-	BodyParsedWithPathToPayload    *map[string]string
-	QueryParsed                    *map[string]interface{}
-	QueryParsedWithPathToPayload   *map[string]string
-	CookiesParsed                  *map[string]interface{}
-	CookiesParsedWithPathToPayload *map[string]string
-	HeadersParsed                  *map[string]interface{}
-	HeadersParsedWithPathToPayload *map[string]string
-	OutgoingRequestHostname        *string
-	OutgoingRequestPort            *int
-	OutgoingRequestResolvedIp      *string
-	PartialInterceptorResult       *utils.InterceptorResult
+	Callback               CallbackFunction
+	Method                 *string
+	Route                  *string
+	RouteParsed            *string
+	URL                    *string
+	StatusCode             *int
+	IP                     *string
+	IsIpBypassed           *bool
+	UserAgent              *string
+	UserId                 *string
+	UserName               *string
+	BodyRaw                *string
+	BodyParsed             *map[string]interface{}
+	BodyParsedFlattened    *map[string]string
+	QueryParsed            *map[string]interface{}
+	QueryParsedFlattened   *map[string]string
+	CookiesParsed          *map[string]interface{}
+	CookiesParsedFlattened *map[string]string
+	HeadersParsed          *map[string]interface{}
+	HeadersParsedFlattened *map[string]string
+
+	/* Event level context cache below (changes on each PHP function call) */
+	OutgoingRequestHostname   *string
+	OutgoingRequestPort       *int
+	OutgoingRequestResolvedIp *string
+	PartialInterceptorResult  *utils.InterceptorResult
 }
 
 var Context ContextData
@@ -110,20 +112,20 @@ func GetHeadersParsed() map[string]interface{} {
 	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
 }
 
-func GetBodyParsedWithPathToPayload() map[string]string {
-	return GetFromCache(ContextSetBody, &Context.BodyParsedWithPathToPayload)
+func GetBodyParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetBody, &Context.BodyParsedFlattened)
 }
 
-func GetQueryParsedWithPathToPayload() map[string]string {
-	return GetFromCache(ContextSetQuery, &Context.QueryParsedWithPathToPayload)
+func GetQueryParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetQuery, &Context.QueryParsedFlattened)
 }
 
-func GetCookiesParsedWithPathToPayload() map[string]string {
-	return GetFromCache(ContextSetCookies, &Context.CookiesParsedWithPathToPayload)
+func GetCookiesParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetCookies, &Context.CookiesParsedFlattened)
 }
 
-func GetHeadersParsedWithPathToPayload() map[string]string {
-	return GetFromCache(ContextSetHeaders, &Context.HeadersParsedWithPathToPayload)
+func GetHeadersParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsedFlattened)
 }
 
 func GetUserAgent() string {
