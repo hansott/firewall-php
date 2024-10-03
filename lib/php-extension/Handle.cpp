@@ -26,7 +26,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(copy, handle_pre_file_path_access_2, handle_post_file_path_access_2),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(file, handle_pre_file_path_access, handle_post_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(file_get_contents, handle_pre_file_path_access, handle_post_file_path_access),
-	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(file_put_contents, handle_pre_file_path_access, handle_post_file_path_access),
+	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(file_put_contents, handle_pre_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(fopen, handle_pre_file_path_access, handle_post_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(lchgrp, handle_pre_file_path_access),
 	AIKIDO_REGISTER_FUNCTION_HANDLER_EX(lchown, handle_pre_file_path_access),
