@@ -19,7 +19,7 @@ func CheckContextForPathTraversal(filename string, operation string, checkPathSt
 					Source:        source.Name,
 					PathToPayload: path,
 					Metadata: map[string]string{
-						"filename": sanitizedPath,
+						"filename": filename,
 					},
 					Payload: str,
 				}

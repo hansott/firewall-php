@@ -12,25 +12,28 @@ import (
 type CallbackFunction func(int) string
 
 type ContextData struct {
-	Callback                  CallbackFunction
-	Method                    *string
-	Route                     *string
-	RouteParsed               *string
-	URL                       *string
-	StatusCode                *int
-	IP                        *string
-	IsIpBypassed              *bool
-	UserAgent                 *string
-	UserId                    *string
-	UserName                  *string
-	Body                      *string
-	BodyParsed                *map[string]string
-	Query                     *string
-	QueryParsed               *map[string]string
-	Cookies                   *string
-	CookiesParsed             *map[string]string
-	Headers                   *map[string]interface{}
-	HeadersParsed             *map[string]string
+	/* Request level context cache below (changes on each PHP request) */
+	Callback      CallbackFunction
+	Method        *string
+	Route         *string
+	RouteParsed   *string
+	URL           *string
+	StatusCode    *int
+	IP            *string
+	IsIpBypassed  *bool
+	UserAgent     *string
+	UserId        *string
+	UserName      *string
+	Body          *string
+	BodyParsed    *map[string]string
+	Query         *string
+	QueryParsed   *map[string]string
+	Cookies       *string
+	CookiesParsed *map[string]string
+	Headers       *map[string]interface{}
+	HeadersParsed *map[string]string
+
+	/* Event level context cache below (changes on each PHP function call) */
 	OutgoingRequestHostname   *string
 	OutgoingRequestPort       *int
 	OutgoingRequestResolvedIp *string

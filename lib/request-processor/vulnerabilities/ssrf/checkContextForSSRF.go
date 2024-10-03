@@ -6,6 +6,7 @@ import (
 	"main/utils"
 )
 
+/* This is called before a request is made to check for SSRF */
 func CheckContextForSSRF(hostname string, port int, operation string) *utils.InterceptorResult {
 	for _, source := range context.SOURCES {
 		mapss := source.CacheGet()
