@@ -4,6 +4,7 @@ import sys
 from testlib import *
 import json
 
+
 def run_benchmark():        
     for _ in range(10000):
         response = php_server_post("/test", {}, benchmark=True)
