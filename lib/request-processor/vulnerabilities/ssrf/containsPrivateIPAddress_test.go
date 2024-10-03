@@ -38,6 +38,7 @@ var publicIPs = []string{
 }
 
 var privateIPs = []string{
+	"localhost",
 	"0.0.0.0",
 	//"0000.0000.0000.0000",
 	//"0000.0000",
