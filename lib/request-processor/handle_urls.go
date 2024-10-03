@@ -19,6 +19,8 @@ All these checks first verify if the hostname was provided via user input.
 Protects both curl and fopen wrapper functions (file_get_contents, etc...).
 */
 func OnPreOutgoingRequest() string {
+	context.ContextSetPartialInterceptorResult(nil)
+
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	operation := context.GetFunctionName()
 
@@ -44,6 +46,8 @@ All these checks first verify if the hostname was provided via user input.
 Protects curl.
 */
 func OnPostOutgoingRequest() string {
+	defer context.ContextSetPartialInterceptorResult(nil)
+
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	effectiveHostname, effectivePort := context.GetOutgoingRequestEffectiveHostnameAndPort()
 	resolvedIp := context.GetOutgoingRequestResolvedIp()

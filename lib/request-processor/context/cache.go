@@ -135,6 +135,6 @@ A partial interceptor result stores the payload that matched the user input, the
 PHP function that was called, ..., basically the data needed for reporting if this actually turns into
 a detection at a later stage.
 */
-func ContextSetPartialInterceptorResult(interceptorResult utils.InterceptorResult) {
-	Context.PartialInterceptorResult = &interceptorResult
+func ContextSetPartialInterceptorResult(interceptorResult *utils.InterceptorResult) {
+	Context.PartialInterceptorResult = interceptorResult
 }
