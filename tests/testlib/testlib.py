@@ -13,7 +13,7 @@ mock_port = 0
 benchmarks = []
 
 def load_test_args():
-    global test_name, php_port, mock_port
+    global test_name, php_port, mock_port, initial_mock_port
     php_port = int(sys.argv[1])
     mock_port = int(sys.argv[2])
     test_name = sys.argv[3]
@@ -216,3 +216,9 @@ def add_to_hosts_file(hostname, ip):
     with open(hosts_file, 'a') as file:
         file.write(entry)
         print(f"Added '{entry.strip()}' to the hosts file.")
+
+def mock_down():
+    mock_port = 0
+    
+def mock_up():
+    mock

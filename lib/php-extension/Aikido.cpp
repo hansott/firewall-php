@@ -302,18 +302,22 @@ PHP_MINFO_FUNCTION(aikido)
 // Receives two parameters: id and name (both strings).
 // Returns true if the setting of the user succeeded, false otherwise.
 ZEND_FUNCTION(set_user) {
+	if (AIKIDO_GLOBAL(disable) == true) {
+		return false;
+	}
+
 	char *id;
 	size_t id_len;
 	char *name;
 	size_t name_len;
 
-	// parse parameters
+		// parse parameters
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_STRING(id, id_len)
 		Z_PARAM_STRING(name, name_len)
 	ZEND_PARSE_PARAMETERS_END();
 
-	RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));	
+	RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));
 }
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_aikido_set_user, 0, 2, _IS_BOOL, 0)
