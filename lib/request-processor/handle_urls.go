@@ -57,10 +57,9 @@ func OnPostOutgoingRequest() string {
 
 	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)
 	if effectiveHostname != hostname {
-		// After the request was made, if effective hostname is different that the initially requested one (redirects, ...)
-		// -> check for SSRF
-		// -> report it to the agent
+		// After the request was made, the effective hostname is different that the initially requested one (redirects)
 		if res == nil {
+			// We double check here for SSRF on the effective hostname because some sinks might not provide the resolved IP address
 			res = ssrf.CheckEffectiveHostnameForSSRF(effectiveHostname)
 		}
 		go grpc.OnDomain(effectiveHostname, effectivePort)
