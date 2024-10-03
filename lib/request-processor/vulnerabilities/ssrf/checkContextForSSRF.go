@@ -44,7 +44,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 				// Hostname matched in the user input but we did not managed to determine if it's a SSRF attack at this point.
 				// Storing the matching information (interceptor result) in order to use it once the request completes,
 				// as at that point we might have more information to determine if SSRF or not.
-				context.ContextSetPartialInterceptorResult(interceptorResult)
+				context.ContextSetPartialInterceptorResult(&interceptorResult)
 			}
 		}
 	}
