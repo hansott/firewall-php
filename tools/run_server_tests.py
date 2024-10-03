@@ -57,7 +57,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
             'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
             'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
-            'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
+            'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
         })
         
         php_server_process_cmd = ['php', '-S', f'localhost:{php_port}', '-t', test_dir]

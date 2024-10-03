@@ -28,19 +28,22 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	std::string log_level = get_env_string("AIKIDO_LOG_LEVEL", "INFO");
-	std::string token = get_env_string("AIKIDO_TOKEN", "");
-	std::string endpoint = get_env_string("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
-	std::string config_endpoint = get_env_string("AIKIDO_CONFIG_ENDPOINT", "https://runtime.aikido.dev/");
-	bool blocking = get_env_bool("AIKIDO_BLOCKING", false);
-	bool localhost_allowed_by_default = get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true);
-	bool collect_api_schema = get_env_bool("AIKIDO_FEATURE_COLLECT_API_SCHEMA", false);
-
-	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(log_level);
-	AIKIDO_GLOBAL(blocking) = blocking;
+	AIKIDO_GLOBAL(log_level_str) = get_env_string("AIKIDO_LOG_LEVEL", "INFO");
+	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(AIKIDO_GLOBAL(log_level_str));
+	AIKIDO_GLOBAL(blocking) = get_env_bool("AIKIDO_BLOCKING", false);
+	AIKIDO_GLOBAL(disable) = get_env_bool("AIKIDO_DISABLE", false);
+	AIKIDO_GLOBAL(collect_api_schema) = get_env_bool("AIKIDO_FEATURE_COLLECT_API_SCHEMA", false);
+	AIKIDO_GLOBAL(localhost_allowed_by_default) = get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true);
+	AIKIDO_GLOBAL(trust_proxy) = get_env_bool("AIKIDO_TRUST_PROXY", true);
 	AIKIDO_GLOBAL(socket_path) = aikido_generate_socket_path();
+	AIKIDO_GLOBAL(sapi_name) = sapi_module.name;
 
 	AIKIDO_LOG_INFO("MINIT started!\n");
+
+	if (AIKIDO_GLOBAL(disable) == true) {
+		AIKIDO_LOG_INFO("MINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
+		return SUCCESS;
+	}
 
 	for ( auto& it : HOOKED_FUNCTIONS ) {
 		zend_function* function_data = (zend_function*)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
@@ -86,26 +89,23 @@ PHP_MINIT_FUNCTION(aikido)
 		zend_execute_ex = aikido_zend_execute_ex;
 	#endif
 
-	std::string sapi_name(sapi_module.name);
-	AIKIDO_LOG_INFO("SAPI: %s\n", sapi_name.c_str());
-
-	/* If SAPI name is "cli" run in "simple" mode */ 
-	if (sapi_name == "cli") {
+	/* If SAPI name is "cli" run in "simple" mode */
+	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
 		AIKIDO_LOG_INFO("MINIT finished earlier because we run in CLI mode!\n");
 		return SUCCESS;
 	}
 
 	json initData = {
-		{"token", token},
+		{"token", get_env_string("AIKIDO_TOKEN", "")},
 		{"socket_path", AIKIDO_GLOBAL(socket_path)},
-		{"platform_name", sapi_name},
+		{"platform_name", AIKIDO_GLOBAL(sapi_name)},
 		{"platform_version", PHP_VERSION},
-		{"endpoint", endpoint},
-		{"config_endpoint", config_endpoint},
-		{"log_level", log_level},
-		{"blocking", blocking},
-		{"localhost_allowed_by_default", localhost_allowed_by_default},
-		{"collect_api_schema", collect_api_schema}};
+		{"endpoint", get_env_string("AIKIDO_ENDPOINT", "https://guard.aikido.dev/")},
+		{"config_endpoint", get_env_string("AIKIDO_REALTIME_ENDPOINT", "https://runtime.aikido.dev/")},
+		{"log_level", AIKIDO_GLOBAL(log_level_str)},
+		{"blocking", AIKIDO_GLOBAL(blocking)},
+		{"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
+		{"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)}};
 
 	std::string aikido_agent_lib_handle_path = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-agent.so";
 	aikido_agent_lib_handle = dlopen(aikido_agent_lib_handle_path.c_str(), RTLD_LAZY);
@@ -141,11 +141,16 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 {
 	AIKIDO_LOG_DEBUG("MSHUTDOWN started!\n");
 
-	std::string sapi_name(sapi_module.name);
-	AIKIDO_LOG_DEBUG("SAPI: %s\n", sapi_name.c_str());
+	if (AIKIDO_GLOBAL(disable) == true) {
+		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because AIKIDO_DISABLE is set to 1!\n");
+		aikido_log_uninit();
+		return SUCCESS;
+	}
+
+	AIKIDO_LOG_DEBUG("SAPI: %s\n", AIKIDO_GLOBAL(sapi_name));
 
 	/* If SAPI name is "cli" run in "simple" mode */
-	if (sapi_name == "cli") {
+	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
 		AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
 		aikido_log_uninit();
 		return SUCCESS;
@@ -181,6 +186,11 @@ RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullp
 PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RINIT started!\n");
 
+	if (AIKIDO_GLOBAL(disable) == true) {
+		AIKIDO_LOG_INFO("RINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
+		return SUCCESS;
+	}
+
 	requestCache.Reset();
 
 	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed)
@@ -194,12 +204,12 @@ PHP_RINIT_FUNCTION(aikido) {
 		}
 
 		json initData = {
-			{"log_level", aikido_log_level_str((AIKIDO_LOG_LEVEL)AIKIDO_GLOBAL(log_level))},
+			{"log_level", AIKIDO_GLOBAL(log_level_str)},
 			{"socket_path", AIKIDO_GLOBAL(socket_path)},
-			{"trust_proxy", get_env_bool("AIKIDO_TRUST_PROXY", true)},
-			{"localhost_allowed_by_default", get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true)},
-			{"collect_api_schema", get_env_bool("AIKIDO_FEATURE_COLLECT_API_SCHEMA", false)},
-			{"sapi", sapi_module.name}};
+			{"trust_proxy", AIKIDO_GLOBAL(trust_proxy)},
+			{"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
+			{"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
+			{"sapi", AIKIDO_GLOBAL(sapi_name)}};
 
 		std::string initDataString = initData.dump();
 
@@ -251,6 +261,11 @@ PHP_RINIT_FUNCTION(aikido) {
 
 PHP_RSHUTDOWN_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RSHUTDOWN started!\n");
+
+	if (AIKIDO_GLOBAL(disable) == true) {
+		AIKIDO_LOG_INFO("RSHUTDOWN finished earlier because AIKIDO_DISABLE is set to 1!\n");
+		return SUCCESS;
+	}
 
 	#if PHP_VERSION_ID < 80000
 		exit_current_request = false;
