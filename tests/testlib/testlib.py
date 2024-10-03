@@ -217,8 +217,8 @@ def add_to_hosts_file(hostname, ip):
         file.write(entry)
         print(f"Added '{entry.strip()}' to the hosts file.")
 
-def mock_down():
-    mock_port = 0
+def mock_server_down():
+    mock_server_post("/mock/down", "")
     
-def mock_up():
-    mock
+def mock_server_up():
+    mock_server_post("/mock/up", "")

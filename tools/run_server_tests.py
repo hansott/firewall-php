@@ -59,7 +59,6 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
             'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
         })
         env.update(load_env_from_json(env_file_path))
-        print(env)
 
         php_server_process_cmd = ['php', '-S', f'localhost:{php_port}', '-t', test_dir]
         if valgrind:
