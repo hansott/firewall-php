@@ -124,6 +124,14 @@ func ContextSetUserName() {
 	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
 }
 
+/*
+A partial interceptor result in stored when user-provided information was matched in the content
+of the currently called PHP function.
+We store this information because we cannot emit a detection at this point.
+We will use this after the PHP function call ends, because at that point we have more information
+that could help us emit a detection, combined with the partial interceptor result that was stored
+before the function call.
+*/
 func ContextSetPartialInterceptorResult(interceptorResult utils.InterceptorResult) {
 	Context.PartialInterceptorResult = &interceptorResult
 }
