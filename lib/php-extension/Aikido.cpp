@@ -303,7 +303,7 @@ PHP_MINFO_FUNCTION(aikido)
 // Returns true if the setting of the user succeeded, false otherwise.
 ZEND_FUNCTION(set_user) {
 	if (AIKIDO_GLOBAL(disable) == true) {
-		return false;
+		RETURN_BOOL(false);
 	}
 
 	char *id;
