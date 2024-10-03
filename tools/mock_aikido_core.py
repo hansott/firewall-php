@@ -14,9 +14,13 @@ responses = {
 events = []
 server_down = False
 
+excluded_routes = ['mock_get_events', 'mock_tests_simple', 'mock_down', 'mock_up']
+
 @app.before_request
 def check_server_status():
     global server_down
+    if request.endpoint in excluded_routes:
+        return None
     if server_down:
         return jsonify({"error": "Service Unavailable"}), 503
 

@@ -15,19 +15,26 @@ from testlib import *
 def run_test():
     assert_response_code_is(php_server_post("/testDetection", {"folder": "../../../.."}), 500)
     
+    mock_server_wait_for_new_events(5)
+    
     assert_events_length_is(mock_server_get_events(), 2)
     
     mock_server_down()
     
-    time.sleep(70)
+    time.sleep(60)
     
     assert_events_length_is(mock_server_get_events(), 2)
     assert_response_code_is(php_server_post("/testDetection", {"folder": "../../../.."}), 500)
+    
+    time.sleep(5)
     assert_events_length_is(mock_server_get_events(), 2)
     
     mock_server_up()
     
+    time.sleep(5)
     assert_response_code_is(php_server_post("/testDetection", {"folder": "../../../.."}), 500)
+    
+    mock_server_wait_for_new_events(5)
     assert_events_length_is(mock_server_get_events(), 3)
         
 if __name__ == "__main__":
