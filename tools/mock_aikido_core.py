@@ -47,13 +47,13 @@ def mock_set_config():
     return jsonify({})
 
 @app.route('/mock/down', methods=['POST'])
-def mock_set_config():
+def mock_down():
     global server_down
     server_down = True
     return jsonify({})
 
 @app.route('/mock/up', methods=['POST'])
-def mock_set_config():
+def mock_up():
     global server_down
     server_down = False
     return jsonify({})
