@@ -15,7 +15,7 @@ from testlib import *
 def run_test():
     assert_response_code_is(php_server_post("/testDetection", {"folder": "../../../.."}), 500)
     
-    mock_server_wait_for_new_events(5)
+    mock_server_wait_for_new_events(30)
     
     assert_events_length_is(mock_server_get_events(), 2)
     
@@ -26,7 +26,7 @@ def run_test():
     assert_events_length_is(mock_server_get_events(), 2)
     assert_response_code_is(php_server_post("/testDetection", {"folder": "../../../.."}), 500)
     
-    time.sleep(5)
+    time.sleep(30)
     assert_events_length_is(mock_server_get_events(), 2)
     
     mock_server_up()
