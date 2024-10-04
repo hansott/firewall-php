@@ -15,7 +15,8 @@ enum EVENT_ID {
     MAX_EVENT_ID
 };
 
-enum CALLBACK_ID {
+enum CALLBACK_ID
+{
     NO_CALLBACK_ID,
 
     CONTEXT_REMOTE_ADDRESS,
@@ -37,7 +38,9 @@ enum CALLBACK_ID {
     FUNCTION_NAME,
 
     OUTGOING_REQUEST_URL,
+    OUTGOING_REQUEST_EFFECTIVE_URL, // Effective URL after redirects (the final URL were the request was actually made)
     OUTGOING_REQUEST_PORT,
+    OUTGOING_REQUEST_RESOLVED_IP,
 
     CMD,
 

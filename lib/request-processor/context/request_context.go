@@ -4,13 +4,13 @@ package context
 import "C"
 import (
 	"main/log"
-	"strconv"
 )
 
 type CallbackFunction func(int) string
 
-type ContextData struct {
-	Callback      CallbackFunction
+/* Request level context cache (changes on each PHP request) */
+type RequestContextData struct {
+	Callback      CallbackFunction // callback to access data from the PHP layer (C++ extension) about the current request and current event
 	Method        *string
 	Route         *string
 	RouteParsed   *string
@@ -31,10 +31,13 @@ type ContextData struct {
 	HeadersParsed *map[string]string
 }
 
-var Context ContextData
+var Context RequestContextData
 
 func Init(callback CallbackFunction) bool {
-	Context = ContextData{
+	if callback == nil {
+		callback = Context.Callback
+	}
+	Context = RequestContextData{
 		Callback: callback,
 	}
 	return true
@@ -122,48 +125,4 @@ func GetUserId() string {
 
 func GetUserName() string {
 	return GetFromCache(ContextSetUserName, &Context.UserName)
-}
-
-func GetFunctionName() string {
-	return Context.Callback(C.FUNCTION_NAME)
-}
-
-func GetOutgoingRequestUrl() string {
-	return Context.Callback(C.OUTGOING_REQUEST_URL)
-}
-
-func GetOutgoingRequestPort() int {
-	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
-	if portStr == "" {
-		return 0
-	}
-	port, err := strconv.Atoi(portStr)
-	if err != nil {
-		return 0
-	}
-	return port
-}
-
-func GetCmd() string {
-	return Context.Callback(C.CMD)
-}
-
-func GetFilename() string {
-	return Context.Callback(C.FILENAME)
-}
-
-func GetFilename2() string {
-	return Context.Callback(C.FILENAME2)
-}
-
-func GetSqlQuery() string {
-	return Context.Callback(C.SQL_QUERY)
-}
-
-func GetSqlDialect() string {
-	return Context.Callback(C.SQL_DIALECT)
-}
-
-func GetModule() string {
-	return Context.Callback(C.MODULE)
 }

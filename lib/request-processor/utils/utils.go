@@ -6,7 +6,6 @@ import (
 	"main/globals"
 	"main/vulnerabilities/sql-injection/dialects"
 	"net"
-	"net/url"
 	"strings"
 )
 
@@ -39,24 +38,6 @@ func MustGetFromMap[T any](m map[string]interface{}, key string) T {
 		panic(fmt.Sprintf("Error parsing JSON: key %s does not exist or it has an incorrect type", key))
 	}
 	return *value
-}
-
-func FixURL(url string) string {
-	if !strings.HasPrefix(url, "https://") && strings.HasPrefix(url, "https:/") {
-		return strings.Replace(url, "https:/", "https://", 1)
-	}
-	if !strings.HasPrefix(url, "http://") && strings.HasPrefix(url, "http:/") {
-		return strings.Replace(url, "http:/", "http://", 1)
-	}
-	return url
-}
-
-func GetDomain(rawurl string) string {
-	parsedURL, err := url.Parse(FixURL(rawurl))
-	if err != nil {
-		return ""
-	}
-	return parsedURL.Hostname()
 }
 
 func ParseFormData(data string, separator string) map[string]interface{} {

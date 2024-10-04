@@ -10,6 +10,8 @@ import (
 )
 
 func OnRequestInit() string {
+	context.Init(nil)
+
 	method := context.GetMethod()
 	route := context.GetRoute()
 	if method == "" || route == "" {

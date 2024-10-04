@@ -101,9 +101,17 @@ char* GoContextCallback(int callback_id) {
         ctx = "OUTGOING_REQUEST_URL";
         ret = eventCache.outgoingRequestUrl;
         break;
+    case OUTGOING_REQUEST_EFFECTIVE_URL:
+        ctx = "OUTGOING_REQUEST_EFFECTIVE_URL";
+        ret = eventCache.outgoingRequestEffectiveUrl;
+        break;
     case OUTGOING_REQUEST_PORT:
         ctx = "OUTGOING_REQUEST_PORT";
         ret = eventCache.outgoingRequestPort;
+        break;
+    case OUTGOING_REQUEST_RESOLVED_IP:
+        ctx = "OUTGOING_REQUEST_RESOLVED_IP";
+        ret = eventCache.outgoingRequestResolvedIp;
         break;
     case CMD:
         ctx = "CMD";

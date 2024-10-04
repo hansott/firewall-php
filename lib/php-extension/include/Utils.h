@@ -2,14 +2,26 @@
 
 #include "Includes.h"
 
+/*
+	Macro for registering an Aikido handler in the HOOKED_FUNCTIONS map.
+	It takes as parameters the PHP function name to be hooked, a C++ function
+	that should be called BEFORE that PHP function is executed and a C++ function
+	that should be called AFTER that PHP function is executed.
+	The nullptr part is a placeholder where the original function handler from
+	the Zend framework will be stored at initialization when we run the hooking.
+*/
+#define AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(function_name, pre_handler, post_handler) { std::string(#function_name), { pre_handler, post_handler, nullptr } }
+
 /* 
 	Macro for registering an Aikido handler in the HOOKED_FUNCTIONS map.
-	It takes as parameters the PHP function name to be hooked and C++ function 
-		that should be called when that PHP function is executed.
-	The nullptr part is a placeholder where the original function handler from
-		the Zend framework will be stored at initialization when we run the hooking.
+	It takes as parameters the PHP function name to be hooked and a C++ function 
+	that should be called BEFORE that PHP function is executed.
+	This macro doesn't register any hook for AFTER the function is execute, that's why
+	the second argument is nullptr.
+	The last nullptr part is a placeholder where the original function handler from
+	the Zend framework will be stored at initialization when we run the hooking.
 */
-#define AIKIDO_REGISTER_FUNCTION_HANDLER_EX(function_name, function_pointer) { std::string(#function_name), { function_pointer, nullptr, nullptr } }
+#define AIKIDO_REGISTER_FUNCTION_HANDLER_EX(function_name, pre_handler) AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(function_name, pre_handler, nullptr)
 
 /*
 	Shorthand version of AIKIDO_REGISTER_FUNCTION_HANDLER_EX that constructs automatically the C++ function to be called.
@@ -19,12 +31,11 @@
 #define AIKIDO_REGISTER_FUNCTION_HANDLER(function_name) { std::string(#function_name), { handle_pre_##function_name, nullptr, nullptr } }
 
 /*
-	Shorthand version of AIKIDO_REGISTER_FUNCTION_HANDLER_EX that constructs automatically the C++ function to be called.
+	Shorthand version of AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX that constructs automatically the C++ function to be called.
 	This version registers a pre-hook and a post-hook (hooks for before and after the function is executed).
 	For example, if function name is curl_init this macro will store { "curl_init", { handle_pre_curl_init, handle_post_curl_init, nullptr } }.
 */
-#define AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(function_name) { std::string(#function_name), { handle_pre_##function_name, handle_post_##function_name, nullptr } }
-
+#define AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(function_name) AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST_EX(function_name, handle_pre_##function_name, handle_post_##function_name)
 
 /*
 	Similar to AIKIDO_REGISTER_FUNCTION_HANDLER, but for methods.
@@ -104,6 +115,8 @@ bool aikido_call_user_function_one_param(std::string function_name, long first_p
 
 bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval *return_value = nullptr, zval *object = nullptr);
 
+std::string aikido_call_user_function_curl_getinfo(zval *curl_handle, int curl_info_option);
+
 std::string aikido_generate_socket_path();
 
-const char* get_event_name(EVENT_ID event);
+const char *get_event_name(EVENT_ID event);

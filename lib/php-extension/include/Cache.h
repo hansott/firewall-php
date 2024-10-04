@@ -22,7 +22,9 @@ public:
     std::string cmd;
 
     std::string outgoingRequestUrl;
+    std::string outgoingRequestEffectiveUrl;
     std::string outgoingRequestPort;
+    std::string outgoingRequestResolvedIp;
     
     std::string sqlQuery;
     std::string sqlDialect;

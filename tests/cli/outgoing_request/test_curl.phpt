@@ -62,4 +62,4 @@ curl_close($ch6);
 [AIKIDO][INFO] [BEFORE] Got domain: www.aikido.dev
 [AIKIDO][INFO] [AFTER] Got domain: www.aikido.dev port: 80
 [AIKIDO][INFO] [BEFORE] Got domain: some-invalid-domain.com
-[AIKIDO][INFO] [AFTER] Got domain: some-invalid-domain.com port: 0
+[AIKIDO][INFO] [AFTER] Got domain: some-invalid-domain.com port: 4113

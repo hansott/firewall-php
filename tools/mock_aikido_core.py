@@ -45,6 +45,10 @@ def mock_set_config():
 def mock_get_events():
     return jsonify(events)
 
+@app.route('/tests/simple', methods=['GET'])
+def mock_tests_simple():
+    time.sleep(1)
+    return jsonify("{}")
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 or len(sys.argv) > 3:

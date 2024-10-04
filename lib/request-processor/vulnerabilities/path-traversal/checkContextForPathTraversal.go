@@ -8,9 +8,11 @@ import (
 func CheckContextForPathTraversal(filename string, operation string, checkPathStart bool) *utils.InterceptorResult {
 	for _, source := range context.SOURCES {
 		mapss := source.CacheGet()
+		sanitizedPath := SanitizePath(filename)
 
 		for str, path := range mapss {
-			if detectPathTraversal(filename, str, checkPathStart) {
+			inputString := SanitizePath(str)
+			if detectPathTraversal(sanitizedPath, inputString, checkPathStart) {
 				return &utils.InterceptorResult{
 					Operation:     operation,
 					Kind:          utils.Path_traversal,
@@ -26,4 +28,12 @@ func CheckContextForPathTraversal(filename string, operation string, checkPathSt
 
 	}
 	return nil
+}
+
+func SanitizePath(path string) string {
+	// If path starts with file:// -> remove it
+	if len(path) > 7 && path[:7] == "file://" {
+		path = path[7:]
+	}
+	return path
 }
