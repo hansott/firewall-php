@@ -3,17 +3,14 @@ package context
 // #include "../../API.h"
 import "C"
 import (
-	"main/helpers"
 	"main/log"
-	"main/utils"
-	"net/url"
 )
 
 type CallbackFunction func(int) string
 
-type ContextData struct {
-	/* Request level context cache below (changes on each PHP request) */
-	Callback      CallbackFunction
+/* Request level context cache (changes on each PHP request) */
+type RequestContextData struct {
+	Callback      CallbackFunction // callback to access data from the PHP layer (C++ extension) about the current request and current event
 	Method        *string
 	Route         *string
 	RouteParsed   *string
@@ -32,21 +29,15 @@ type ContextData struct {
 	CookiesParsed *map[string]string
 	Headers       *map[string]interface{}
 	HeadersParsed *map[string]string
-
-	/* Event level context cache below (changes on each PHP function call) */
-	OutgoingRequestHostname      *string
-	OutgoingRequestPort          *int
-	OutgoingRequestResolvedIp    *string
-	CurrentSsrfInterceptorResult *utils.InterceptorResult
 }
 
-var Context ContextData
+var Context RequestContextData
 
 func Init(callback CallbackFunction) bool {
 	if callback == nil {
 		callback = Context.Callback
 	}
-	Context = ContextData{
+	Context = RequestContextData{
 		Callback: callback,
 	}
 	return true
@@ -134,65 +125,4 @@ func GetUserId() string {
 
 func GetUserName() string {
 	return GetFromCache(ContextSetUserName, &Context.UserName)
-}
-
-func GetHostNameAndPort(urlCallbackOption int) (string, int) {
-	urlStr := Context.Callback(urlCallbackOption)
-	urlParsed, err := url.Parse(urlStr)
-	if err != nil {
-		return "", 0
-	}
-	hostname := urlParsed.Hostname()
-	portFromURL := helpers.GetPortFromURL(urlParsed)
-
-	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
-	port := helpers.ParsePort(portStr)
-	if port == 0 {
-		port = portFromURL
-	}
-	return hostname, port
-}
-
-func GetOutgoingRequestHostnameAndPort() (string, int) {
-	return GetHostNameAndPort(C.OUTGOING_REQUEST_URL)
-}
-
-func GetOutgoingRequestEffectiveHostnameAndPort() (string, int) {
-	return GetHostNameAndPort(C.OUTGOING_REQUEST_EFFECTIVE_URL)
-}
-
-func GetOutgoingRequestResolvedIp() string {
-	return Context.Callback(C.OUTGOING_REQUEST_RESOLVED_IP)
-}
-
-func GetCurrentSsrfInterceptorResult() *utils.InterceptorResult {
-	return Context.CurrentSsrfInterceptorResult
-}
-
-func GetFunctionName() string {
-	return Context.Callback(C.FUNCTION_NAME)
-}
-
-func GetCmd() string {
-	return Context.Callback(C.CMD)
-}
-
-func GetFilename() string {
-	return Context.Callback(C.FILENAME)
-}
-
-func GetFilename2() string {
-	return Context.Callback(C.FILENAME2)
-}
-
-func GetSqlQuery() string {
-	return Context.Callback(C.SQL_QUERY)
-}
-
-func GetSqlDialect() string {
-	return Context.Callback(C.SQL_DIALECT)
-}
-
-func GetModule() string {
-	return Context.Callback(C.MODULE)
 }

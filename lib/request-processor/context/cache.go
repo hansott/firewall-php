@@ -123,18 +123,3 @@ func ContextSetUserId() {
 func ContextSetUserName() {
 	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
 }
-
-/*
-A partial interceptor result in stored when user-provided information was matched in the content
-of the currently called PHP function.
-We store this information because we cannot emit a detection at this point.
-We will use this after the PHP function call ends, because at that point we have more information
-that could help us emit a detection, combined with the partial interceptor result that was stored
-before the function call.
-A partial interceptor result stores the payload that matched the user input, the path to it, the
-PHP function that was called, ..., basically the data needed for reporting if this actually turns into
-a detection at a later stage.
-*/
-func ContextSetCurrentSsrfInterceptorResult(interceptorResult *utils.InterceptorResult) {
-	Context.CurrentSsrfInterceptorResult = interceptorResult
-}
