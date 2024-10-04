@@ -37,6 +37,8 @@ func GetRoutesAndClear() []Route {
 		}
 	}
 
+	// Clear routes data
+	globals.Routes = make(map[string]map[string]*Route)
 	return routes
 }
 

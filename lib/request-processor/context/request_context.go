@@ -22,12 +22,13 @@ type RequestContextData struct {
 	UserId                 *string
 	UserName               *string
 	BodyRaw                *string
+	BodyParsed             *map[string]interface{}
 	BodyParsedFlattened    *map[string]string
-	QueryRaw               *string
+	QueryParsed            *map[string]interface{}
 	QueryParsedFlattened   *map[string]string
-	Cookies                *string
+	CookiesParsed          *map[string]interface{}
 	CookiesParsedFlattened *map[string]string
-	Headers                *map[string]interface{}
+	HeadersParsed          *map[string]interface{}
 	HeadersParsedFlattened *map[string]string
 }
 
