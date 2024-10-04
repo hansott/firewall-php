@@ -45,7 +45,8 @@ func LoadForUnitTests(context map[string]string) {
 }
 
 func UnloadForUnitTests() {
-	Context = ContextData{}
+	Context = RequestContextData{}
+	EventContext = EventContextData{}
 }
 
 func GetJsonString(m map[string]interface{}) string {
