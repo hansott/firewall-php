@@ -60,7 +60,7 @@ def localhost_post_request(port, route, data, headers={}, benchmark=False):
         try:
             r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
             break
-        except ConnectionError as e:
+        except Exception as e:
             retries += 1
             if retries >= 3:
                 print("Max retries reached. Raising exception to the upper layer.")
