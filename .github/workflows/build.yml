@@ -41,6 +41,7 @@ jobs:
         cd agent
         go get main/ipc/protos
         go get google.golang.org/grpc
+        go get github.com/stretchr/testify/assert
         go test ./...
         go build -ldflags "-s -w" -buildmode=c-shared -o ../../build/aikido-agent.so
         ls -l ../../build
@@ -54,6 +55,7 @@ jobs:
         cd request-processor
         go get main/ipc/protos
         go get google.golang.org/grpc
+        go get github.com/stretchr/testify/assert
         go test ./...
         go build -ldflags "-s -w" -buildmode=c-shared -o ../../build/aikido-request-processor.so
         ls -l ../../build

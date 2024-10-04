@@ -18,6 +18,7 @@ go test ./...
 go build -ldflags "-s -w" -buildmode=c-shared  -o ../../build/aikido-agent.so
 cd ../request-processor
 go get google.golang.org/grpc
+go get github.com/stretchr/testify/assert
 go test ./...
 go build -ldflags "-s -w" -buildmode=c-shared  -o ../../build/aikido-request-processor.so
 cd ../../build

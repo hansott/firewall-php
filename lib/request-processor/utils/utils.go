@@ -200,3 +200,12 @@ func GetSqlDialectFromString(dialect string) dialects.SQLDialect {
 		return dialects.SQLDialectMySQL{} // default -> MySQL
 	}
 }
+
+// StringPointer is a helper function to return a pointer to a string value.
+func StringPointer(s string) *string {
+	return &s
+}
+
+func BoolPointer(b bool) *bool {
+	return &b
+}

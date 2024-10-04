@@ -6,8 +6,8 @@ type Source struct {
 }
 
 var SOURCES = []Source{
-	{"body", GetParsedBody},
-	{"query", GetParsedQuery},
-	{"headers", GetParsedHeaders},
-	{"cookies", GetParsedCookies},
+	{"body", GetBodyParsedFlattened},
+	{"query", GetQueryParsedFlattened},
+	{"headers", GetHeadersParsedFlattened},
+	{"cookies", GetCookiesParsedFlattened},
 }

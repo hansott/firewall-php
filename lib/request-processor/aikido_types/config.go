@@ -6,6 +6,7 @@ type EnvironmentConfigData struct {
 	SAPI                      string `json:"sapi"`                         // '{php-sapi}'
 	TrustProxy                bool   `json:"trust_proxy"`                  // default: true
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"` // default: true
+	CollectApiSchema          bool   `json:"collect_api_schema"`           // default: false
 }
 
 type RateLimiting struct {

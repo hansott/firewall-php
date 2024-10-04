@@ -39,12 +39,12 @@ def localhost_get_request(port, route="", benchmark=False):
     time.sleep(0.001)
     return r
 
-def localhost_post_request(port, route, data, benchmark=False):
+def localhost_post_request(port, route, data, headers={}, benchmark=False):
     global benchmarks
     
     start_time = datetime.datetime.now()
     
-    r = requests.post(f"http://localhost:{port}{route}", json=data)
+    r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
     
     end_time = datetime.datetime.now()    
     delta = end_time - start_time
@@ -59,8 +59,8 @@ def localhost_post_request(port, route, data, benchmark=False):
 def php_server_get(route="", benchmark=False):
     return localhost_get_request(php_port, route, benchmark)
 
-def php_server_post(route, data, benchmark=False):
-    return localhost_post_request(php_port, route, data, benchmark)
+def php_server_post(route, data, headers={}, benchmark=False):
+    return localhost_post_request(php_port, route, data, headers, benchmark)
 
 def mock_server_get(route=""):
     return localhost_get_request(mock_port, route, False)

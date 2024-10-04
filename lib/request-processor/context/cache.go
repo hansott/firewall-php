@@ -20,19 +20,22 @@ import (
 type ParseFunction func(string) map[string]interface{}
 
 func ContextSetMap(contextId int, rawDataPtr **string, parsedPtr **map[string]interface{}, stringsPtr **map[string]string, parseFunc ParseFunction) {
-	if *stringsPtr != nil {
+	if stringsPtr != nil && *stringsPtr != nil {
 		return
 	}
+
 	contextData := Context.Callback(contextId)
 	if rawDataPtr != nil {
 		*rawDataPtr = &contextData
 	}
-	parsed := parseFunc(contextData)
 	if parsedPtr != nil {
+		parsed := parseFunc(contextData)
 		*parsedPtr = &parsed
+		if stringsPtr != nil {
+			strings := helpers.ExtractStringsFromUserInput(parsed, []helpers.PathPart{})
+			*stringsPtr = &strings
+		}
 	}
-	strings := helpers.ExtractStringsFromUserInput(parsed, []helpers.PathPart{})
-	*stringsPtr = &strings
 }
 
 func ContextSetString(context_id int, m **string) {
@@ -44,19 +47,19 @@ func ContextSetString(context_id int, m **string) {
 }
 
 func ContextSetBody() {
-	ContextSetMap(C.CONTEXT_BODY, &Context.Body, nil, &Context.BodyParsed, utils.ParseBody)
+	ContextSetMap(C.CONTEXT_BODY, &Context.BodyRaw, &Context.BodyParsed, &Context.BodyParsedFlattened, utils.ParseBody)
 }
 
 func ContextSetQuery() {
-	ContextSetMap(C.CONTEXT_QUERY, &Context.Query, nil, &Context.QueryParsed, utils.ParseQuery)
+	ContextSetMap(C.CONTEXT_QUERY, nil, &Context.QueryParsed, &Context.QueryParsedFlattened, utils.ParseQuery)
 }
 
 func ContextSetCookies() {
-	ContextSetMap(C.CONTEXT_COOKIES, &Context.Cookies, nil, &Context.CookiesParsed, utils.ParseCookies)
+	ContextSetMap(C.CONTEXT_COOKIES, nil, &Context.CookiesParsed, &Context.CookiesParsedFlattened, utils.ParseCookies)
 }
 
 func ContextSetHeaders() {
-	ContextSetMap(C.CONTEXT_HEADERS, nil, &Context.Headers, &Context.HeadersParsed, utils.ParseHeaders)
+	ContextSetMap(C.CONTEXT_HEADERS, nil, &Context.HeadersParsed, &Context.HeadersParsedFlattened, utils.ParseHeaders)
 }
 
 func ContextSetStatusCode() {

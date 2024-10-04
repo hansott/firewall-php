@@ -10,35 +10,40 @@ type CallbackFunction func(int) string
 
 /* Request level context cache (changes on each PHP request) */
 type RequestContextData struct {
-	Callback      CallbackFunction // callback to access data from the PHP layer (C++ extension) about the current request and current event
-	Method        *string
-	Route         *string
-	RouteParsed   *string
-	URL           *string
-	StatusCode    *int
-	IP            *string
-	IsIpBypassed  *bool
-	UserAgent     *string
-	UserId        *string
-	UserName      *string
-	Body          *string
-	BodyParsed    *map[string]string
-	Query         *string
-	QueryParsed   *map[string]string
-	Cookies       *string
-	CookiesParsed *map[string]string
-	Headers       *map[string]interface{}
-	HeadersParsed *map[string]string
+	Callback               CallbackFunction // callback to access data from the PHP layer (C++ extension) about the current request and current event
+	Method                 *string
+	Route                  *string
+	RouteParsed            *string
+	URL                    *string
+	StatusCode             *int
+	IP                     *string
+	IsIpBypassed           *bool
+	UserAgent              *string
+	UserId                 *string
+	UserName               *string
+	BodyRaw                *string
+	BodyParsed             *map[string]interface{}
+	BodyParsedFlattened    *map[string]string
+	QueryParsed            *map[string]interface{}
+	QueryParsedFlattened   *map[string]string
+	CookiesParsed          *map[string]interface{}
+	CookiesParsedFlattened *map[string]string
+	HeadersParsed          *map[string]interface{}
+	HeadersParsedFlattened *map[string]string
 }
 
 var Context RequestContextData
 
 func Init(callback CallbackFunction) bool {
-	if callback == nil {
-		callback = Context.Callback
-	}
 	Context = RequestContextData{
 		Callback: callback,
+	}
+	return true
+}
+
+func Clear() bool {
+	Context = RequestContextData{
+		Callback: Context.Callback,
 	}
 	return true
 }
@@ -83,36 +88,40 @@ func IsIpBypassed() bool {
 	return GetFromCache(ContextSetIsIpBypassed, &Context.IsIpBypassed)
 }
 
-func GetBody() string {
-	return GetFromCache(ContextSetBody, &Context.Body)
+func GetBodyRaw() string {
+	return GetFromCache(ContextSetBody, &Context.BodyRaw)
 }
 
-func GetParsedBody() map[string]string {
+func GetBodyParsed() map[string]interface{} {
 	return GetFromCache(ContextSetBody, &Context.BodyParsed)
 }
 
-func GetQuery() string {
-	return GetFromCache(ContextSetQuery, &Context.Query)
-}
-
-func GetParsedQuery() map[string]string {
+func GetQueryParsed() map[string]interface{} {
 	return GetFromCache(ContextSetQuery, &Context.QueryParsed)
 }
 
-func GetCookies() string {
-	return GetFromCache(ContextSetCookies, &Context.Cookies)
-}
-
-func GetParsedCookies() map[string]string {
+func GetCookiesParsed() map[string]interface{} {
 	return GetFromCache(ContextSetCookies, &Context.CookiesParsed)
 }
 
-func GetHeaders() map[string]interface{} {
-	return GetFromCache(ContextSetHeaders, &Context.Headers)
+func GetHeadersParsed() map[string]interface{} {
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
 }
 
-func GetParsedHeaders() map[string]string {
-	return GetFromCache(ContextSetHeaders, &Context.HeadersParsed)
+func GetBodyParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetBody, &Context.BodyParsedFlattened)
+}
+
+func GetQueryParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetQuery, &Context.QueryParsedFlattened)
+}
+
+func GetCookiesParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetCookies, &Context.CookiesParsedFlattened)
+}
+
+func GetHeadersParsedFlattened() map[string]string {
+	return GetFromCache(ContextSetHeaders, &Context.HeadersParsedFlattened)
 }
 
 func GetUserAgent() string {

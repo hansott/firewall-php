@@ -31,10 +31,10 @@ func (s *server) OnRequestInit(ctx context.Context, req *protos.RequestMetadataI
 }
 
 func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
-	log.Debugf("Received request metadata: %s %s %d", req.GetMethod(), req.GetRoute(), req.GetStatusCode())
+	log.Debugf("Received request metadata: %s %s %d %v", req.GetMethod(), req.GetRoute(), req.GetStatusCode(), req.GetApiSpec())
 
 	go storeStats()
-	go storeRoute(req.GetMethod(), req.GetRoute())
+	go storeRoute(req.GetMethod(), req.GetRoute(), req.GetApiSpec())
 	go updateRateLimitingStatus(req.GetMethod(), req.GetRoute())
 
 	return &emptypb.Empty{}, nil
