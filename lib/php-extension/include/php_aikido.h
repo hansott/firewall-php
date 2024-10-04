@@ -15,7 +15,13 @@ ZEND_TSRMLS_CACHE_EXTERN()
 ZEND_BEGIN_MODULE_GLOBALS(aikido)
     long log_level;
     bool blocking;
+    bool disable;
+    bool collect_api_schema;
+    bool trust_proxy;
+    bool localhost_allowed_by_default;
     std::string socket_path;
+    std::string log_level_str;
+    std::string sapi_name;
 ZEND_END_MODULE_GLOBALS(aikido)
 
 ZEND_EXTERN_MODULE_GLOBALS(aikido)

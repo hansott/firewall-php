@@ -52,14 +52,14 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
 
         print(f"Starting PHP server on port {php_port} for {test_name}...")
         env = os.environ.copy()
-        env.update(load_env_from_json(env_file_path))
         env.update({
             'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
             'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
-            'AIKIDO_CONFIG_ENDPOINT': f'http://localhost:{mock_port}/',
+            'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
         })
-        
+        env.update(load_env_from_json(env_file_path))
+
         php_server_process_cmd = ['php', '-S', f'localhost:{php_port}', '-t', test_dir]
         if valgrind:
             php_server_process_cmd = ['valgrind', f'--supressions={test_lib_dir}/valgrind.supp'] + php_server_process_cmd

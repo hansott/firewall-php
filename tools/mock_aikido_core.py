@@ -12,7 +12,17 @@ responses = {
 }
 
 events = []
+server_down = False
 
+excluded_routes = ['mock_get_events', 'mock_tests_simple', 'mock_down', 'mock_up']
+
+@app.before_request
+def check_server_status():
+    global server_down
+    if request.endpoint in excluded_routes:
+        return None
+    if server_down:
+        return jsonify({"error": "Service Unavailable"}), 503
 
 @app.route('/config', methods=['GET'])
 def get_config():
@@ -40,6 +50,17 @@ def mock_set_config():
     responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
     return jsonify({})
 
+@app.route('/mock/down', methods=['POST'])
+def mock_down():
+    global server_down
+    server_down = True
+    return jsonify({})
+
+@app.route('/mock/up', methods=['POST'])
+def mock_up():
+    global server_down
+    server_down = False
+    return jsonify({})
 
 @app.route('/mock/events', methods=['GET'])
 def mock_get_events():
