@@ -19,7 +19,7 @@ All these checks first verify if the hostname was provided via user input.
 Protects both curl and fopen wrapper functions (file_get_contents, etc...).
 */
 func OnPreOutgoingRequest() string {
-	context.ContextSetPartialInterceptorResult(nil)
+	context.ContextSetCurrentSsrfInterceptorResult(nil)
 
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	operation := context.GetFunctionName()
@@ -36,7 +36,13 @@ func OnPreOutgoingRequest() string {
 }
 
 /*
-	Downgrades a potential SSRF attack to a blind SSRF attack.
+	This function acts as a last resort to protect against SSRF.
+	If we didn't have enough info to stop the SSRF attack before the request was made,
+	we attempt to block it after the request was made.
+	If we detect SSRF here we throw an exception to the PHP layer and the response content
+	of the request does NOT reach the PHP code, thus stopping the SSRF attack.
+	If it's a PUT/POST request, it will actually go through, but an exception will be thrown to
+	the PHP layer, thus downgrading it to blind SSRF.
 	Defends agains:
 
 - re-direct SSRF attacks (redirects lead to a hostname that resolves to a local IP address)
@@ -46,7 +52,7 @@ All these checks first verify if the hostname was provided via user input.
 Protects curl.
 */
 func OnPostOutgoingRequest() string {
-	defer context.ContextSetPartialInterceptorResult(nil)
+	defer context.ContextSetCurrentSsrfInterceptorResult(nil)
 
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	effectiveHostname, effectivePort := context.GetOutgoingRequestEffectiveHostnameAndPort()
@@ -71,6 +77,8 @@ func OnPostOutgoingRequest() string {
 
 	if res != nil {
 		go grpc.OnAttackDetected(*res)
+
+		/* Throw exception to PHP layer if blocking is enabled -> Response content is not returned to the PHP code */
 		return attack.GetAttackDetectedAction(*res)
 	}
 	return ""

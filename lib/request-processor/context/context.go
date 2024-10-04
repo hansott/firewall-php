@@ -34,10 +34,10 @@ type ContextData struct {
 	HeadersParsed *map[string]string
 
 	/* Event level context cache below (changes on each PHP function call) */
-	OutgoingRequestHostname   *string
-	OutgoingRequestPort       *int
-	OutgoingRequestResolvedIp *string
-	PartialInterceptorResult  *utils.InterceptorResult
+	OutgoingRequestHostname      *string
+	OutgoingRequestPort          *int
+	OutgoingRequestResolvedIp    *string
+	CurrentSsrfInterceptorResult *utils.InterceptorResult
 }
 
 var Context ContextData
@@ -165,8 +165,8 @@ func GetOutgoingRequestResolvedIp() string {
 	return Context.Callback(C.OUTGOING_REQUEST_RESOLVED_IP)
 }
 
-func GetPartialInterceptorResult() *utils.InterceptorResult {
-	return Context.PartialInterceptorResult
+func GetCurrentSsrfInterceptorResult() *utils.InterceptorResult {
+	return Context.CurrentSsrfInterceptorResult
 }
 
 func GetFunctionName() string {

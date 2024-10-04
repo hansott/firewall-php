@@ -29,7 +29,7 @@ func isTrustedHostname(hostname string) bool {
 	return exists
 }
 
-func TryGetIMDSIp(hostname string, resolvedIps []string) string {
+func FindIMDSIp(hostname string, resolvedIps []string) string {
 	if isTrustedHostname(hostname) {
 		return ""
 	}
