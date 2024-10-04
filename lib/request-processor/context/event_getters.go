@@ -47,7 +47,7 @@ func GetModule() string {
 	return Context.Callback(C.MODULE)
 }
 
-func getHostNameAndPort(urlCallbackId int) (string, int) {
+func getHostNameAndPort(urlCallbackId int) (string, int) { // urlcallbackid is the type of data we request, eg C.OUTGOING_REQUEST_URL
 	urlStr := Context.Callback(urlCallbackId)
 	urlParsed, err := url.Parse(urlStr)
 	if err != nil {
