@@ -11,6 +11,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 		mapss := source.CacheGet()
 
 		for str, path := range mapss {
+
 			if findHostnameInUserInput(str, hostname, port) {
 				interceptorResult := utils.InterceptorResult{
 					Operation:     operation,
@@ -31,7 +32,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 				if resolvedIpStatus != nil {
 					interceptorResult.Metadata["resolvedIp"] = resolvedIpStatus.ip
 					if resolvedIpStatus.isIMDS {
-						// Hostname was found in user input and it resolves to an IMDS IP address -> stored SSRF
+						// Hostname was found in user input and it resolves to an IMDS IP address -> SSRF
 						interceptorResult.Metadata["isIMDSIp"] = "true"
 					}
 					if resolvedIpStatus.isPrivate {
@@ -44,7 +45,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 				// Hostname matched in the user input but we did not managed to determine if it's a SSRF attack at this point.
 				// Storing the matching information (interceptor result) in order to use it once the request completes,
 				// as at that point we might have more information to determine if SSRF or not.
-				context.ContextSetPartialInterceptorResult(interceptorResult)
+				context.EventContextSetCurrentSsrfInterceptorResult(&interceptorResult)
 			}
 		}
 	}
@@ -53,7 +54,7 @@ func CheckContextForSSRF(hostname string, port int, operation string) *utils.Int
 
 /* This is called after the request is made to check for SSRF in the effective hostname - hostname optained after redirects from the PHP library that made the request (curl) */
 func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorResult {
-	interceptorResult := context.GetPartialInterceptorResult()
+	interceptorResult := context.GetCurrentSsrfInterceptorResult()
 	if interceptorResult == nil {
 		// The initially requested hostname was not found in the user input -> no SSRF
 		return nil
@@ -64,7 +65,7 @@ func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorR
 	if resolvedIpStatus != nil {
 		interceptorResult.Metadata["resolvedIp"] = resolvedIpStatus.ip
 		if resolvedIpStatus.isIMDS {
-			// Hostname was found in user input and the effective hostname (after redirects) resolved to an IMDS IP address -> stored SSRF
+			// Hostname was found in user input and the effective hostname (after redirects) resolved to an IMDS IP address -> SSRF
 			interceptorResult.Metadata["isIMDSIp"] = "true"
 		}
 		if resolvedIpStatus.isPrivate {
@@ -78,7 +79,7 @@ func CheckEffectiveHostnameForSSRF(effectiveHostname string) *utils.InterceptorR
 
 /* This is called after the request is made to check for SSRF in the resolvedIP - IP optained from the PHP library that made the request (curl) */
 func CheckResolvedIpForSSRF(resolvedIp string) *utils.InterceptorResult {
-	interceptorResult := context.GetPartialInterceptorResult()
+	interceptorResult := context.GetCurrentSsrfInterceptorResult()
 	if interceptorResult == nil {
 		// The initially requested hostname was not found in the user input -> no SSRF
 		return nil
