@@ -56,13 +56,13 @@ def localhost_post_request(port, route, data, headers={}, benchmark=False):
     
     retries = 0
     r = ""
-    while retries < 3:
+    while retries < 10:
         try:
             r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
             break
         except Exception as e:
             retries += 1
-            if retries >= 3:
+            if retries >= 10:
                 print("Max retries reached. Raising exception to the upper layer.")
                 raise
             time.sleep(0.5)
