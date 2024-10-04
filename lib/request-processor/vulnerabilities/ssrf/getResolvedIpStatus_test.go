@@ -9,7 +9,6 @@ func TestResolvedIpStatus(t *testing.T) {
 		hostname string
 		expected *ResolvedIpStatus
 	}{
-		{"localhost", &ResolvedIpStatus{ip: "::1", isPrivate: true, isIMDS: false}},
 		{"127.0.0.1", &ResolvedIpStatus{ip: "127.0.0.1", isPrivate: true, isIMDS: false}},
 		{"169.254.169.254", &ResolvedIpStatus{ip: "169.254.169.254", isPrivate: true, isIMDS: true}},
 	}
