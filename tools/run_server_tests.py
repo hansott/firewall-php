@@ -82,19 +82,22 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
         subprocess.run(['python3', test_script_name, str(php_port), str(mock_port), test_name], 
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
                        cwd=test_script_cwd,
-                       check=True, timeout=600)
+                       check=True, timeout=600, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         passed_tests.append(test_name)
 
     except subprocess.CalledProcessError as e:
         print(f"Error in testing scenario {test_name}:")
-        print(f"Test output: {e.output}")
+        print(f"Exception output: {e.output}")
+        print(f"Test exit code: {e.returncode}")
+        print(f"Test stdout: {e.stdout.decode()}")
+        print(f"Test stderr: {e.stderr.decode()}")
         failed_tests.append(test_name)
         
     except subprocess.TimeoutExpired:
         print(f"Error in testing scenario {test_name}:")
         print(f"Execution timed out.")
-        failed_tests.append([test_name, "Timeout"])
+        failed_tests.append(test_name)
         
     finally:
         if php_server_process:
