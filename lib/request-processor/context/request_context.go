@@ -34,11 +34,15 @@ type RequestContextData struct {
 var Context RequestContextData
 
 func Init(callback CallbackFunction) bool {
-	if callback == nil {
-		callback = Context.Callback
-	}
 	Context = RequestContextData{
 		Callback: callback,
+	}
+	return true
+}
+
+func Clear() bool {
+	Context = RequestContextData{
+		Callback: Context.Callback,
 	}
 	return true
 }

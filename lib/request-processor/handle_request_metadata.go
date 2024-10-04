@@ -12,7 +12,7 @@ import (
 )
 
 func OnRequestInit() string {
-	context.Init(nil)
+	context.Clear()
 
 	method := context.GetMethod()
 	route := context.GetRoute()
@@ -79,5 +79,6 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, api
 
 func OnRequestShutdown() string {
 	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode(), api_discovery.GetApiInfo())
+	context.Clear()
 	return ""
 }
