@@ -7,29 +7,12 @@ import (
 	"net/url"
 )
 
-func GetHostNameAndPort(urlCallbackOption int) (string, int) {
-	urlStr := Context.Callback(urlCallbackOption)
-	urlParsed, err := url.Parse(urlStr)
-	if err != nil {
-		return "", 0
-	}
-	hostname := urlParsed.Hostname()
-	portFromURL := helpers.GetPortFromURL(urlParsed)
-
-	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
-	port := helpers.ParsePort(portStr)
-	if port == 0 {
-		port = portFromURL
-	}
-	return hostname, port
-}
-
 func GetOutgoingRequestHostnameAndPort() (string, int) {
-	return GetHostNameAndPort(C.OUTGOING_REQUEST_URL)
+	return getHostNameAndPort(C.OUTGOING_REQUEST_URL)
 }
 
 func GetOutgoingRequestEffectiveHostnameAndPort() (string, int) {
-	return GetHostNameAndPort(C.OUTGOING_REQUEST_EFFECTIVE_URL)
+	return getHostNameAndPort(C.OUTGOING_REQUEST_EFFECTIVE_URL)
 }
 
 func GetOutgoingRequestResolvedIp() string {
@@ -62,4 +45,21 @@ func GetSqlDialect() string {
 
 func GetModule() string {
 	return Context.Callback(C.MODULE)
+}
+
+func getHostNameAndPort(urlCallbackId int) (string, int) { // urlcallbackid is the type of data we request, eg C.OUTGOING_REQUEST_URL
+	urlStr := Context.Callback(urlCallbackId)
+	urlParsed, err := url.Parse(urlStr)
+	if err != nil {
+		return "", 0
+	}
+	hostname := urlParsed.Hostname()
+	portFromURL := helpers.GetPortFromURL(urlParsed)
+
+	portStr := Context.Callback(C.OUTGOING_REQUEST_PORT)
+	port := helpers.ParsePort(portStr)
+	if port == 0 {
+		port = portFromURL
+	}
+	return hostname, port
 }
