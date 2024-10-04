@@ -27,7 +27,17 @@ def localhost_get_request(port, route="", benchmark=False):
     
     start_time = datetime.datetime.now()
 
-    r = requests.get(f"http://localhost:{port}{route}")
+    retries = 0
+    while retries < 3:
+        try:
+            r = requests.get(f"http://localhost:{port}{route}")
+            break
+        except ConnectionError as e:
+            retries += 1
+            if retries >= 3:
+                print("Max retries reached. Raising exception to the upper layer.")
+                raise
+            time.sleep(0.5)
 
     end_time = datetime.datetime.now()    
     delta = end_time - start_time
@@ -44,7 +54,18 @@ def localhost_post_request(port, route, data, headers={}, benchmark=False):
     
     start_time = datetime.datetime.now()
     
-    r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
+    retries = 0
+    r = ""
+    while retries < 3:
+        try:
+            r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
+            break
+        except ConnectionError as e:
+            retries += 1
+            if retries >= 3:
+                print("Max retries reached. Raising exception to the upper layer.")
+                raise
+            time.sleep(0.5)
     
     end_time = datetime.datetime.now()    
     delta = end_time - start_time

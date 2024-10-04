@@ -12,8 +12,7 @@ from testlib import *
 def run_test():
     for _ in range(200):
         response = php_server_post("/testDetection", {"folder": "../../../.."})
-        assert_response_code_is(response, 500)   
-        time.sleep(0.5)
+        assert_response_code_is(response, 500)
         
     time.sleep(5)
         
