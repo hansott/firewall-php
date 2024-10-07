@@ -129,7 +129,7 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, benchmark=False, valg
                 thread = threading.Thread(target=handle_test_scenario, args=args)
                 threads.append(thread)
                 thread.start()
-                time.sleep(30)
+                time.sleep(5)
             else:
                 handle_test_scenario(*args)
         
