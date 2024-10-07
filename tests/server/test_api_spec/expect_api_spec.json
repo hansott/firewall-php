@@ -4,7 +4,7 @@
         {
             "path": "/api/v1/orders",
             "method": "POST",
-            "count": 2,
+            "count": 3,
             "apispec": {
                 "body": {
                     "schema": {
