@@ -9,6 +9,13 @@ from testlib import *
 3. Waits for the heartbeat event and validates the API schema reporting.
 '''
 
+def get_api_spec_with_no_body():
+    url = "/api/v1/orders?userId=12345&status=pending"
+    headers = {
+        "Content-Type": "application/json",
+    }
+    return url, None, headers
+
 def get_api_spec_simple():
     url = "/api/v1/orders?userId=12345&status=pending"
     headers = {
@@ -83,6 +90,7 @@ def run_api_spec_tests(fns, expected_json):
 
 def run_test():
     run_api_spec_tests([
+        get_api_spec_with_no_body,
         get_api_spec_simple,
         get_api_spec_merge,
     ], "expect_api_spec.json")
