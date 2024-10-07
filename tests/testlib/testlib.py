@@ -12,6 +12,13 @@ php_port = 0
 mock_port = 0
 benchmarks = []
 
+from requests.adapters import HTTPAdapter, Retry
+s = requests.Session()
+retries = Retry(connect=10,
+                backoff_factor=1)
+
+s.mount('http://', HTTPAdapter(max_retries=retries))
+
 def load_test_args():
     global test_name, php_port, mock_port, initial_mock_port
     php_port = int(sys.argv[1])
@@ -23,14 +30,14 @@ def get_mock_port():
     return mock_port
 
 def localhost_get_request(port, route="", benchmark=False):
-    global benchmarks
+    global benchmarks, s
     
     start_time = datetime.datetime.now()
 
     retries = 0
     while retries < 3:
         try:
-            r = requests.get(f"http://localhost:{port}{route}")
+            r = s.get(f"http://localhost:{port}{route}")
             break
         except ConnectionError as e:
             retries += 1
@@ -50,7 +57,7 @@ def localhost_get_request(port, route="", benchmark=False):
     return r
 
 def localhost_post_request(port, route, data, headers={}, benchmark=False):
-    global benchmarks
+    global benchmarks, s
     
     start_time = datetime.datetime.now()
     
@@ -58,7 +65,7 @@ def localhost_post_request(port, route, data, headers={}, benchmark=False):
     r = ""
     while retries < 10:
         try:
-            r = requests.post(f"http://localhost:{port}{route}", json=data, headers=headers)
+            r = s.post(f"http://localhost:{port}{route}", json=data, headers=headers)
             break
         except Exception as e:
             retries += 1
