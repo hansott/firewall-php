@@ -322,7 +322,7 @@ jobs:
       - name: Run simple server tests
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --test test_max_detection_events_per_timeframe
+          python3 run_server_tests.py ../tests/server ../tests/testlib
 
       - name: Run CLI benchmarks with Aikido
         run: |
@@ -431,7 +431,7 @@ jobs:
         run: |
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib  --test test_max_detection_events_per_timeframe
+          sudo python run_server_tests.py ../tests/server ../tests/testlib
 
       - name: Run CLI benchmarks with Aikido
         run: |
