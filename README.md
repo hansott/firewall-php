@@ -20,9 +20,9 @@ Zen will autonomously protect your PHP applications from the inside against:
 
 Zen operates autonomously on the same server as your PHP app to:
 
-✅ Secure your app like a classic web application firewall (WAF), but with none of the infrastructure or cost.
-✅ Rate limit specific API endpoints by IP or by user
-✅ Allow you to block specific users manually
+* ✅ Secure your app like a classic web application firewall (WAF), but with none of the infrastructure or cost.
+* ✅ Rate limit specific API endpoints by IP or by user
+* ✅ Allow you to block specific users manually
 
 ## Installation
 
