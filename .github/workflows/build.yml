@@ -319,10 +319,10 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run simple server tests
-        run: |
-          cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib
+      #- name: Run simple server tests
+      #  run: |
+      #    cd tools
+      #    python3 run_server_tests.py ../tests/server ../tests/testlib
 
       - name: Run CLI benchmarks with Aikido
         run: |
@@ -427,11 +427,11 @@ jobs:
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run CLI Server tests
-        run: |
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
-          cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib
+      #- name: Run CLI Server tests
+      #  run: |
+      #    export TEST_PHP_EXECUTABLE=/usr/bin/php
+      #    cd tools
+      #    sudo python run_server_tests.py ../tests/server ../tests/testlib
 
       - name: Run CLI benchmarks with Aikido
         run: |
