@@ -1,3 +1,3 @@
 <?php
-passthru("time sleep 1");
+passthru("time");
 ?>
