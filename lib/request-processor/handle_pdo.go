@@ -18,7 +18,7 @@ func OnPreSqlQueryExecuted() string {
 	log.Info("Got PDO query: ", query, " dialect: ", dialect)
 	res := sql_injection.CheckContextForSqlInjection(query, operation, dialect)
 	if res != nil {
-		go grpc.OnAttackDetected(*res)
+		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 		return attack.GetAttackDetectedAction(*res)
 	}
 	return ""

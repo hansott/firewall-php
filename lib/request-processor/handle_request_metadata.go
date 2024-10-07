@@ -67,8 +67,6 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, api
 
 	log.Info("[RSHUTDOWN] Got request metadata: ", method, " ", route, " ", statusCode)
 
-	route = context.GetParsedRoute()
-
 	if !utils.ShouldDiscoverRoute(statusCode, route, method) {
 		return
 	}
@@ -78,7 +76,7 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, api
 }
 
 func OnRequestShutdown() string {
-	go OnRequestShutdownReporting(context.GetMethod(), context.GetRoute(), context.GetStatusCode(), api_discovery.GetApiInfo())
+	go OnRequestShutdownReporting(context.GetMethod(), context.GetParsedRoute(), context.GetStatusCode(), api_discovery.GetApiInfo())
 	context.Clear()
 	return ""
 }

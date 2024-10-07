@@ -18,14 +18,14 @@ func OnPrePathAccessed() string {
 
 	res := path_traversal.CheckContextForPathTraversal(filename, operation, true)
 	if res != nil {
-		go grpc.OnAttackDetected(*res)
+		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 		return attack.GetAttackDetectedAction(*res)
 	}
 
 	if filename2 != "" {
 		res = path_traversal.CheckContextForPathTraversal(filename2, operation, true)
 		if res != nil {
-			go grpc.OnAttackDetected(*res)
+			go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 			return attack.GetAttackDetectedAction(*res)
 		}
 	}

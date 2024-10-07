@@ -26,7 +26,7 @@ func OnPreOutgoingRequest() string {
 
 	res := ssrf.CheckContextForSSRF(hostname, port, operation)
 	if res != nil {
-		go grpc.OnAttackDetected(*res)
+		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 		return attack.GetAttackDetectedAction(*res)
 	}
 
@@ -76,7 +76,7 @@ func OnPostOutgoingRequest() string {
 	}
 
 	if res != nil {
-		go grpc.OnAttackDetected(*res)
+		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 
 		/* Throw exception to PHP layer if blocking is enabled -> Response content is not returned to the PHP code */
 		return attack.GetAttackDetectedAction(*res)

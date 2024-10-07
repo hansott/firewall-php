@@ -18,7 +18,7 @@ func OnPreShellExecuted() string {
 	log.Info("Got shell command: ", cmd)
 	res := shell_injection.CheckContextForShellInjection(cmd, operation)
 	if res != nil {
-		go grpc.OnAttackDetected(*res)
+		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
 		return attack.GetAttackDetectedAction(*res)
 	}
 	return ""

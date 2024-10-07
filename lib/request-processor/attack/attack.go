@@ -29,8 +29,8 @@ func GetHeadersProto() []*protos.Header {
 }
 
 /* Construct the AttackDetected protobuf structure to be sent via gRPC to the Agent */
-func GetAttackDetectedProto(res utils.InterceptorResult) protos.AttackDetected {
-	return protos.AttackDetected{
+func GetAttackDetectedProto(res utils.InterceptorResult) *protos.AttackDetected {
+	return &protos.AttackDetected{
 		Request: &protos.Request{
 			Method:    context.GetMethod(),
 			IpAddress: context.GetIp(),
