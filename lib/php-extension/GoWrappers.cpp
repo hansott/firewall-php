@@ -163,7 +163,7 @@ bool GoRequestProcessorContextInit() {
 
 /*
     If the blocking mode is set from agent (different than -1), return that.
-	Otherwise, return the env variable AIKIDO_BLOCKING.
+	Otherwise, return the env variable AIKIDO_BLOCK.
 */
 bool IsBlockingEnabled() {
     if (!request_processor_get_blocking_mode_fn) {
