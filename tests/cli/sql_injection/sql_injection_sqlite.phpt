@@ -3,7 +3,7 @@ Test SQLite database operations
 
 --ENV--
 AIKIDO_LOG_LEVEL=INFO
-AIKIDO_BLOCKING=1
+AIKIDO_BLOCK=1
 
 --FILE--
 <?php

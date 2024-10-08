@@ -3,7 +3,7 @@ Test path traversal (parse_ini_file)
 
 --ENV--
 AIKIDO_LOG_LEVEL=INFO
-AIKIDO_BLOCKING=1
+AIKIDO_BLOCK=1
 
 --FILE--
 <?php

@@ -28,9 +28,17 @@ PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
 
-	AIKIDO_GLOBAL(log_level_str) = get_env_string("AIKIDO_LOG_LEVEL", "INFO");
-	AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(AIKIDO_GLOBAL(log_level_str));
-	AIKIDO_GLOBAL(blocking) = get_env_bool("AIKIDO_BLOCKING", false);
+	bool debug = get_env_bool("AIKIDO_DEBUG", false);
+	if (debug) {
+		AIKIDO_GLOBAL(log_level_str) = "DEBUG";
+		AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_DEBUG;
+	}
+	else {
+		AIKIDO_GLOBAL(log_level_str) = get_env_string("AIKIDO_LOG_LEVEL", "INFO");
+		AIKIDO_GLOBAL(log_level) = aikido_log_level_from_str(AIKIDO_GLOBAL(log_level_str));
+	}
+
+	AIKIDO_GLOBAL(blocking) = get_env_bool("AIKIDO_BLOCK", false);
 	AIKIDO_GLOBAL(disable) = get_env_bool("AIKIDO_DISABLE", false);
 	AIKIDO_GLOBAL(collect_api_schema) = get_env_bool("AIKIDO_FEATURE_COLLECT_API_SCHEMA", false);
 	AIKIDO_GLOBAL(localhost_allowed_by_default) = get_env_bool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true);

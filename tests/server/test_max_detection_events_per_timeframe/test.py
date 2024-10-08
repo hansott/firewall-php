@@ -4,7 +4,7 @@ import sys
 from testlib import *
 
 '''
-1. Sets up a simple config and env AIKIDO_BLOCKING=1.
+1. Sets up a simple config and env AIKIDO_BLOCK=1.
 2. Sends 200 attack requests to a route, that will cause sending a detection event.
 3. Checks that there are no more than 100 detection events submited.
 '''
