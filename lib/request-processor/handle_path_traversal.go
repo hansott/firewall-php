@@ -3,7 +3,7 @@ package main
 import (
 	"main/attack"
 	"main/context"
-	"main/grpc"
+	"main/log"
 	path_traversal "main/vulnerabilities/path-traversal"
 )
 
@@ -16,17 +16,20 @@ func OnPrePathAccessed() string {
 		return "{}"
 	}
 
+	if context.IsProtectionTurnedOff() {
+		log.Infof("Protection is turned off -> will not run detection logic!")
+		return "{}"
+	}
+
 	res := path_traversal.CheckContextForPathTraversal(filename, operation, true)
 	if res != nil {
-		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-		return attack.GetAttackDetectedAction(*res)
+		return attack.ReportAttackDetected(res)
 	}
 
 	if filename2 != "" {
 		res = path_traversal.CheckContextForPathTraversal(filename2, operation, true)
 		if res != nil {
-			go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-			return attack.GetAttackDetectedAction(*res)
+			return attack.ReportAttackDetected(res)
 		}
 	}
 	return "{}"
