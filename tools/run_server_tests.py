@@ -62,7 +62,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, benchmark, valg
 
         php_server_process_cmd = ['php', '-S', f'localhost:{php_port}', '-t', test_dir]
         if valgrind:
-            php_server_process_cmd = ['valgrind', f'--suppressions={test_lib_dir}/valgrind.supp'] + php_server_process_cmd
+            php_server_process_cmd = ['valgrind', f'--suppressions={test_lib_dir}/valgrind.supp', '--track-origins=yes'] + php_server_process_cmd
             
         php_server_process = subprocess.Popen(
             php_server_process_cmd,
