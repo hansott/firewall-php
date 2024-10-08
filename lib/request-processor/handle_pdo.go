@@ -3,7 +3,6 @@ package main
 import (
 	"main/attack"
 	"main/context"
-	"main/grpc"
 	"main/log"
 	sql_injection "main/vulnerabilities/sql-injection"
 )
@@ -16,10 +15,15 @@ func OnPreSqlQueryExecuted() string {
 		return ""
 	}
 	log.Info("Got PDO query: ", query, " dialect: ", dialect)
+
+	if context.IsProtectionTurnedOff() {
+		log.Infof("Protection is turned off -> will not run detection logic!")
+		return "{}"
+	}
+
 	res := sql_injection.CheckContextForSqlInjection(query, operation, dialect)
 	if res != nil {
-		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-		return attack.GetAttackDetectedAction(*res)
+		return attack.ReportAttackDetected(res)
 	}
 	return ""
 }

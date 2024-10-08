@@ -18,6 +18,7 @@ type RequestContextData struct {
 	StatusCode             *int
 	IP                     *string
 	IsIpBypassed           *bool
+	IsProtectionTurnedOff  *bool
 	UserAgent              *string
 	UserId                 *string
 	UserName               *string
@@ -134,4 +135,8 @@ func GetUserId() string {
 
 func GetUserName() string {
 	return GetFromCache(ContextSetUserName, &Context.UserName)
+}
+
+func IsProtectionTurnedOff() bool {
+	return GetFromCache(ContextSetIsProtectionTurnedOff, &Context.IsProtectionTurnedOff)
 }

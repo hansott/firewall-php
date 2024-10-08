@@ -15,21 +15,19 @@ func OnRequestInit() string {
 	context.Clear()
 
 	method := context.GetMethod()
-	route := context.GetRoute()
+	route := context.GetParsedRoute()
 	if method == "" || route == "" {
 		return "{}"
 	}
 
 	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
 
-	if !grpc.AreEndpointsConfigured() {
+	if !utils.AreEndpointsConfigured() {
 		log.Debugf("[RINIT] No endpoints configured! Skipping checks...")
 		return "{}"
 	}
 
-	route = context.GetParsedRoute()
-
-	endpointData, err := grpc.GetEndpointConfig(method, route)
+	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
 		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
 		return "{}"

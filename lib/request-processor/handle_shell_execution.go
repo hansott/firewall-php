@@ -3,7 +3,6 @@ package main
 import (
 	"main/attack"
 	"main/context"
-	"main/grpc"
 	"main/log"
 	shell_injection "main/vulnerabilities/shell-injection"
 )
@@ -16,10 +15,15 @@ func OnPreShellExecuted() string {
 	}
 
 	log.Info("Got shell command: ", cmd)
+
+	if context.IsProtectionTurnedOff() {
+		log.Infof("Protection is turned off -> will not run detection logic!")
+		return "{}"
+	}
+
 	res := shell_injection.CheckContextForShellInjection(cmd, operation)
 	if res != nil {
-		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-		return attack.GetAttackDetectedAction(*res)
+		return attack.ReportAttackDetected(res)
 	}
 	return ""
 }

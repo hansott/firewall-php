@@ -3,6 +3,7 @@ package attack
 import (
 	"fmt"
 	"main/context"
+	"main/grpc"
 	"main/ipc/protos"
 	"main/utils"
 )
@@ -65,4 +66,13 @@ func BuildAttackDetectedMessage(result utils.InterceptorResult) string {
 
 func GetAttackDetectedAction(result utils.InterceptorResult) string {
 	return fmt.Sprintf(`{"action": "throw", "message": "%s", "code": -1}`, BuildAttackDetectedMessage(result))
+}
+
+func ReportAttackDetected(res *utils.InterceptorResult) string {
+	if res == nil {
+		return ""
+	}
+
+	go grpc.OnAttackDetected(GetAttackDetectedProto(*res))
+	return GetAttackDetectedAction(*res)
 }

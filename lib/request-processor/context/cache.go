@@ -107,15 +107,11 @@ func ContextSetIp() {
 }
 
 func ContextSetIsIpBypassed() {
-	ContextSetIp()
 	if Context.IsIpBypassed != nil {
 		return
 	}
 
-	if Context.IP == nil {
-		return
-	}
-	isIpBypassed := utils.IsIpBypassed(*Context.IP)
+	isIpBypassed := utils.IsIpBypassed(GetIp())
 	Context.IsIpBypassed = &isIpBypassed
 }
 
@@ -125,4 +121,20 @@ func ContextSetUserId() {
 
 func ContextSetUserName() {
 	ContextSetString(C.CONTEXT_USER_NAME, &Context.UserName)
+}
+
+func ContextSetIsProtectionTurnedOff() {
+	if Context.IsProtectionTurnedOff != nil {
+		return
+	}
+
+	method := GetMethod()
+	route := GetParsedRoute()
+
+	endpointConfig, err := utils.GetEndpointConfig(method, route)
+	isProtectionTurnedOff := false
+	if err == nil {
+		isProtectionTurnedOff = endpointConfig.ForceProtectionOff
+	}
+	Context.IsProtectionTurnedOff = &isProtectionTurnedOff
 }

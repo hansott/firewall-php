@@ -21,13 +21,17 @@ Protects both curl and fopen wrapper functions (file_get_contents, etc...).
 func OnPreOutgoingRequest() string {
 	defer context.ResetEventContext()
 
+	if context.IsProtectionTurnedOff() {
+		log.Infof("Protection is turned off -> will not run detection logic!")
+		return "{}"
+	}
+
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
 	operation := context.GetFunctionName()
 
 	res := ssrf.CheckContextForSSRF(hostname, port, operation)
 	if res != nil {
-		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-		return attack.GetAttackDetectedAction(*res)
+		return attack.ReportAttackDetected(res)
 	}
 
 	log.Info("[BEFORE] Got domain: ", hostname)
@@ -64,6 +68,14 @@ func OnPostOutgoingRequest() string {
 	log.Info("[AFTER] Got domain: ", hostname, " port: ", port)
 
 	go grpc.OnDomain(hostname, port)
+	if effectiveHostname != hostname {
+		go grpc.OnDomain(effectiveHostname, effectivePort)
+	}
+
+	if context.IsProtectionTurnedOff() {
+		log.Infof("Protection is turned off -> will not run detection logic!")
+		return "{}"
+	}
 
 	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)
 	if effectiveHostname != hostname {
@@ -72,14 +84,11 @@ func OnPostOutgoingRequest() string {
 			// We double check here for SSRF on the effective hostname because some sinks might not provide the resolved IP address
 			res = ssrf.CheckEffectiveHostnameForSSRF(effectiveHostname)
 		}
-		go grpc.OnDomain(effectiveHostname, effectivePort)
 	}
 
 	if res != nil {
-		go grpc.OnAttackDetected(attack.GetAttackDetectedProto(*res))
-
 		/* Throw exception to PHP layer if blocking is enabled -> Response content is not returned to the PHP code */
-		return attack.GetAttackDetectedAction(*res)
+		return attack.ReportAttackDetected(res)
 	}
 	return ""
 }
