@@ -6,6 +6,10 @@ import time
 import sys
 import json
 import argparse
+from tools.server_tests.php_built_in.main import handle_php_built_in
+from tools.server_tests.apache.main import handle_apache_mod_php
+from tools.server_tests.nginx.main import handle_nginx_php_fpm
+
 
 used_ports = set()
 passed_tests = []
@@ -35,54 +39,6 @@ def print_test_results(s, tests):
         print(f"\t- {t}")
 
 
-def handle_php_built_in(test_dir, env_file_path, server_port, mock_port, valgrind, debug):
-    env = os.environ.copy()
-    env.update({
-        'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
-        'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
-        'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
-        'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
-    })
-    env.update(load_env_from_json(env_file_path))
-
-    php_server_process_cmd = ['php', '-S', f'localhost:{server_port}', '-t', test_dir]
-    if valgrind:
-        php_server_process_cmd = ['valgrind', f'--suppressions={test_lib_dir}/valgrind.supp', '--track-origins=yes'] + php_server_process_cmd
-        
-    return [subprocess.Popen(
-        php_server_process_cmd,
-        env=env
-    )]
-
-def handle_apache_mod_php(test_dir, server_port, mock_port, valgrind, debug):
-    pass
-
-def handle_nginx_php_fpm(test_dir, server_port, mock_port, valgrind, debug):
-    nginx_server_template = """
-server {{
-    listen 80;
-    server_name {server_name};
-
-    root {document_root};
-    index index.php;
-
-    location / {{
-        try_files $uri $uri/ /index.php?$args;
-    }}
-
-    location ~ \.php$ {{
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/{php_fpm_socket};
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }}
-
-    location ~ /\.ht {{
-        deny all;
-    }}
-}}
-"""
-
 def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchmark, valgrind, debug):
     try:
         # Generate unique ports for mock server and PHP server.
@@ -107,7 +63,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
             "nginx-php-fpm": handle_nginx_php_fpm
         }
         
-        server_processes = server_handlers[server](test_dir, env_file_path, server_port, mock_port, valgrind, debug)
+        server_processes = server_handlers[server](test_dir, test_lib_dir, load_env_from_json(env_file_path), server_port, mock_port, valgrind, debug)
 
         time.sleep(5)
 
