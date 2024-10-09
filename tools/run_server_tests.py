@@ -49,6 +49,14 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
 
         config_path = os.path.join(test_dir, 'start_config.json')
         env_file_path = os.path.join(test_dir, 'env.json')
+        
+        env = {
+            'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
+            'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
+            'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
+            'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
+        }
+        env.update(load_env_from_json(loaded_env))
 
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
@@ -63,7 +71,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
             "nginx-php-fpm": handle_nginx_php_fpm
         }
         
-        server_processes = server_handlers[server](test_dir, test_lib_dir, load_env_from_json(env_file_path), server_port, mock_port, valgrind, debug)
+        server_processes = server_handlers[server](test_dir, test_lib_dir, env, server_port, mock_port, valgrind, debug)
 
         time.sleep(5)
 
