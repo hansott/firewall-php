@@ -319,20 +319,20 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run simple server tests
+      - name: Run php-built-in server tests
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
 
       - name: Run CLI benchmarks with Aikido
         run: |
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks with Aikido
+      - name: Run php-built-in server benchmarks with Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Uninstall Aikido
         run: |
@@ -343,10 +343,10 @@ jobs:
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks without Aikido
+      - name: Run php-built-in server benchmarks without Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Get benchmark result
         run: |
@@ -427,21 +427,21 @@ jobs:
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run CLI Server tests
+      - name: Run php-built-in server tests
         run: |
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib
+          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
 
       - name: Run CLI benchmarks with Aikido
         run: |
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks with Aikido
+      - name: Run php-built-in server benchmarks with Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Uninstall Aikido
         run: |
@@ -452,10 +452,10 @@ jobs:
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks without Aikido
+      - name: Run php-built-in server benchmarks without Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Store benchmark result
         run: |

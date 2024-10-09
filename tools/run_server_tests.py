@@ -6,9 +6,9 @@ import time
 import sys
 import json
 import argparse
-from tools.server_tests.php_built_in.main import handle_php_built_in
-from tools.server_tests.apache.main import handle_apache_mod_php
-from tools.server_tests.nginx.main import handle_nginx_php_fpm
+from server_tests.php_built_in.main import handle_php_built_in
+from server_tests.apache.main import handle_apache_mod_php
+from server_tests.nginx.main import handle_nginx_php_fpm
 
 
 used_ports = set()
@@ -56,7 +56,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
             'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
             'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
         }
-        env.update(load_env_from_json(loaded_env))
+        env.update(load_env_from_json(env_file_path))
 
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
