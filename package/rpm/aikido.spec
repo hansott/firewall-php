@@ -71,21 +71,6 @@ else
     fi
 fi
 
-# Remove the Aikido Socket folder
-SOCKET_FOLDER="/run/aikido-%{version}"
-
-if [ -d "$SOCKET_FOLDER" ]; then
-    echo "Removing $SOCKET_FOLDER ..."
-    rm -rf "$SOCKET_FOLDER"
-    if [ $? -eq 0 ]; then
-        echo "Socket folder removed successfully."
-    else
-        echo "Failed to remove the socket folder."
-    fi
-else
-    echo "Socket $SOCKET_FOLDER does not exist."
-fi
-
 mkdir -p /run/aikido-%{version}
 chmod 777 /run/aikido-%{version}
 
@@ -141,7 +126,23 @@ else
     exit 1
 fi
 
+# Remove the Aikido logs folder
 rm -rf /var/log/aikido-%{version}
+
+# Remove the Aikido socket folder
+SOCKET_FOLDER="/run/aikido-%{version}"
+
+if [ -d "$SOCKET_FOLDER" ]; then
+    echo "Removing $SOCKET_FOLDER ..."
+    rm -rf "$SOCKET_FOLDER"
+    if [ $? -eq 0 ]; then
+        echo "Socket folder removed successfully."
+    else
+        echo "Failed to remove the socket folder."
+    fi
+else
+    echo "Socket $SOCKET_FOLDER does not exist."
+fi
 
 echo "Uninstallation process for Aikido v%{version} completed."
 

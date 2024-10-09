@@ -71,7 +71,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
             "nginx-php-fpm": handle_nginx_php_fpm
         }
         
-        server_processes = server_handlers[server](test_dir, test_lib_dir, env, server_port, mock_port, valgrind, debug)
+        server_processes = server_handlers[server](test_name, test_dir, test_lib_dir, env, server_port, mock_port, valgrind, debug)
 
         time.sleep(5)
 
@@ -119,7 +119,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
 def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in", benchmark=False, valgrind=False, debug=False):
     if specific_test:
         specific_test = os.path.join(root_tests_dir, specific_test)
-        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, benchmark, valgrind, debug)
+        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, server, benchmark, valgrind, debug)
     else:
         run_parallel = True
         if benchmark or valgrind:
