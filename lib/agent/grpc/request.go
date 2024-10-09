@@ -16,6 +16,54 @@ func storeStats() {
 	globals.StatsData.Requests += 1
 }
 
+func getApiSpecData(apiSpec *protos.APISpec) (*protos.DataSchema, string, *protos.DataSchema, []*protos.APIAuthType) {
+	if apiSpec == nil {
+		return nil, "", nil, nil
+	}
+
+	var bodyDataSchema *protos.DataSchema = nil
+	var bodyType string = ""
+	if apiSpec.Body != nil {
+		bodyDataSchema = apiSpec.Body.Schema
+		bodyType = apiSpec.Body.Type
+	}
+
+	return bodyDataSchema, bodyType, apiSpec.Query, apiSpec.Auth
+}
+
+func getMergedApiSpec(currentApiSpec *protos.APISpec, newApiSpec *protos.APISpec) *protos.APISpec {
+	if newApiSpec == nil {
+		return currentApiSpec
+	}
+	if currentApiSpec == nil {
+		return newApiSpec
+	}
+
+	currentBodySchema, currentBodyType, currentQuerySchema, currentAuth := getApiSpecData(currentApiSpec)
+	newBodySchema, newBodyType, newQuerySchema, newAuth := getApiSpecData(newApiSpec)
+
+	mergedBodySchema := api_discovery.MergeDataSchemas(currentBodySchema, newBodySchema)
+	mergedQuerySchema := api_discovery.MergeDataSchemas(currentQuerySchema, newQuerySchema)
+	mergedAuth := api_discovery.MergeApiAuthTypes(currentAuth, newAuth)
+	if mergedBodySchema == nil && mergedQuerySchema == nil && mergedAuth == nil {
+		return nil
+	}
+
+	mergedBodyType := newBodyType
+	if mergedBodyType == "" {
+		mergedBodyType = currentBodyType
+	}
+
+	return &protos.APISpec{
+		Body: &protos.APIBodyInfo{
+			Type:   mergedBodyType,
+			Schema: mergedBodySchema,
+		},
+		Query: mergedQuerySchema,
+		Auth:  mergedAuth,
+	}
+}
+
 func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 	globals.RoutesMutex.Lock()
 	defer globals.RoutesMutex.Unlock()
@@ -25,23 +73,12 @@ func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 	}
 	routeData, ok := globals.Routes[route][method]
 	if !ok {
-		routeData = &Route{Path: route, Method: method,
-			ApiSpec: &protos.APISpec{
-				Body: &protos.APIBodyInfo{},
-			}}
+		routeData = &Route{Path: route, Method: method}
 		globals.Routes[route][method] = routeData
 	}
 
 	routeData.Hits++
-
-	if apiSpec == nil {
-		return
-	}
-	if apiSpec.Body != nil {
-		routeData.ApiSpec.Body.Schema = api_discovery.MergeDataSchemas(routeData.ApiSpec.Body.Schema, apiSpec.Body.Schema)
-	}
-	routeData.ApiSpec.Query = api_discovery.MergeDataSchemas(routeData.ApiSpec.Query, apiSpec.Query)
-	routeData.ApiSpec.Auth = api_discovery.MergeApiAuthTypes(routeData.ApiSpec.Auth, apiSpec.Auth)
+	routeData.ApiSpec = getMergedApiSpec(routeData.ApiSpec, apiSpec)
 }
 
 func updateRateLimitingStatus(method string, route string) {
