@@ -38,7 +38,7 @@ pm.max_children = 5
 pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
-chdir = /
+clear_env = no
 
 """
 
@@ -106,7 +106,7 @@ def handle_nginx_php_fpm(test_name, test_dir, test_lib_dir, env, server_port, mo
     enable_config_line("/etc/php-fpm.conf", "include=/etc/php-fpm.d/*.conf", ';')
     php_fpm_create_conf_file(test_name, "ttimcu", env)
     
-    subprocess.run(['sudo', 'systemctl', 'restart', 'nginx.service'], check=True)
-    subprocess.run(['sudo', 'systemctl', 'restart', 'php-fpm.service'], check=True)
+    subprocess.run(['systemctl', 'restart', 'nginx.service'], check=True)
+    subprocess.run(['systemctl', 'restart', 'php-fpm.service'], check=True)
     return []
     
