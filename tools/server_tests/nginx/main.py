@@ -47,8 +47,6 @@ group = {user}
 listen = /run/php-fpm/php-fpm-{name}.sock
 listen.owner = {nginx_user}
 listen.group = {nginx_user}
-error.log = /var/log/php-fpm/error-{name}.log
-access.log = /var/log/php-fpm/access-{name}.log
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
@@ -145,7 +143,7 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
 
     get_user_of_process('nginx')
     get_user_of_process('php-fpm')                        
-    php_fpm_command = ["/usr/sbin/php-fpm", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
+    php_fpm_command = ["/usr/sbin/php-fpm", "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
     return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
     
