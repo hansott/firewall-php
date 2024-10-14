@@ -30,8 +30,8 @@ php_fpm_conf_template = """[{name}]
 user = {user}
 group = {user}
 listen = /run/php-fpm/php-fpm-{name}.sock
-listen.owner = nginx
-listen.group = nginx
+listen.owner = {user}
+listen.group = {user}
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
@@ -112,7 +112,7 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     if not nginx_restarted:
         if not os.path.exists("/run/php-fpm"):
             os.makedirs("/run/php-fpm")
-        subprocess.run(['systemctl', 'restart', 'nginx.service'], check=True)
+        subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
         nginx_restarted = True
                         
