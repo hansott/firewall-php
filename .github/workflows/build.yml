@@ -276,7 +276,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup
         run: |
           cat /etc/centos-release
           cd /etc/yum.repos.d/
@@ -288,12 +288,11 @@ jobs:
           pip3 install flask
           pip3 install requests
           pip3 install pandas
-          yum install -y nginx
-          yum install -y php-fpm
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
-
+          yum install -y nginx
+          yum install -y php-fpm
 
       - name: Check PHP setup
         run: |
@@ -321,6 +320,11 @@ jobs:
         run: |
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
+
+      - name: Run nginx-php-fpm server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
 
       - name: Run php-built-in server tests
         run: |
