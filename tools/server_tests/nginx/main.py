@@ -45,8 +45,8 @@ php_fpm_conf_template = """[{name}]
 user = {user}
 group = {user}
 listen = /run/php-fpm/php-fpm-{name}.sock
-listen.owner = {nginx_user}
-listen.group = {nginx_user}
+listen.owner = {user}
+listen.group = {user}
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
@@ -86,6 +86,26 @@ def enable_config_line(file_path, line_to_check, comment_ch):
         print(f"The line '{line_to_check}' was uncommented.")
 
 
+def modify_nginx_conf(file_path):
+    try:
+        # Read the nginx configuration file
+        with open(file_path, 'r') as file:
+            content = file.read()
+
+        # Replace 'user nginx;' or 'user www-data;' with 'user root;'
+        content = content.replace('user nginx;', 'user root;')
+        content = content.replace('user www-data;', 'user root;')
+
+        # Write the modified content back to the file
+        with open(file_path, 'w') as file:
+            file.write(content)
+
+        print(f"nginx.conf has been updated to use 'user root;'.")
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found.")
+    except Exception as e:
+        print(f"Error: {e}")
+
 def nginx_create_conf_file(test_name, test_dir, server_port):
     nginx_config = nginx_conf_template.format(
         name = test_name,
@@ -110,8 +130,7 @@ def php_fpm_create_conf_file(test_dir, test_name, user):
     print("Selected nginx user: ", nginx_user)
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
-        user = user,
-        nginx_user = nginx_user
+        user = user
     )
         
     php_fpm_config_file_path = os.path.join(test_dir, f"{test_name}.conf")
@@ -137,6 +156,7 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     if not nginx_restarted:
         create_folder("/run/php-fpm")
         create_folder("/var/log/php-fpm")
+        modify_nginx_conf("/etc/nginx/nginx.conf")
         subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
         nginx_restarted = True
@@ -146,4 +166,7 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     php_fpm_command = ["/usr/sbin/php-fpm", "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
     return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
-    
+
+
+def done_nginx_php_fpm():
+    subprocess.run(['pkill', 'nginx'], check=True)

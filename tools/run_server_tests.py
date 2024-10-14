@@ -8,7 +8,7 @@ import json
 import argparse
 from server_tests.php_built_in.main import handle_php_built_in
 from server_tests.apache.main import handle_apache_mod_php
-from server_tests.nginx.main import prepare_nginx_php_fpm, handle_nginx_php_fpm
+from server_tests.nginx.main import prepare_nginx_php_fpm, handle_nginx_php_fpm, done_nginx_php_fpm
 
 server_prepare_handlers = {
     "php-built-in": None,
@@ -20,6 +20,12 @@ server_handlers = {
     "php-built-in": handle_php_built_in,
     "apache-mod-php": handle_apache_mod_php,
     "nginx-php-fpm": handle_nginx_php_fpm
+}
+
+server_done_handlers = {
+    "php-built-in": None,
+    "apache-mod-php": None,
+    "nginx-php-fpm": done_nginx_php_fpm
 }
 
 used_ports = set()
@@ -148,6 +154,9 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
 
     for thread in threads:
         thread.join()
+        
+    if server_done_handlers[server]:
+        server_done_handlers[server]()
             
     print_test_results("Passed tests:", passed_tests)
     print_test_results("Failed tests:", failed_tests)
