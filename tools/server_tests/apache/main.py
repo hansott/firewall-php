@@ -18,7 +18,7 @@ server {{
     location ~ \.php$ {{
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/{php_fpm_socket};
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME $fastcgi_script_name;
         include fastcgi_params;
     }}
 
