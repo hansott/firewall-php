@@ -3,7 +3,6 @@ import subprocess
 import re
 
 nginx_config_dir = "/etc/nginx/conf.d"
-php_fpm_pool_dir = "/etc/php-fpm.d"
 socket_folder = "/run/php-fpm"
 
 nginx_conf_template = """
@@ -84,29 +83,37 @@ def nginx_create_conf_file(test_name, test_dir, server_port):
     print(f"Configured nginx config for {test_name}")
 
 
-def php_fpm_create_conf_file(test_name, user, env):
+def php_fpm_create_conf_file(test_dir, test_name, user):
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
-        user = "ttimcu",
+        user = user,
     )
     
-    for e in env:
-        php_fpm_config += f"env[{e}] = {env[e]}\n"
-
-    php_fpm_config_file = os.path.join(php_fpm_pool_dir, f"{test_name}.conf")
-    with open(php_fpm_config_file, "w") as fpm_file:
+    php_fpm_config_file_path = os.path.join(test_dir, f"{test_name}.conf")
+    with open(php_fpm_config_file_path, "w") as fpm_file:
         fpm_file.write(php_fpm_config)
 
     print(f"Configured PHP-FPM config for {test_name}")
-
-def handle_nginx_php_fpm(test_name, test_dir, test_lib_dir, env, server_port, mock_port, valgrind, debug):
-    enable_config_line("/etc/nginx/nginx.conf", "include /etc/nginx/conf.d/*.conf;", '#')
-    nginx_create_conf_file(test_name, test_dir, server_port)
-
-    enable_config_line("/etc/php-fpm.conf", "include=/etc/php-fpm.d/*.conf", ';')
-    php_fpm_create_conf_file(test_name, "ttimcu", env)
     
-    subprocess.run(['systemctl', 'restart', 'nginx.service'], check=True)
-    subprocess.run(['systemctl', 'restart', 'php-fpm.service'], check=True)
-    return []
+    return php_fpm_config_file_path
+
+
+def prepare_nginx_php_fpm(test_data):
+    enable_config_line("/etc/nginx/nginx.conf", "include /etc/nginx/conf.d/*.conf;", '#')
+    nginx_create_conf_file(test_data["test_name"], test_data["test_dir"], test_data["server_port"])
+
+    test_data["fpm_config"] = php_fpm_create_conf_file(test_data["test_name"], "root")
+    return test_data
+
+nginx_restarted = False
+
+def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
+    if not nginx_restarted:
+        if not os.path.exists("/run/php-fpm"):
+            os.makedirs("/run/php-fpm")
+        subprocess.run(['systemctl', 'restart', 'nginx.service'], check=True)
+        nginx_restarted = True
+                        
+    php_fpm_command = ["php-fpm", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
+    return subprocess.run(php_fpm_command, env=test_data["env"], check=True)
     

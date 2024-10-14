@@ -8,8 +8,19 @@ import json
 import argparse
 from server_tests.php_built_in.main import handle_php_built_in
 from server_tests.apache.main import handle_apache_mod_php
-from server_tests.nginx.main import handle_nginx_php_fpm
+from server_tests.nginx.main import prepare_nginx_php_fpm, handle_nginx_php_fpm
 
+server_prepare_handlers = {
+    "php-built-in": None,
+    "apache-mod-php": None,
+    "nginx-php-fpm": prepare_nginx_php_fpm
+}
+
+server_handlers = {
+    "php-built-in": handle_php_built_in,
+    "apache-mod-php": handle_apache_mod_php,
+    "nginx-php-fpm": handle_nginx_php_fpm
+}
 
 used_ports = set()
 passed_tests = []
@@ -39,44 +50,24 @@ def print_test_results(s, tests):
         print(f"\t- {t}")
 
 
-def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchmark, valgrind, debug):
+def handle_test_scenario(data, root_tests_dir, test_lib_dir, server, benchmark, valgrind, debug):
+    test_name = data["test_name"]
+    mock_port = data["mock_port"]
+    server_port = data["server_port"]
     try:
-        # Generate unique ports for mock server and PHP server.
-        mock_port = generate_unique_port()
-        server_port = generate_unique_port()
-
-        test_name = os.path.basename(os.path.normpath(test_dir))
-
-        config_path = os.path.join(test_dir, 'start_config.json')
-        env_file_path = os.path.join(test_dir, 'env.json')
-        
-        env = {
-            'AIKIDO_LOG_LEVEL': 'DEBUG' if debug else 'ERROR',
-            'AIKIDO_TOKEN': 'AIK_RUNTIME_MOCK',
-            'AIKIDO_ENDPOINT': f'http://localhost:{mock_port}/',
-            'AIKIDO_REALTIME_ENDPOINT': f'http://localhost:{mock_port}/',
-        }
-        env.update(load_env_from_json(env_file_path))
-
         print(f"Running {test_name}...")
         print(f"Starting mock server on port {mock_port} with start_config.json for {test_name}...")
-        mock_aikido_core = subprocess.Popen(['python3', 'mock_aikido_core.py', str(mock_port), config_path])
+        mock_aikido_core = subprocess.Popen(["python3", "mock_aikido_core.py", str(mock_port), data["config_path"]])
         time.sleep(5)
 
         print(f"Starting {server} server on port {server_port} for {test_name}...")
-
-        server_handlers = {
-            "php-built-in": handle_php_built_in,
-            "apache-mod-php": handle_apache_mod_php,
-            "nginx-php-fpm": handle_nginx_php_fpm
-        }
         
-        server_processes = server_handlers[server](test_name, test_dir, test_lib_dir, env, server_port, mock_port, valgrind, debug)
+        server_processes = server_handlers[server](data, test_lib_dir, valgrind)
 
         time.sleep(5)
 
         test_script_name = "test.py"
-        test_script_cwd = test_dir
+        test_script_cwd = data["test_dir"]
         if benchmark:
             print(f"Running benchmark for {test_name}...")
             test_script_name = "benchmark.py"
@@ -84,7 +75,7 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
         else:
             print(f"Running test.py for {test_name}...")
             
-        subprocess.run(['python3', test_script_name, str(server_port), str(mock_port), test_name], 
+        subprocess.run(["python3", test_script_name, str(server_port), str(mock_port), test_name], 
                        env=dict(os.environ, PYTHONPATH=f"{test_lib_dir}:$PYTHONPATH"),
                        cwd=test_script_cwd,
                        check=True, timeout=600, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -116,31 +107,47 @@ def handle_test_scenario(root_tests_dir, test_dir, test_lib_dir, server, benchma
             print(f"Mock server on port {mock_port} stopped.")
 
 
-def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in", benchmark=False, valgrind=False, debug=False):
+def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in", benchmark=False, valgrind=False, debug=False):    
     if specific_test:
-        specific_test = os.path.join(root_tests_dir, specific_test)
-        handle_test_scenario(root_tests_dir, specific_test, test_lib_dir, server, benchmark, valgrind, debug)
+        test_dirs = [os.path.join(root_tests_dir, specific_test)]
     else:
-        run_parallel = True
-        if benchmark or valgrind:
-            run_parallel = False
-            
         test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
-        threads = []
         
-        for test_dir in test_dirs:
-            args = (root_tests_dir, test_dir, test_lib_dir, server, benchmark, valgrind, debug)
-            if run_parallel:
-                thread = threading.Thread(target=handle_test_scenario, args=args)
-                threads.append(thread)
-                thread.start()
-                time.sleep(5)
-            else:
-                handle_test_scenario(*args)
+    tests_data = []
+    for test_dir in test_dirs:
+        mock_port = generate_unique_port()
+        test_data = {
+            "test_name": os.path.basename(os.path.normpath(test_dir)),
+            "test_dir": test_dir,
+            "mock_port": mock_port,
+            "server_port": generate_unique_port(),
+            "config_path": os.path.join(test_dir, "start_config.json"),
+            "env_path": os.path.join(test_dir, "env.json")
+        }
+
+        env = {
+            "AIKIDO_LOG_LEVEL": "DEBUG" if debug else "ERROR",
+            "AIKIDO_TOKEN": "AIK_RUNTIME_MOCK",
+            "AIKIDO_ENDPOINT": f"http://localhost:{mock_port}/",
+            "AIKIDO_REALTIME_ENDPOINT": f"http://localhost:{mock_port}/",
+        }
+        env.update(load_env_from_json(test_data["env_path"]))
+        test_data["env"] = env
         
-        if run_parallel:
-            for thread in threads:
-                thread.join()
+        if server_prepare_handlers[server] is not None:
+            test_data = server_prepare_handlers[server](test_data)
+        tests_data.append(test_data)
+            
+    threads = []
+    for test_data in tests_data:
+        args = (test_data, root_tests_dir, test_lib_dir, server, benchmark, valgrind, debug)
+        thread = threading.Thread(target=handle_test_scenario, args=args)
+        threads.append(thread)
+        thread.start()
+        time.sleep(5)
+
+    for thread in threads:
+        thread.join()
             
     print_test_results("Passed tests:", passed_tests)
     print_test_results("Failed tests:", failed_tests)
@@ -150,13 +157,13 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for running PHP server tests with Aikido Firewall installed.")
-    parser.add_argument('root_folder_path', type=str, help='Path to the root folder of the tests to be ran.')
-    parser.add_argument('test_lib_dir', type=str, help='Directory for the test libraries.')
-    parser.add_argument('--test', type=str, default=None, help='Run a single test from the root folder.')
-    parser.add_argument('--benchmark', action='store_true', help='Enable benchmarking.')
-    parser.add_argument('--valgrind', action='store_true', help='Enable valgrind.')
-    parser.add_argument('--debug', action='store_true', help='Enable debugging logs.')
-    parser.add_argument('--server', type=str, choices=['php-built-in', 'apache-mod-php', 'nginx-php-fpm'], help='Enable nginx & php-fpm testing.')
+    parser.add_argument("root_folder_path", type=str, help="Path to the root folder of the tests to be ran.")
+    parser.add_argument("test_lib_dir", type=str, help="Directory for the test libraries.")
+    parser.add_argument("--test", type=str, default=None, help="Run a single test from the root folder.")
+    parser.add_argument("--benchmark", action="store_true", help="Enable benchmarking.")
+    parser.add_argument("--valgrind", action="store_true", help="Enable valgrind.")
+    parser.add_argument("--debug", action="store_true", help="Enable debugging logs.")
+    parser.add_argument("--server", type=str, choices=["php-built-in", "apache-mod-php", "nginx-php-fpm"], default="php-built-in", help="Enable nginx & php-fpm testing.")
 
     # Parse arguments
     args = parser.parse_args()

@@ -72,6 +72,7 @@ AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level) {
 std::string get_environment_variable(const std::string& env_key) {
     const char* env_value = getenv(env_key.c_str());
     if (!env_value) return "";
+    AIKIDO_LOG_DEBUG("env[%s] = %s\n", env_key.c_str(), env_value);
     return env_value;
 }
 
