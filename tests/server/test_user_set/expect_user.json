@@ -3,8 +3,7 @@
     "users": [
         {
             "id": "12345",
-            "name": "Tudor",
-            "lastIpAddress": "::1"
+            "name": "Tudor"
         }
     ]
 }

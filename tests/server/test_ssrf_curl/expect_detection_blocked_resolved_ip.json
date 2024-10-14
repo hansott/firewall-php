@@ -2,7 +2,6 @@
     "type": "detected_attack",
     "request": {
         "method": "POST",
-        "ipAddress": "::1",
         "headers": {
             "content_type": [
                 "application/json"
@@ -25,8 +24,7 @@
         },
         "user": {
             "id": "12345",
-            "name": "Tudor",
-            "lastIpAddress": "::1"
+            "name": "Tudor"
         }
     },
     "agent": {
