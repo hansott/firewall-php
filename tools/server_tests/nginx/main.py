@@ -1,9 +1,13 @@
 import os
 import subprocess
 import re
+import pwd
 
 nginx_config_dir = "/etc/nginx/conf.d"
 socket_folder = "/run/php-fpm"
+
+users = pwd.getpwall()
+usernames = [user.pw_name for user in users]
 
 nginx_conf_template = """
 server {{
@@ -30,8 +34,8 @@ php_fpm_conf_template = """[{name}]
 user = {user}
 group = {user}
 listen = /run/php-fpm/php-fpm-{name}.sock
-listen.owner = {user}
-listen.group = {user}
+listen.owner = {nginx_user}
+listen.group = {nginx_user}
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
@@ -84,11 +88,16 @@ def nginx_create_conf_file(test_name, test_dir, server_port):
 
 
 def php_fpm_create_conf_file(test_dir, test_name, user):
+    nginx_user = "nginx"
+    if "nginx" not in usernames:
+        nginx_user = "root"
+    
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
         user = user,
+        nginx_user = nginx_user
     )
-    
+        
     php_fpm_config_file_path = os.path.join(test_dir, f"{test_name}.conf")
     with open(php_fpm_config_file_path, "w") as fpm_file:
         fpm_file.write(php_fpm_config)
@@ -110,8 +119,8 @@ nginx_restarted = False
 def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     global nginx_restarted
     if not nginx_restarted:
-        if not os.path.exists("/run/php-fpm"):
-            os.makedirs("/run/php-fpm")
+        if not os.path.exists(socket_folder):
+            os.makedirs(socket_folder)
         subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
         nginx_restarted = True
