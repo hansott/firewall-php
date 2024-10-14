@@ -141,9 +141,9 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
         create_folder("/var/log/php-fpm")
         subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
-        get_user_of_process('nginx')
         nginx_restarted = True
 
+    get_user_of_process('nginx')
     get_user_of_process('php-fpm')                        
     php_fpm_command = ["/usr/sbin/php-fpm", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
