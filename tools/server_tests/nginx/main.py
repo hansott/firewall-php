@@ -107,8 +107,9 @@ def php_fpm_create_conf_file(test_dir, test_name, user):
     for u in ["nginx", "www-data"]:
         if u in usernames:
             nginx_user = user
+            break
         
-    
+    print("Selected nginx user: ", nginx_user)
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
         user = user,
@@ -142,7 +143,8 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
         print("nginx server restarted!")
         get_user_of_process('nginx')
         nginx_restarted = True
-                        
+
+    get_user_of_process('php-fpm')                        
     php_fpm_command = ["/usr/sbin/php-fpm", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
     return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
