@@ -8,6 +8,7 @@ socket_folder = "/run/php-fpm"
 
 users = pwd.getpwall()
 usernames = [user.pw_name for user in users]
+print("Users on system: ", usernames)
 
 nginx_conf_template = """
 server {{
