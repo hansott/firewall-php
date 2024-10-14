@@ -288,6 +288,7 @@ jobs:
           pip3 install flask
           pip3 install requests
           pip3 install pandas
+          pip3 install psutil
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
@@ -425,7 +426,7 @@ jobs:
 
       - name: Setup Python
         run: |
-          sudo apt-get install -y python3-flask python3-pandas
+          sudo apt-get install -y python3-flask python3-pandas python3-psutil
           python --version
 
       - name: Install DEB

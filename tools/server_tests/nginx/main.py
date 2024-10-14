@@ -2,6 +2,7 @@ import os
 import subprocess
 import re
 import pwd
+import psutil
 
 nginx_config_dir = "/etc/nginx/conf.d"
 socket_folder = "/run/php-fpm"
@@ -9,6 +10,17 @@ socket_folder = "/run/php-fpm"
 users = pwd.getpwall()
 usernames = [user.pw_name for user in users]
 print("Users on system: ", usernames)
+
+def get_user_of_process(process_name):
+    # Iterate over all running processes
+    for proc in psutil.process_iter(['pid', 'name', 'username']):
+        try:
+            # Check if the process name matches
+            if proc.info['name'] == process_name:
+                return f"Process '{process_name}' (PID: {proc.info['pid']}) is running under user: {proc.info['username']}"
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return f"No process named '{process_name}' is currently running."
 
 nginx_conf_template = """
 server {{
@@ -122,6 +134,7 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
             os.makedirs(socket_folder)
         subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
+        print("nginx user: ", get_user_of_process('nginx'))
         nginx_restarted = True
                         
     php_fpm_command = ["/usr/sbin/php-fpm", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
