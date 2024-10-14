@@ -417,9 +417,7 @@ jobs:
 
       - name: Setup Python
         run: |
-          sudo apt-get install pip3
-          sudo pip3 install flask --no-input
-          sudo pip3 install pandas --no-input
+          sudo apt-get install -y python3-flask python3-pandas
           python --version
 
       - name: Install DEB
