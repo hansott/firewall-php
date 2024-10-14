@@ -69,8 +69,6 @@ def enable_config_line(file_path, line_to_check, comment_ch):
 
     if changes_made:
         print(f"The line '{line_to_check}' was uncommented.")
-    else:
-        print(f"The line '{line_to_check}' was already uncommented or not found.")
 
 
 def nginx_create_conf_file(test_name, test_dir, server_port):
