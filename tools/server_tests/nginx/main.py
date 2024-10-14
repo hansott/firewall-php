@@ -98,9 +98,11 @@ def nginx_create_conf_file(test_name, test_dir, server_port):
 
 
 def php_fpm_create_conf_file(test_dir, test_name, user):
-    nginx_user = "nginx"
-    if "nginx" not in usernames:
-        nginx_user = "root"
+    nginx_user = "root"
+    for u in ["nginx", "www-data"]:
+        if u in usernames:
+            nginx_user = user
+        
     
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
