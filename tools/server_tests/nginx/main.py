@@ -5,7 +5,6 @@ import pwd
 import psutil
 
 nginx_config_dir = "/etc/nginx/conf.d"
-socket_folder = "/run/php-fpm"
 
 users = pwd.getpwall()
 usernames = [user.pw_name for user in users]
@@ -48,6 +47,8 @@ group = {user}
 listen = /run/php-fpm/php-fpm-{name}.sock
 listen.owner = {nginx_user}
 listen.group = {nginx_user}
+error_log = /var/log/php-fpm/error-{name}.log
+access.log = /var/log/php-fpm/access-{name}.log
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
@@ -56,6 +57,10 @@ pm.max_spare_servers = 3
 clear_env = no
 
 """
+
+def create_folder(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
 def enable_config_line(file_path, line_to_check, comment_ch):
     # Read the nginx.conf file
@@ -131,8 +136,8 @@ nginx_restarted = False
 def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     global nginx_restarted
     if not nginx_restarted:
-        if not os.path.exists(socket_folder):
-            os.makedirs(socket_folder)
+        create_folder("/run/php-fpm")
+        create_folder("/var/log/php-fpm")
         subprocess.run(['nginx'], check=True)
         print("nginx server restarted!")
         get_user_of_process('nginx')
