@@ -106,7 +106,7 @@ def php_fpm_create_conf_file(test_dir, test_name, user):
     nginx_user = "root"
     for u in ["nginx", "www-data"]:
         if u in usernames:
-            nginx_user = user
+            nginx_user = u
             break
         
     print("Selected nginx user: ", nginx_user)
