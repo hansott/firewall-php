@@ -411,9 +411,11 @@ jobs:
 
       - name: Check PHP setup
         run: |
-          which php
-          php -v
           php -i
+
+      - name: Setup Servers
+        run: |
+          sudo apt-get install -y nginx php-fpm
 
       - name: Setup Python
         run: |
@@ -428,6 +430,12 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
+
+      - name: Run nginx-php-fpm server tests
+        run: |
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          cd tools
+          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
 
       - name: Run php-built-in server tests
         run: |
