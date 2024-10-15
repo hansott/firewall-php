@@ -440,10 +440,9 @@ jobs:
 
       - name: Run nginx-php-fpm server tests
         run: |
-          ls -l tests/server/test_allowed_ip
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
+          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm --debug
 
       - name: Run php-built-in server tests
         run: |
@@ -496,6 +495,7 @@ jobs:
             ${{ github.workspace }}/tests/cli/*.diff
             /var/log/nginx/*
             /var/log/php-fpm/*
+            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
       
       - name: Archive benchmark artifacts
         uses: actions/upload-artifact@v4
