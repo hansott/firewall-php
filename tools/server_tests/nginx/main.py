@@ -53,7 +53,10 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 clear_env = no
+catch_workers_output = yes
 
+php_admin_value[error_log] = /var/log/php-fpm/error-{name}.log
+php_admin_flag[log_errors] = on
 """
 
 def create_folder(folder_path):
