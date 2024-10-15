@@ -440,6 +440,7 @@ jobs:
 
       - name: Run nginx-php-fpm server tests
         run: |
+          ls -R .
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
