@@ -481,10 +481,10 @@ jobs:
           python3 benchmark_report.py ../benchmarks/cli
           python3 benchmark_report.py ../benchmarks/server
       
-      - name: List state
+      - name: Prepare logs
         if: always()
         run:
-          ls -l /var/log/php-fpm/
+          chmod 777 /var/log/php-fpm/*
 
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
