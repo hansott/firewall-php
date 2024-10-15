@@ -35,6 +35,7 @@ server {{
     location ~ \.php$ {{
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:/run/php-fpm/php-fpm-{name}.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_index index.php;
         include fastcgi.conf;
     }}
