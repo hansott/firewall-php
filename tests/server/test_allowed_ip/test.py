@@ -11,23 +11,23 @@ from testlib import *
 
 
 def run_test():
-    response = php_server_get("/test")
+    response = php_server_get("/somethingVerySpecific")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ")
 
-    #apply_config("change_config_remove_allowed_ip.json")
+    apply_config("change_config_remove_allowed_ip.json")
         
-    #response = php_server_get("/test")
-    #assert_response_code_is(response, 200)
-    #assert_response_body_contains(response, "Something")
+    response = php_server_get("/somethingVerySpecific")
+    assert_response_code_is(response, 200)
+    assert_response_body_contains(response, "Something")
     
-    #apply_config("start_config.json")
+    apply_config("start_config.json")
         
-    #response = php_server_get("/test")
-    #assert_response_code_is(response, 403)
-    #assert_response_header_contains(response, "Content-Type", "text")
-    #assert_response_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ")
+    response = php_server_get("/somethingVerySpecific")
+    assert_response_code_is(response, 403)
+    assert_response_header_contains(response, "Content-Type", "text")
+    assert_response_body_contains(response, "Your IP address is not allowed to access this resource! (Your IP: ")
     
     
 if __name__ == "__main__":
