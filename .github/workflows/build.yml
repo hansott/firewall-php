@@ -324,6 +324,7 @@ jobs:
 
       - name: Run nginx-php-fpm server tests
         run: |
+          ls -l ./tests/server/test_allowed_ip
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
 

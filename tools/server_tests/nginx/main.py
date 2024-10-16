@@ -3,6 +3,7 @@ import subprocess
 import re
 import pwd
 import psutil
+import time
 
 nginx_config_dir = "/etc/nginx/conf.d"
 
@@ -157,6 +158,11 @@ def prepare_nginx_php_fpm(test_data):
 nginx_restarted = False
 
 def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
+    php_fpm_command = ["/usr/sbin/php-fpm", "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
+    print("PHP-FPM command: ", php_fpm_command)
+    z = [subprocess.Popen(php_fpm_command, env=test_data["env"])]
+
+    time.sleep(5)
     global nginx_restarted
     if not nginx_restarted:
         create_folder("/run/php-fpm")
@@ -166,12 +172,8 @@ def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
         print("nginx server restarted!")
         nginx_restarted = True
 
-    get_user_of_process('nginx')
-    get_user_of_process('php-fpm')                        
-    php_fpm_command = ["/usr/sbin/php-fpm", "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
-    print("PHP-FPM command: ", php_fpm_command)
-    return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
-
+    time.sleep(5)
+    return z
 
 def done_nginx_php_fpm():
     subprocess.run(['pkill', 'nginx'], check=True)
