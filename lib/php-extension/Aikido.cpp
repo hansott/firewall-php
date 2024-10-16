@@ -10,19 +10,17 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 void* aikido_agent_lib_handle = nullptr;
 zval* server = nullptr;
 
-#if PHP_VERSION_ID < 80000
-	bool exit_current_request = false;
+bool exit_current_request = false;
 
-	static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
+static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
 
-	void aikido_zend_execute_ex(zend_execute_data *execute_data) {
-		if (exit_current_request) {
-			AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
-			zend_bailout();
-		}
-		original_zend_execute_ex(execute_data);
+void aikido_zend_execute_ex(zend_execute_data *execute_data) {
+	if (exit_current_request) {
+		AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
+		zend_bailout();
 	}
-#endif
+	original_zend_execute_ex(execute_data);
+}
 
 PHP_MINIT_FUNCTION(aikido)
 {
@@ -92,10 +90,8 @@ PHP_MINIT_FUNCTION(aikido)
 		AIKIDO_LOG_INFO("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 	}
 
-	#if PHP_VERSION_ID < 80000
-		original_zend_execute_ex = zend_execute_ex;
-		zend_execute_ex = aikido_zend_execute_ex;
-	#endif
+	original_zend_execute_ex = zend_execute_ex;
+	zend_execute_ex = aikido_zend_execute_ex;
 
 	/* If SAPI name is "cli" run in "simple" mode */
 	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
@@ -155,7 +151,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 		return SUCCESS;
 	}
 
-	AIKIDO_LOG_DEBUG("SAPI: %s\n", AIKIDO_GLOBAL(sapi_name));
+	AIKIDO_LOG_DEBUG("SAPI: %s\n", AIKIDO_GLOBAL(sapi_name).c_str());
 
 	/* If SAPI name is "cli" run in "simple" mode */
 	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
@@ -198,6 +194,8 @@ PHP_RINIT_FUNCTION(aikido) {
 		AIKIDO_LOG_INFO("RINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
 		return SUCCESS;
 	}
+
+	exit_current_request = false;
 
 	requestCache.Reset();
 
@@ -255,10 +253,8 @@ PHP_RINIT_FUNCTION(aikido) {
 			GoRequestProcessorContextInit();
 
 			if (send_request_init_metadata_event() == EXIT) {
-				#if PHP_VERSION_ID < 80000
-					AIKIDO_LOG_INFO("Marking current request for exit!\n");
-					exit_current_request = true;
-				#endif
+				AIKIDO_LOG_INFO("Marking current request for exit!\n");
+				exit_current_request = true;
 			}
 		}
 	}
@@ -274,10 +270,6 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 		AIKIDO_LOG_INFO("RSHUTDOWN finished earlier because AIKIDO_DISABLE is set to 1!\n");
 		return SUCCESS;
 	}
-
-	#if PHP_VERSION_ID < 80000
-		exit_current_request = false;
-	#endif
 
 	/*
 	if (aikido_request_processor_lib_handle)) {

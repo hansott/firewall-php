@@ -8,12 +8,18 @@ import json
 import argparse
 from server_tests.php_built_in.main import handle_php_built_in
 from server_tests.apache.main import handle_apache_mod_php
-from server_tests.nginx.main import prepare_nginx_php_fpm, handle_nginx_php_fpm, done_nginx_php_fpm
+from server_tests.nginx.main import prepare_nginx_php_fpm, pre_nginx_php_fpm, handle_nginx_php_fpm, done_nginx_php_fpm
 
 server_prepare_handlers = {
     "php-built-in": None,
     "apache-mod-php": None,
     "nginx-php-fpm": prepare_nginx_php_fpm
+}
+
+server_pre_tests_handlers = {
+    "php-built-in": None,
+    "apache-mod-php": None,
+    "nginx-php-fpm": pre_nginx_php_fpm
 }
 
 server_handlers = {
@@ -144,13 +150,16 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
             test_data = server_prepare_handlers[server](test_data)
         tests_data.append(test_data)
             
+    if server_pre_tests_handlers[server] is not None:
+        test_data = server_pre_tests_handlers[server]()
+
+            
     threads = []
     for test_data in tests_data:
         args = (test_data, root_tests_dir, test_lib_dir, server, benchmark, valgrind, debug)
         thread = threading.Thread(target=handle_test_scenario, args=args)
         threads.append(thread)
         thread.start()
-        time.sleep(30)
 
     for thread in threads:
         thread.join()

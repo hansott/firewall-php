@@ -155,25 +155,26 @@ def prepare_nginx_php_fpm(test_data):
     test_data["fpm_config"] = php_fpm_create_conf_file(test_data["test_dir"], test_data["test_name"], "root")
     return test_data
 
-nginx_restarted = False
+
+def pre_nginx_php_fpm():
+    subprocess.run(['pkill', 'nginx'])
+    subprocess.run(['pkill', 'php-fpm'])
+    subprocess.run(['rm', '-rf', '/var/log/nginx/*'])
+    subprocess.run(['rm', '-rf', '/var/log/php-fpm/*'])
+    subprocess.run(['rm', '-rf', '/var/log/aikido-1.0.79/*'])
+    create_folder("/run/php-fpm")
+    create_folder("/var/log/php-fpm")
+    modify_nginx_conf("/etc/nginx/nginx.conf")
+    subprocess.run(['nginx'], check=True)
+    print("nginx server restarted!")
+    time.sleep(5)
+
 
 def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
     php_fpm_command = ["/usr/sbin/php-fpm", "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
-    z = [subprocess.Popen(php_fpm_command, env=test_data["env"])]
+    return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
 
-    time.sleep(5)
-    global nginx_restarted
-    if not nginx_restarted:
-        create_folder("/run/php-fpm")
-        create_folder("/var/log/php-fpm")
-        modify_nginx_conf("/etc/nginx/nginx.conf")
-        subprocess.run(['nginx'], check=True)
-        print("nginx server restarted!")
-        nginx_restarted = True
-
-    time.sleep(5)
-    return z
 
 def done_nginx_php_fpm():
     subprocess.run(['pkill', 'nginx'], check=True)
