@@ -2,11 +2,6 @@
     "type": "detected_attack",
     "request": {
         "method": "POST",
-        "headers": {
-            "content_type": [
-                "application/json"
-            ]
-        },
         "body": "{\"url\": \"http://127.0.0.1:8081\"}",
         "source": "php",
         "route": "/testDetection"

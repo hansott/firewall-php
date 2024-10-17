@@ -2,11 +2,6 @@
     "type": "detected_attack",
     "request": {
         "method": "POST",
-        "headers": {
-            "content_type": [
-                "application/json"
-            ]
-        },
         "body": "{\"userId\": \"1 OR 1=1\"}",
         "source": "php",
         "route": "/testDetection"

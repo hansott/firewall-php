@@ -322,9 +322,13 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
+      - name: Run apache-mod-php server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
+
       - name: Run nginx-php-fpm server tests
         run: |
-          ls -l ./tests/server/test_allowed_ip
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
 
@@ -371,6 +375,7 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+            /var/log/httpd/*
             /var/log/nginx/*
             /var/log/php-fpm/*
             
@@ -438,6 +443,11 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
+
+      - name: Run apache-mod-php server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
 
       - name: Run nginx-php-fpm server tests
         run: |

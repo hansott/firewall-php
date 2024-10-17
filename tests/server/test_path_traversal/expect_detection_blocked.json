@@ -2,11 +2,6 @@
     "type": "detected_attack",
     "request": {
         "method": "POST",
-        "headers": {
-            "content_type": [
-                "application/json"
-            ]
-        },
         "body": "{\"folder\": \"../../../..\"}",
         "route": "/testDetection"
     },

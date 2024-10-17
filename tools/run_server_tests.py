@@ -7,18 +7,18 @@ import sys
 import json
 import argparse
 from server_tests.php_built_in.main import handle_php_built_in
-from server_tests.apache.main import handle_apache_mod_php
+from server_tests.apache.main import prepare_apache_mod_php, pre_apache_mod_php, handle_apache_mod_php, done_apache_mod_php
 from server_tests.nginx.main import prepare_nginx_php_fpm, pre_nginx_php_fpm, handle_nginx_php_fpm, done_nginx_php_fpm
 
 server_prepare_handlers = {
     "php-built-in": None,
-    "apache-mod-php": None,
+    "apache-mod-php": prepare_apache_mod_php,
     "nginx-php-fpm": prepare_nginx_php_fpm
 }
 
 server_pre_tests_handlers = {
     "php-built-in": None,
-    "apache-mod-php": None,
+    "apache-mod-php": pre_apache_mod_php,
     "nginx-php-fpm": pre_nginx_php_fpm
 }
 
@@ -30,7 +30,7 @@ server_handlers = {
 
 server_done_handlers = {
     "php-built-in": None,
-    "apache-mod-php": None,
+    "apache-mod-php": done_apache_mod_php,
     "nginx-php-fpm": done_nginx_php_fpm
 }
 
@@ -38,12 +38,15 @@ used_ports = set()
 passed_tests = []
 failed_tests = []
 
+lock = threading.Lock()
+
 def generate_unique_port():
-    while True:
-        port = random.randint(1024, 65535)
-        if port not in used_ports:
-            used_ports.add(port)
-            return port
+    with lock:
+        while True:
+            port = random.randint(1024, 65535)
+            if port not in used_ports:
+                used_ports.add(port)
+                return port
 
 def load_env_from_json(file_path):
     if not os.path.exists(file_path):
@@ -74,7 +77,7 @@ def handle_test_scenario(data, root_tests_dir, test_lib_dir, server, benchmark, 
 
         print(f"Starting {server} server on port {server_port} for {test_name}...")
         
-        server_processes = server_handlers[server](data, test_lib_dir, valgrind)
+        server_process = server_handlers[server](data, test_lib_dir, valgrind)
 
         time.sleep(5)
 
@@ -108,9 +111,9 @@ def handle_test_scenario(data, root_tests_dir, test_lib_dir, server, benchmark, 
         failed_tests.append(test_name)
         
     finally:
-        for p in server_processes:
-            p.terminate()
-            p.wait()
+        if server_process:
+            server_process.terminate()
+            server_process.wait()
             print(f"PHP server on port {server_port} stopped.")
 
         if mock_aikido_core:
