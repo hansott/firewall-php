@@ -9,6 +9,8 @@ import time
 
 apache_conf_global_file = "/etc/httpd/conf/httpd.conf"
 apache_conf_proxy_module_file = "/etc/httpd/conf.modules.d/00-proxy.conf"
+apache_conf_proxy_h2_module_file = "/etc/httpd/conf.modules.d/10-proxy_h2.conf"
+
 apache_conf_mpm_module_file = "/etc/httpd/conf.modules.d/00-mpm.conf"
 apache_conf_folder = "/etc/httpd/conf.d"
 apache_log_folder = "/var/log/httpd"
@@ -221,6 +223,7 @@ def apache_mod_php_init(tests_dir):
     subprocess.run(['rm', '-rf', f'{apache_log_folder}/*'])
     
     toggle_config_line(apache_conf_proxy_module_file, "LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so", "#")
+    toggle_config_line(apache_conf_proxy_h2_module_file, "LoadModule proxy_http2_module modules/mod_proxy_http2.so", "#")
     
     toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_worker_module modules/mod_mpm_worker.so", "#")
     toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_event_module modules/mod_mpm_event.so", "#")

@@ -289,12 +289,13 @@ jobs:
           pip3 install requests
           pip3 install pandas
           pip3 install psutil
+          yum install -y httpd
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
           yum install -y nginx
           yum install -y php-fpm
-          yum install -y httpd
+
 
       - name: Check PHP setup
         run: |
