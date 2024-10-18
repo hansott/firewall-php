@@ -25,6 +25,8 @@ Listen {port}
 
 ErrorLog "logs/error_log"
 
+LogFormat "%h %l %u %t %r %>s %b" combined
+
 IncludeOptional conf.d/*.conf
 
 <IfModule mime_module>
@@ -225,6 +227,7 @@ def apache_mod_php_init(tests_dir):
     select_apache_user()
     global prev_owning_user, prev_owning_group
     prev_owning_user, prev_owning_group = get_user_and_group(tests_dir)
+    print(f"Got previous owning user:group -> {prev_owning_user}:{prev_owning_group}")
     
 
 def apache_mod_php_process_test(test_data):

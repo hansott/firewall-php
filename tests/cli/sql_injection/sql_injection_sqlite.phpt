@@ -8,9 +8,7 @@ AIKIDO_BLOCK=1
 --FILE--
 <?php
 try {
-    $dbFile = 'unsafe_database.sqlite';
-
-    $pdo = new PDO('sqlite:unsafe_database.sqlite');
+    $pdo = new PDO('sqlite::memory:');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY, 
@@ -38,10 +36,6 @@ try {
 // Close the database connection
 $pdo = null;
 
-// Delete the database file
-if (file_exists($dbFile)) {
-    unlink($dbFile);
-}
 ?>
 
 --EXPECTREGEX--
