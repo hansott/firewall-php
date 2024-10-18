@@ -188,7 +188,7 @@ def nginx_php_fpm_pre_tests():
 def nginx_php_fpm_start_server(test_data, test_lib_dir, valgrind):
     php_fpm_command = [php_fpm_bin, "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
-    return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
+    return subprocess.Popen(php_fpm_command, env=test_data["env"])
 
 
 def nginx_php_fpm_uninit():
