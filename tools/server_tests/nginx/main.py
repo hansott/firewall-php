@@ -159,7 +159,11 @@ def php_fpm_create_conf_file(test_dir, test_name, user):
     return php_fpm_config_file_path
 
 
-def prepare_nginx_php_fpm(test_data):
+def nginx_php_fpm_init(tests_dir):
+    pass
+
+
+def nginx_php_fpm_process_test(test_data):
     enable_config_line(nginx_global_conf, f"include {nginx_config_dir}/*.conf;", '#')
     nginx_create_conf_file(test_data["test_name"], test_data["test_dir"], test_data["server_port"])
 
@@ -167,7 +171,7 @@ def prepare_nginx_php_fpm(test_data):
     return test_data
 
 
-def pre_nginx_php_fpm():
+def nginx_php_fpm_pre_tests():
     subprocess.run(['pkill', 'nginx'])
     subprocess.run(['pkill', 'php-fpm'])
     subprocess.run(['rm', '-rf', f'{log_dir}/nginx/*'])
@@ -181,11 +185,12 @@ def pre_nginx_php_fpm():
     time.sleep(5)
 
 
-def handle_nginx_php_fpm(test_data, test_lib_dir, valgrind):
+def nginx_php_fpm_start_server(test_data, test_lib_dir, valgrind):
     php_fpm_command = [php_fpm_bin, "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
     return [subprocess.Popen(php_fpm_command, env=test_data["env"])]
 
 
-def done_nginx_php_fpm():
-    subprocess.run(['pkill', 'nginx'], check=True)
+def nginx_php_fpm_uninit():
+    subprocess.run(['pkill', 'nginx'])
+    subprocess.run(['pkill', 'php-fpm'])

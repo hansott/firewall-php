@@ -2,6 +2,7 @@ import os
 import subprocess
 import re
 import pwd
+import grp
 import psutil
 import time
 
@@ -17,8 +18,8 @@ ServerRoot "/etc/httpd"
 ServerName "localhost"
 PidFile /run/httpd/httpd-{name}.pid
 Include conf.modules.d/*.conf
-User apache
-Group apache
+User {user}
+Group {user}
 ServerAdmin root@localhost
 Listen {port}
 
@@ -61,9 +62,6 @@ IncludeOptional conf.d/*.conf
 </VirtualHost>
 """
 
-prev_user = ""
-prev_group = ""
-
 def append_if_not_exists(file_path, content):
     try:
         # Open the file in read mode to check for existing content
@@ -105,7 +103,6 @@ def modify_apache_conf(file_path):
         print(f"Error: {e}")
 
 
-
 def toggle_config_line(file_path, line_to_check, comment_ch, enable=False):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -141,6 +138,40 @@ def toggle_config_line(file_path, line_to_check, comment_ch, enable=False):
             print(f"The line '{line_to_check}' was commented.")
 
 
+apache_user = None
+prev_owning_user = ""
+prev_owning_group = ""
+
+def select_apache_user():
+    global apache_user
+    users = pwd.getpwall()
+    usernames = [user.pw_name for user in users]
+    print("Users on system: ", usernames)
+    for u in ["apache", "www-data"]:
+        if u in usernames:
+            apache_user = u
+            break
+    
+    assert apache_user is not None
+        
+    print("Selected apache user: ", apache_user)
+
+
+def get_user_and_group(folder_path):
+    # Get the folder's status, which includes owner and group info
+    folder_stat = os.stat(folder_path)
+
+    # Get the user ID and group ID
+    user_id = folder_stat.st_uid
+    group_id = folder_stat.st_gid
+
+    # Get the username from the user ID
+    user_name = pwd.getpwuid(user_id).pw_name
+
+    # Get the group name from the group ID
+    group_name = grp.getgrgid(group_id).gr_name
+    return user_name, group_name
+
 
 def apache_create_config_file(test_name, test_dir, server_port, env):
     apache_config = apache_conf_template.format(
@@ -148,6 +179,7 @@ def apache_create_config_file(test_name, test_dir, server_port, env):
         port = server_port,
         test_dir = test_dir,
         log_dir = apache_log_folder,
+        user = apache_user
     )
     
     apache_config_file = os.path.join(test_dir, f"{test_name}.conf")
@@ -156,21 +188,6 @@ def apache_create_config_file(test_name, test_dir, server_port, env):
 
     print(f"Configured apache config for {test_name}")
     return apache_config_file
-
-
-def pre_apache_mod_php():
-    subprocess.run(['pkill', 'httpd'])
-    subprocess.run(['rm', '-rf', f'{apache_log_folder}/*'])
-    
-    toggle_config_line(apache_conf_proxy_module_file, "LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so", "#")
-    
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_worker_module modules/mod_mpm_worker.so", "#")
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_event_module modules/mod_mpm_event.so", "#")
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_prefork_module modules/mod_mpm_prefork.so", "#", enable=True)
-    
-    # subprocess.run(['httpd'], check=True)
-    # print("httpd server restarted!")
-    # time.sleep(5)
 
 
 def add_user_group_access(full_path, user, group):
@@ -185,32 +202,52 @@ def add_user_group_access(full_path, user, group):
                 # print(f"Setting permissions for {current_path}")
                 
                 # Change ownership of the directory
-                subprocess.run(['sudo', 'chown', f'{user}:{group}', current_path], check=True)
+                subprocess.run(['chown', f'{user}:{group}', current_path], check=True)
 
                 # Ensure the execute permission (search permission) on directories
-                subprocess.run(['sudo', 'chmod', '775', current_path], check=True)
+                subprocess.run(['chmod', '775', current_path], check=True)
         
         print(f"Successfully added access to full path '{full_path}' for user '{user}' and group '{group}'.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to modify permissions: {e}")
 
 
-def prepare_apache_mod_php(test_data):
+def apache_mod_php_init(tests_dir):
+    subprocess.run(['pkill', 'httpd'])
+    subprocess.run(['rm', '-rf', f'{apache_log_folder}/*'])
+    
+    toggle_config_line(apache_conf_proxy_module_file, "LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so", "#")
+    
+    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_worker_module modules/mod_mpm_worker.so", "#")
+    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_event_module modules/mod_mpm_event.so", "#")
+    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_prefork_module modules/mod_mpm_prefork.so", "#", enable=True)
+    
+    select_apache_user()
+    global prev_owning_user, prev_owning_group
+    prev_owning_user, prev_owning_group = get_user_and_group(tests_dir)
+    
+
+def apache_mod_php_process_test(test_data):
     test_dir = test_data["test_dir"]
     server_port = test_data["server_port"]
     test_data["apache_config"] = apache_create_config_file(test_data["test_name"], test_dir, server_port, test_data["env"])
     
-    add_user_group_access(os.path.join(test_dir, "index.php"), "apache", "apache")
+    global apache_user
+    add_user_group_access(os.path.join(test_dir, "index.php"), apache_user, apache_user)
     
     # append_if_not_exists(apache_conf_global_file, f"Listen {server_port}\n")
     return test_data
 
 
-def handle_apache_mod_php(test_data, test_lib_dir, valgrind):
+def apache_mod_php_pre_tests():
+    pass
+
+
+def apache_mod_php_start_server(test_data, test_lib_dir, valgrind):
     print(['/usr/sbin/httpd', '-f', test_data["apache_config"]])
     return subprocess.Popen(['/usr/sbin/httpd', '-f', test_data["apache_config"]], env=test_data["env"])
 
 
-def done_apache_mod_php():
+def apache_mod_php_uninit():
     subprocess.run(['pkill', 'httpd'])
-    subprocess.run(['chown', '-R', 'ttimcu:ttimcu', '../'])
+    subprocess.run(['chown', '-R', f'{prev_owning_user}:{prev_owning_group}', '../'])

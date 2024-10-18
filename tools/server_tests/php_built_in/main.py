@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-def handle_php_built_in(test_data, test_lib_dir, valgrind):
+def php_built_in_start_server(test_data, test_lib_dir, valgrind):
     server_port = test_data["server_port"]
     
     php_server_process_cmd = ['php', '-S', f'localhost:{server_port}', '-t', test_data["test_dir"]]

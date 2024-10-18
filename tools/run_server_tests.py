@@ -6,32 +6,38 @@ import time
 import sys
 import json
 import argparse
-from server_tests.php_built_in.main import handle_php_built_in
-from server_tests.apache.main import prepare_apache_mod_php, pre_apache_mod_php, handle_apache_mod_php, done_apache_mod_php
-from server_tests.nginx.main import prepare_nginx_php_fpm, pre_nginx_php_fpm, handle_nginx_php_fpm, done_nginx_php_fpm
+from server_tests.php_built_in.main import php_built_in_start_server
+from server_tests.apache.main import apache_mod_php_init, apache_mod_php_process_test, apache_mod_php_pre_tests, apache_mod_php_start_server, apache_mod_php_uninit
+from server_tests.nginx.main import nginx_php_fpm_init, nginx_php_fpm_process_test, nginx_php_fpm_pre_tests, nginx_php_fpm_start_server, nginx_php_fpm_uninit
 
-server_prepare_handlers = {
-    "php-built-in": None,
-    "apache-mod-php": prepare_apache_mod_php,
-    "nginx-php-fpm": prepare_nginx_php_fpm
-}
-
-server_pre_tests_handlers = {
-    "php-built-in": None,
-    "apache-mod-php": pre_apache_mod_php,
-    "nginx-php-fpm": pre_nginx_php_fpm
-}
-
-server_handlers = {
-    "php-built-in": handle_php_built_in,
-    "apache-mod-php": handle_apache_mod_php,
-    "nginx-php-fpm": handle_nginx_php_fpm
-}
-
-server_done_handlers = {
-    "php-built-in": None,
-    "apache-mod-php": done_apache_mod_php,
-    "nginx-php-fpm": done_nginx_php_fpm
+INIT = 0
+PROCESS_TEST = 1
+PRE_TESTS = 2
+START_SERVER = 3
+UNINIT = 4
+    
+servers = {
+    "php-built-in": (
+        None,
+        None,
+        None,
+        php_built_in_start_server,
+        None
+    ),
+    "apache-mod-php": ( 
+        apache_mod_php_init, 
+        apache_mod_php_process_test, 
+        apache_mod_php_pre_tests, 
+        apache_mod_php_start_server, 
+        apache_mod_php_uninit
+    ),
+    "nginx-php-fpm": ( 
+        nginx_php_fpm_init, 
+        nginx_php_fpm_process_test, 
+        nginx_php_fpm_pre_tests, 
+        nginx_php_fpm_start_server, 
+        nginx_php_fpm_uninit
+    ),
 }
 
 used_ports = set()
@@ -77,7 +83,8 @@ def handle_test_scenario(data, root_tests_dir, test_lib_dir, server, benchmark, 
 
         print(f"Starting {server} server on port {server_port} for {test_name}...")
         
-        server_process = server_handlers[server](data, test_lib_dir, valgrind)
+        server_start = servers[server][START_SERVER]
+        server_process = server_start(data, test_lib_dir, valgrind)
 
         time.sleep(5)
 
@@ -127,6 +134,10 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
         test_dirs = [os.path.join(root_tests_dir, specific_test)]
     else:
         test_dirs = [f.path for f in os.scandir(root_tests_dir) if f.is_dir()]
+       
+    server_init = servers[server][INIT] 
+    if server_init is not None:
+        server_init(root_tests_dir)
         
     tests_data = []
     for test_dir in test_dirs:
@@ -149,13 +160,13 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
         env.update(load_env_from_json(test_data["env_path"]))
         test_data["env"] = env
         
-        if server_prepare_handlers[server] is not None:
-            test_data = server_prepare_handlers[server](test_data)
+        server_process_test = servers[server][PROCESS_TEST]
+        if server_process_test is not None:
+            test_data = server_process_test(test_data)
         tests_data.append(test_data)
             
-    if server_pre_tests_handlers[server] is not None:
-        test_data = server_pre_tests_handlers[server]()
-
+    if servers[server][2] is not None:
+        test_data = servers[server][2]()
             
     threads = []
     for test_data in tests_data:
@@ -167,8 +178,9 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
     for thread in threads:
         thread.join()
         
-    if server_done_handlers[server]:
-        server_done_handlers[server]()
+    server_uninit = servers[server][UNINIT]
+    if server_uninit is not None:
+        server_uninit()
             
     print_test_results("Passed tests:", passed_tests)
     print_test_results("Failed tests:", failed_tests)
