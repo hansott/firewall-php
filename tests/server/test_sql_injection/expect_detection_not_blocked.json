@@ -1,6 +1,11 @@
 {
     "type": "detected_attack",
     "request": {
+        "headers": {
+            "content_type": [
+                "application/json"
+            ]
+        },
         "method": "POST",
         "body": "{\"userId\": \"1 OR 1=1\"}",
         "source": "php",

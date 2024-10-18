@@ -143,13 +143,31 @@ std::string extract_headers() {
     std::map<std::string, std::string> headers;
     zend_string *key;
     zval *val;
-    ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(server), key, val) {
-        if (key && ZSTR_LEN(key) > 5 && memcmp(ZSTR_VAL(key), "HTTP_", 5) == 0) {
-            std::string header(ZSTR_VAL(key) + 5);
-            std::transform(header.begin(), header.end(), header.begin(), ::tolower);
-            headers[header] = Z_STRVAL_P(val);
+    ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(server), key, val)
+    {
+        if (key && Z_TYPE_P(val) == IS_STRING)
+        {
+            std::string header_name(ZSTR_VAL(key));
+            std::string http_header_key;
+            std::string http_header_value(Z_STRVAL_P(val));
+
+            if (header_name.find("HTTP_") == 0) {
+                http_header_key = header_name.substr(5);
+            }
+            else if (header_name == "CONTENT_TYPE" || header_name == "CONTENT_LENGTH" || header_name == "AUTHORIZATION") {
+                http_header_key = header_name;
+            }
+            else {
+                AIKIDO_LOG_DEBUG("Header not matching criteria: %s\n", header_name.c_str());
+            }
+
+            if (!http_header_key.empty()) {
+                std::transform(http_header_key.begin(), http_header_key.end(), http_header_key.begin(), ::tolower);
+                headers[http_header_key] = http_header_value;
+            }
         }
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     json headers_json;
     for (auto const& [key, val] : headers) {

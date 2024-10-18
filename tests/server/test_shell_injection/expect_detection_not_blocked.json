@@ -1,6 +1,11 @@
 {
     "type": "detected_attack",
     "request": {
+        "headers": {
+            "content_type": [
+                "application/json"
+            ]
+        },
         "method": "POST",
         "body": "{\"command\": \"`whoami`\"}",
         "source": "php",

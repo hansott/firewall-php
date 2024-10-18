@@ -57,6 +57,8 @@ IncludeOptional conf.d/*.conf
         RewriteCond %{{REQUEST_FILENAME}} !-f
         RewriteCond %{{REQUEST_FILENAME}} !-d
         RewriteRule ^(.*)$ index.php [L]
+        
+        SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
     </Directory>
 
     ErrorLog {log_dir}/error_{name}.log
