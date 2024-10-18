@@ -294,7 +294,7 @@ jobs:
           dnf --assumeyes install php-pdo
           yum install -y nginx
           yum install -y php-fpm
-          yum install httpd
+          yum install -y httpd
 
       - name: Check PHP setup
         run: |
