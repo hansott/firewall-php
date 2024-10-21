@@ -457,7 +457,7 @@ jobs:
       - name: Run apache-mod-php server tests
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
+          sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
 
       - name: Run nginx-php-fpm server tests
         run: |
