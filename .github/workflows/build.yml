@@ -431,15 +431,6 @@ jobs:
         run: |
           php -i
 
-      - name: Setup Servers
-        run: |
-          sudo apt-get install -y nginx php-fpm
-          sudo apt-get install -y apache2 libapache2-mod-php
-          sudo a2dismod mpm_event
-          sudo a2dismod mpm_worker
-          sudo a2enmod mpm_prefork
-          sudo a2enmod rewrite
-
       - name: Setup Python
         run: |
           sudo apt-get install -y python3-flask python3-pandas python3-psutil
@@ -456,11 +447,18 @@ jobs:
 
       - name: Run apache-mod-php server tests
         run: |
+          sudo apt-get install -y nginx php-fpm
+          sudo apt-get install -y apache2 libapache2-mod-php
+          sudo a2dismod mpm_event
+          sudo a2dismod mpm_worker
+          sudo a2enmod mpm_prefork
+          sudo a2enmod rewrite
           cd tools
           sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
 
       - name: Run nginx-php-fpm server tests
         run: |
+          sudo apt-get install -y nginx php-fpm
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm --debug
