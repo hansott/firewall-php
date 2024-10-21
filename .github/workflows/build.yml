@@ -524,6 +524,7 @@ jobs:
             /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
             /var/log/apache2/*
             /etc/apache2/*
+            /etc/php/*
       
       - name: Archive benchmark artifacts
         uses: actions/upload-artifact@v4
