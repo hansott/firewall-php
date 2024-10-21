@@ -37,7 +37,7 @@ else:
     apache_run_folder = "/run/apache2"
     apache_include_conf = """IncludeOptional mods-enabled/*.load
 IncludeOptional mods-enabled/*.conf"""
-    apache_error_log = f"ErrorLog {apache_log_folder}/error.log"
+    apache_error_log = f"{apache_log_folder}/error.log"
 
 apache_conf_template = """
 ServerRoot "{server_root}"
@@ -49,7 +49,7 @@ Group {user}
 ServerAdmin root@localhost
 Listen {port}
 
-{error_log}
+ErrorLog {error_log}
 
 LogFormat "%h %l %u %t %r %>s %b" combined
 
