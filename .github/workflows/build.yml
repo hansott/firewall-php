@@ -434,6 +434,7 @@ jobs:
       - name: Setup Servers
         run: |
           sudo apt-get install -y nginx php-fpm
+          sudo apt-get install -y apache2 libapache2-mod-php
 
       - name: Setup Python
         run: |
@@ -513,6 +514,8 @@ jobs:
             /var/log/nginx/*
             /var/log/php-fpm/*
             /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+            /var/log/apache2/*
+            /etc/apache2/*
       
       - name: Archive benchmark artifacts
         uses: actions/upload-artifact@v4
