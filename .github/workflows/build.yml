@@ -420,6 +420,19 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_DEB=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
 
+      - name: Setup nginx & php-fpm
+        run: |
+          sudo apt-get install -y nginx php-fpm
+
+      - name: Setup Apache (mod_php)
+        run: |
+          sudo apt-get install -y nginx php-fpm
+          sudo apt-get install -y apache2 libapache2-mod-php
+          sudo a2dismod mpm_event
+          sudo a2dismod mpm_worker
+          sudo a2enmod mpm_prefork
+          sudo a2enmod rewrite
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -447,18 +460,11 @@ jobs:
 
       - name: Run apache-mod-php server tests
         run: |
-          sudo apt-get install -y nginx php-fpm
-          sudo apt-get install -y apache2 libapache2-mod-php
-          sudo a2dismod mpm_event
-          sudo a2dismod mpm_worker
-          sudo a2enmod mpm_prefork
-          sudo a2enmod rewrite
           cd tools
           sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
 
       - name: Run nginx-php-fpm server tests
         run: |
-          sudo apt-get install -y nginx php-fpm
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
           sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm --debug
