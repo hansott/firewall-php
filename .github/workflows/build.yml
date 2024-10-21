@@ -443,6 +443,7 @@ jobs:
       - name: Check PHP setup
         run: |
           sudo apt-get install libapache2-mod-php
+          sudo a2enmod php${{ matrix.php_version }}
           php -i
 
       - name: Setup Python
