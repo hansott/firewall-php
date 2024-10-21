@@ -432,6 +432,7 @@ jobs:
           sudo a2dismod mpm_worker
           sudo a2enmod mpm_prefork
           sudo a2enmod rewrite
+          sudo apt-get install libapache2-mod-php
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -442,7 +443,16 @@ jobs:
 
       - name: Check PHP setup
         run: |
-          sudo apt-get install libapache2-mod-php
+          php_versions = ("php7.3" "php7.4" "php8.0" "php8.1" "php8.2" "php8.3")
+          for version in "${php_versions[@]}"; do
+              if a2query -m "$version" > /dev/null 2>&1; then
+                  echo "Disabling $version..."
+                  sudo a2dismod "$version"
+              else
+                  echo "$version is not installed."
+              fi
+          done
+
           sudo a2enmod php${{ matrix.php_version }}
           php -i
 
