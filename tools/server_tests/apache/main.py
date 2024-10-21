@@ -6,30 +6,54 @@ import grp
 import psutil
 import time
 
-
-apache_conf_global_file = "/etc/httpd/conf/httpd.conf"
-apache_conf_proxy_module_file = "/etc/httpd/conf.modules.d/00-proxy.conf"
-apache_conf_proxy_h2_module_file = "/etc/httpd/conf.modules.d/10-proxy_h2.conf"
-
-apache_conf_mpm_module_file = "/etc/httpd/conf.modules.d/00-mpm.conf"
-apache_conf_folder = "/etc/httpd/conf.d"
-apache_log_folder = "/var/log/httpd"
+if os.path.exists('/etc/httpd'):
+    # Centos
+    apache_binary = "httpd"
+    apache_server_root = "/etc/httpd"
+    apache_conf_global_file = f"{apache_server_root}/conf/httpd.conf"
+    apache_conf_proxy_module_file = f"{apache_server_root}/conf.modules.d/00-proxy.conf"
+    apache_conf_proxy_h2_module_file = f"{apache_server_root}/conf.modules.d/10-proxy_h2.conf"
+    apache_conf_mpm_worker_file = f"{apache_server_root}/conf.modules.d/00-mpm.conf"
+    apache_conf_mpm_event_file = f"{apache_server_root}/conf.modules.d/00-mpm.conf"
+    apache_conf_mpm_prefork_file = f"{apache_server_root}/conf.modules.d/00-mpm.conf"
+    apache_conf_folder = f"{apache_server_root}/conf.d"
+    apache_log_folder = "/var/log/httpd"
+    apache_run_folder = "/run/httpd"
+    apache_include_conf = """Include conf.modules.d/*.conf
+IncludeOptional conf.d/*.conf"""
+    apache_error_log = "logs/error_log"
+else:
+    # Debian
+    apache_binary = "apache2"
+    apache_server_root = "/etc/apache2"
+    apache_conf_global_file = f"{apache_server_root}/apache2.conf"
+    apache_conf_proxy_module_file = f"{apache_server_root}/mods-available/proxy.conf"
+    apache_conf_proxy_h2_module_file = f"{apache_server_root}/mods-available/proxy_http2.load"
+    apache_conf_mpm_worker_file = f"{apache_server_root}/mods-available/mpm_worker.conf"
+    apache_conf_mpm_event_file = f"{apache_server_root}/mods-available/mpm_event.conf"
+    apache_conf_mpm_prefork_file = f"{apache_server_root}/mods-available/mpm_prefork.conf"
+    apache_conf_folder = f"{apache_server_root}/sites-available"
+    apache_log_folder = "/var/log/apache2"
+    apache_run_folder = "/run/apache2"
+    apache_include_conf = """IncludeOptional mods-enabled/*.load
+IncludeOptional mods-enabled/*.conf"""
+    apache_error_log = f"ErrorLog {apache_log_folder}/error.log"
 
 apache_conf_template = """
-ServerRoot "/etc/httpd"
+ServerRoot "{server_root}"
 ServerName "localhost"
-PidFile /run/httpd/httpd-{name}.pid
-Include conf.modules.d/*.conf
+PidFile {server_run}/{server_binary}-{name}.pid
+
 User {user}
 Group {user}
 ServerAdmin root@localhost
 Listen {port}
 
-ErrorLog "logs/error_log"
+{error_log}
 
 LogFormat "%h %l %u %t %r %>s %b" combined
 
-IncludeOptional conf.d/*.conf
+{optional_conf}
 
 <IfModule mime_module>
     TypesConfig /etc/mime.types
@@ -113,7 +137,7 @@ def toggle_config_line(file_path, line_to_check, comment_ch, enable=False):
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
-    commented_line_pattern = r"\s*" + re.escape(line_to_check.strip()) + r"\s*"
+    commented_line_pattern = r"\s*" + re.escape(line_to_check.strip()) + r".*"
 
     if enable:
         commented_line_pattern = "\s*" + comment_ch + commented_line_pattern
@@ -181,11 +205,16 @@ def get_user_and_group(folder_path):
 
 def apache_create_config_file(test_name, test_dir, server_port, env):
     apache_config = apache_conf_template.format(
+        server_root = apache_server_root,
+        server_binary = apache_binary,
+        server_run = apache_run_folder,
         name = test_name,
         port = server_port,
         test_dir = test_dir,
         log_dir = apache_log_folder,
-        user = apache_user
+        user = apache_user,
+        optional_conf = apache_include_conf,
+        error_log = apache_error_log
     )
     
     apache_config_file = os.path.join(test_dir, f"{test_name}.conf")
@@ -219,17 +248,22 @@ def add_user_group_access(full_path, user, group):
 
 
 def apache_mod_php_init(tests_dir):
-    subprocess.run(['pkill', 'httpd'])
-    subprocess.run(['rm', '-rf', f'{apache_log_folder}/*'])
-    
-    toggle_config_line(apache_conf_proxy_module_file, "LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so", "#")
-    toggle_config_line(apache_conf_proxy_h2_module_file, "LoadModule proxy_http2_module modules/mod_proxy_http2.so", "#")
-    
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_worker_module modules/mod_mpm_worker.so", "#")
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_event_module modules/mod_mpm_event.so", "#")
-    toggle_config_line(apache_conf_mpm_module_file, "LoadModule mpm_prefork_module modules/mod_mpm_prefork.so", "#", enable=True)
-    
     select_apache_user()
+
+    subprocess.run(['pkill', apache_binary])
+    subprocess.run(['rm', '-rf', f'{apache_log_folder}/*'])
+    subprocess.run(['mkdir', '-p', apache_log_folder], check=True)
+    subprocess.run(['chown', f'{apache_user}:{apache_user}', apache_log_folder], check=True)
+    subprocess.run(['chmod', '755', apache_log_folder], check=True)
+    
+    
+    toggle_config_line(apache_conf_proxy_module_file, "LoadModule proxy_fcgi_module", "#")
+    toggle_config_line(apache_conf_proxy_h2_module_file, "LoadModule proxy_http2_module", "#")
+    
+    toggle_config_line(apache_conf_mpm_worker_file, "LoadModule mpm_worker_module", "#")
+    toggle_config_line(apache_conf_mpm_event_file, "LoadModule mpm_event_module", "#")
+    toggle_config_line(apache_conf_mpm_prefork_file, "LoadModule mpm_prefork_module", "#", enable=True)
+    
     global prev_owning_user, prev_owning_group
     prev_owning_user, prev_owning_group = get_user_and_group(tests_dir)
     print(f"Got previous owning user:group -> {prev_owning_user}:{prev_owning_group}")
@@ -252,10 +286,10 @@ def apache_mod_php_pre_tests():
 
 
 def apache_mod_php_start_server(test_data, test_lib_dir, valgrind):
-    print(['/usr/sbin/httpd', '-f', test_data["apache_config"]])
-    return subprocess.Popen(['/usr/sbin/httpd', '-f', test_data["apache_config"]], env=test_data["env"])
+    print([f'/usr/sbin/{apache_binary}', '-f', test_data["apache_config"]])
+    return subprocess.Popen([f'/usr/sbin/{apache_binary}', '-f', test_data["apache_config"]], env=test_data["env"])
 
 
 def apache_mod_php_uninit():
-    subprocess.run(['pkill', 'httpd'])
+    subprocess.run(['pkill', apache_binary])
     subprocess.run(['chown', '-R', f'{prev_owning_user}:{prev_owning_group}', '../'])
