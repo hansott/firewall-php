@@ -45,6 +45,7 @@ fi
 PHP_DEBIAN_MOD_DIR="/etc/php/$PHP_VERSION/mods-available"
 PHP_DEBIAN_MOD_DIR_CLI="/etc/php/$PHP_VERSION/cli/conf.d"
 PHP_DEBIAN_MOD_DIR_FPM="/etc/php/$PHP_VERSION/fpm/conf.d"
+PHP_DEBIAN_MOD_DIR_APACHE2="/etc/php/$PHP_VERSION/apache2/conf.d"
 
 if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     # Debian-based system
@@ -58,6 +59,10 @@ if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     if [ -d $PHP_DEBIAN_MOD_DIR_FPM ]; then
         echo "Installing new Aikido mod in $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini..."
         ln -sf $PHP_DEBIAN_MOD_DIR/aikido-%{version}.ini $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini
+    fi
+    if [ -d $PHP_DEBIAN_MOD_DIR_APACHE2 ]; then
+        echo "Installing new Aikido mod in $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini..."
+        ln -sf $PHP_DEBIAN_MOD_DIR/aikido-%{version}.ini $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini
     fi
 else
     # RedHat-based system
@@ -91,6 +96,7 @@ echo "Found PHP version $PHP_VERSION!"
 PHP_DEBIAN_MOD_DIR="/etc/php/$PHP_VERSION/mods-available"
 PHP_DEBIAN_MOD_DIR_CLI="/etc/php/$PHP_VERSION/cli/conf.d"
 PHP_DEBIAN_MOD_DIR_FPM="/etc/php/$PHP_VERSION/fpm/conf.d"
+PHP_DEBIAN_MOD_DIR_APACHE2="/etc/php/$PHP_VERSION/apache2/conf.d"
 
 if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     # Debian-based system
@@ -104,6 +110,10 @@ if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     if [ -d $PHP_DEBIAN_MOD_DIR_FPM ]; then
         echo "Uninstalling Aikido mod from $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini..."
         rm -f $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini
+    fi
+    if [ -d $PHP_DEBIAN_MOD_DIR_APACHE2 ]; then
+        echo "Uninstalling Aikido mod from $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini..."
+        rm -f $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini
     fi
 else
     # RedHat-based system
