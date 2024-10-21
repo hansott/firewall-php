@@ -427,7 +427,7 @@ jobs:
       - name: Setup Apache (mod_php)
         run: |
           sudo apt-get install -y nginx php-fpm
-          sudo apt-get install -y apache2 libapache2-mod-php
+          sudo apt-get install -y apache2
           sudo a2dismod mpm_event
           sudo a2dismod mpm_worker
           sudo a2enmod mpm_prefork
@@ -442,6 +442,7 @@ jobs:
 
       - name: Check PHP setup
         run: |
+          sudo apt-get install libapache2-mod-php
           php -i
 
       - name: Setup Python
