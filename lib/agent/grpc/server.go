@@ -24,10 +24,10 @@ func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Emp
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) OnRequestInit(ctx context.Context, req *protos.RequestMetadataInit) (*protos.RequestStatus, error) {
-	log.Debugf("Received request metadata: %s %s", req.GetMethod(), req.GetRoute())
+func (s *server) ShouldRateLimit(ctx context.Context, req *protos.RateLimitingInfo) (*protos.RateLimitingStatus, error) {
+	log.Debugf("Received rate limiting info: %s %s %s %s", req.GetMethod(), req.GetRoute(), req.GetUser(), req.GetIp())
 
-	return getRequestStatus(req.GetMethod(), req.GetRoute()), nil
+	return shouldRateLimit(req.GetMethod(), req.GetRoute(), req.GetUser(), req.GetIp()), nil
 }
 
 func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
@@ -35,7 +35,7 @@ func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetad
 
 	go storeStats()
 	go storeRoute(req.GetMethod(), req.GetRoute(), req.GetApiSpec())
-	go updateRateLimitingStatus(req.GetMethod(), req.GetRoute())
+	go updateRateLimitingCounts(req.GetMethod(), req.GetRoute(), req.GetUser(), req.GetIp())
 
 	return &emptypb.Empty{}, nil
 }

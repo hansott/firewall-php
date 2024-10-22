@@ -17,7 +17,7 @@ type RateLimitingConfig struct {
 	WindowSizeInMinutes int
 }
 
-type RateLimitingStatus struct {
+type RateLimitingCounts struct {
 	NumberOfRequestsPerWindow Queue
 	TotalNumberOfRequests     int
 }
@@ -28,6 +28,7 @@ type RateLimitingKey struct {
 }
 
 type RateLimitingValue struct {
-	Config RateLimitingConfig
-	Status RateLimitingStatus
+	Config     RateLimitingConfig
+	UserCounts map[string]*RateLimitingCounts
+	IpCounts   map[string]*RateLimitingCounts
 }

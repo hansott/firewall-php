@@ -4,18 +4,18 @@
 #include "Handle.h"
 #include "Cache.h"
 #include "HandleUsers.h"
+#include "HandleShouldBlockRequest.h"
+#include "Actions.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
 zval* server = nullptr;
 
-bool exit_current_request = false;
-
 static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
 
 void aikido_zend_execute_ex(zend_execute_data *execute_data) {
-	if (exit_current_request) {
+	if (action.Exit()) {
 		AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
 		zend_bailout();
 	}
@@ -25,6 +25,7 @@ void aikido_zend_execute_ex(zend_execute_data *execute_data) {
 PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
+	RegisterRequestBlockObject();
 
 	bool debug = get_env_bool("AIKIDO_DEBUG", false);
 	if (debug) {
@@ -195,9 +196,8 @@ PHP_RINIT_FUNCTION(aikido) {
 		return SUCCESS;
 	}
 
-	exit_current_request = false;
-
 	requestCache.Reset();
+	action.Reset();
 
 	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed)
 	{
@@ -252,10 +252,7 @@ PHP_RINIT_FUNCTION(aikido) {
 
 			GoRequestProcessorContextInit();
 
-			if (send_request_init_metadata_event() == EXIT) {
-				AIKIDO_LOG_INFO("Marking current request for exit!\n");
-				exit_current_request = true;
-			}
+			send_request_init_metadata_event();
 		}
 	}
 	
@@ -298,35 +295,9 @@ PHP_MINFO_FUNCTION(aikido)
 	php_info_print_table_end();
 }
 
-// Exports the "\aikido\set_user" function, to be called from PHP user code.
-// Receives two parameters: id and name (both strings).
-// Returns true if the setting of the user succeeded, false otherwise.
-ZEND_FUNCTION(set_user) {
-	if (AIKIDO_GLOBAL(disable) == true) {
-		RETURN_BOOL(false);
-	}
-
-	char *id;
-	size_t id_len;
-	char *name;
-	size_t name_len;
-
-		// parse parameters
-	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_STRING(id, id_len)
-		Z_PARAM_STRING(name, name_len)
-	ZEND_PARSE_PARAMETERS_END();
-
-	RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));
-}
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_aikido_set_user, 0, 2, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
-ZEND_END_ARG_INFO()
-
 static const zend_function_entry ext_functions[] = {
 	ZEND_NS_FE("aikido", set_user, arginfo_aikido_set_user)
+	ZEND_NS_FE("aikido", should_block_request, arginfo_aikido_should_block_request)
 	ZEND_FE_END
 };
 

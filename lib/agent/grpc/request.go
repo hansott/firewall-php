@@ -81,7 +81,22 @@ func storeRoute(method string, route string, apiSpec *protos.APISpec) {
 	routeData.ApiSpec = getMergedApiSpec(routeData.ApiSpec, apiSpec)
 }
 
-func updateRateLimitingStatus(method string, route string) {
+func incrementRateLimitingCounts(m map[string]*RateLimitingCounts, key string) {
+	if key == "" {
+		return
+	}
+
+	rateLimitingData, exists := m[key]
+	if !exists {
+		rateLimitingData = &RateLimitingCounts{}
+		m[key] = rateLimitingData
+	}
+
+	rateLimitingData.TotalNumberOfRequests += 1
+	rateLimitingData.NumberOfRequestsPerWindow.IncrementLast()
+}
+
+func updateRateLimitingCounts(method string, route string, user string, ip string) {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
@@ -90,25 +105,39 @@ func updateRateLimitingStatus(method string, route string) {
 		return
 	}
 
-	rateLimitingData.Status.TotalNumberOfRequests += 1
-	rateLimitingData.Status.NumberOfRequestsPerWindow.IncrementLast()
+	incrementRateLimitingCounts(rateLimitingData.UserCounts, user)
+	incrementRateLimitingCounts(rateLimitingData.IpCounts, ip)
 }
 
-func getRequestStatus(method string, route string) *protos.RequestStatus {
+func isRateLimitingThresholdExceeded(config *RateLimitingConfig, countsMap map[string]*RateLimitingCounts, key string) bool {
+	counts, exists := countsMap[key]
+	if !exists {
+		return false
+	}
+
+	return counts.TotalNumberOfRequests >= config.MaxRequests
+}
+
+func shouldRateLimit(method string, route string, user string, ip string) *protos.RateLimitingStatus {
 	globals.RateLimitingMutex.Lock()
 	defer globals.RateLimitingMutex.Unlock()
 
-	forwardToServer := true
-
-	rateLimitingData, exists := globals.RateLimitingMap[RateLimitingKey{Method: method, Route: route}]
-	if exists && rateLimitingData.Status.TotalNumberOfRequests >= rateLimitingData.Config.MaxRequests {
-		log.Infof("Rate limited request for (%s, %s) - status (%v)", method, route, rateLimitingData)
-		forwardToServer = false
+	rateLimitingDataForRoute, exists := globals.RateLimitingMap[RateLimitingKey{Method: method, Route: route}]
+	if !exists {
+		return &protos.RateLimitingStatus{Block: false}
 	}
 
-	return &protos.RequestStatus{
-		ForwardToServer: forwardToServer,
+	if isRateLimitingThresholdExceeded(&rateLimitingDataForRoute.Config, rateLimitingDataForRoute.UserCounts, user) {
+		log.Infof("Rate limited request for user %s - %s %s - %v", user, method, route, rateLimitingDataForRoute.UserCounts[user])
+		return &protos.RateLimitingStatus{Block: true, Trigger: "user"}
 	}
+
+	if isRateLimitingThresholdExceeded(&rateLimitingDataForRoute.Config, rateLimitingDataForRoute.IpCounts, ip) {
+		log.Infof("Rate limited request for ip %s - %s %s - %v", ip, method, route, rateLimitingDataForRoute.IpCounts[ip])
+		return &protos.RateLimitingStatus{Block: true, Trigger: "ip"}
+	}
+
+	return &protos.RateLimitingStatus{Block: false}
 }
 
 func getCloudConfig() *protos.CloudConfig {

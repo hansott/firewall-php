@@ -1,34 +1,88 @@
 #include "Includes.h"
+#include "Actions.h"
 
-ACTION aikido_execute_output_throw(json event) {
-    std::string message = event["message"].get<std::string>();
-    int code = event["code"].get<int>();
+Action action;
+
+ACTION_STATUS Action::executeThrow(json &event)
+{
+    int _response_code = event["response_code"].get<int>();
+    std::string _message = event["message"].get<std::string>();
     zend_throw_exception(zend_exception_get_default(), message.c_str(), code);
     return BLOCK;
 }
 
-ACTION aikido_execute_output_exit(json event) {
+ACTION_STATUS Action::executeExit(json &event)
+{
     int _response_code = event["response_code"].get<int>();
     std::string _message = event["message"].get<std::string>();
 
-    //aikido_call_user_function("ob_clean");
+    // aikido_call_user_function("ob_clean");
     aikido_call_user_function("header_remove");
     aikido_call_user_function_one_param("http_response_code", _response_code);
     aikido_call_user_function_one_param("header", "Content-Type: text/plain");
     aikido_echo(_message);
-    aikido_exit();
+    exit = true;
     return EXIT;
 }
 
-ACTION aikido_execute_output(std::string& event) {
-    if (event.empty()) {
+ACTION_STATUS Action::executeStore(json &event)
+{
+    block = true;
+    type = event["type"];
+    trigger = event["trigger"];
+    ip = event["ip"];
+}
+
+ACTION_STATUS Action::Execute(std::string &event)
+{
+    if (event.empty())
+    {
         return CONTINUE;
     }
 
     json eventJson = json::parse(event);
-    if (eventJson["action"] == "throw")
-        return aikido_execute_output_throw(eventJson);
-    if (eventJson["action"] == "exit")
-        return aikido_execute_output_exit(eventJson);
+    std::string actionType = eventJson["action"]
+    
+    if (actionType == "throw")
+    {
+        return executeThrow(eventJson);
+    }
+    else if (actionType == "exit")
+    {
+        return executeExit(eventJson);
+    }
+    else if (actionType == "store")
+    {
+        return executeStore(eventJson);
+    }
     return CONTINUE;
+}
+
+void Action::Reset()
+{
+    exit = false;
+    block = false;
+    type = "";
+    trigger = ""
+    ip = "";
+}
+
+bool Action::Exit() {
+    return exit;
+}
+
+bool Action::Block() {
+    return block;
+}
+
+char* Action::Type() {
+    return type.c_str();
+}
+
+char* Action::Trigger() {
+    return trigger.c_str();
+}
+
+char* Action::Ip() {
+    return ip.c_str();
 }

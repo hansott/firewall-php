@@ -57,34 +57,34 @@ func OnDomain(domain string, port int) {
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
-func OnRequestInit(method string, route string, timeout time.Duration) bool {
+func ShouldRateLimit(method string, route string, user string, ip string, timeout time.Duration) *protos.RateLimitingStatus {
 	if client == nil {
-		return true
+		return nil
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	requestStatus, err := client.OnRequestInit(ctx, &protos.RequestMetadataInit{Method: method, Route: route})
+	RateLimitingStatus, err := client.ShouldRateLimit(ctx, &protos.RateLimitingInfo{Method: method, Route: route, User: user, Ip: ip})
 	if err != nil {
-		log.Warnf("Could not send request metadata %v %v: %v", method, route, err)
-		return true
+		log.Warnf("Cannot get rate limiting status %v %v: %v", method, route, err)
+		return nil
 	}
 
-	log.Debugf("Request metadata sent via socket (%v %v) and got reply (%v)", method, route, requestStatus)
-	return requestStatus.ForwardToServer
+	log.Debugf("Rate limiting status for (%v %v) sent via socket and got reply (%v)", method, route, RateLimitingStatus)
+	return RateLimitingStatus
 }
 
 /* Send request metadata (route, method & status code) to Aikido Agent via gRPC */
-func OnRequestShutdown(method string, route string, statusCode int, timeout time.Duration, apiSpec *protos.APISpec) {
+func OnRequestShutdown(method string, route string, statusCode int, user string, ip string, apiSpec *protos.APISpec) {
 	if client == nil {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode), ApiSpec: apiSpec})
+	_, err := client.OnRequestShutdown(ctx, &protos.RequestMetadataShutdown{Method: method, Route: route, StatusCode: int32(statusCode), User: user, Ip: ip, ApiSpec: apiSpec})
 	if err != nil {
 		log.Warnf("Could not send request metadata %v %v %v: %v", method, route, statusCode, err)
 		return
