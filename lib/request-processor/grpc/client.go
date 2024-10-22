@@ -57,7 +57,7 @@ func OnDomain(domain string, port int) {
 }
 
 /* Send request metadata (route & method) to Aikido Agent via gRPC */
-func ShouldRateLimit(method string, route string, user string, ip string, timeout time.Duration) *protos.RateLimitingStatus {
+func GetRateLimitingStatus(method string, route string, user string, ip string, timeout time.Duration) *protos.RateLimitingStatus {
 	if client == nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func ShouldRateLimit(method string, route string, user string, ip string, timeou
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	RateLimitingStatus, err := client.ShouldRateLimit(ctx, &protos.RateLimitingInfo{Method: method, Route: route, User: user, Ip: ip})
+	RateLimitingStatus, err := client.GetRateLimitingStatus(ctx, &protos.RateLimitingInfo{Method: method, Route: route, User: user, Ip: ip})
 	if err != nil {
 		log.Warnf("Cannot get rate limiting status %v %v: %v", method, route, err)
 		return nil

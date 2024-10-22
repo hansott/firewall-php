@@ -33,7 +33,7 @@ func OnGetBlockingStatus() string {
 		if !context.IsIpBypassed() {
 			// If request is monitored for rate limiting and the IP is not bypassed,
 			// do a sync call via gRPC to see if the request should be blocked or not
-			rateLimitingStatus := grpc.ShouldRateLimit(method, route, userId, ip, 10*time.Millisecond)
+			rateLimitingStatus := grpc.GetRateLimitingStatus(method, route, userId, ip, 10*time.Millisecond)
 			if rateLimitingStatus != nil && rateLimitingStatus.Block {
 				action := map[string]interface{}{
 					"action":  "store",

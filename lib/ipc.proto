@@ -8,7 +8,7 @@ option go_package = "ipc/protos;protos";
 
 service Aikido {
   rpc OnDomain (Domain) returns (google.protobuf.Empty);
-  rpc ShouldRateLimit (RateLimitingInfo) returns (RateLimitingStatus);
+  rpc GetRateLimitingStatus (RateLimitingInfo) returns (RateLimitingStatus);
   rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
   rpc OnUser(User) returns (google.protobuf.Empty);

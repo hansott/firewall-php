@@ -7,7 +7,7 @@ ACTION_STATUS Action::executeThrow(json &event)
 {
     int _response_code = event["response_code"].get<int>();
     std::string _message = event["message"].get<std::string>();
-    zend_throw_exception(zend_exception_get_default(), message.c_str(), code);
+    zend_throw_exception(zend_exception_get_default(), _message.c_str(), _response_code);
     return BLOCK;
 }
 
@@ -31,6 +31,7 @@ ACTION_STATUS Action::executeStore(json &event)
     type = event["type"];
     trigger = event["trigger"];
     ip = event["ip"];
+    return CONTINUE;
 }
 
 ACTION_STATUS Action::Execute(std::string &event)
@@ -41,7 +42,7 @@ ACTION_STATUS Action::Execute(std::string &event)
     }
 
     json eventJson = json::parse(event);
-    std::string actionType = eventJson["action"]
+    std::string actionType = eventJson["action"];
     
     if (actionType == "throw")
     {
@@ -63,7 +64,7 @@ void Action::Reset()
     exit = false;
     block = false;
     type = "";
-    trigger = ""
+    trigger = "";
     ip = "";
 }
 
@@ -76,13 +77,13 @@ bool Action::Block() {
 }
 
 char* Action::Type() {
-    return type.c_str();
+    return (char*)type.c_str();
 }
 
 char* Action::Trigger() {
-    return trigger.c_str();
+    return (char*)trigger.c_str();
 }
 
 char* Action::Ip() {
-    return ip.c_str();
+    return (char*)ip.c_str();
 }

@@ -56,7 +56,7 @@ func OnRequestShutdownReporting(method string, route string, statusCode int, use
 }
 
 func OnPostRequest() string {
-	go OnRequestShutdownReporting(context.GetMethod(), context.GetParsedRoute(), context.GetStatusCode(), api_discovery.GetApiInfo())
+	go OnRequestShutdownReporting(context.GetMethod(), context.GetParsedRoute(), context.GetStatusCode(), context.GetUserId(), context.GetIp(), api_discovery.GetApiInfo())
 	context.Clear()
 	return ""
 }
