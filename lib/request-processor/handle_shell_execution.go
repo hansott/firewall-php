@@ -18,7 +18,7 @@ func OnPreShellExecuted() string {
 
 	if context.IsProtectionTurnedOff() {
 		log.Infof("Protection is turned off -> will not run detection logic!")
-		return "{}"
+		return ""
 	}
 
 	res := shell_injection.CheckContextForShellInjection(cmd, operation)

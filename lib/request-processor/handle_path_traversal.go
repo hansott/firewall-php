@@ -13,12 +13,12 @@ func OnPrePathAccessed() string {
 	operation := context.GetFunctionName()
 
 	if filename == "" || operation == "" {
-		return "{}"
+		return ""
 	}
 
 	if context.IsProtectionTurnedOff() {
 		log.Infof("Protection is turned off -> will not run detection logic!")
-		return "{}"
+		return ""
 	}
 
 	res := path_traversal.CheckContextForPathTraversal(filename, operation, true)
@@ -32,5 +32,5 @@ func OnPrePathAccessed() string {
 			return attack.ReportAttackDetected(res)
 		}
 	}
-	return "{}"
+	return ""
 }

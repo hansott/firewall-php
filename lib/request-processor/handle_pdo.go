@@ -18,7 +18,7 @@ func OnPreSqlQueryExecuted() string {
 
 	if context.IsProtectionTurnedOff() {
 		log.Infof("Protection is turned off -> will not run detection logic!")
-		return "{}"
+		return ""
 	}
 
 	res := sql_injection.CheckContextForSqlInjection(query, operation, dialect)

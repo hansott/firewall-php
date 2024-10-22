@@ -5,9 +5,9 @@ Action action;
 
 ACTION_STATUS Action::executeThrow(json &event)
 {
-    int _response_code = event["response_code"].get<int>();
+    int _code = event["code"].get<int>();
     std::string _message = event["message"].get<std::string>();
-    zend_throw_exception(zend_exception_get_default(), _message.c_str(), _response_code);
+    zend_throw_exception(zend_exception_get_default(), _message.c_str(), _code);
     return BLOCK;
 }
 
@@ -42,6 +42,9 @@ ACTION_STATUS Action::Execute(std::string &event)
     }
 
     json eventJson = json::parse(event);
+    if (eventJson.empty()) {
+        return CONTINUE;
+    }
     std::string actionType = eventJson["action"];
     
     if (actionType == "throw")

@@ -181,7 +181,7 @@ void send_request_init_metadata_event(){
         action.Execute(outputEvent);
     }
     catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+        AIKIDO_LOG_ERROR("Exception encountered in processing request init metadata: %s\n", e.what());
     }
 }
 
@@ -192,7 +192,7 @@ void send_request_shutdown_metadata_event(){
         action.Execute(outputEvent);
     }
     catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+        AIKIDO_LOG_ERROR("Exception encountered in processing request shutdown metadata: %s\n", e.what());
     }
 }
 

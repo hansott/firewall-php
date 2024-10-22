@@ -16,7 +16,7 @@ func OnPreRequest() string {
 	method := context.GetMethod()
 	route := context.GetParsedRoute()
 	if method == "" || route == "" {
-		return "{}"
+		return ""
 	}
 
 	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
@@ -24,7 +24,7 @@ func OnPreRequest() string {
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
 		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
-		return "{}"
+		return ""
 	}
 
 	ip := context.GetIp()
@@ -37,7 +37,7 @@ func OnPreRequest() string {
 		return fmt.Sprintf(`{"action": "exit", "message": "%s", "response_code": 403}`, message)
 	}
 
-	return "{}"
+	return ""
 }
 
 func OnRequestShutdownReporting(method string, route string, statusCode int, user string, ip string, apiSpec *protos.APISpec) {

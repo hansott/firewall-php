@@ -12,19 +12,19 @@ import (
 func OnGetBlockingStatus() string {
 	userId := context.GetUserId()
 	if utils.IsUserBlocked(userId) {
-		return `{"action": "store", "type": "ratelimited", "trigger": "user"}`
+		return `{"action": "store", "type": "blocked", "trigger": "user"}`
 	}
 
 	method := context.GetMethod()
 	route := context.GetParsedRoute()
 	if method == "" || route == "" {
-		return "{}"
+		return ""
 	}
 
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
 		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
-		return "{}"
+		return ""
 	}
 
 	ip := context.GetIp()
@@ -42,10 +42,7 @@ func OnGetBlockingStatus() string {
 				}
 				if rateLimitingStatus.Trigger == "ip" {
 					action["ip"] = ip
-				} else {
-					action["user"] = userId
 				}
-
 				actionJson, err := json.Marshal(action)
 				if err == nil {
 					return string(actionJson)
