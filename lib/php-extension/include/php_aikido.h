@@ -1,6 +1,6 @@
 /* Aikido extension for PHP */
 
-#ifndef PHP_AIKIDO_H
+# ifndef PHP_AIKIDO_H
 # define PHP_AIKIDO_H
 
 extern zend_module_entry aikido_module_entry;

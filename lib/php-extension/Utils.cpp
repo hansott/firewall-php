@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "Actions.h"
 #include <ctime>
 
 std::string to_lowercase(const std::string& str) {
@@ -157,10 +158,7 @@ std::string extract_headers() {
             else if (header_name == "CONTENT_TYPE" || header_name == "CONTENT_LENGTH" || header_name == "AUTHORIZATION") {
                 http_header_key = header_name;
             }
-            else {
-                AIKIDO_LOG_DEBUG("Header not matching criteria: %s\n", header_name.c_str());
-            }
-
+            
             if (!http_header_key.empty()) {
                 std::transform(http_header_key.begin(), http_header_key.end(), http_header_key.begin(), ::tolower);
                 headers[http_header_key] = http_header_value;
@@ -176,44 +174,32 @@ std::string extract_headers() {
     return headers_json.dump();
 }
 
-ACTION send_request_init_metadata_event(){
+void send_request_init_metadata_event(){
     try {
         std::string outputEvent;
         GoRequestProcessorOnEvent(EVENT_PRE_REQUEST, outputEvent);
-        return aikido_execute_output(outputEvent);
+        action.Execute(outputEvent);
     }
     catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+        AIKIDO_LOG_ERROR("Exception encountered in processing request init metadata: %s\n", e.what());
     }
-    return CONTINUE;
 }
 
-ACTION send_request_shutdown_metadata_event(){
+void send_request_shutdown_metadata_event(){
     try {
         std::string outputEvent;
         GoRequestProcessorOnEvent(EVENT_POST_REQUEST, outputEvent);
-        return aikido_execute_output(outputEvent);
+        action.Execute(outputEvent);
     }
     catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request metadata: %s\n", e.what());
+        AIKIDO_LOG_ERROR("Exception encountered in processing request shutdown metadata: %s\n", e.what());
     }
-    return CONTINUE;
 }
 
 bool aikido_echo(std::string message) {
     unsigned int wrote = zend_write(message.c_str(), message.length()); // echo '<message>'
     AIKIDO_LOG_INFO("Called 'echo' -> result %d\n", wrote == message.length());
     return wrote == message.length();
-}
-
-bool aikido_exit() {
-//#if PHP_VERSION_ID >= 80000
-//    int _result = zend_eval_stringl("exit();", strlen("exit();"), NULL, "aikido php code (exit action)");
-//    AIKIDO_LOG_INFO("Called 'exit' eval -> result %d\n", _result == SUCCESS);
-//    return _result == SUCCESS;
-//#else
-    return false;
-//#endif
 }
 
 bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval *params, zval *return_value, zval *object)
@@ -287,8 +273,10 @@ const char *get_event_name(EVENT_ID event) {
             return "PreRequest";
         case EVENT_POST_REQUEST:
             return "PostRequest";
-        case EVENT_PRE_USER:
-            return "PreUser";
+        case EVENT_SET_USER:
+            return "SetUser";
+        case EVENT_GET_BLOCKING_STATUS:
+            return "GetBlockingStatus";
         case EVENT_PRE_OUTGOING_REQUEST:
             return "PreOutgoingRequest";
         case EVENT_POST_OUTGOING_REQUEST:

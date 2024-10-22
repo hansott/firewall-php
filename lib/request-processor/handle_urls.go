@@ -23,7 +23,7 @@ func OnPreOutgoingRequest() string {
 
 	if context.IsProtectionTurnedOff() {
 		log.Infof("Protection is turned off -> will not run detection logic!")
-		return "{}"
+		return ""
 	}
 
 	hostname, port := context.GetOutgoingRequestHostnameAndPort()
@@ -74,7 +74,7 @@ func OnPostOutgoingRequest() string {
 
 	if context.IsProtectionTurnedOff() {
 		log.Infof("Protection is turned off -> will not run detection logic!")
-		return "{}"
+		return ""
 	}
 
 	res := ssrf.CheckResolvedIpForSSRF(resolvedIp)

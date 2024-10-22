@@ -81,17 +81,15 @@ std::string get_env_string(const std::string& env_key, const std::string default
 
 bool get_env_bool(const std::string& env_key, bool default_value);
 
-enum ACTION {
+enum ACTION_STATUS {
 	CONTINUE,
 	BLOCK,
 	EXIT
 };
 
-ACTION send_request_init_metadata_event();
+void send_request_init_metadata_event();
 
-ACTION send_request_shutdown_metadata_event();
-
-ACTION aikido_execute_output(std::string& event);
+void send_request_shutdown_metadata_event();
 
 std::string extract_server_var(const char *var);
 
@@ -106,8 +104,6 @@ std::string extract_url();
 std::string extract_headers();
 
 bool aikido_echo(std::string s);
-
-bool aikido_exit();
 
 bool aikido_call_user_function(std::string function_name, unsigned int params_number = 0, zval *params = nullptr, zval *return_value = nullptr, zval *object = nullptr);
 

@@ -8,7 +8,7 @@ option go_package = "ipc/protos;protos";
 
 service Aikido {
   rpc OnDomain (Domain) returns (google.protobuf.Empty);
-  rpc OnRequestInit (RequestMetadataInit) returns (RequestStatus);
+  rpc GetRateLimitingStatus (RateLimitingInfo) returns (RateLimitingStatus);
   rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
   rpc OnUser(User) returns (google.protobuf.Empty);
@@ -20,16 +20,20 @@ message Domain {
   int32 port = 2;
 }
 
-message RequestMetadataInit {
+message RateLimitingInfo {
   string method = 1;
   string route = 2;
+  string user = 3;
+  string ip = 4;
 }
 
 message RequestMetadataShutdown {
   string method = 1;
   string route = 2;
   int32 statusCode = 3;
-  APISpec apiSpec = 4;
+  string user = 4;
+  string ip = 5;
+  APISpec apiSpec = 6;
 }
 
 message RateLimiting {
@@ -51,8 +55,9 @@ message CloudConfig {
   bool block = 4;
 }
 
-message RequestStatus {
-  bool forwardToServer = 1;
+message RateLimitingStatus {
+  bool block = 1;
+  string trigger = 2;
 }
 
 message User {

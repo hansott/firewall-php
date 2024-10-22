@@ -3,8 +3,8 @@
 #include "HandlePathAccess.h"
 #include "HandlePDO.h"
 #include "Cache.h"
-
 #include "Utils.h"
+#include "Actions.h"
 
 unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 	/* Outgoing request */
@@ -120,7 +120,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 			if (eventId != NO_EVENT_ID) {
 				std::string outputEvent;
 				GoRequestProcessorOnEvent(eventId, outputEvent);
-				if (IsBlockingEnabled() && aikido_execute_output(outputEvent) == BLOCK) {
+				if (IsBlockingEnabled() && action.Execute(outputEvent) == BLOCK) {
 					// exit generic handler and do not call the original handler
 					// thus blocking the execution 
 					return;
@@ -150,7 +150,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
 				std::string outputEvent;
 				GoRequestProcessorOnEvent(eventId, outputEvent);
 				if (IsBlockingEnabled()) {
-					aikido_execute_output(outputEvent);
+					action.Execute(outputEvent);
 				}
 			}
 		}
