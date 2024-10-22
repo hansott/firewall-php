@@ -6,4 +6,4 @@ ZEND_END_ARG_INFO()
 
 ZEND_FUNCTION(should_block_request);
 
-void RegisterRequestBlockObject();
+void RegisterAikidoBlockRequestStatusClass();

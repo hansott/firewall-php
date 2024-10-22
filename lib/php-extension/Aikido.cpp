@@ -25,7 +25,7 @@ void aikido_zend_execute_ex(zend_execute_data *execute_data) {
 PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
-	RegisterRequestBlockObject();
+	RegisterAikidoBlockRequestStatusClass();
 
 	bool debug = get_env_bool("AIKIDO_DEBUG", false);
 	if (debug) {
