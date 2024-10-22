@@ -188,6 +188,17 @@ RequestProcessorContextInitFn request_processor_context_init_fn = nullptr;
 RequestProcessorOnEventFn request_processor_on_event_fn = nullptr;
 RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullptr;
 
+bool initialize_server() {
+	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
+	if (!server_str) return false;
+
+	/* Guarantee that "_SERVER" global variable is initialized for the current request */
+	zend_is_auto_global(server_str);
+	zend_string_release(server_str);
+	server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+	return server != NULL;
+}
+
 PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RINIT started!\n");
 
@@ -242,16 +253,8 @@ PHP_RINIT_FUNCTION(aikido) {
 	}
 
 	if (!request_processor_loading_failed) {
-		zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
-		if (server_str) {
-			/* Guarantee that "_SERVER" global variable is initialized for the current request */
-			zend_is_auto_global(server_str);
-			zend_string_release(server_str);
-
-			server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-
+		if (initialize_server()){
 			GoRequestProcessorContextInit();
-
 			send_request_init_metadata_event();
 		}
 	}
@@ -281,7 +284,9 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 	}
 	*/
 
-	send_request_shutdown_metadata_event();
+	if (initialize_server()) {
+		send_request_shutdown_metadata_event();
+	}
 
 	AIKIDO_LOG_DEBUG("RSHUTDOWN finished!\n");
 	return SUCCESS;
