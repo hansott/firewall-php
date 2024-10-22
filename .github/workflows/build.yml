@@ -276,7 +276,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup
         run: |
           cat /etc/centos-release
           cd /etc/yum.repos.d/
@@ -284,13 +284,19 @@ jobs:
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
           yum install -y yum-utils
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
-          yum -y install python3
+          yum -y install gcc python3-devel
           pip3 install flask
           pip3 install requests
           pip3 install pandas
+          pip3 install psutil
+          yum install -y httpd
           dnf --assumeyes module reset php
           dnf --assumeyes --nogpgcheck module install php:remi-${{ matrix.php_version }}
           dnf --assumeyes install php-pdo
+          yum install -y mod_php
+          yum install -y nginx
+          yum install -y php-fpm
+
 
       - name: Check PHP setup
         run: |
@@ -319,20 +325,31 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run simple server tests
+      - name: Run apache-mod-php server tests
+        run: |
+          ls -R /etc/httpd/
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
+
+      - name: Run nginx-php-fpm server tests
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
+
+      - name: Run php-built-in server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
 
       - name: Run CLI benchmarks with Aikido
         run: |
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks with Aikido
+      - name: Run php-built-in server benchmarks with Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Uninstall Aikido
         run: |
@@ -343,10 +360,10 @@ jobs:
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks without Aikido
+      - name: Run php-built-in server benchmarks without Aikido
         run: |
           cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Get benchmark result
         run: |
@@ -362,6 +379,10 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+            /etc/httpd/*
+            /var/log/httpd/*
+            /var/log/nginx/*
+            /var/log/php-fpm/*
             
 
       - name: Archive benchmark artifacts
@@ -399,6 +420,19 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_DEB=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
 
+      - name: Setup nginx & php-fpm
+        run: |
+          sudo apt-get install -y nginx php-fpm
+
+      - name: Setup Apache (mod_php)
+        run: |
+          sudo apt-get install -y nginx php-fpm
+          sudo apt-get install -y apache2
+          sudo a2dismod mpm_event
+          sudo a2dismod mpm_worker
+          sudo a2enmod mpm_prefork
+          sudo a2enmod rewrite
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -408,14 +442,23 @@ jobs:
 
       - name: Check PHP setup
         run: |
-          which php
-          php -v
+          php_versions=("php7.3" "php7.4" "php8.0" "php8.1" "php8.2" "php8.3")
+          for version in "${php_versions[@]}"; do
+              if a2query -m "$version" > /dev/null 2>&1; then
+                  echo "Disabling $version..."
+                  sudo a2dismod "$version"
+              else
+                  echo "$version is not installed."
+              fi
+          done
+
+          sudo apt install libapache2-mod-php${{ matrix.php_version }}
+          sudo a2enmod php${{ matrix.php_version }}
           php -i
 
       - name: Setup Python
         run: |
-          sudo pip3 install flask --no-input
-          sudo pip3 install pandas --no-input
+          sudo apt-get install -y python3-flask python3-pandas python3-psutil
           python --version
 
       - name: Install DEB
@@ -427,21 +470,32 @@ jobs:
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run CLI Server tests
+      - name: Run apache-mod-php server tests
+        run: |
+          cd tools
+          sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
+
+      - name: Run nginx-php-fpm server tests
         run: |
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib
+          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm --debug
+
+      - name: Run php-built-in server tests
+        run: |
+          export TEST_PHP_EXECUTABLE=/usr/bin/php
+          cd tools
+          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
 
       - name: Run CLI benchmarks with Aikido
         run: |
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks with Aikido
+      - name: Run php-built-in server benchmarks with Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Uninstall Aikido
         run: |
@@ -452,10 +506,10 @@ jobs:
           cd benchmarks/cli/
           PYTHONPATH=../../tests/testlib python3 benchmark.py .
 
-      - name: Run server benchmarks without Aikido
+      - name: Run php-built-in server benchmarks without Aikido
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark
+          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
 
       - name: Store benchmark result
         run: |
@@ -463,6 +517,11 @@ jobs:
           python3 benchmark_report.py ../benchmarks/cli
           python3 benchmark_report.py ../benchmarks/server
       
+      - name: Prepare logs
+        if: always()
+        run:
+          sudo chmod 777 /var/log/php-fpm/*
+
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
         if: always()
@@ -471,6 +530,12 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
+            /var/log/nginx/*
+            /var/log/php-fpm/*
+            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+            /var/log/apache2/*
+            /etc/apache2/*
+            /etc/php/*
       
       - name: Archive benchmark artifacts
         uses: actions/upload-artifact@v4

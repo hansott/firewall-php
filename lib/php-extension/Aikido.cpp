@@ -4,29 +4,28 @@
 #include "Handle.h"
 #include "Cache.h"
 #include "HandleUsers.h"
+#include "HandleShouldBlockRequest.h"
+#include "Actions.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 void* aikido_agent_lib_handle = nullptr;
 zval* server = nullptr;
 
-#if PHP_VERSION_ID < 80000
-	bool exit_current_request = false;
+static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
 
-	static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
-
-	void aikido_zend_execute_ex(zend_execute_data *execute_data) {
-		if (exit_current_request) {
-			AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
-			zend_bailout();
-		}
-		original_zend_execute_ex(execute_data);
+void aikido_zend_execute_ex(zend_execute_data *execute_data) {
+	if (action.Exit()) {
+		AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
+		zend_bailout();
 	}
-#endif
+	original_zend_execute_ex(execute_data);
+}
 
 PHP_MINIT_FUNCTION(aikido)
 {
 	aikido_log_init();
+	RegisterAikidoBlockRequestStatusClass();
 
 	bool debug = get_env_bool("AIKIDO_DEBUG", false);
 	if (debug) {
@@ -92,10 +91,8 @@ PHP_MINIT_FUNCTION(aikido)
 		AIKIDO_LOG_INFO("Hooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
 	}
 
-	#if PHP_VERSION_ID < 80000
-		original_zend_execute_ex = zend_execute_ex;
-		zend_execute_ex = aikido_zend_execute_ex;
-	#endif
+	original_zend_execute_ex = zend_execute_ex;
+	zend_execute_ex = aikido_zend_execute_ex;
 
 	/* If SAPI name is "cli" run in "simple" mode */
 	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
@@ -155,7 +152,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido)
 		return SUCCESS;
 	}
 
-	AIKIDO_LOG_DEBUG("SAPI: %s\n", AIKIDO_GLOBAL(sapi_name));
+	AIKIDO_LOG_DEBUG("SAPI: %s\n", AIKIDO_GLOBAL(sapi_name).c_str());
 
 	/* If SAPI name is "cli" run in "simple" mode */
 	if (AIKIDO_GLOBAL(sapi_name) == "cli") {
@@ -191,6 +188,17 @@ RequestProcessorContextInitFn request_processor_context_init_fn = nullptr;
 RequestProcessorOnEventFn request_processor_on_event_fn = nullptr;
 RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullptr;
 
+bool initialize_server() {
+	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
+	if (!server_str) return false;
+
+	/* Guarantee that "_SERVER" global variable is initialized for the current request */
+	zend_is_auto_global(server_str);
+	zend_string_release(server_str);
+	server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
+	return server != NULL;
+}
+
 PHP_RINIT_FUNCTION(aikido) {
 	AIKIDO_LOG_DEBUG("RINIT started!\n");
 
@@ -200,6 +208,7 @@ PHP_RINIT_FUNCTION(aikido) {
 	}
 
 	requestCache.Reset();
+	action.Reset();
 
 	if (!aikido_request_processor_lib_handle && !request_processor_loading_failed)
 	{
@@ -244,22 +253,9 @@ PHP_RINIT_FUNCTION(aikido) {
 	}
 
 	if (!request_processor_loading_failed) {
-		zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
-		if (server_str) {
-			/* Guarantee that "_SERVER" global variable is initialized for the current request */
-			zend_is_auto_global(server_str);
-			zend_string_release(server_str);
-
-			server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-
+		if (initialize_server()){
 			GoRequestProcessorContextInit();
-
-			if (send_request_init_metadata_event() == EXIT) {
-				#if PHP_VERSION_ID < 80000
-					AIKIDO_LOG_INFO("Marking current request for exit!\n");
-					exit_current_request = true;
-				#endif
-			}
+			send_request_init_metadata_event();
 		}
 	}
 	
@@ -275,10 +271,6 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 		return SUCCESS;
 	}
 
-	#if PHP_VERSION_ID < 80000
-		exit_current_request = false;
-	#endif
-
 	/*
 	if (aikido_request_processor_lib_handle)) {
 		RequestProcessorUninitFn request_processor_uninit_fn = (RequestProcessorUninitFn)dlsym(aikido_globals->aikido_request_processor_lib_handle, "AgentUninit");
@@ -292,7 +284,9 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
 	}
 	*/
 
-	send_request_shutdown_metadata_event();
+	if (initialize_server()) {
+		send_request_shutdown_metadata_event();
+	}
 
 	AIKIDO_LOG_DEBUG("RSHUTDOWN finished!\n");
 	return SUCCESS;
@@ -306,35 +300,9 @@ PHP_MINFO_FUNCTION(aikido)
 	php_info_print_table_end();
 }
 
-// Exports the "\aikido\set_user" function, to be called from PHP user code.
-// Receives two parameters: id and name (both strings).
-// Returns true if the setting of the user succeeded, false otherwise.
-ZEND_FUNCTION(set_user) {
-	if (AIKIDO_GLOBAL(disable) == true) {
-		RETURN_BOOL(false);
-	}
-
-	char *id;
-	size_t id_len;
-	char *name;
-	size_t name_len;
-
-		// parse parameters
-	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_STRING(id, id_len)
-		Z_PARAM_STRING(name, name_len)
-	ZEND_PARSE_PARAMETERS_END();
-
-	RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));
-}
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_aikido_set_user, 0, 2, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
-ZEND_END_ARG_INFO()
-
 static const zend_function_entry ext_functions[] = {
 	ZEND_NS_FE("aikido", set_user, arginfo_aikido_set_user)
+	ZEND_NS_FE("aikido", should_block_request, arginfo_aikido_should_block_request)
 	ZEND_FE_END
 };
 

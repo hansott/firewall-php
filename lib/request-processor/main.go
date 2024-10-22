@@ -14,9 +14,10 @@ import (
 )
 
 var eventHandlers = map[int]HandlerFunction{
-	C.EVENT_PRE_REQUEST:            OnRequestInit,
-	C.EVENT_POST_REQUEST:           OnRequestShutdown,
-	C.EVENT_PRE_USER:               OnUserEvent,
+	C.EVENT_PRE_REQUEST:            OnPreRequest,
+	C.EVENT_POST_REQUEST:           OnPostRequest,
+	C.EVENT_SET_USER:               OnUserEvent,
+	C.EVENT_GET_BLOCKING_STATUS:    OnGetBlockingStatus,
 	C.EVENT_PRE_OUTGOING_REQUEST:   OnPreOutgoingRequest,
 	C.EVENT_POST_OUTGOING_REQUEST:  OnPostOutgoingRequest,
 	C.EVENT_PRE_SHELL_EXECUTED:     OnPreShellExecuted,

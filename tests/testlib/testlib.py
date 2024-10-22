@@ -146,7 +146,6 @@ def assert_event_contains_subset_file(event, event_subset_file):
     with open(event_subset_file, 'r') as file:
         event_subset = json.load(file)
     assert event_subset
-    print(event_subset, event)
     assert_event_contains_subset(event, event_subset)
 
 def assert_started_event_is_valid(event):

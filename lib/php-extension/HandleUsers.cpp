@@ -1,5 +1,30 @@
 #include "HandleUsers.h"
 #include "Cache.h"
+#include "Actions.h"
+
+// Exports the "\aikido\set_user" function, to be called from PHP user code.
+// Receives two parameters: id and name (both strings).
+// Returns true if the setting of the user succeeded, false otherwise.
+ZEND_FUNCTION(set_user)
+{
+    if (AIKIDO_GLOBAL(disable) == true)
+    {
+        RETURN_BOOL(false);
+    }
+
+    char *id;
+    size_t id_len;
+    char *name;
+    size_t name_len;
+
+    // parse parameters
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_STRING(id, id_len)
+        Z_PARAM_STRING(name, name_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    RETURN_BOOL(send_user_event(std::string(id, id_len), std::string(name, name_len)));
+}
 
 bool send_user_event(std::string id, std::string username) {
     requestCache.userId = id;
@@ -8,8 +33,8 @@ bool send_user_event(std::string id, std::string username) {
     try
     {
         std::string output;
-        GoRequestProcessorOnEvent(EVENT_PRE_USER, output);
-        aikido_execute_output(output);
+        GoRequestProcessorOnEvent(EVENT_SET_USER, output);
+        action.Execute(output);
         return true;
     }
     catch (const std::exception &e)

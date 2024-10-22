@@ -1,13 +1,12 @@
 {
     "type": "detected_attack",
     "request": {
-        "method": "POST",
-        "ipAddress": "::1",
         "headers": {
             "content_type": [
                 "application/json"
             ]
         },
+        "method": "POST",
         "body": "{\"userId\": \"1 OR 1=1\"}",
         "source": "php",
         "route": "/testDetection"
@@ -27,8 +26,7 @@
         },
         "user": {
             "id": "12345",
-            "name": "Tudor",
-            "lastIpAddress": "::1"
+            "name": "Tudor"
         }
     },
     "agent": {

@@ -1,13 +1,12 @@
 {
     "type": "detected_attack",
     "request": {
-        "method": "POST",
-        "ipAddress": "::1",
         "headers": {
             "content_type": [
                 "application/json"
             ]
         },
+        "method": "POST",
         "body": "{\"command\": \"`whoami`\"}",
         "source": "php",
         "route": "/testDetection"

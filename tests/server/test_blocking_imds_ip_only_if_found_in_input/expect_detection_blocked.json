@@ -2,12 +2,6 @@
     "type": "detected_attack",
     "request": {
         "method": "POST",
-        "ipAddress": "::1",
-        "headers": {
-            "content_type": [
-                "application/json"
-            ]
-        },
         "body": "{\"url\": \"169.254.169.254\"}",
         "source": "php",
         "route": "/"

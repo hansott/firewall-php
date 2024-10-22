@@ -1,6 +1,7 @@
 package rate_limiting
 
 import (
+	. "main/aikido_types"
 	"main/globals"
 	"main/log"
 	"main/utils"
@@ -12,30 +13,37 @@ var (
 	RateLimitingTicker  = time.NewTicker(globals.MinRateLimitingIntervalInMs * time.Millisecond)
 )
 
-func AdvanceRateLimitingQueues() {
-	globals.RateLimitingMutex.Lock()
-	defer globals.RateLimitingMutex.Unlock()
-
-	for _, endpoint := range globals.RateLimitingMap {
-		if endpoint.Config.WindowSizeInMinutes <= endpoint.Status.NumberOfRequestsPerWindow.Length() {
+func advanceRateLimitingQueuesForMap(config *RateLimitingConfig, countsMap map[string]*RateLimitingCounts) {
+	for _, counts := range countsMap {
+		if config.WindowSizeInMinutes <= counts.NumberOfRequestsPerWindow.Length() {
 			// Sliding window is moving, need to substract the entry that goes out of the window
 			// Ex: if the window is set to 10 minutes, when another minute passes,
 			//     need to remove the number of requests from the entry of 11 minutes ago
 
 			// Get the number of requests for the entry that just dropped out of the sliding window
-			numberOfRequestToSubstract := endpoint.Status.NumberOfRequestsPerWindow.Pop()
-			if endpoint.Status.TotalNumberOfRequests < numberOfRequestToSubstract {
+			numberOfRequestToSubstract := counts.NumberOfRequestsPerWindow.Pop()
+			if counts.TotalNumberOfRequests < numberOfRequestToSubstract {
 				// This should never happen, but better to have a check in place
-				log.Warnf("More requests to substract (%d) than total number of requests (%d) for endpoint (%v)",
-					numberOfRequestToSubstract, endpoint.Status.TotalNumberOfRequests, endpoint)
+				log.Warnf("More requests to substract (%d) than total number of requests (%d)!",
+					numberOfRequestToSubstract, counts.TotalNumberOfRequests)
 			} else {
 				// Remove the number of requests for the entry that just dropped out of the sliding window from total
-				endpoint.Status.TotalNumberOfRequests -= numberOfRequestToSubstract
+				counts.TotalNumberOfRequests -= numberOfRequestToSubstract
 			}
 		}
 
 		// Create a new entry in queue for the current minute
-		endpoint.Status.NumberOfRequestsPerWindow.Push(0)
+		counts.NumberOfRequestsPerWindow.Push(0)
+	}
+}
+
+func AdvanceRateLimitingQueues() {
+	globals.RateLimitingMutex.Lock()
+	defer globals.RateLimitingMutex.Unlock()
+
+	for _, endpoint := range globals.RateLimitingMap {
+		advanceRateLimitingQueuesForMap(&endpoint.Config, endpoint.UserCounts)
+		advanceRateLimitingQueuesForMap(&endpoint.Config, endpoint.IpCounts)
 	}
 }
 

@@ -45,6 +45,7 @@ fi
 PHP_DEBIAN_MOD_DIR="/etc/php/$PHP_VERSION/mods-available"
 PHP_DEBIAN_MOD_DIR_CLI="/etc/php/$PHP_VERSION/cli/conf.d"
 PHP_DEBIAN_MOD_DIR_FPM="/etc/php/$PHP_VERSION/fpm/conf.d"
+PHP_DEBIAN_MOD_DIR_APACHE2="/etc/php/$PHP_VERSION/apache2/conf.d"
 
 if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     # Debian-based system
@@ -59,6 +60,10 @@ if [ -d $PHP_DEBIAN_MOD_DIR ]; then
         echo "Installing new Aikido mod in $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini..."
         ln -sf $PHP_DEBIAN_MOD_DIR/aikido-%{version}.ini $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini
     fi
+    if [ -d $PHP_DEBIAN_MOD_DIR_APACHE2 ]; then
+        echo "Installing new Aikido mod in $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini..."
+        ln -sf $PHP_DEBIAN_MOD_DIR/aikido-%{version}.ini $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini
+    fi
 else
     # RedHat-based system
 
@@ -69,21 +74,6 @@ else
         echo "No mod dir! Exiting!"
         exit 1
     fi
-fi
-
-# Remove the Aikido Socket folder
-SOCKET_FOLDER="/run/aikido-%{version}"
-
-if [ -d "$SOCKET_FOLDER" ]; then
-    echo "Removing $SOCKET_FOLDER ..."
-    rm -rf "$SOCKET_FOLDER"
-    if [ $? -eq 0 ]; then
-        echo "Socket folder removed successfully."
-    else
-        echo "Failed to remove the socket folder."
-    fi
-else
-    echo "Socket $SOCKET_FOLDER does not exist."
 fi
 
 mkdir -p /run/aikido-%{version}
@@ -106,6 +96,7 @@ echo "Found PHP version $PHP_VERSION!"
 PHP_DEBIAN_MOD_DIR="/etc/php/$PHP_VERSION/mods-available"
 PHP_DEBIAN_MOD_DIR_CLI="/etc/php/$PHP_VERSION/cli/conf.d"
 PHP_DEBIAN_MOD_DIR_FPM="/etc/php/$PHP_VERSION/fpm/conf.d"
+PHP_DEBIAN_MOD_DIR_APACHE2="/etc/php/$PHP_VERSION/apache2/conf.d"
 
 if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     # Debian-based system
@@ -119,6 +110,10 @@ if [ -d $PHP_DEBIAN_MOD_DIR ]; then
     if [ -d $PHP_DEBIAN_MOD_DIR_FPM ]; then
         echo "Uninstalling Aikido mod from $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini..."
         rm -f $PHP_DEBIAN_MOD_DIR_FPM/zz-aikido-%{version}.ini
+    fi
+    if [ -d $PHP_DEBIAN_MOD_DIR_APACHE2 ]; then
+        echo "Uninstalling Aikido mod from $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini..."
+        rm -f $PHP_DEBIAN_MOD_DIR_APACHE2/zz-aikido-%{version}.ini
     fi
 else
     # RedHat-based system
@@ -141,7 +136,23 @@ else
     exit 1
 fi
 
+# Remove the Aikido logs folder
 rm -rf /var/log/aikido-%{version}
+
+# Remove the Aikido socket folder
+SOCKET_FOLDER="/run/aikido-%{version}"
+
+if [ -d "$SOCKET_FOLDER" ]; then
+    echo "Removing $SOCKET_FOLDER ..."
+    rm -rf "$SOCKET_FOLDER"
+    if [ $? -eq 0 ]; then
+        echo "Socket folder removed successfully."
+    else
+        echo "Failed to remove the socket folder."
+    fi
+else
+    echo "Socket $SOCKET_FOLDER does not exist."
+fi
 
 echo "Uninstallation process for Aikido v%{version} completed."
 

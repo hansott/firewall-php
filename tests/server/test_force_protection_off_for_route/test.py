@@ -43,7 +43,7 @@ def run_test():
     time.sleep(10)
     events = mock_server_get_events()
     assert_events_length_is(events, 9)
-    assert_detection_events_are_valid(events[5:10])
+    assert_detection_events_are_valid(events[5:])
         
     
 if __name__ == "__main__":
