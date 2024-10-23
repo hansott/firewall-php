@@ -18,7 +18,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
         zend_class_entry* executed_scope = zend_get_executed_scope();
 
         std::string function_name(ZSTR_VAL(func->common.function_name));
-        function_name = to_lowercase(function_name);
+        function_name = ToLowercase(function_name);
 
         aikido_handler handler = nullptr;
 
@@ -32,7 +32,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
             /* A method was executed (executed_scope stores the name of the current class) */
 
             std::string class_name(ZSTR_VAL(executed_scope->name));
-            class_name = to_lowercase(class_name);
+            class_name = ToLowercase(class_name);
 
             scope_name = class_name + "->" + function_name;
 

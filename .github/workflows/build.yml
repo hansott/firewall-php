@@ -30,7 +30,7 @@ jobs:
 
     - name: Get Aikido version
       run: |
-        AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+        AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
 
@@ -96,7 +96,7 @@ jobs:
 
     - name: Get Aikido version
       run: |
-        AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+        AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
         echo "AIKIDO_ARTIFACT=aikido-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
@@ -159,7 +159,7 @@ jobs:
 
       - name: Get Aikido version
         run: |
-          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+          AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
       
@@ -243,7 +243,7 @@ jobs:
 
       - name: Get Aikido version
         run: |
-          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+          AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
@@ -305,7 +305,7 @@ jobs:
 
       - name: Get Aikido version
         run: |
-          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+          AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
@@ -415,7 +415,7 @@ jobs:
 
       - name: Set env
         run: |
-          AIKIDO_VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+          AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_DEB=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV

@@ -3,16 +3,13 @@
 AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
     zval *curlHandle = NULL;
 
-    // Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
+    ZEND_PARSE_PARAMETERS_START(1, 1)
 #if PHP_VERSION_ID >= 80000
-    ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_OBJECT(curlHandle)
-    ZEND_PARSE_PARAMETERS_END();
 #else
-    ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_RESOURCE(curlHandle)
-    ZEND_PARSE_PARAMETERS_END();
 #endif
+    ZEND_PARSE_PARAMETERS_END();
 
     eventCache.outgoingRequestUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
     if (eventCache.outgoingRequestUrl.empty()) return;

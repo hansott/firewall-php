@@ -28,7 +28,7 @@ std::string aikido_log_level_str(AIKIDO_LOG_LEVEL level);
 
 AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level);
 
-std::string to_lowercase(const std::string &str);
+std::string ToLowercase(const std::string &str);
 
 bool aikido_echo(std::string s);
 
@@ -40,6 +40,6 @@ bool aikido_call_user_function_one_param(std::string function_name, std::string 
 
 std::string aikido_call_user_function_curl_getinfo(zval *curl_handle, int curl_info_option);
 
-std::string aikido_generate_socket_path();
+std::string GenerateSocketPath();
 
 const char *GetEventName(EVENT_ID event);

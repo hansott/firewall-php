@@ -2,7 +2,7 @@ rm -rf ~/rpmbuild
 rpmdev-setuptree
 
 PHP_VERSION=$(php -v | grep -oP 'PHP \K\d+\.\d+' | head -n 1)
-VERSION=$(grep '# define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
+VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
 
 mkdir -p ~/rpmbuild/SOURCES/aikido-php-firewall-$VERSION
 
