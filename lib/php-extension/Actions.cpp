@@ -30,7 +30,9 @@ ACTION_STATUS Action::executeStore(json &event)
     block = true;
     type = event["type"];
     trigger = event["trigger"];
-    ip = event["ip"];
+    if (event.contains("ip")) {
+        ip = event["ip"];
+    }
     return CONTINUE;
 }
 
