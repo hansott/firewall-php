@@ -1,10 +1,8 @@
-#include "Utils.h"
-#include "Actions.h"
-#include <ctime>
+#include "Includes.h"
 
 std::string to_lowercase(const std::string& str) {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c){ return std::tolower(c); });
+    std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
     return result;
 }
 
@@ -70,140 +68,13 @@ AIKIDO_LOG_LEVEL aikido_log_level_from_str(std::string level) {
     return AIKIDO_LOG_LEVEL_ERROR;
 }
 
-std::string get_environment_variable(const std::string& env_key) {
-    const char* env_value = getenv(env_key.c_str());
-    if (!env_value) return "";
-    AIKIDO_LOG_DEBUG("env[%s] = %s\n", env_key.c_str(), env_value);
-    return env_value;
-}
-
-std::string get_env_string(const std::string& env_key, const std::string default_value) {
-	std::string env_value = get_environment_variable(env_key.c_str());
-	if (!env_value.empty()) {
-        return env_value;
-	}
-    return default_value;
-}
-
-bool get_env_bool(const std::string& env_key, bool default_value) {
-	std::string env_value = get_environment_variable(env_key.c_str());
-	if (!env_value.empty()) {
-        return (env_value == "1" || env_value == "true");
-	}
-    return default_value;
-}
-
-std::string extract_server_var(const char *var) {
-    if (!server) {
-        return "";
-    }
-    zval *data = zend_hash_str_find(Z_ARRVAL_P(server), var, strlen(var));
-    if (!data) {
-        return "";
-    }
-    return Z_STRVAL_P(data);
-}
-
-std::string extract_route() {
-    std::string route = extract_server_var("REQUEST_URI");
-    size_t pos = route.find("?");
-    if (pos != std::string::npos) {
-        route = route.substr(0, pos);
-    }
-    return route;
-}
-
-std::string extract_status_code() {
-    return std::to_string(SG(sapi_headers).http_response_code);
-}
-
-bool is_https() {
-    return extract_server_var("HTTPS") != "" ? true : false;
-}
-
-std::string extract_url() {
-    return (is_https() ? "https://" : "http://") + extract_server_var("HTTP_HOST") + extract_server_var("REQUEST_URI");
-}
-
-std::string extract_body()
-{
-    long maxlen = PHP_STREAM_COPY_ALL;
-    zend_string *contents;
-    php_stream *stream;
-
-    stream = php_stream_open_wrapper("php://input", "rb", 0 | REPORT_ERRORS, NULL);
-    if ((contents = php_stream_copy_to_mem(stream, maxlen, 0)) != NULL) {
-        php_stream_close(stream);
-        return std::string(ZSTR_VAL(contents));
-    }
-    php_stream_close(stream);
-    return "";
-}
-
-std::string extract_headers() {
-    std::map<std::string, std::string> headers;
-    zend_string *key;
-    zval *val;
-    ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(server), key, val)
-    {
-        if (key && Z_TYPE_P(val) == IS_STRING)
-        {
-            std::string header_name(ZSTR_VAL(key));
-            std::string http_header_key;
-            std::string http_header_value(Z_STRVAL_P(val));
-
-            if (header_name.find("HTTP_") == 0) {
-                http_header_key = header_name.substr(5);
-            }
-            else if (header_name == "CONTENT_TYPE" || header_name == "CONTENT_LENGTH" || header_name == "AUTHORIZATION") {
-                http_header_key = header_name;
-            }
-            
-            if (!http_header_key.empty()) {
-                std::transform(http_header_key.begin(), http_header_key.end(), http_header_key.begin(), ::tolower);
-                headers[http_header_key] = http_header_value;
-            }
-        }
-    }
-    ZEND_HASH_FOREACH_END();
-
-    json headers_json;
-    for (auto const& [key, val] : headers) {
-        headers_json[key] = val;
-    }
-    return headers_json.dump();
-}
-
-void send_request_init_metadata_event(){
-    try {
-        std::string outputEvent;
-        GoRequestProcessorOnEvent(EVENT_PRE_REQUEST, outputEvent);
-        action.Execute(outputEvent);
-    }
-    catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request init metadata: %s\n", e.what());
-    }
-}
-
-void send_request_shutdown_metadata_event(){
-    try {
-        std::string outputEvent;
-        GoRequestProcessorOnEvent(EVENT_POST_REQUEST, outputEvent);
-        action.Execute(outputEvent);
-    }
-    catch (const std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception encountered in processing request shutdown metadata: %s\n", e.what());
-    }
-}
-
 bool aikido_echo(std::string message) {
-    unsigned int wrote = zend_write(message.c_str(), message.length()); // echo '<message>'
+    unsigned int wrote = zend_write(message.c_str(), message.length());  // echo '<message>'
     AIKIDO_LOG_INFO("Called 'echo' -> result %d\n", wrote == message.length());
     return wrote == message.length();
 }
 
-bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval *params, zval *return_value, zval *object)
-{
+bool aikido_call_user_function(std::string function_name, unsigned int params_number, zval* params, zval* return_value, zval* object) {
     zval _function_name;
     zend_string* _function_name_str = zend_string_init(function_name.c_str(), function_name.length(), 0);
     if (!_function_name_str) {
@@ -228,15 +99,13 @@ bool aikido_call_user_function(std::string function_name, unsigned int params_nu
     return _result == SUCCESS;
 }
 
-bool aikido_call_user_function_one_param(std::string function_name, long first_param, zval *return_value, zval *object)
-{
+bool aikido_call_user_function_one_param(std::string function_name, long first_param, zval* return_value, zval* object) {
     zval _params[1];
     ZVAL_LONG(&_params[0], first_param);
     return aikido_call_user_function(function_name, 1, _params, return_value, object);
 }
 
-bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval *return_value, zval *object)
-{
+bool aikido_call_user_function_one_param(std::string function_name, std::string first_param, zval* return_value, zval* object) {
     zval _params[1];
     zend_string* _first_param = zend_string_init(first_param.c_str(), first_param.length(), 0);
     if (!_first_param) {
@@ -267,7 +136,7 @@ std::string aikido_generate_socket_path() {
     return socket_file_path;
 }
 
-const char *get_event_name(EVENT_ID event) {
+const char* GetEventName(EVENT_ID event) {
     switch (event) {
         case EVENT_PRE_REQUEST:
             return "PreRequest";
@@ -299,7 +168,7 @@ std::string aikido_call_user_function_curl_getinfo(zval* curl_handle, int curl_i
     ZVAL_LONG(&params[1], curl_info_option);
 
     std::string result = "";
-    if (aikido_call_user_function("curl_getinfo", 2, params, &retval)){
+    if (aikido_call_user_function("curl_getinfo", 2, params, &retval)) {
         switch (Z_TYPE(retval)) {
             case IS_LONG:
                 result = std::to_string(Z_LVAL(retval));
@@ -309,7 +178,7 @@ std::string aikido_call_user_function_curl_getinfo(zval* curl_handle, int curl_i
                 break;
         }
     }
-    
+
     zval_dtor(&params[0]);
     zval_dtor(&params[1]);
     zval_dtor(&retval);

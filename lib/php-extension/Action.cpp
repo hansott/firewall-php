@@ -1,18 +1,15 @@
 #include "Includes.h"
-#include "Actions.h"
 
 Action action;
 
-ACTION_STATUS Action::executeThrow(json &event)
-{
+ACTION_STATUS Action::executeThrow(json &event) {
     int _code = event["code"].get<int>();
     std::string _message = event["message"].get<std::string>();
     zend_throw_exception(zend_exception_get_default(), _message.c_str(), _code);
     return BLOCK;
 }
 
-ACTION_STATUS Action::executeExit(json &event)
-{
+ACTION_STATUS Action::executeExit(json &event) {
     int _response_code = event["response_code"].get<int>();
     std::string _message = event["message"].get<std::string>();
 
@@ -25,8 +22,7 @@ ACTION_STATUS Action::executeExit(json &event)
     return EXIT;
 }
 
-ACTION_STATUS Action::executeStore(json &event)
-{
+ACTION_STATUS Action::executeStore(json &event) {
     block = true;
     type = event["type"];
     trigger = event["trigger"];
@@ -36,10 +32,8 @@ ACTION_STATUS Action::executeStore(json &event)
     return CONTINUE;
 }
 
-ACTION_STATUS Action::Execute(std::string &event)
-{
-    if (event.empty())
-    {
+ACTION_STATUS Action::Execute(std::string &event) {
+    if (event.empty()) {
         return CONTINUE;
     }
 
@@ -48,24 +42,18 @@ ACTION_STATUS Action::Execute(std::string &event)
         return CONTINUE;
     }
     std::string actionType = eventJson["action"];
-    
-    if (actionType == "throw")
-    {
+
+    if (actionType == "throw") {
         return executeThrow(eventJson);
-    }
-    else if (actionType == "exit")
-    {
+    } else if (actionType == "exit") {
         return executeExit(eventJson);
-    }
-    else if (actionType == "store")
-    {
+    } else if (actionType == "store") {
         return executeStore(eventJson);
     }
     return CONTINUE;
 }
 
-void Action::Reset()
-{
+void Action::Reset() {
     exit = false;
     block = false;
     type = "";
@@ -81,14 +69,14 @@ bool Action::Block() {
     return block;
 }
 
-char* Action::Type() {
-    return (char*)type.c_str();
+char *Action::Type() {
+    return (char *)type.c_str();
 }
 
-char* Action::Trigger() {
-    return (char*)trigger.c_str();
+char *Action::Trigger() {
+    return (char *)trigger.c_str();
 }
 
-char* Action::Ip() {
-    return (char*)ip.c_str();
+char *Action::Ip() {
+    return (char *)ip.c_str();
 }

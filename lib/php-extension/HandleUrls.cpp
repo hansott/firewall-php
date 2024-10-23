@@ -1,46 +1,43 @@
-#include "HandleUrls.h"
-#include "Utils.h"
-#include "Cache.h"
+#include "Includes.h"
 
 AIKIDO_HANDLER_FUNCTION(handle_pre_curl_exec) {
     zval *curlHandle = NULL;
 
-	// Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
-    #if PHP_VERSION_ID >= 80000
-        ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_OBJECT(curlHandle) 
-        ZEND_PARSE_PARAMETERS_END();
-    #else
-        ZEND_PARSE_PARAMETERS_START(1, 1)
-            Z_PARAM_RESOURCE(curlHandle)
-        ZEND_PARSE_PARAMETERS_END();
-    #endif
+    // Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
+#if PHP_VERSION_ID >= 80000
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_OBJECT(curlHandle)
+    ZEND_PARSE_PARAMETERS_END();
+#else
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_RESOURCE(curlHandle)
+    ZEND_PARSE_PARAMETERS_END();
+#endif
 
-	eventCache.outgoingRequestUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
-	if (eventCache.outgoingRequestUrl.empty()) return;
-	
-	eventId = EVENT_PRE_OUTGOING_REQUEST;
-	eventCache.moduleName = "curl";
+    eventCache.outgoingRequestUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
+    if (eventCache.outgoingRequestUrl.empty()) return;
+
+    eventId = EVENT_PRE_OUTGOING_REQUEST;
+    eventCache.moduleName = "curl";
 }
 
-
 AIKIDO_HANDLER_FUNCTION(handle_post_curl_exec) {
-	zval *curlHandle = NULL;
+    zval *curlHandle = NULL;
 
-	// Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
-	#if PHP_VERSION_ID >= 80000
-		ZEND_PARSE_PARAMETERS_START(1, 1)
-			Z_PARAM_OBJECT(curlHandle) 
-		ZEND_PARSE_PARAMETERS_END();
-	#else
-		ZEND_PARSE_PARAMETERS_START(1, 1)
-			Z_PARAM_RESOURCE(curlHandle)
-		ZEND_PARSE_PARAMETERS_END();
-	#endif
+// Curl handles changed between PHP 7 & PHP 8 - so we need different extraction
+#if PHP_VERSION_ID >= 80000
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_OBJECT(curlHandle)
+    ZEND_PARSE_PARAMETERS_END();
+#else
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_RESOURCE(curlHandle)
+    ZEND_PARSE_PARAMETERS_END();
+#endif
 
-	eventId = EVENT_POST_OUTGOING_REQUEST;
-	eventCache.moduleName = "curl";
-	eventCache.outgoingRequestEffectiveUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
-	eventCache.outgoingRequestPort = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_PORT);
-	eventCache.outgoingRequestResolvedIp = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_IP);
+    eventId = EVENT_POST_OUTGOING_REQUEST;
+    eventCache.moduleName = "curl";
+    eventCache.outgoingRequestEffectiveUrl = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_EFFECTIVE_URL);
+    eventCache.outgoingRequestPort = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_PORT);
+    eventCache.outgoingRequestResolvedIp = aikido_call_user_function_curl_getinfo(curlHandle, CURLINFO_PRIMARY_IP);
 }

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Includes.h"
-
 class RequestCache {
-public:
+   public:
     std::string userId;
     std::string userName;
 
@@ -12,7 +10,7 @@ public:
 };
 
 class EventCache {
-public:
+   public:
     std::string functionName;
     std::string moduleName;
 
@@ -25,7 +23,7 @@ public:
     std::string outgoingRequestEffectiveUrl;
     std::string outgoingRequestPort;
     std::string outgoingRequestResolvedIp;
-    
+
     std::string sqlQuery;
     std::string sqlDialect;
 

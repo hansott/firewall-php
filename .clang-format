@@ -1,0 +1,9 @@
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 0
+BraceWrapping:
+  AfterControlStatement: false
+  AfterFunction: false
+  BeforeElse: false
+  IndentBraces: false
+SortIncludes: false

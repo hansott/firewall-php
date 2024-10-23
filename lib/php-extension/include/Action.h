@@ -2,6 +2,12 @@
 
 #include "Includes.h"
 
+enum ACTION_STATUS {
+    CONTINUE,
+    BLOCK,
+    EXIT
+};
+
 class Action {
     private:
         bool exit = false;
