@@ -31,7 +31,7 @@ func (s *server) GetRateLimitingStatus(ctx context.Context, req *protos.RateLimi
 }
 
 func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetadataShutdown) (*emptypb.Empty, error) {
-	log.Debugf("Received request metadata: %s %s %d %v", req.GetMethod(), req.GetRoute(), req.GetStatusCode(), req.GetApiSpec())
+	log.Debugf("Received request metadata: %s %s %d %s %s %v", req.GetMethod(), req.GetRoute(), req.GetStatusCode(), req.GetUser(), req.GetIp(), req.GetApiSpec())
 
 	go storeStats()
 	go storeRoute(req.GetMethod(), req.GetRoute(), req.GetApiSpec())

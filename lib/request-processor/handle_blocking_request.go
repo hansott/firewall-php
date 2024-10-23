@@ -23,7 +23,7 @@ func OnGetBlockingStatus() string {
 
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
-		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
+		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
 		return ""
 	}
 

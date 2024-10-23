@@ -30,7 +30,7 @@ bool GoRequestProcessorOnEvent(EVENT_ID event_id, std::string &output) {
 */
 char* GoContextCallback(int callback_id) {
     if (!server) {
-        AIKIDO_LOG_WARN("_SERVER variables is not initialized!\n");
+        AIKIDO_LOG_WARN("_SERVER variable is not initialized!\n");
         return nullptr;
     }
     std::string ctx;

@@ -13,6 +13,10 @@ ZEND_FUNCTION(should_block_request)
         return;
     }
 
+    if (!get_blocking_status()) {
+        return;
+    }
+
     object_init_ex(return_value, aikido_block_request_status_class);
     #if PHP_VERSION_ID >= 80000
         zend_object *obj = Z_OBJ_P(return_value);
@@ -39,3 +43,16 @@ void RegisterAikidoBlockRequestStatusClass() {
     zend_declare_property_string(aikido_block_request_status_class, "ip", sizeof("ip") - 1, "", ZEND_ACC_PUBLIC);
 }
 
+bool get_blocking_status() {
+    try {
+        std::string output;
+        GoRequestProcessorOnEvent(EVENT_GET_BLOCKING_STATUS, output);
+        action.Execute(output);
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        AIKIDO_LOG_ERROR("Exception encountered in processing get blocking status event: %s\n", e.what());
+    }
+    return false;
+}

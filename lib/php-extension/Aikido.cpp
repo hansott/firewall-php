@@ -190,11 +190,19 @@ RequestProcessorGetBlockingModeFn request_processor_get_blocking_mode_fn = nullp
 
 bool initialize_server() {
 	zend_string *server_str = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
-	if (!server_str) return false;
+	if (!server_str) {
+		return false;
+	}
 
-	/* Guarantee that "_SERVER" global variable is initialized for the current request */
-	zend_is_auto_global(server_str);
+	/* Guarantee that "_SERVER" PHP global variable is initialized for the current request */
+	if (!zend_is_auto_global(server_str)) {
+		zend_string_release(server_str);
+		return false;
+	}
+
 	zend_string_release(server_str);
+
+	/* Search for the "_SERVER" PHP global variable and store it */
 	server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
 	return server != NULL;
 }

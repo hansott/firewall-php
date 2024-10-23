@@ -19,11 +19,11 @@ func OnPreRequest() string {
 		return ""
 	}
 
-	log.Infof("[RINIT] Got request metadata: %s %s", method, route)
+	log.Infof("Got request metadata: %s %s", method, route)
 
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
-		log.Debugf("[RINIT] Method+route in not configured in endpoints! Skipping checks...")
+		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
 		return ""
 	}
 
