@@ -37,7 +37,7 @@ var StatsData StatsDataType
 var RateLimitingMap = make(map[RateLimitingKey]*RateLimitingValue)
 
 // Rate limiting mutex used to sync access across the go routines
-var RateLimitingMutex sync.Mutex
+var RateLimitingMutex sync.RWMutex
 
 // Users map, which holds the current users and their data
 var Users = make(map[string]User)

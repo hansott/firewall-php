@@ -119,8 +119,8 @@ func isRateLimitingThresholdExceeded(config *RateLimitingConfig, countsMap map[s
 }
 
 func getRateLimitingStatus(method string, route string, user string, ip string) *protos.RateLimitingStatus {
-	globals.RateLimitingMutex.Lock()
-	defer globals.RateLimitingMutex.Unlock()
+	globals.RateLimitingMutex.RLock()
+	defer globals.RateLimitingMutex.RUnlock()
 
 	rateLimitingDataForRoute, exists := globals.RateLimitingMap[RateLimitingKey{Method: method, Route: route}]
 	if !exists {
