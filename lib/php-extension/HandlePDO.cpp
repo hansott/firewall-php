@@ -27,7 +27,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
     eventCache.sqlDialect = "unknown";
 
     zval retval;
-    if (aikido_call_user_function_one_param("getAttribute", PDO_ATTR_DRIVER_NAME, &retval, pdo_object)) {
+    if (CallPhpFunctionWithOneParam("getAttribute", PDO_ATTR_DRIVER_NAME, &retval, pdo_object)) {
         if (Z_TYPE(retval) == IS_STRING) {
             eventCache.sqlDialect = Z_STRVAL_P(&retval);
         }

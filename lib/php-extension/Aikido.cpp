@@ -4,10 +4,9 @@
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 PHP_MINIT_FUNCTION(aikido) {
-    aikido_log_init();
-    RegisterAikidoBlockRequestStatusClass();
-
     AIKIDO_LOG_INFO("MINIT started!\n");
+
+    RegisterAikidoBlockRequestStatusClass();
 
     if (AIKIDO_GLOBAL(disable) == true) {
         AIKIDO_LOG_INFO("MINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
@@ -41,14 +40,12 @@ PHP_MSHUTDOWN_FUNCTION(aikido) {
 
     if (AIKIDO_GLOBAL(disable) == true) {
         AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because AIKIDO_DISABLE is set to 1!\n");
-        aikido_log_uninit();
         return SUCCESS;
     }
 
     /* If SAPI name is "cli" run in "simple" mode */
     if (AIKIDO_GLOBAL(sapi_name) == "cli") {
         AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
-        aikido_log_uninit();
         return SUCCESS;
     }
 
@@ -58,8 +55,6 @@ PHP_MSHUTDOWN_FUNCTION(aikido) {
     }
 
     AIKIDO_LOG_DEBUG("MSHUTDOWN finished!\n");
-
-    aikido_log_uninit();
     return SUCCESS;
 }
 
