@@ -325,16 +325,15 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run apache-mod-php server tests
-        run: |
-          ls -R /etc/httpd/
-          cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
-
       - name: Run nginx-php-fpm server tests
         run: |
           cd tools
           python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
+
+      - name: Run apache-mod-php server tests
+        run: |
+          cd tools
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
 
       - name: Run php-built-in server tests
         run: |
@@ -379,7 +378,6 @@ jobs:
           if-no-files-found: ignore
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
-            /etc/httpd/*
             /var/log/httpd/*
             /var/log/nginx/*
             /var/log/php-fpm/*
@@ -534,8 +532,6 @@ jobs:
             /var/log/php-fpm/*
             /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
             /var/log/apache2/*
-            /etc/apache2/*
-            /etc/php/*
       
       - name: Archive benchmark artifacts
         uses: actions/upload-artifact@v4

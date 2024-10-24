@@ -174,6 +174,7 @@ def main(root_tests_dir, test_lib_dir, specific_test=None, server="php-built-in"
         thread = threading.Thread(target=handle_test_scenario, args=args)
         threads.append(thread)
         thread.start()
+        time.sleep(10)
 
     for thread in threads:
         thread.join()
