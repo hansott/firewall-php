@@ -115,18 +115,21 @@ bool RequestProcessor::Init() {
     }
 
     if (!request.Init()) {
+        AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
         return false;
     }
 
     ContextInit();
-    SendPostRequestEvent();
+    SendPreRequestEvent();
     return true;
 }
 
 void RequestProcessor::Uninit() {
-    if (request.Init()) {
-        SendPostRequestEvent();
+    if (!request.Init()) {
+        AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
+        return;
     }
+    SendPostRequestEvent();
 }
 
 RequestProcessor::~RequestProcessor() {
