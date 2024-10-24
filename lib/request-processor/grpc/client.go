@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var conn grpc.ClientConn
+var conn *grpc.ClientConn
 var client protos.AikidoClient
 
 func Init() {
@@ -35,7 +35,9 @@ func Init() {
 }
 
 func Uninit() {
-	conn.Close()
+	if conn != nil {
+		conn.Close()
+	}
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */

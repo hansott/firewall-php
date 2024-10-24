@@ -4,6 +4,8 @@
 ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 PHP_MINIT_FUNCTION(aikido) {
+    LoadEnvironment();
+
     AIKIDO_LOG_INFO("MINIT started!\n");
 
     RegisterAikidoBlockRequestStatusClass();
@@ -23,10 +25,8 @@ PHP_MINIT_FUNCTION(aikido) {
         return SUCCESS;
     }
 
-    if (!AIKIDO_GLOBAL(agent)->Init()) {
+    if (!AIKIDO_GLOBAL(agent).Init()) {
         AIKIDO_LOG_INFO("Aikido Agent initialization failed!\n");
-        delete AIKIDO_GLOBAL(agent);
-        AIKIDO_GLOBAL(agent) = nullptr;
     } else {
         AIKIDO_LOG_INFO("Aikido Agent initialization succeeded!\n");
     }
@@ -47,11 +47,6 @@ PHP_MSHUTDOWN_FUNCTION(aikido) {
     if (AIKIDO_GLOBAL(sapi_name) == "cli") {
         AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because we run in CLI mode!\n");
         return SUCCESS;
-    }
-
-    if (AIKIDO_GLOBAL(agent)) {
-        delete AIKIDO_GLOBAL(agent);
-        AIKIDO_GLOBAL(agent) = nullptr;
     }
 
     AIKIDO_LOG_DEBUG("MSHUTDOWN finished!\n");
