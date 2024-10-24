@@ -133,7 +133,7 @@ RequestProcessor::~RequestProcessor() {
     if (!this->libHandle) {
         return;
     }
-    if (this->requestProcessorUninitFn) {
+    if (!this->initFailed && this->requestProcessorUninitFn) {
         this->requestProcessorUninitFn();
     }
     dlclose(this->libHandle);
