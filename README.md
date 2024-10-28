@@ -36,7 +36,7 @@ Prerequisites:
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
-`rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
+`rpm -Uvh --oldpackage https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
@@ -50,7 +50,7 @@ Create a new file in `.ebextensions/01_aikido_php_firewall.config` with the foll
 ```
 commands:
   aikido-php-firewall:
-    command: "rpm -Uvh https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm"
+    command: "rpm -Uvh --oldpackage https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm"
     ignoreErrors: true
 
 files: 

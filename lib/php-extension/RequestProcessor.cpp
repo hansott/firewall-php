@@ -119,9 +119,10 @@ bool RequestProcessor::Init() {
         return false;
     }
 
+    requestInitialized = true;
+
     ContextInit();
     SendPreRequestEvent();
-    requestInitialized = true;
     return true;
 }
 

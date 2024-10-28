@@ -318,7 +318,7 @@ jobs:
 
       - name: Install RPM
         run: |
-          rpm -Uvh ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
+          rpm -Uvh --oldpackage ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
 
       - name: Run CLI tests
         run: |

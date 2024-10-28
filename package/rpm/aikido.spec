@@ -1,5 +1,5 @@
 Name:           aikido-php-firewall
-Version:        1.0.82
+Version:        1.0.83
 Release:        1
 Summary:        Aikido PHP Extension
 License:        GPL
@@ -24,7 +24,7 @@ cp -rf opt/aikido-%{version}/* %{buildroot}/opt/aikido-%{version}
 echo "Starting the installation process for Aikido PHP Firewall v%{version}..."
 
 mkdir -p /var/log/aikido-%{version}
-chmod 777 /var/log/aikido-%{version}
+chmod 776 /var/log/aikido-%{version}
 
 PHP_VERSION=$(php -v | grep -oP 'PHP \K\d+\.\d+' | head -n 1)
 PHP_EXT_DIR=$(php -i | grep "^extension_dir" | awk '{print $3}')

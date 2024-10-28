@@ -5,11 +5,13 @@ Request request;
 bool Request::Init() {
     zend_string* serverString = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
     if (!serverString) {
+        AIKIDO_LOG_WARN("Error allocating the '_SERVER' zend string!");
         return false;
     }
 
     /* Guarantee that "_SERVER" PHP global variable is initialized for the current request */
     if (!zend_is_auto_global(serverString)) {
+        AIKIDO_LOG_WARN("'_SERVER' is not initialized!");
         zend_string_release(serverString);
         return false;
     }
@@ -18,7 +20,11 @@ bool Request::Init() {
 
     /* Search for the "_SERVER" PHP global variable and store it */
     this->server = zend_hash_str_find(&EG(symbol_table), "_SERVER", sizeof("_SERVER") - 1);
-    return this->server != NULL;
+    if (this->server == NULL) {
+        AIKIDO_LOG_WARN("'_SERVER' was not found in the global symbol table!");
+        return false;
+    }
+    return true;
 }
 
 bool Request::Ok() {
