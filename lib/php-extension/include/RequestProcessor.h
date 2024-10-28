@@ -9,6 +9,7 @@ typedef void (*RequestProcessorUninitFn)();
 class RequestProcessor {
    private:
     bool initFailed = false;
+    bool requestInitialized = false;
     void* libHandle = nullptr;
     RequestProcessorContextInitFn requestProcessorContextInitFn = nullptr;
     RequestProcessorOnEventFn requestProcessorOnEventFn = nullptr;

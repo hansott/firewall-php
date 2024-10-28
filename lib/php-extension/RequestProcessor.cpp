@@ -19,7 +19,7 @@ bool RequestProcessor::ContextInit() {
 }
 
 bool RequestProcessor::SendEvent(EVENT_ID eventId, std::string& output) {
-    if (!this->requestProcessorOnEventFn) {
+    if (!this->requestInitialized) {
         return false;
     }
 
@@ -63,7 +63,7 @@ void RequestProcessor::SendPostRequestEvent() {
         Otherwise, return the env variable AIKIDO_BLOCK.
 */
 bool RequestProcessor::IsBlockingEnabled() {
-    if (!requestProcessorGetBlockingModeFn) {
+    if (!this->requestInitialized) {
         return false;
     }
     int ret = requestProcessorGetBlockingModeFn();
@@ -121,6 +121,7 @@ bool RequestProcessor::Init() {
 
     ContextInit();
     SendPreRequestEvent();
+    requestInitialized = true;
     return true;
 }
 
@@ -130,6 +131,7 @@ void RequestProcessor::Uninit() {
         return;
     }
     SendPostRequestEvent();
+    requestInitialized = false;
 }
 
 RequestProcessor::~RequestProcessor() {

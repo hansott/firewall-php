@@ -22,6 +22,7 @@ std::string sapi_name;
 std::string token;
 std::string endpoint;
 std::string config_endpoint;
+Log logger;
 Agent agent;
 ZEND_END_MODULE_GLOBALS(aikido)
 

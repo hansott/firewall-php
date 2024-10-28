@@ -1,7 +1,5 @@
 #include "Includes.h"
 
-Log logger;
-
 Log::Log() {
     std::time_t currentTime = std::time(nullptr);
     char timeStr[20];
