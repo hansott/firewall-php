@@ -134,6 +134,10 @@ def modify_apache_conf(file_path):
 
 
 def toggle_config_line(file_path, line_to_check, comment_ch, enable=False):
+    if not os.path.exists(file_path):
+        print(f"File '{file_path}' does not exist.")
+        return
+    
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
