@@ -6,6 +6,7 @@ typedef void (*AgentUninitFn)();
 class Agent {
    private:
     void* libHandle = nullptr;
+    bool inForkedProcess = false;
 
    private:
     std::string GetInitData();
@@ -14,6 +15,7 @@ class Agent {
     Agent() = default;
 
     bool Init();
+    void InForkedProcess();
 
     ~Agent();
 };

@@ -87,7 +87,7 @@ bool RequestProcessor::Init() {
             return false;
         }
 
-        AIKIDO_LOG_DEBUG("Initializing Aikido Request Processor...\n");
+        AIKIDO_LOG_INFO("Initializing Aikido Request Processor...\n");
 
         RequestProcessorInitFn requestProcessorInitFn = (RequestProcessorInitFn)dlsym(libHandle, "RequestProcessorInit");
         this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
@@ -111,7 +111,7 @@ bool RequestProcessor::Init() {
             return false;
         }
 
-        AIKIDO_LOG_DEBUG("Aikido Request Processor initialized successfully!\n");
+        AIKIDO_LOG_INFO("Aikido Request Processor initialized successfully!\n");
     }
 
     if (!request.Init()) {

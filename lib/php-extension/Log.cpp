@@ -5,14 +5,24 @@ Log::Log() {
     char timeStr[20];
     std::strftime(timeStr, sizeof(timeStr), "%Y%m%d%H%M%S", std::localtime(&currentTime));
     std::string logFilePath = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + timeStr + "-" + std::to_string(getpid()) + ".log";
-    logFile = fopen(logFilePath.c_str(), "w");
+    this->logFile = fopen(logFilePath.c_str(), "w");
 }
 
 Log::~Log() {
-    if (logFile) {
-        fclose(logFile);
-        logFile = nullptr;
+    if (this->inForkedProcess) {
+        AIKIDO_LOG_INFO("Log destructor called in forked process -> nothing to do!\n");
+        return;
     }
+    if (!this->logFile) {
+        return;
+    }
+
+    fclose(this->logFile);
+    this->logFile = nullptr;
+}
+
+void Log::InForkedProcess() {
+    this->inForkedProcess = true;
 }
 
 void Log::Write(AIKIDO_LOG_LEVEL level, const char* format, ...) {
