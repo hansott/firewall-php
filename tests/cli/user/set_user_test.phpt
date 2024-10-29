@@ -20,5 +20,6 @@ if ($a == true) {
 ?>
 
 --EXPECTF--
+[AIKIDO][INFO] Initializing context...
 [AIKIDO][INFO] [UEVENT] Got user event: 122-sa-2 username1 ::1
 User set successfully
