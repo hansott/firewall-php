@@ -380,7 +380,6 @@ jobs:
             ${{ github.workspace }}/tests/cli/*.diff
             /var/log/httpd/*
             /var/log/nginx/*
-            /var/log/php-fpm/*
             
 
       - name: Archive benchmark artifacts
@@ -524,7 +523,6 @@ jobs:
           path: |
             ${{ github.workspace }}/tests/cli/*.diff
             /var/log/nginx/*
-            /var/log/php-fpm/*
             /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
             /var/log/apache2/*
       
