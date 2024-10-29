@@ -103,4 +103,5 @@ class ZenBlockDecision
         return $next($request);
     }
 }
+?>
 ```
