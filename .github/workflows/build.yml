@@ -514,12 +514,6 @@ jobs:
           cd tools
           python3 benchmark_report.py ../benchmarks/cli
           python3 benchmark_report.py ../benchmarks/server
-      
-      - name: Prepare logs
-        if: always()
-        run: |
-          sudo chmod 777 /var/log/php-fpm/*
-          sudo chmod -R 777 /var/log/aikido-*
 
       - name: Archive test artifacts
         uses: actions/upload-artifact@v4
