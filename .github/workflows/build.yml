@@ -517,7 +517,7 @@ jobs:
       
       - name: Prepare logs
         if: always()
-        run:
+        run: |
           sudo chmod 777 /var/log/php-fpm/*
           sudo chmod -R 777 /var/log/aikido-*
 
