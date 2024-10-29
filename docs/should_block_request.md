@@ -43,7 +43,7 @@ if (extension_loaded('aikido')) {
                 echo "Your user exceeded the rate limit for this endpoint!";
             }
             else if ($decision->trigger == "ip") {
-                echo "Your IP ($decision->ip) exceeded the rate limit for this endpoint!";
+                echo "Your IP ({$decision->ip}) exceeded the rate limit for this endpoint!";
             }
         }
         exit();
@@ -52,7 +52,6 @@ if (extension_loaded('aikido')) {
     // Continue handling the request
     echo "Request successful!";
 }
-?>
 ```
 
 ## Laravel
@@ -94,7 +93,7 @@ class ZenBlockDecision
                     return response('Your user exceeded the rate limit for this endpoint!', 429);
                 }
                 else if ($decision->trigger == "ip") {
-                    return response('Your IP ($decision->ip) exceeded the rate limit for this endpoint!', 429);
+                    return response("Your IP ({$decision->ip}) exceeded the rate limit for this endpoint!", 429);
                 }
             }
         }
@@ -103,5 +102,4 @@ class ZenBlockDecision
         return $next($request);
     }
 }
-?>
 ```
