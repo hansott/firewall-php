@@ -29,7 +29,7 @@ Zen operates autonomously on the same server as your PHP app to:
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
 Prerequisites:
 * Ensure you have sudo privileges on your system.
-* Check that you have a supported PHP version installed (PHP version >= 7.3).
+* Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.4).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
 ### Manual installation
