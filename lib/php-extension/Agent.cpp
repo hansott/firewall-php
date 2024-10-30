@@ -39,15 +39,7 @@ bool Agent::Init() {
     return agentInitFn(GoCreateString(initData));
 }
 
-void Agent::InForkedProcess() {
-    this->inForkedProcess = true;
-}
-
-Agent::~Agent() {
-    if (this->inForkedProcess) {
-        AIKIDO_LOG_INFO("Agent destructor called in forked process -> nothing to do!\n");
-        return;
-    }
+void Agent::Uninit() {
     if (!this->libHandle) {
         return;
     }
