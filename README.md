@@ -12,7 +12,6 @@ Zen protects your PHP apps by preventing user input containing dangerous strings
 
 Zen will autonomously protect your PHP applications from the inside against:
 
-* 🛡️ [NoSQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
 * 🛡️ [SQL injection attacks](https://www.aikido.dev/blog/web-application-security-vulnerabilities)
 * 🛡️ [Command injection attacks](https://owasp.org/www-community/attacks/Command_Injection)
 * 🛡️ [Path traversal attacks](https://owasp.org/www-community/attacks/Path_Traversal)
@@ -29,7 +28,7 @@ Zen operates autonomously on the same server as your PHP app to:
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
 Prerequisites:
 * Ensure you have sudo privileges on your system.
-* Check that you have a supported PHP version installed (PHP version >= 7.3).
+* Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.3).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
 ### Manual installation
@@ -88,7 +87,6 @@ Zen for PHP can do this because the monitored functions are hooked at the PHP-co
     * ✅ [`Microsoft SQL Server`](https://www.php.net/manual/en/ref.pdo-dblib.php)
     * ✅ [`SQLite`](https://www.php.net/manual/en/ref.pdo-sqlite.php)
 * 🚧 [`MySQLi`](https://www.php.net/manual/en/book.mysqli.php)
-* 🚧 [`MongoDB`](https://www.php.net/manual/en/set.mongodb.php)
 * 🚧 [`Oracle OCI8`](https://www.php.net/manual/en/book.oci8.php)
 * 🚧 [`PostgreSQL`](https://www.php.net/manual/en/book.pgsql.php)
 * 🚧 [`SQLite3`](https://www.php.net/manual/en/book.sqlite3.php)
