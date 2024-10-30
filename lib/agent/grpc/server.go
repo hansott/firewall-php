@@ -55,15 +55,17 @@ func (s *server) OnAttackDetected(ctx context.Context, req *protos.AttackDetecte
 	return &emptypb.Empty{}, nil
 }
 
+var grpcServer *grpc.Server
+
 func StartServer(lis net.Listener) {
-	s := grpc.NewServer()
-	protos.RegisterAikidoServer(s, &server{})
+	grpcServer = grpc.NewServer()
+	protos.RegisterAikidoServer(grpcServer, &server{})
 
 	log.Infof("Server is running on Unix socket %s", globals.EnvironmentConfig.SocketPath)
-	if err := s.Serve(lis); err != nil {
+	if err := grpcServer.Serve(lis); err != nil {
 		log.Warnf("gRPC server failed to serve: %v", err)
 	}
-	log.Warnf("gRPC server went down!")
+	log.Info("gRPC server went down!")
 	lis.Close()
 }
 
@@ -88,6 +90,11 @@ func Init() bool {
 }
 
 func Uninit() {
+	if grpcServer != nil {
+		grpcServer.Stop()
+		log.Infof("gRPC server has been stopped!")
+	}
+
 	// Remove the socket file if it exists
 	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
 		if err := os.RemoveAll(globals.EnvironmentConfig.SocketPath); err != nil {
