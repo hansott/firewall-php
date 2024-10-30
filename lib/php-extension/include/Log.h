@@ -21,13 +21,11 @@ enum AIKIDO_LOG_LEVEL {
 class Log {
    private:
     FILE* logFile = nullptr;
-    bool inForkedProcess = false;
 
    public:
     Log();
     ~Log();
 
-    void InForkedProcess();
     void Write(AIKIDO_LOG_LEVEL level, const char* format, ...);
 
     static std::string ToString(AIKIDO_LOG_LEVEL level);

@@ -9,20 +9,12 @@ Log::Log() {
 }
 
 Log::~Log() {
-    if (this->inForkedProcess) {
-        AIKIDO_LOG_INFO("Log destructor called in forked process -> nothing to do!\n");
-        return;
-    }
     if (!this->logFile) {
         return;
     }
 
     fclose(this->logFile);
     this->logFile = nullptr;
-}
-
-void Log::InForkedProcess() {
-    this->inForkedProcess = true;
 }
 
 void Log::Write(AIKIDO_LOG_LEVEL level, const char* format, ...) {
