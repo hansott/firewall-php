@@ -28,7 +28,7 @@ void LoadEnvironment() {
         AIKIDO_GLOBAL(log_level_str) = "DEBUG";
         AIKIDO_GLOBAL(log_level) = AIKIDO_LOG_LEVEL_DEBUG;
     } else {
-        AIKIDO_GLOBAL(log_level_str) = GetEnvString("AIKIDO_LOG_LEVEL", "INFO");
+        AIKIDO_GLOBAL(log_level_str) = GetEnvString("AIKIDO_LOG_LEVEL", "WARN");
         AIKIDO_GLOBAL(log_level) = Log::ToLevel(AIKIDO_GLOBAL(log_level_str));
     }
 
