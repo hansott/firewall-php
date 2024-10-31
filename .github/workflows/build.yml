@@ -271,6 +271,7 @@ jobs:
     strategy:
       matrix:
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -296,7 +297,6 @@ jobs:
           yum install -y mod_php
           yum install -y nginx
           yum install -y php-fpm
-
 
       - name: Check PHP setup
         run: |
@@ -325,71 +325,10 @@ jobs:
           export TEST_PHP_EXECUTABLE=/usr/bin/php
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run nginx-php-fpm server tests
+      - name: Run ${{ matrix.server }} server tests
         run: |
           cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm
-
-      - name: Run apache-mod-php server tests
-        run: |
-          cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
-
-      - name: Run php-built-in server tests
-        run: |
-          cd tools
-          python3 run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
-
-      - name: Run CLI benchmarks with Aikido
-        run: |
-          cd benchmarks/cli/
-          PYTHONPATH=../../tests/testlib python3 benchmark.py .
-
-      - name: Run php-built-in server benchmarks with Aikido
-        run: |
-          cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
-
-      - name: Uninstall Aikido
-        run: |
-          rpm -e aikido-php-firewall
-
-      - name: Run CLI benchmarks without Aikido
-        run: |
-          cd benchmarks/cli/
-          PYTHONPATH=../../tests/testlib python3 benchmark.py .
-
-      - name: Run php-built-in server benchmarks without Aikido
-        run: |
-          cd tools
-          python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
-
-      - name: Get benchmark result
-        run: |
-          cd tools
-          python3 benchmark_report.py ../benchmarks/cli
-          python3 benchmark_report.py ../benchmarks/server
-
-      - name: Archive test artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
-          if-no-files-found: ignore
-          path: |
-            ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/httpd/*
-            /var/log/nginx/*
-            
-
-      - name: Archive benchmark artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
-          path: |
-            ${{ github.workspace }}/benchmarks/cli/benchmark_results.md
-            ${{ github.workspace }}/benchmarks/server/benchmark_results.md
+          python3 run_server_tests.py ../tests/server ../tests/testlib --server=${{ matrix.server }}
             
 
   test_php_ubuntu:
@@ -399,6 +338,7 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'ubuntu-20.04']
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -467,70 +407,7 @@ jobs:
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
 
-      - name: Run apache-mod-php server tests
+      - name: Run ${{ matrix.server }} server tests
         run: |
           cd tools
-          sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=apache-mod-php --debug
-
-      - name: Run nginx-php-fpm server tests
-        run: |
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
-          cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=nginx-php-fpm --debug
-
-      - name: Run php-built-in server tests
-        run: |
-          export TEST_PHP_EXECUTABLE=/usr/bin/php
-          cd tools
-          sudo python run_server_tests.py ../tests/server ../tests/testlib --server=php-built-in
-
-      - name: Run CLI benchmarks with Aikido
-        run: |
-          cd benchmarks/cli/
-          PYTHONPATH=../../tests/testlib python3 benchmark.py .
-
-      - name: Run php-built-in server benchmarks with Aikido
-        run: |
-          cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
-
-      - name: Uninstall Aikido
-        run: |
-          sudo dpkg -r aikido-php-firewall
-
-      - name: Run CLI benchmarks without Aikido
-        run: |
-          cd benchmarks/cli/
-          PYTHONPATH=../../tests/testlib python3 benchmark.py .
-
-      - name: Run php-built-in server benchmarks without Aikido
-        run: |
-          cd tools
-          sudo python3 run_server_tests.py ../benchmarks/server ../tests/testlib --benchmark --server=php-built-in
-
-      - name: Store benchmark result
-        run: |
-          cd tools
-          python3 benchmark_report.py ../benchmarks/cli
-          python3 benchmark_report.py ../benchmarks/server
-
-      - name: Archive test artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
-          if-no-files-found: ignore
-          path: |
-            ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/nginx/*
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
-            /var/log/apache2/*
-      
-      - name: Archive benchmark artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: benchmark-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
-          path: |
-            ${{ github.workspace }}/benchmarks/cli/benchmark_results.md
-            ${{ github.workspace }}/benchmarks/server/benchmark_results.md
+          sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=${{ matrix.server }}
