@@ -360,16 +360,16 @@ jobs:
       #    python3 benchmark_report.py ../benchmarks/cli
       #    python3 benchmark_report.py ../benchmarks/server
 
-      - name: Archive test artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
-          if-no-files-found: ignore
-          path: |
-            ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/httpd/*
-            /var/log/nginx/*
+      #- name: Archive test artifacts
+      #  uses: actions/upload-artifact@v4
+      #  if: always()
+      #  with:
+      #    name: test-results-aikido-${{ env.AIKIDO_VERSION }}-centos-latest-php-${{ matrix.php_version }}
+      #    if-no-files-found: ignore
+      #    path: |
+      #      ${{ github.workspace }}/tests/cli/*.diff
+      #      /var/log/httpd/*
+      #      /var/log/nginx/*
             
       #- name: Archive benchmark artifacts
       #  uses: actions/upload-artifact@v4
@@ -492,17 +492,17 @@ jobs:
       #    python3 benchmark_report.py ../benchmarks/cli
       #    python3 benchmark_report.py ../benchmarks/server
 
-      - name: Archive test artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
-          if-no-files-found: ignore
-          path: |
-            ${{ github.workspace }}/tests/cli/*.diff
-            /var/log/nginx/*
-            /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
-            /var/log/apache2/*
+      #- name: Archive test artifacts
+      #  uses: actions/upload-artifact@v4
+      #  if: always()
+      #  with:
+      #    name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
+      #    if-no-files-found: ignore
+      #    path: |
+      #      ${{ github.workspace }}/tests/cli/*.diff
+      #      /var/log/nginx/*
+      #      /var/log/aikido-${{ env.AIKIDO_VERSION }}/*
+      #      /var/log/apache2/*
       
       #- name: Archive benchmark artifacts
       #  uses: actions/upload-artifact@v4
