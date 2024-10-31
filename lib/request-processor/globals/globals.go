@@ -11,5 +11,5 @@ var CloudConfig CloudConfigData
 var CloudConfigMutex sync.Mutex
 
 const (
-	Version = "1.0.86"
+	Version = "1.0.87"
 )

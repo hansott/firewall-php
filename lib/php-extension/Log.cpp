@@ -1,6 +1,6 @@
 #include "Includes.h"
 
-Log::Log() {
+void Log::Init() {
     std::time_t currentTime = std::time(nullptr);
     char timeStr[20];
     std::strftime(timeStr, sizeof(timeStr), "%Y%m%d%H%M%S", std::localtime(&currentTime));
@@ -8,7 +8,7 @@ Log::Log() {
     this->logFile = fopen(logFilePath.c_str(), "w");
 }
 
-Log::~Log() {
+void Log::Uninit() {
     if (!this->logFile) {
         return;
     }
@@ -60,4 +60,8 @@ AIKIDO_LOG_LEVEL Log::ToLevel(std::string level) {
         return AIKIDO_LOG_LEVEL_DEBUG;
     }
     return AIKIDO_LOG_LEVEL_ERROR;
+}
+
+LogScopedUninit::~LogScopedUninit() {
+    AIKIDO_GLOBAL(logger).Uninit();
 }

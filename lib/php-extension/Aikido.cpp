@@ -5,6 +5,7 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 PHP_MINIT_FUNCTION(aikido) {
     LoadEnvironment();
+    AIKIDO_GLOBAL(logger).Init();
 
     AIKIDO_LOG_INFO("MINIT started!\n");
 
@@ -37,6 +38,8 @@ PHP_MINIT_FUNCTION(aikido) {
 
 PHP_MSHUTDOWN_FUNCTION(aikido) {
     AIKIDO_LOG_DEBUG("MSHUTDOWN started!\n");
+
+    LogScopedUninit logScopedUninit;
 
     if (AIKIDO_GLOBAL(disable) == true) {
         AIKIDO_LOG_INFO("MSHUTDOWN finished earlier because AIKIDO_DISABLE is set to 1!\n");
