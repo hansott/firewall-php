@@ -419,4 +419,4 @@ jobs:
           name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
           if-no-files-found: ignore
           path: |
-            ${{ github.workspace }}/tests/cli/*.diff
+            ${{ github.workspace }}/tests/cli/**/*.diff
