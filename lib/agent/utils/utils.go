@@ -66,7 +66,7 @@ func StartPollingRoutine(stopChan chan struct{}, ticker *time.Ticker, pollingFun
 	}()
 }
 
-func StopPollingRouting(stopChan chan struct{}) {
+func StopPollingRoutine(stopChan chan struct{}) {
 	close(stopChan)
 }
 

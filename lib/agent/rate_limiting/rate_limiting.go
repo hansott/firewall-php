@@ -53,5 +53,5 @@ func Init() {
 }
 
 func Uninit() {
-	utils.StopPollingRouting(RateLimitingChannel)
+	utils.StopPollingRoutine(RateLimitingChannel)
 }

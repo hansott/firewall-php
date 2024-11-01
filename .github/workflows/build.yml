@@ -388,7 +388,7 @@ jobs:
                   echo "$version is not installed."
               fi
           done
-
+          sudo apt-get update
           sudo apt install libapache2-mod-php${{ matrix.php_version }}
           sudo a2enmod php${{ matrix.php_version }}
           php -i
@@ -403,6 +403,7 @@ jobs:
           sudo dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
 
       - name: Run CLI tests
+        if: matrix.os == 'ubuntu-latest'
         run: |
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
@@ -411,3 +412,12 @@ jobs:
         run: |
           cd tools
           sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=${{ matrix.server }}
+
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
+          if-no-files-found: ignore
+          path: |
+            ${{ github.workspace }}/tests/cli/**/*.diff

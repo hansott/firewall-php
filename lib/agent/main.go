@@ -37,7 +37,10 @@ func AgentInit(initJson string) (initOk bool) {
 
 //export AgentUninit
 func AgentUninit() {
+	rate_limiting.Uninit()
+	cloud.Uninit()
 	grpc.Uninit()
+	config.Uninit()
 
 	log.Infof("Aikido Agent v%s unloaded!", globals.Version)
 	log.Uninit()
