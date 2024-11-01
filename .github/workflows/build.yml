@@ -391,7 +391,8 @@ jobs:
           sudo apt-get update
           sudo apt install libapache2-mod-php${{ matrix.php_version }}
           sudo a2enmod php${{ matrix.php_version }}
-          sudo apt-get remove php-redis
+          sudo apt-get purge --auto-remove redis-server -y
+          sudo pecl uninstall redis
           php -i
 
       - name: Setup Python
