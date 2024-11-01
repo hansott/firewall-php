@@ -411,3 +411,12 @@ jobs:
         run: |
           cd tools
           sudo python3 run_server_tests.py ../tests/server ../tests/testlib --server=${{ matrix.server }}
+
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-aikido-${{ env.AIKIDO_VERSION }}-${{ matrix.os }}-php-${{ matrix.php_version }}
+          if-no-files-found: ignore
+          path: |
+            ${{ github.workspace }}/tests/cli/*.diff
