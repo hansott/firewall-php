@@ -389,7 +389,7 @@ jobs:
               fi
           done
           sudo apt-get update
-          sudo apt install libapache2-mod-php${{ matrix.php_version }} --fix-missing
+          sudo apt install libapache2-mod-php${{ matrix.php_version }}
           sudo a2enmod php${{ matrix.php_version }}
           php -i
 
