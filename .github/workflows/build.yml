@@ -388,8 +388,8 @@ jobs:
                   echo "$version is not installed."
               fi
           done
-
-          sudo apt install libapache2-mod-php${{ matrix.php_version }}
+          sudo apt-get update
+          sudo apt install libapache2-mod-php${{ matrix.php_version }} --fix-missing
           sudo a2enmod php${{ matrix.php_version }}
           php -i
 
