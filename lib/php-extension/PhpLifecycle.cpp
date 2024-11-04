@@ -22,8 +22,10 @@ void PhpLifecycle::RequestShutdown() {
 
 void PhpLifecycle::ModuleShutdown() {
     if (this->mainPID == getpid()) {
+        AIKIDO_LOG_INFO("Module shutdown called on main PID. Uninitializing Aikido Agent...\n");
         AIKIDO_GLOBAL(agent).Uninit();
     } else {
+        AIKIDO_LOG_INFO("Module shutdown NOT called on main PID. Uninitializing Aikido Request Processor...\n");
         requestProcessor.Uninit();
     }
 }

@@ -150,10 +150,12 @@ void RequestProcessor::Uninit() {
         return;
     }
     if (!this->initFailed && this->requestProcessorUninitFn) {
+        AIKIDO_LOG_INFO("Calling uninit for Aikido Request Processor...\n");
         this->requestProcessorUninitFn();
     }
     dlclose(this->libHandle);
     this->libHandle = nullptr;
+    AIKIDO_LOG_INFO("Aikido Request Processor unloaded!\n");
 }
 
 RequestProcessor::~RequestProcessor() {

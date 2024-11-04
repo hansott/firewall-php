@@ -21,6 +21,7 @@ const (
 var (
 	currentLogLevel = ErrorLevel
 	Logger          = log.New(os.Stdout, "", 0)
+	cliLogging      = false
 )
 var LogFile *os.File
 
@@ -41,8 +42,10 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 		return "invalid log level"
 	}
 
-	logMessage := fmt.Sprintf("[AIKIDO][%s][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
-	return logMessage
+	if cliLogging {
+		return fmt.Sprintf("[AIKIDO][%s] %s\n", levelStr, message)
+	}
+	return fmt.Sprintf("[AIKIDO][%s][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
 }
 
 func logMessage(level LogLevel, args ...interface{}) {
@@ -113,6 +116,14 @@ func SetLogLevel(level string) error {
 }
 
 func Init() {
+	if err := SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
+		panic(fmt.Sprintf("Error setting log level: %s", err))
+	}
+
+	if globals.EnvironmentConfig.SAPI == "cli" {
+		cliLogging = true
+		return
+	}
 	currentTime := time.Now()
 	timeStr := currentTime.Format("20060102150405")
 	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%s-%d.log", timeStr, os.Getpid())
@@ -123,10 +134,6 @@ func Init() {
 	}
 
 	Logger.SetOutput(LogFile)
-
-	if err := SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
-		panic(fmt.Sprintf("Error setting log level: %s", err))
-	}
 }
 
 func Uninit() {
