@@ -6,6 +6,7 @@ import time
 import sys
 import json
 import argparse
+import socket
 from server_tests.php_built_in.main import php_built_in_start_server
 from server_tests.apache.main import apache_mod_php_init, apache_mod_php_process_test, apache_mod_php_pre_tests, apache_mod_php_start_server, apache_mod_php_uninit
 from server_tests.nginx.main import nginx_php_fpm_init, nginx_php_fpm_process_test, nginx_php_fpm_pre_tests, nginx_php_fpm_start_server, nginx_php_fpm_uninit
@@ -46,11 +47,16 @@ failed_tests = []
 
 lock = threading.Lock()
 
+def is_port_in_active_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        result = sock.connect_ex(('127.0.0.1', port))
+        return result == 0
+
 def generate_unique_port():
     with lock:
         while True:
             port = random.randint(1024, 65535)
-            if port not in used_ports:
+            if port not in used_ports and not is_port_in_active_use(port):
                 used_ports.add(port)
                 return port
 
