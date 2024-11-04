@@ -27,3 +27,7 @@ func Init(initJson string) {
 		}
 	}
 }
+
+func Uninit() {
+	log.Uninit()
+}

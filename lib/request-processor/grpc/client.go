@@ -38,6 +38,7 @@ func Uninit() {
 	if conn != nil {
 		conn.Close()
 	}
+	stopCloudConfigRoutine()
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */

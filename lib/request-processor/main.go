@@ -114,6 +114,7 @@ func RequestProcessorUninit() {
 		grpc.Uninit()
 	}
 	log.Debugf("Aikido Request Processor v%s stopped!", globals.Version)
+	config.Uninit()
 }
 
 func main() {}
