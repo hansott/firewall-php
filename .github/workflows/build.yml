@@ -33,6 +33,14 @@ jobs:
         AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+        echo "AIKIDO_INTERNALS_REPO=https://api.github.com/repos/AikidoSec/zen-internals"
+        echo "AIKIDO_INTERNALS_LIB=libzen_internals_x86_64-unknown-linux-gnu.so"
+
+    - name: Download Aikido Zen Internals Lib for Tests
+      run: |
+        mkdir -p /opt/aikido-$AIKIDO_VERSION
+        cd /opt/aikido-$AIKIDO_VERSION
+        curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r '.assets[] | select(.name == "$AIKIDO_INTERNALS_LIB") | .browser_download_url')
 
     - name: Build Aikido Agent
       run: |
