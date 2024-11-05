@@ -8,7 +8,7 @@ import (
 )
 
 func TestCheckContextForShellInjection(t *testing.T) {
-	zen_internals.InitZenInternals()
+	zen_internals.Init()
 	t.Run("it detects shell injection", func(t *testing.T) {
 		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
@@ -87,5 +87,5 @@ func TestCheckContextForShellInjection(t *testing.T) {
 		}
 	})
 
-	zen_internals.CloseZenInternals()
+	zen_internals.Uninit()
 }
