@@ -33,8 +33,8 @@ jobs:
         AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
         echo $AIKIDO_VERSION
         echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-        echo "AIKIDO_INTERNALS_REPO=https://api.github.com/repos/AikidoSec/zen-internals"
-        echo "AIKIDO_INTERNALS_LIB=libzen_internals_x86_64-unknown-linux-gnu.so"
+        echo "AIKIDO_INTERNALS_REPO=https://api.github.com/repos/AikidoSec/zen-internals" >> $GITHUB_ENV
+        echo "AIKIDO_INTERNALS_LIB=libzen_internals_x86_64-unknown-linux-gnu.so" >> $GITHUB_ENV
 
     - name: Download Aikido Zen Internals Lib for Tests
       run: |
@@ -170,6 +170,8 @@ jobs:
           AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
+          echo "AIKIDO_INTERNALS_REPO=https://api.github.com/repos/AikidoSec/zen-internals" >> $GITHUB_ENV
+          echo "AIKIDO_INTERNALS_LIB=libzen_internals_x86_64-unknown-linux-gnu.so" >> $GITHUB_ENV
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -189,15 +191,22 @@ jobs:
           pattern: |
             aikido-request-processor*
 
+      - name: Download Aikido Zen Internals Lib for Tests
+        run: |
+          curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r '.assets[] | select(.name == "$AIKIDO_INTERNALS_LIB") | .browser_download_url')
+
       - name: List Artifacts
         run: |
           ls -l -R | grep aikido
+          ls -l -R | grep libzen
           pwd
       
       - name: Prepare rpm package
         run: |
           mv aikido-agent/aikido-agent.so package/rpm/opt/aikido/aikido-agent.so
           mv aikido-request-processor/aikido-request-processor.so package/rpm/opt/aikido/aikido-request-processor.so
+          mv $AIKIDO_INTERNALS_LIB package/rpm/opt/aikido/$AIKIDO_INTERNALS_LIB
+          mv aikido-agent/aikido-agent.so package/rpm/opt/aikido/aikido-agent.so
           mv aikido-extension-php-*/build/modules/aikido-extension-php-* package/rpm/opt/aikido/
           mv package/rpm/opt/aikido package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}
           chmod 777 package/rpm/opt/aikido-${{ env.AIKIDO_VERSION }}/*
