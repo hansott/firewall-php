@@ -1,7 +1,15 @@
 #pragma once
 
-std::string ToLowercase(const std::string &str);
+#include "Includes.h"
+
+std::string ToLowercase(const std::string& str);
+
+std::string GetRandomNumber();
+
+std::string GetTime();
+
+std::string GetDateTime();
 
 std::string GenerateSocketPath();
 
-const char *GetEventName(EVENT_ID event);
+const char* GetEventName(EVENT_ID event);

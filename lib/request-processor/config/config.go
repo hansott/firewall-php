@@ -19,11 +19,9 @@ func Init(initJson string) {
 		panic("Socket path not set!")
 	}
 
-	if globals.EnvironmentConfig.SAPI != "cli" {
-		log.Init()
-	} else {
-		if err := log.SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
-			panic(fmt.Sprintf("Error setting log level: %s", err))
-		}
-	}
+	log.Init()
+}
+
+func Uninit() {
+	log.Uninit()
 }

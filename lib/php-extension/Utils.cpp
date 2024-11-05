@@ -6,20 +6,29 @@ std::string ToLowercase(const std::string& str) {
     return result;
 }
 
-int GetRandomNumber() {
+std::string GetRandomNumber() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(100000, 999999);
-    return dis(gen);
+    return std::to_string(int(dis(gen)));
 }
 
-std::string GenerateSocketPath() {
+std::string GetTime() {
+    std::time_t current_time = std::time(nullptr);
+    char time_str[20];
+    std::strftime(time_str, sizeof(time_str), "%H:%M:%S", std::localtime(&current_time));
+    return time_str;
+}
+
+std::string GetDateTime() {
     std::time_t current_time = std::time(nullptr);
     char time_str[20];
     std::strftime(time_str, sizeof(time_str), "%Y%m%d%H%M%S", std::localtime(&current_time));
-    std::string socket_file_path = "/run/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-" +
-                                   std::string(time_str) + "-" + std::to_string(GetRandomNumber()) + ".sock";
-    return socket_file_path;
+    return time_str;
+}
+
+std::string GenerateSocketPath() {
+    return "/run/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-" + GetDateTime() + "-" + GetRandomNumber() + ".sock";
 }
 
 const char* GetEventName(EVENT_ID event) {

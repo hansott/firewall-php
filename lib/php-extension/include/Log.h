@@ -20,15 +20,25 @@ enum AIKIDO_LOG_LEVEL {
 
 class Log {
    private:
+    std::string logFilePath;
     FILE* logFile = nullptr;
 
    public:
-    Log();
-    ~Log();
+    Log() = default;
+    ~Log() = default;
+
+    void Init();
+    void Uninit();
 
     void Write(AIKIDO_LOG_LEVEL level, const char* format, ...);
 
     static std::string ToString(AIKIDO_LOG_LEVEL level);
 
     static AIKIDO_LOG_LEVEL ToLevel(std::string level);
+};
+
+class LogScopedUninit {
+   public:
+    LogScopedUninit() = default;
+    ~LogScopedUninit();
 };

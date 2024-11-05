@@ -22,5 +22,6 @@ func Init() {
 }
 
 func Uninit() {
-	utils.StopPollingRouting(HeartbeatRoutineChannel)
+	utils.StopPollingRoutine(HeartbeatRoutineChannel)
+	utils.StopPollingRoutine(ConfigPollingRoutineChannel)
 }
