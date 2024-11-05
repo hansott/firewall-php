@@ -36,7 +36,7 @@ func Init() bool {
 
 	handle := C.dlopen(zenInternalsLibPath, C.RTLD_LAZY)
 	if handle == nil {
-		log.Errorf("Failed to load zen-internals library from: %s!", C.GoString(zenInternalsLibPath))
+		log.Errorf("Failed to load zen-internals library from '%s' with error %s!", C.GoString(zenInternalsLibPath), C.GoString(C.dlerror()))
 		return false
 	}
 

@@ -57,6 +57,7 @@ jobs:
 
     - name: Build Aikido Request Processor
       run: |
+        uname -m
         ls -l /opt/aikido-1.0.90/libzen_internals_x86_64-unknown-linux-gnu.so
         pwd
         ls -l ${{ github.workspace }}/build/
