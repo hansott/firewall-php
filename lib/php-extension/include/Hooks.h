@@ -34,6 +34,12 @@ extern unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HO
 
 void HookFunctions();
 
+void UnhookFunctions();
+
 void HookMethods();
 
+void UnhookMethods();
+
 void HookExecute();
+
+void UnhookExecute();

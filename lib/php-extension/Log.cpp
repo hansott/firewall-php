@@ -3,14 +3,14 @@
 void Log::Init() {
     this->logFilePath = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + GetDateTime() + "-" + std::to_string(getpid()) + ".log";
     this->logFile = fopen(this->logFilePath.c_str(), "w");
-    AIKIDO_LOG_INFO("Opened log file %s!\n", this->logFilePath);
+    AIKIDO_LOG_INFO("Opened log file %s!\n", this->logFilePath.c_str());
 }
 
 void Log::Uninit() {
     if (!this->logFile) {
         return;
     }
-    AIKIDO_LOG_INFO("Closed log file %s!\n", this->logFilePath);
+    AIKIDO_LOG_INFO("Closed log file %s!\n", this->logFilePath.c_str());
     fclose(this->logFile);
     this->logFile = nullptr;
 }
@@ -20,12 +20,14 @@ void Log::Write(AIKIDO_LOG_LEVEL level, const char* format, ...) {
         return;
     }
 
-    fprintf(logFile, "[AIKIDO][%s][%s] ", ToString(level).c_str(), GetTime().c_str());
+    fprintf(logFile, "[AIKIDO][%s][%d][%s] ", ToString(level).c_str(), getpid(), GetTime().c_str());
 
     va_list args;
     va_start(args, format);
     vfprintf(logFile, format, args);
     va_end(args);
+
+    fflush(logFile);
 }
 
 std::string Log::ToString(AIKIDO_LOG_LEVEL level) {
