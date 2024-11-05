@@ -14,7 +14,7 @@ func CheckContextForShellInjection(command string, operation string) *utils.Inte
 		for str, path := range mapss {
 			status, err := zen_internals.DetectShellInjection(command, str)
 			if err != nil {
-				log.Error("Error while getting shell injection handler from zen internals", err)
+				log.Error("Error while getting shell injection handler from zen internals: ", err)
 				return nil
 			}
 			if status == 1 {

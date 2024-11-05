@@ -19,7 +19,7 @@ func CheckContextForSqlInjection(sql string, operation string, dialect string) *
 		for str, path := range mapss {
 			status, err := zen_internals.DetectSQLInjection(sql, str, utils.GetSqlDialectFromString(dialect))
 			if err != nil {
-				log.Error("Error while getting sql injection handler from zen internals", err)
+				log.Error("Error while getting sql injection handler from zen internals: ", err)
 				return nil
 			}
 			if status == 1 {

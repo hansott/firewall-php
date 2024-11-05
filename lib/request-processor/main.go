@@ -43,7 +43,8 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Init()
 	}
-	if zen_internals.InitZenInternals() != nil {
+	if !zen_internals.Init() {
+		log.Error("Error initializing zen-internals library!")
 		return false
 	}
 	return true
@@ -114,11 +115,11 @@ func RequestProcessorGetBlockingMode() int {
 //export RequestProcessorUninit
 func RequestProcessorUninit() {
 	log.Debug("Uninit: {}")
+	zen_internals.Uninit()
+
 	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Uninit()
 	}
-
-	zen_internals.CloseZenInternals()
 
 	log.Debugf("Aikido Request Processor v%s stopped!", globals.Version)
 	config.Uninit()

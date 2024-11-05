@@ -19,8 +19,8 @@ int call_detect_sql_injection(detect_sql_injection_func func, const char* query,
 import "C"
 import (
 	"errors"
-	"fmt"
 	"main/globals"
+	"main/log"
 	"unsafe"
 )
 
@@ -30,31 +30,45 @@ var (
 	detectShellInjection C.detect_shell_injection_func
 )
 
-func InitZenInternals() error {
+func Init() bool {
+	zenInternalsLibPath := C.CString("/opt/aikido-" + globals.Version + "/libzen_internals_x86_64-unknown-linux-gnu.so")
+	defer C.free(unsafe.Pointer(zenInternalsLibPath))
 
-	zenInternalsLibPath := "/opt/aikido-" + globals.Version + "/libzen_internals_x86_64-unknown-linux-gnu.so"
-	handle := C.dlopen(C.CString(zenInternalsLibPath), C.RTLD_LAZY)
-	fmt.Println(handle)
+	handle := C.dlopen(zenInternalsLibPath, C.RTLD_LAZY)
 	if handle == nil {
-		return errors.New("failed to load shared library")
+		log.Error("Failed to load zen-internals library!")
+		return false
 	}
 
-	// Retrieve the detect_sql_injection function pointer
-	vDetectSqlInjection := C.dlsym(handle, C.CString("detect_sql_injection"))
+	detectSqlInjectionFnName := C.CString("detect_sql_injection")
+	defer C.free(unsafe.Pointer(detectSqlInjectionFnName))
+
+	vDetectSqlInjection := C.dlsym(handle, detectSqlInjectionFnName)
 	if vDetectSqlInjection == nil {
-		return errors.New("failed to find detect_sql_injection function")
+		log.Error("Failed to load detect_sql_injection function from zen-internals library!")
+		return false
 	}
-	vDetectShellInjection := C.dlsym(handle, C.CString("detect_shell_injection"))
+
+	detectShellInjectionFnName := C.CString("detect_shell_injection")
+	defer C.free(unsafe.Pointer(detectShellInjectionFnName))
+
+	vDetectShellInjection := C.dlsym(handle, detectShellInjectionFnName)
 	if vDetectShellInjection == nil {
-		return errors.New("failed to find detect_shell_injection function")
+		log.Error("Failed to load detect_shell_injection function from zen-internals library!")
+		return false
 	}
 
 	detectSqlInjection = (C.detect_sql_injection_func)(vDetectSqlInjection)
 	detectShellInjection = (C.detect_shell_injection_func)(vDetectShellInjection)
-	return nil
+
+	log.Debugf("Loaded zen-internals library!")
+	return true
 }
 
-func CloseZenInternals() {
+func Uninit() {
+	detectSqlInjection = nil
+	detectShellInjection = nil
+
 	if handle != nil {
 		C.dlclose(handle)
 		handle = nil
