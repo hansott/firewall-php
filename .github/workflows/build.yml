@@ -44,6 +44,7 @@ jobs:
 
     - name: Build Aikido Agent
       run: |
+        ls -l /opt/aikido-$AIKIDO_VERSION
         cd lib
         protoc --go_out=agent --go-grpc_out=agent ipc.proto
         cd agent
@@ -191,7 +192,7 @@ jobs:
           pattern: |
             aikido-request-processor*
 
-      - name: Download Aikido Zen Internals Lib for Tests
+      - name: Download Aikido Zen Internals Lib
         run: |
           curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r ".assets[] | select(.name == \"$AIKIDO_INTERNALS_LIB\") | .browser_download_url")
 
