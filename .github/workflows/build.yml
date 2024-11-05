@@ -41,7 +41,6 @@ jobs:
         mkdir -p /opt/aikido-$AIKIDO_VERSION
         cd /opt/aikido-$AIKIDO_VERSION
         curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r ".assets[] | select(.name == \"$AIKIDO_INTERNALS_LIB\") | .browser_download_url")
-        sudo chmod 777 /opt/aikido-$AIKIDO_VERSION/$AIKIDO_INTERNALS_LIB
 
     - name: Build Aikido Agent
       run: |
@@ -167,6 +166,7 @@ jobs:
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
           yum -y install epel-release
           yum -y install rpmdevtools
+          yum -y install jq
 
       - name: Get Aikido version
         run: |
