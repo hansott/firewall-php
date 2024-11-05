@@ -40,9 +40,7 @@ jobs:
       run: |
         mkdir -p /opt/aikido-$AIKIDO_VERSION
         cd /opt/aikido-$AIKIDO_VERSION
-        curl -s $AIKIDO_INTERNALS_REPO/releases/latest
-        curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r '.assets[] | select(.name == "$AIKIDO_INTERNALS_LIB") | .browser_download_url'
-        curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r '.assets[] | select(.name == "$AIKIDO_INTERNALS_LIB") | .browser_download_url')
+        curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r ".assets[] | select(.name == \"$AIKIDO_INTERNALS_LIB\") | .browser_download_url")
 
     - name: Build Aikido Agent
       run: |
@@ -195,7 +193,7 @@ jobs:
 
       - name: Download Aikido Zen Internals Lib for Tests
         run: |
-          curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r '.assets[] | select(.name == "$AIKIDO_INTERNALS_LIB") | .browser_download_url')
+          curl -L -o $AIKIDO_INTERNALS_LIB $(curl -s $AIKIDO_INTERNALS_REPO/releases/latest | jq -r ".assets[] | select(.name == \"$AIKIDO_INTERNALS_LIB\") | .browser_download_url")
 
       - name: List Artifacts
         run: |
