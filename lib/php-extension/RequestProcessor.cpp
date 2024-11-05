@@ -78,40 +78,50 @@ bool RequestProcessor::Init() {
         return false;
     }
 
+    if (this->libHandle) {
+        return true;
+    }
+
+    std::string requestProcessorLibPath = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-request-processor.so";
+    this->libHandle = dlopen(requestProcessorLibPath.c_str(), RTLD_LAZY);
     if (!this->libHandle) {
-        std::string requestProcessorLibPath = "/opt/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-request-processor.so";
-        this->libHandle = dlopen(requestProcessorLibPath.c_str(), RTLD_LAZY);
-        if (!this->libHandle) {
-            AIKIDO_LOG_ERROR("Error loading the Aikido Request Processor library from %s: %s!\n", requestProcessorLibPath.c_str(), dlerror());
-            this->initFailed = true;
-            return false;
-        }
+        AIKIDO_LOG_ERROR("Error loading the Aikido Request Processor library from %s: %s!\n", requestProcessorLibPath.c_str(), dlerror());
+        this->initFailed = true;
+        return false;
+    }
 
-        AIKIDO_LOG_INFO("Initializing Aikido Request Processor...\n");
+    AIKIDO_LOG_INFO("Initializing Aikido Request Processor...\n");
 
-        RequestProcessorInitFn requestProcessorInitFn = (RequestProcessorInitFn)dlsym(libHandle, "RequestProcessorInit");
-        this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
-        this->requestProcessorOnEventFn = (RequestProcessorOnEventFn)dlsym(libHandle, "RequestProcessorOnEvent");
-        this->requestProcessorGetBlockingModeFn = (RequestProcessorGetBlockingModeFn)dlsym(libHandle, "RequestProcessorGetBlockingMode");
-        this->requestProcessorUninitFn = (RequestProcessorUninitFn)dlsym(libHandle, "RequestProcessorUninit");
-        if (!requestProcessorInitFn ||
-            !this->requestProcessorContextInitFn ||
-            !this->requestProcessorOnEventFn ||
-            !this->requestProcessorGetBlockingModeFn ||
-            !this->requestProcessorUninitFn) {
-            AIKIDO_LOG_ERROR("Error loading symbols from the Aikido Request Processor library!\n");
-            this->initFailed = true;
-            return false;
-        }
+    RequestProcessorInitFn requestProcessorInitFn = (RequestProcessorInitFn)dlsym(libHandle, "RequestProcessorInit");
+    this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
+    this->requestProcessorOnEventFn = (RequestProcessorOnEventFn)dlsym(libHandle, "RequestProcessorOnEvent");
+    this->requestProcessorGetBlockingModeFn = (RequestProcessorGetBlockingModeFn)dlsym(libHandle, "RequestProcessorGetBlockingMode");
+    this->requestProcessorUninitFn = (RequestProcessorUninitFn)dlsym(libHandle, "RequestProcessorUninit");
+    if (!requestProcessorInitFn ||
+        !this->requestProcessorContextInitFn ||
+        !this->requestProcessorOnEventFn ||
+        !this->requestProcessorGetBlockingModeFn ||
+        !this->requestProcessorUninitFn) {
+        AIKIDO_LOG_ERROR("Error loading symbols from the Aikido Request Processor library!\n");
+        this->initFailed = true;
+        return false;
+    }
 
-        std::string initDataString = this->GetInitData();
-        if (!requestProcessorInitFn(GoCreateString(initDataString))) {
-            AIKIDO_LOG_ERROR("Failed to initialize Aikido Request Processor library: %s!\n", dlerror());
-            this->initFailed = true;
-            return false;
-        }
+    std::string initDataString = this->GetInitData();
+    if (!requestProcessorInitFn(GoCreateString(initDataString))) {
+        AIKIDO_LOG_ERROR("Failed to initialize Aikido Request Processor library: %s!\n", dlerror());
+        this->initFailed = true;
+        return false;
+    }
 
-        AIKIDO_LOG_INFO("Aikido Request Processor initialized successfully!\n");
+    AIKIDO_LOG_INFO("Aikido Request Processor initialized successfully!\n");
+    return true;
+}
+
+bool RequestProcessor::RequestInit() {
+    if (!this->Init()) {
+        AIKIDO_LOG_ERROR("Failed to initialize the request processor!\n");
+        return false;
     }
 
     if (!request.Init()) {
@@ -126,7 +136,7 @@ bool RequestProcessor::Init() {
     return true;
 }
 
-void RequestProcessor::Uninit() {
+void RequestProcessor::RequestShutdown() {
     if (!request.Init()) {
         AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
         return;
@@ -135,13 +145,19 @@ void RequestProcessor::Uninit() {
     requestInitialized = false;
 }
 
-RequestProcessor::~RequestProcessor() {
+void RequestProcessor::Uninit() {
     if (!this->libHandle) {
         return;
     }
     if (!this->initFailed && this->requestProcessorUninitFn) {
+        AIKIDO_LOG_INFO("Calling uninit for Aikido Request Processor...\n");
         this->requestProcessorUninitFn();
     }
     dlclose(this->libHandle);
     this->libHandle = nullptr;
+    AIKIDO_LOG_INFO("Aikido Request Processor unloaded!\n");
+}
+
+RequestProcessor::~RequestProcessor() {
+    this->Uninit();
 }

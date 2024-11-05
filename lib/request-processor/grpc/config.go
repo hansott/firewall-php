@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	stop              chan struct{}
+	stopChan          chan struct{}
 	cloudConfigTicker = time.NewTicker(1 * time.Minute)
 )
 
@@ -51,17 +51,23 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 func startCloudConfigRoutine() {
 	GetCloudConfig()
 
-	stop = make(chan struct{})
+	stopChan = make(chan struct{})
 
 	go func() {
 		for {
 			select {
 			case <-cloudConfigTicker.C:
 				GetCloudConfig()
-			case <-stop:
+			case <-stopChan:
 				cloudConfigTicker.Stop()
 				return
 			}
 		}
 	}()
+}
+
+func stopCloudConfigRoutine() {
+	if stopChan != nil {
+		close(stopChan)
+	}
 }

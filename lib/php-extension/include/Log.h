@@ -20,6 +20,7 @@ enum AIKIDO_LOG_LEVEL {
 
 class Log {
    private:
+    std::string logFilePath;
     FILE* logFile = nullptr;
 
    public:

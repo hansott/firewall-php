@@ -26,12 +26,7 @@ PHP_MINIT_FUNCTION(aikido) {
         return SUCCESS;
     }
 
-    if (!AIKIDO_GLOBAL(agent).Init()) {
-        AIKIDO_LOG_INFO("Aikido Agent initialization failed!\n");
-    } else {
-        AIKIDO_LOG_INFO("Aikido Agent initialization succeeded!\n");
-    }
-
+    phpLifecycle.ModuleInit();
     AIKIDO_LOG_INFO("MINIT finished!\n");
     return SUCCESS;
 }
@@ -52,8 +47,7 @@ PHP_MSHUTDOWN_FUNCTION(aikido) {
         return SUCCESS;
     }
 
-    AIKIDO_GLOBAL(agent).Uninit();
-
+    phpLifecycle.ModuleShutdown();
     AIKIDO_LOG_DEBUG("MSHUTDOWN finished!\n");
     return SUCCESS;
 }
@@ -66,10 +60,7 @@ PHP_RINIT_FUNCTION(aikido) {
         return SUCCESS;
     }
 
-    action.Reset();
-    requestCache.Reset();
-    requestProcessor.Init();
-
+    phpLifecycle.RequestInit();
     AIKIDO_LOG_DEBUG("RINIT finished!\n");
     return SUCCESS;
 }
@@ -82,8 +73,7 @@ PHP_RSHUTDOWN_FUNCTION(aikido) {
         return SUCCESS;
     }
 
-    requestProcessor.Uninit();
-
+    phpLifecycle.RequestShutdown();
     AIKIDO_LOG_DEBUG("RSHUTDOWN finished!\n");
     return SUCCESS;
 }

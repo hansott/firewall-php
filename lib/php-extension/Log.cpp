@@ -1,18 +1,16 @@
 #include "Includes.h"
 
 void Log::Init() {
-    std::time_t currentTime = std::time(nullptr);
-    char timeStr[20];
-    std::strftime(timeStr, sizeof(timeStr), "%Y%m%d%H%M%S", std::localtime(&currentTime));
-    std::string logFilePath = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + timeStr + "-" + std::to_string(getpid()) + ".log";
-    this->logFile = fopen(logFilePath.c_str(), "w");
+    this->logFilePath = "/var/log/aikido-" + std::string(PHP_AIKIDO_VERSION) + "/aikido-extension-php-" + GetDateTime() + "-" + std::to_string(getpid()) + ".log";
+    this->logFile = fopen(this->logFilePath.c_str(), "w");
+    AIKIDO_LOG_INFO("Opened log file %s!\n", this->logFilePath);
 }
 
 void Log::Uninit() {
     if (!this->logFile) {
         return;
     }
-
+    AIKIDO_LOG_INFO("Closed log file %s!\n", this->logFilePath);
     fclose(this->logFile);
     this->logFile = nullptr;
 }
@@ -22,14 +20,12 @@ void Log::Write(AIKIDO_LOG_LEVEL level, const char* format, ...) {
         return;
     }
 
-    fprintf(logFile, "[AIKIDO][%s] ", ToString(level).c_str());
+    fprintf(logFile, "[AIKIDO][%s][%s] ", ToString(level).c_str(), GetTime().c_str());
 
     va_list args;
     va_start(args, format);
     vfprintf(logFile, format, args);
     va_end(args);
-
-    fflush(logFile);
 }
 
 std::string Log::ToString(AIKIDO_LOG_LEVEL level) {

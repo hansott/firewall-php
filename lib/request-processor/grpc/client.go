@@ -35,6 +35,7 @@ func Init() {
 }
 
 func Uninit() {
+	stopCloudConfigRoutine()
 	if conn != nil {
 		conn.Close()
 	}

@@ -26,8 +26,10 @@ class RequestProcessor {
     RequestProcessor() = default;
 
     bool Init();
+    bool RequestInit();
     bool SendEvent(EVENT_ID eventId, std::string& output);
     bool IsBlockingEnabled();
+    void RequestShutdown();
     void Uninit();
 
     ~RequestProcessor();
