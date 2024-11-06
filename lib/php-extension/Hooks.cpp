@@ -45,7 +45,7 @@ unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HOOKED_ME
 void HookFunctions() {
     for (auto &it : HOOKED_FUNCTIONS) {
         zend_function *function_data = (zend_function *)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
-        if (function_data == NULL) {
+        if (!function_data) {
             AIKIDO_LOG_WARN("Function \"%s\" does not exist!\n", it.first.c_str());
             continue;
         }
@@ -60,16 +60,33 @@ void HookFunctions() {
     }
 }
 
+void UnhookFunctions() {
+    for (auto &it : HOOKED_FUNCTIONS) {
+        zend_function *function_data = (zend_function *)zend_hash_str_find_ptr(CG(function_table), it.first.c_str(), it.first.length());
+        if (!function_data) {
+            AIKIDO_LOG_WARN("Function \"%s\" does not exist!\n", it.first.c_str());
+            continue;
+        }
+        if (!it.second.original_handler) {
+            AIKIDO_LOG_WARN("Cannot unhook function \"%s\" without an original handler (was not previously hooked)!\n", it.first.c_str());
+            continue;
+        }
+        function_data->internal_function.handler = it.second.original_handler;
+        AIKIDO_LOG_INFO("Unhooked function \"%s\" (original handler %p)!\n", it.first.c_str(), it.second.original_handler);
+        it.second.original_handler = nullptr;
+    }
+}
+
 void HookMethods() {
     for (auto &it : HOOKED_METHODS) {
         zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
-        if (class_entry == NULL) {
+        if (!class_entry) {
             AIKIDO_LOG_WARN("Class \"%s\" does not exist!\n", it.first.class_name.c_str());
             continue;
         }
 
         zend_function *method = (zend_function *)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
-        if (method == NULL) {
+        if (!method) {
             AIKIDO_LOG_WARN("Method \"%s->%s\" does not exist!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
             continue;
         }
@@ -85,17 +102,57 @@ void HookMethods() {
     }
 }
 
-static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = NULL;
+void UnhookMethods() {
+    for (auto &it : HOOKED_METHODS) {
+        zend_class_entry *class_entry = (zend_class_entry *)zend_hash_str_find_ptr(CG(class_table), it.first.class_name.c_str(), it.first.class_name.length());
+        if (!class_entry) {
+            AIKIDO_LOG_WARN("Class \"%s\" does not exist!\n", it.first.class_name.c_str());
+            continue;
+        }
+
+        zend_function *method = (zend_function *)zend_hash_str_find_ptr(&class_entry->function_table, it.first.method_name.c_str(), it.first.method_name.length());
+        if (!method) {
+            AIKIDO_LOG_WARN("Method \"%s->%s\" does not exist!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
+            continue;
+        }
+
+        if (!it.second.original_handler) {
+            AIKIDO_LOG_WARN("Cannot unhook method \"%s->%s\" without an original handler (was not previously hooked)!\n", it.first.class_name.c_str(), it.first.method_name.c_str());
+            continue;
+        }
+
+        method->internal_function.handler = it.second.original_handler;
+        AIKIDO_LOG_INFO("Unhooked method \"%s->%s\" (original handler %p)!\n", it.first.class_name.c_str(), it.first.method_name.c_str(), it.second.original_handler);
+        it.second.original_handler = nullptr;
+    }
+}
+
+static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = nullptr;
 
 void aikido_zend_execute_ex(zend_execute_data *execute_data) {
     if (action.Exit()) {
         AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
         zend_bailout();
     }
-    original_zend_execute_ex(execute_data);
+    if (original_zend_execute_ex) {
+        original_zend_execute_ex(execute_data);
+    }
 }
 
 void HookExecute() {
+    if (original_zend_execute_ex) {
+        AIKIDO_LOG_WARN("Function zend_execute_ex already hooked (original handler %p)!\n", original_zend_execute_ex);
+        return;
+    }
     original_zend_execute_ex = zend_execute_ex;
     zend_execute_ex = aikido_zend_execute_ex;
+}
+
+void UnhookExecute() {
+    if (!original_zend_execute_ex) {
+        AIKIDO_LOG_WARN("Cannot unhook zend_execute_ex without an original handler (was not hooked before)!\n");
+        return;
+    }
+    zend_execute_ex = original_zend_execute_ex;
+    original_zend_execute_ex = nullptr;
 }

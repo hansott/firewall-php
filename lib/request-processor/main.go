@@ -10,6 +10,7 @@ import (
 	"main/grpc"
 	"main/log"
 	"main/utils"
+	zen_internals "main/vulnerabilities/zen-internals"
 	"unsafe"
 )
 
@@ -41,6 +42,10 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 
 	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Init()
+	}
+	if !zen_internals.Init() {
+		log.Error("Error initializing zen-internals library!")
+		return false
 	}
 	return true
 }
@@ -110,9 +115,12 @@ func RequestProcessorGetBlockingMode() int {
 //export RequestProcessorUninit
 func RequestProcessorUninit() {
 	log.Debug("Uninit: {}")
+	zen_internals.Uninit()
+
 	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Uninit()
 	}
+
 	log.Debugf("Aikido Request Processor v%s stopped!", globals.Version)
 	config.Uninit()
 }

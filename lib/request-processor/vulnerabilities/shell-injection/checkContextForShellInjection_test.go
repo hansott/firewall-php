@@ -7,7 +7,6 @@ import (
 )
 
 func TestCheckContextForShellInjection(t *testing.T) {
-
 	t.Run("it detects shell injection", func(t *testing.T) {
 		context.LoadForUnitTests(map[string]string{
 			"remoteAddress": "ip",
