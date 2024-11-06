@@ -217,3 +217,12 @@ func StringPointer(s string) *string {
 func BoolPointer(b bool) *bool {
 	return &b
 }
+
+func ArrayContains(array []string, search string) bool {
+	for _, member := range array {
+		if member == search {
+			return true
+		}
+	}
+	return false
+}
