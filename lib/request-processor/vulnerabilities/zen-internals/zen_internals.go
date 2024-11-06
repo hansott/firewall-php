@@ -30,7 +30,7 @@ var (
 )
 
 func Init() bool {
-	zenInternalsLibPath := C.CString("/opt/aikido-" + globals.Version + "/libzen_internals_aarch64-unknown-linux-gnu.so")
+	zenInternalsLibPath := C.CString("/opt/aikido-" + globals.Version + "/libzen_internals_x86_64-unknown-linux-gnu.so")
 	defer C.free(unsafe.Pointer(zenInternalsLibPath))
 
 	handle := C.dlopen(zenInternalsLibPath, C.RTLD_LAZY)
