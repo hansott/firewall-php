@@ -16,8 +16,7 @@ func CheckContextForSqlInjection(sql string, operation string, dialect string) *
 		mapss := source.CacheGet()
 
 		for str, path := range mapss {
-			status := detectSQLInjection(sql, str, dialectId)
-			if status == 1 {
+			if detectSQLInjection(sql, str, dialectId) {
 				return &utils.InterceptorResult{
 					Operation:     operation,
 					Kind:          utils.Sql_injection,

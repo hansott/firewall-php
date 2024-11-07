@@ -2,31 +2,44 @@ package sql_injection
 
 import (
 	zen_internals "main/vulnerabilities/zen-internals"
+	"regexp"
+	"strings"
 )
 
-func detectSQLInjection(query string, userInput string, dialect int) int {
-	if len(userInput) <= 1 {
-		// We ignore single characters since they are only able to crash the SQL Server,
-		// And don't pose a big threat.
-		return 0
+var isAlphanumeric = regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString
+
+func shouldReturnEarly(query, userInput string) bool {
+	// User input too small or larger than query
+	if len(userInput) <= 1 || len(query) < len(userInput) {
+		return true
 	}
 
-	if len(userInput) > len(query) {
-		// We ignore cases where the user input is longer than the query.
-		// Because the user input can't be part of the query.
-		return 0
+	// Lowercase versions of query and user input
+	queryLowercase := strings.ToLower(query)
+	userInputLowercase := strings.ToLower(userInput)
+
+	// User input not in query
+	if !strings.Contains(queryLowercase, userInputLowercase) {
+		return true
 	}
 
-	if !queryContainsUserInput(query, userInput) {
-		// If the user input is not part of the query, return false (No need to check)
-		return 0
+	// User input is alphanumerical (with underscores allowed)
+	if isAlphanumeric(userInputLowercase) {
+		return true
 	}
 
-	if userInputOccurrencesSafelyEncapsulated(query, userInput) {
-		return 0
+	// Check if user input is a valid comma-separated list of numbers
+	cleanedInputForList := strings.ReplaceAll(strings.ReplaceAll(userInputLowercase, " ", ""), ",", "")
+	match, _ := regexp.MatchString(`^\d+$`, cleanedInputForList)
+	return match
+}
+
+func detectSQLInjection(query string, userInput string, dialect int) bool {
+	if shouldReturnEarly(query, userInput) {
+		return false
 	}
 
 	// Executing our final check with zen_internals
-	return zen_internals.DetectSQLInjection(query, userInput, dialect)
+	return zen_internals.DetectSQLInjection(query, userInput, dialect) == 1
 
 }
