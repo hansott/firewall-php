@@ -60,6 +60,7 @@ jobs:
         cd lib
         protoc --go_out=request-processor --go-grpc_out=request-processor ipc.proto
         cd request-processor
+        go mod tidy
         go get google.golang.org/grpc
         go get github.com/stretchr/testify/assert
         go get main/ipc/protos
