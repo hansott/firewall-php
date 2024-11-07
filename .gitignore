@@ -26,7 +26,6 @@ tests/cli/**/*.sh
 *aikido-agent
 *.pb.go
 *.pb.go
-*go.sum
 *.log
 *.nice
 aikido-*-extension-php-*.so
