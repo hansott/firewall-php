@@ -18,7 +18,6 @@ int call_detect_sql_injection(detect_sql_injection_func func, const char* query,
 */
 import "C"
 import (
-	"errors"
 	"main/globals"
 	"main/log"
 	"unsafe"
@@ -63,9 +62,9 @@ func Uninit() {
 }
 
 // DetectSQLInjection performs SQL injection detection using the loaded library
-func DetectSQLInjection(query string, user_input string, dialect int) (int, error) {
+func DetectSQLInjection(query string, user_input string, dialect int) int {
 	if detectSqlInjection == nil {
-		return 0, errors.New("detect_sql_injection function not initialized")
+		return 0
 	}
 
 	// Convert strings to C strings
@@ -76,5 +75,6 @@ func DetectSQLInjection(query string, user_input string, dialect int) (int, erro
 
 	// Call the detect_sql_injection function
 	result := int(C.call_detect_sql_injection(detectSqlInjection, cQuery, cUserInput, C.int(dialect)))
-	return result, nil
+	log.Debugf("DetectSqlInjection(%s, %s, %d) -> %d", query, user_input, dialect, result)
+	return result
 }
