@@ -2,6 +2,11 @@
 
 /* Helper for handle pre file path access */
 void helper_handle_pre_file_path_access(char *filename, EVENT_ID &eventId) {
+    if (strncmp(filename, "php://", 6) == 0) {
+        // Whitelist php:// streams as they are often used by PHP frameworks a lot
+        return;
+    }
+
     // if filename starts with http:// or https://, it's a URL so we treat it as an outgoing request
     if (strncmp(filename, "http://", 7) == 0 ||
         strncmp(filename, "https://", 8) == 0) {
