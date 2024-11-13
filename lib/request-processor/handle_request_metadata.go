@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"main/api_discovery"
 	"main/context"
 	"main/grpc"
@@ -12,31 +11,6 @@ import (
 
 func OnPreRequest() string {
 	context.Clear()
-
-	method := context.GetMethod()
-	route := context.GetParsedRoute()
-	if method == "" || route == "" {
-		return ""
-	}
-
-	log.Infof("Got request metadata: %s %s", method, route)
-
-	endpointData, err := utils.GetEndpointConfig(method, route)
-	if err != nil {
-		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
-		return ""
-	}
-
-	ip := context.GetIp()
-
-	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
-		message := "Your IP address is not allowed to access this resource!"
-		if ip != "" {
-			message += fmt.Sprintf(" (Your IP: %s)", ip)
-		}
-		return fmt.Sprintf(`{"action": "exit", "message": "%s", "response_code": 403}`, message)
-	}
-
 	return ""
 }
 

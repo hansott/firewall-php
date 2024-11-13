@@ -9,10 +9,26 @@ import (
 	"time"
 )
 
+func GetStoreAction(actionType, trigger, ip string) string {
+	actionMap := map[string]interface{}{
+		"action":  "store",
+		"type":    actionType,
+		"trigger": trigger,
+	}
+	if trigger == "ip" {
+		actionMap["ip"] = ip
+	}
+	actionJson, err := json.Marshal(actionMap)
+	if err != nil {
+		return ""
+	}
+	return string(actionJson)
+}
+
 func OnGetBlockingStatus() string {
 	userId := context.GetUserId()
 	if utils.IsUserBlocked(userId) {
-		return `{"action": "store", "type": "blocked", "trigger": "user"}`
+		return GetStoreAction("blocked", "user", "")
 	}
 
 	method := context.GetMethod()
@@ -35,23 +51,15 @@ func OnGetBlockingStatus() string {
 			// do a sync call via gRPC to see if the request should be blocked or not
 			rateLimitingStatus := grpc.GetRateLimitingStatus(method, route, userId, ip, 10*time.Millisecond)
 			if rateLimitingStatus != nil && rateLimitingStatus.Block {
-				action := map[string]interface{}{
-					"action":  "store",
-					"type":    "ratelimited",
-					"trigger": rateLimitingStatus.Trigger,
-				}
-				if rateLimitingStatus.Trigger == "ip" {
-					action["ip"] = ip
-				}
-				actionJson, err := json.Marshal(action)
-				if err == nil {
-					return string(actionJson)
-				}
+				return GetStoreAction("ratelimited", rateLimitingStatus.Trigger, ip)
 			}
 		} else {
 			log.Infof("IP \"%s\" is bypassed for rate limiting!", ip)
 		}
 	}
 
+	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
+		return GetStoreAction("blocked", "ip", ip)
+	}
 	return ""
 }

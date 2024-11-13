@@ -1,6 +1,7 @@
 package attack
 
 import (
+	"encoding/json"
 	"fmt"
 	"main/context"
 	"main/grpc"
@@ -64,8 +65,21 @@ func BuildAttackDetectedMessage(result utils.InterceptorResult) string {
 		utils.EscapeHTML(result.PathToPayload))
 }
 
+func GetThrowAction(message string, code int) string {
+	actionMap := map[string]interface{}{
+		"action":  "throw",
+		"message": message,
+		"code":    code,
+	}
+	actionJson, err := json.Marshal(actionMap)
+	if err != nil {
+		return ""
+	}
+	return string(actionJson)
+}
+
 func GetAttackDetectedAction(result utils.InterceptorResult) string {
-	return fmt.Sprintf(`{"action": "throw", "message": "%s", "code": -1}`, BuildAttackDetectedMessage(result))
+	return GetThrowAction(BuildAttackDetectedMessage(result), -1)
 }
 
 func ReportAttackDetected(res *utils.InterceptorResult) string {
