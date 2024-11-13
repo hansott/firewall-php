@@ -10,4 +10,6 @@ if (extension_loaded('aikido')) {
     }
 }
 
+echo "Something";
+
 ?>
