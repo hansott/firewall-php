@@ -70,7 +70,8 @@ files:
 
 ## Supported libraries and frameworks
 
-Zen for PHP 7.3+ works for:
+### PHP versions
+Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3.
 
 ### Web frameworks
 
