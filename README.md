@@ -35,11 +35,11 @@ Prerequisites:
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
-`rpm -Uvh --oldpackage https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm`
+`rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.94/aikido-php-firewall-1.0.94-1.x86_64.rpm`
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
-`dpkg -i https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.deb`
+`dpkg -i https://github.com/AikidoSec/firewall-php/releases/download/v1.0.94/aikido-php-firewall-1.0.94-1.x86_64.deb`
 
 ### Cloud providers
 
@@ -49,7 +49,7 @@ Create a new file in `.ebextensions/01_aikido_php_firewall.config` with the foll
 ```
 commands:
   aikido-php-firewall:
-    command: "rpm -Uvh --oldpackage https://aikido-firewall.s3.eu-west-1.amazonaws.com/aikido-php-firewall.x86_64.rpm"
+    command: "rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.94/aikido-php-firewall-1.0.94-1.x86_64.rpm"
     ignoreErrors: true
 
 files: 
