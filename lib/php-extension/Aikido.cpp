@@ -18,7 +18,6 @@ PHP_MINIT_FUNCTION(aikido) {
 
     HookFunctions();
     HookMethods();
-    HookExecute();
 
     /* If SAPI name is "cli" run in "simple" mode */
     if (AIKIDO_GLOBAL(sapi_name) == "cli") {

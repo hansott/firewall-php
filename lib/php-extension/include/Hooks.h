@@ -39,7 +39,3 @@ void UnhookFunctions();
 void HookMethods();
 
 void UnhookMethods();
-
-void HookExecute();
-
-void UnhookExecute();

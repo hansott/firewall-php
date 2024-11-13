@@ -126,33 +126,3 @@ void UnhookMethods() {
         it.second.original_handler = nullptr;
     }
 }
-
-static void (*original_zend_execute_ex)(zend_execute_data *execute_data) = nullptr;
-
-void aikido_zend_execute_ex(zend_execute_data *execute_data) {
-    if (action.Exit()) {
-        AIKIDO_LOG_INFO("Current request is marked for exit. Bailing out...\n");
-        zend_bailout();
-    }
-    if (original_zend_execute_ex) {
-        original_zend_execute_ex(execute_data);
-    }
-}
-
-void HookExecute() {
-    if (original_zend_execute_ex) {
-        AIKIDO_LOG_WARN("Function zend_execute_ex already hooked (original handler %p)!\n", original_zend_execute_ex);
-        return;
-    }
-    original_zend_execute_ex = zend_execute_ex;
-    zend_execute_ex = aikido_zend_execute_ex;
-}
-
-void UnhookExecute() {
-    if (!original_zend_execute_ex) {
-        AIKIDO_LOG_WARN("Cannot unhook zend_execute_ex without an original handler (was not hooked before)!\n");
-        return;
-    }
-    zend_execute_ex = original_zend_execute_ex;
-    original_zend_execute_ex = nullptr;
-}

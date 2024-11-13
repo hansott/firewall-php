@@ -86,7 +86,12 @@ class ZenBlockDecision
 
         if ($decision->block) {
             if ($decision->type == "blocked") {
-                return response('Your user is blocked!', 403);
+                if ($decision->trigger == "user") {
+                    return response('Your user is blocked!', 403);
+                }
+                else if ($decision->trigger == "ip") {
+                    return response("Your IP is not allowed to access this endpoint!", 403);
+                }
             }
             else if ($decision->type == "ratelimited") {
                 if ($decision->trigger == "user") {

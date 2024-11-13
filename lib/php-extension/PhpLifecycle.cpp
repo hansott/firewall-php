@@ -26,7 +26,6 @@ void PhpLifecycle::ModuleShutdown() {
         AIKIDO_LOG_INFO("Unhooking functions...\n");
         UnhookFunctions();
         UnhookMethods();
-        UnhookExecute();
         AIKIDO_LOG_INFO("Uninitializing Aikido Agent...\n");
         AIKIDO_GLOBAL(agent).Uninit();
     } else {
