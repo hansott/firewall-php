@@ -32,9 +32,14 @@ if (extension_loaded('aikido')) {
 
     if ($decision->block) {
         if ($decision->type == "blocked") {
-            // If the user is blocked, return a 403 status code
+            // If the user/ip is blocked, return a 403 status code
             http_response_code(403);
-            echo "Your user is blocked!";
+            if ($decision->trigger == "user") {
+                echo "Your user is blocked!";
+            }
+            else if ($decision->trigger == "ip") {
+                echo "Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})";
+            }
         }
         else if ($decision->type == "ratelimited") {
             // If the rate limit is exceeded, return a 429 status code
@@ -90,7 +95,7 @@ class ZenBlockDecision
                     return response('Your user is blocked!', 403);
                 }
                 else if ($decision->trigger == "ip") {
-                    return response("Your IP is not allowed to access this endpoint!", 403);
+                    return response("Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})", 403);
                 }
             }
             else if ($decision->type == "ratelimited") {
