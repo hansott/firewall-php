@@ -1,1 +1,1 @@
-sudo rpm -e aikido-php-firewall
+rpm -e aikido-php-firewall
