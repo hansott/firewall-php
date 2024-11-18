@@ -20,7 +20,7 @@ type Hostname struct {
 type Route struct {
 	Path    string          `json:"path"`
 	Method  string          `json:"method"`
-	Hits    int64           `json:"count"`
+	Hits    int64           `json:"hits"`
 	ApiSpec *protos.APISpec `json:"apispec"`
 }
 
