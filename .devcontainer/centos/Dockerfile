@@ -34,3 +34,4 @@ RUN unzip -o $PROTOC_ZIP -d /usr/local include/*
 RUN rm -f $PROTOC_ZIP
 ENV PATH="$HOME/go/bin:${PATH}"
 RUN yum install -y rpmdevtools
+RUN yum install -y git

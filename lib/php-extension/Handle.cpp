@@ -1,11 +1,15 @@
 #include "Includes.h"
+#include "include/Stats.h"
 
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
+    ScopedTimer scopedTimer;
+
     AIKIDO_LOG_DEBUG("Aikido generic handler started!\n");
 
     zif_handler original_handler = nullptr;
     aikido_handler post_handler = nullptr;
 
+    std::string sink;
     std::string outputEvent;
     bool caughtException = false;
 
@@ -53,6 +57,9 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
             return;
         }
 
+        sink = scope_name;
+        scopedTimer.SetSink(sink);
+
         AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
         EVENT_ID eventId = NO_EVENT_ID;
@@ -68,10 +75,15 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
         if (eventId != NO_EVENT_ID) {
             std::string outputEvent;
             requestProcessor.SendEvent(eventId, outputEvent);
-            if (requestProcessor.IsBlockingEnabled() && action.Execute(outputEvent) == BLOCK) {
-                // exit generic handler and do not call the original handler
-                // thus blocking the execution
-                return;
+            ACTION_STATUS actionStatus = action.Execute(outputEvent);
+            if (actionStatus == BLOCK) {
+                stats[sink].IncrementAttacksDetected();
+                if (requestProcessor.IsBlockingEnabled()) {
+                    // exit generic handler and do not call the original handler
+                    // thus blocking the execution
+                    stats[sink].IncrementAttacksBlocked();
+                    return;
+                }
             }
         }
     } catch (const std::exception& e) {
@@ -95,8 +107,15 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
             if (eventId != NO_EVENT_ID) {
                 std::string output;
                 requestProcessor.SendEvent(eventId, output);
-                if (requestProcessor.IsBlockingEnabled()) {
-                    action.Execute(output);
+                ACTION_STATUS actionStatus = action.Execute(outputEvent);
+                if (actionStatus == BLOCK) {
+                    stats[sink].IncrementAttacksDetected();
+                    if (requestProcessor.IsBlockingEnabled()) {
+                        // exit generic handler and do not call the original handler
+                        // thus blocking the execution
+                        stats[sink].IncrementAttacksBlocked();
+                        return;
+                    }
                 }
             }
         }

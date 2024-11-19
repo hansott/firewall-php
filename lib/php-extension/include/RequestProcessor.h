@@ -4,6 +4,7 @@ typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
 typedef GoUint8 (*RequestProcessorContextInitFn)(ContextCallback);
 typedef char* (*RequestProcessorOnEventFn)(GoInt eventId);
 typedef int (*RequestProcessorGetBlockingModeFn)();
+typedef void (*RequestProcessorReportStats)(GoString, GoInt32, GoInt32, GoInt32, GoInt32, GoSlice);
 typedef void (*RequestProcessorUninitFn)();
 
 class RequestProcessor {
@@ -14,6 +15,7 @@ class RequestProcessor {
     RequestProcessorContextInitFn requestProcessorContextInitFn = nullptr;
     RequestProcessorOnEventFn requestProcessorOnEventFn = nullptr;
     RequestProcessorGetBlockingModeFn requestProcessorGetBlockingModeFn = nullptr;
+    RequestProcessorReportStats requestProcessorReportStatsFn = nullptr;
     RequestProcessorUninitFn requestProcessorUninitFn = nullptr;
 
    private:
@@ -29,6 +31,7 @@ class RequestProcessor {
     bool RequestInit();
     bool SendEvent(EVENT_ID eventId, std::string& output);
     bool IsBlockingEnabled();
+    bool ReportStats();
     void RequestShutdown();
     void Uninit();
 

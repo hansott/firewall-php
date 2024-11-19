@@ -73,6 +73,18 @@ bool RequestProcessor::IsBlockingEnabled() {
     return ret;
 }
 
+bool RequestProcessor::ReportStats() {
+    if (!this->requestInitialized) {
+        return false;
+    }
+
+    for (const auto& [sink, sinkStats] : stats) {
+        requestProcessorReportStatsFn(GoCreateString(sink), sinkStats.attacksDetected, sinkStats.interceptorThrewError, sinkStats.withoutContext, sinkStats.timings.size(), GoCreateSlice(sinkStats.timings));
+    }
+    
+    return true;
+}
+
 bool RequestProcessor::Init() {
     if (this->initFailed) {
         return false;
@@ -96,11 +108,13 @@ bool RequestProcessor::Init() {
     this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
     this->requestProcessorOnEventFn = (RequestProcessorOnEventFn)dlsym(libHandle, "RequestProcessorOnEvent");
     this->requestProcessorGetBlockingModeFn = (RequestProcessorGetBlockingModeFn)dlsym(libHandle, "RequestProcessorGetBlockingMode");
+    this->requestProcessorReportStatsFn = (RequestProcessorReportStats)dlsym(libHandle, "RequestProcessorReportStats");
     this->requestProcessorUninitFn = (RequestProcessorUninitFn)dlsym(libHandle, "RequestProcessorUninit");
     if (!requestProcessorInitFn ||
         !this->requestProcessorContextInitFn ||
         !this->requestProcessorOnEventFn ||
         !this->requestProcessorGetBlockingModeFn ||
+        !this->requestProcessorReportStatsFn ||
         !this->requestProcessorUninitFn) {
         AIKIDO_LOG_ERROR("Error loading symbols from the Aikido Request Processor library!\n");
         this->initFailed = true;

@@ -112,6 +112,11 @@ func RequestProcessorGetBlockingMode() int {
 	return utils.GetBlockingMode()
 }
 
+//export RequestProcessorReportStats
+func RequestProcessorReportStats(sink string, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total int32, timings []int64) {
+	go grpc.OnMonitoredSinkStats(sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, timings)
+}
+
 //export RequestProcessorUninit
 func RequestProcessorUninit() {
 	log.Debug("Uninit: {}")

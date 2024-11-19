@@ -60,7 +60,7 @@ func GetStatsAndClear() Stats {
 	defer globals.StatsData.StatsMutex.Unlock()
 
 	stats := Stats{
-		Sinks:     make(map[string]MonitoredSinkStats),
+		Sinks:     globals.StatsData.MonitoredSinkStats,
 		StartedAt: globals.StatsData.StartedAt,
 		EndedAt:   utils.GetTime(),
 		Requests: Requests{
@@ -78,6 +78,7 @@ func GetStatsAndClear() Stats {
 	globals.StatsData.RequestsAborted = 0
 	globals.StatsData.Attacks = 0
 	globals.StatsData.AttacksBlocked = 0
+	globals.StatsData.MonitoredSinkStats = make(map[string]MonitoredSinkStats)
 
 	return stats
 }
