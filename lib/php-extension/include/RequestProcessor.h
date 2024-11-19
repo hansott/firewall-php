@@ -12,6 +12,7 @@ class RequestProcessor {
     bool initFailed = false;
     bool requestInitialized = false;
     void* libHandle = nullptr;
+    uint64_t numberOfRequests = 0;
     RequestProcessorContextInitFn requestProcessorContextInitFn = nullptr;
     RequestProcessorOnEventFn requestProcessorOnEventFn = nullptr;
     RequestProcessorGetBlockingModeFn requestProcessorGetBlockingModeFn = nullptr;

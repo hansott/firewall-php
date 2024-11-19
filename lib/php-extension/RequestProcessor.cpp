@@ -78,10 +78,14 @@ bool RequestProcessor::ReportStats() {
         return false;
     }
 
+    if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) != 0) {
+        return false;
+    }
+
     for (const auto& [sink, sinkStats] : stats) {
         requestProcessorReportStatsFn(GoCreateString(sink), sinkStats.attacksDetected, sinkStats.interceptorThrewError, sinkStats.withoutContext, sinkStats.timings.size(), GoCreateSlice(sinkStats.timings));
     }
-    
+    stats.clear();
     return true;
 }
 
@@ -143,7 +147,8 @@ bool RequestProcessor::RequestInit() {
         return false;
     }
 
-    requestInitialized = true;
+    this->requestInitialized = true;
+    this->numberOfRequests++;
 
     ContextInit();
     SendPreRequestEvent();
@@ -156,7 +161,7 @@ void RequestProcessor::RequestShutdown() {
         return;
     }
     SendPostRequestEvent();
-    requestInitialized = false;
+    this->requestInitialized = false;
 }
 
 void RequestProcessor::Uninit() {

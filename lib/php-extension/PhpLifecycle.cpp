@@ -14,6 +14,7 @@ void PhpLifecycle::RequestInit() {
     action.Reset();
     requestCache.Reset();
     requestProcessor.RequestInit();
+    requestProcessor.ReportStats();
 }
 
 void PhpLifecycle::RequestShutdown() {
