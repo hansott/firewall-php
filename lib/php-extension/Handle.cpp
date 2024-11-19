@@ -75,13 +75,12 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
         if (eventId != NO_EVENT_ID) {
             std::string outputEvent;
             requestProcessor.SendEvent(eventId, outputEvent);
-            ACTION_STATUS actionStatus = action.Execute(outputEvent);
-            if (actionStatus == BLOCK) {
+            if (action.IsDetection(outputEvent)) {
                 stats[sink].IncrementAttacksDetected();
-                if (requestProcessor.IsBlockingEnabled()) {
+                if (requestProcessor.IsBlockingEnabled() && action.Execute(outputEvent) == BLOCK) {
+                    stats[sink].IncrementAttacksBlocked();
                     // exit generic handler and do not call the original handler
                     // thus blocking the execution
-                    stats[sink].IncrementAttacksBlocked();
                     return;
                 }
             }
@@ -107,16 +106,12 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
             if (eventId != NO_EVENT_ID) {
                 std::string output;
                 requestProcessor.SendEvent(eventId, output);
-                ACTION_STATUS actionStatus = action.Execute(outputEvent);
-                if (actionStatus == BLOCK) {
+                if (action.IsDetection(output)) {
                     stats[sink].IncrementAttacksDetected();
-                    if (requestProcessor.IsBlockingEnabled()) {
-                        // exit generic handler and do not call the original handler
-                        // thus blocking the execution
+                    if (requestProcessor.IsBlockingEnabled() && action.Execute(output) == BLOCK) {
                         stats[sink].IncrementAttacksBlocked();
-                        return;
                     }
-                }
+                }   
             }
         }
     }
