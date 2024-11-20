@@ -57,7 +57,7 @@ func (s *server) OnAttackDetected(ctx context.Context, req *protos.AttackDetecte
 }
 
 func (s *server) OnMonitoredSinkStats(ctx context.Context, req *protos.MonitoredSinkStats) (*emptypb.Empty, error) {
-	go storeSinkStats(req)
+	storeSinkStats(req)
 	return &emptypb.Empty{}, nil
 }
 

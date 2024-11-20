@@ -166,5 +166,5 @@ func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, intercep
 		log.Warnf("Could not send monitored sink stats event")
 		return
 	}
-	log.Debugf("Monitored sink stats event sent via socket")
+	log.Debugf("Monitored sink stats for sink \"%s\" sent via socket", sink)
 }
