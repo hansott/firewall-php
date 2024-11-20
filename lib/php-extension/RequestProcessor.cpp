@@ -74,10 +74,6 @@ bool RequestProcessor::IsBlockingEnabled() {
 }
 
 bool RequestProcessor::ReportStats() {
-    if (!this->requestInitialized) {
-        return false;
-    }
-
     if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) != 0) {
         return false;
     }
@@ -169,6 +165,9 @@ void RequestProcessor::Uninit() {
         return;
     }
     if (!this->initFailed && this->requestProcessorUninitFn) {
+        AIKIDO_LOG_INFO("Reporting final stats to Aikido Request Processor...\n");
+        this->ReportStats();
+
         AIKIDO_LOG_INFO("Calling uninit for Aikido Request Processor...\n");
         this->requestProcessorUninitFn();
     }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 
 	"main/ipc/protos"
@@ -157,7 +158,11 @@ func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, intercep
 	defer cancel()
 
 	_, err := client.OnMonitoredSinkStats(ctx, &protos.MonitoredSinkStats{Sink: sink, AttacksDetected: attacksDetected,
-		InterceptorThrewError: interceptorThrewError, WithoutContext: withoutContext, Total: total, Timings: timings})
+		InterceptorThrewError: interceptorThrewError, WithoutContext: withoutContext, Total: total,
+		CompressedTiming: &protos.CompressedTiming{
+			AverageInMs: utils.ComputeAverage(timings),
+			Percentiles: utils.ComputePercentiles(timings),
+		}})
 	if err != nil {
 		log.Warnf("Could not send monitored sink stats event")
 		return

@@ -26,10 +26,10 @@ func storeAttackStats(req *protos.AttackDetected) {
 	}
 }
 
-func getCompressedTiming(timings []int64) CompressedTiming {
+func getCompressedTiming(protoCompressedTiming *protos.CompressedTiming) CompressedTiming {
 	return CompressedTiming{
-		AverageInMS:  utils.ComputeAverage(timings),
-		Percentiles:  utils.ComputePercentiles(timings),
+		AverageInMS:  protoCompressedTiming.GetAverageInMs(),
+		Percentiles:  protoCompressedTiming.GetPercentiles(),
 		CompressedAt: utils.GetTime(),
 	}
 }
@@ -49,7 +49,9 @@ func storeSinkStats(protoSinkStats *protos.MonitoredSinkStats) {
 	monitoredSinkStats.InterceptorThrewError += int(protoSinkStats.GetInterceptorThrewError())
 	monitoredSinkStats.WithoutContext += int(protoSinkStats.GetWithoutContext())
 	monitoredSinkStats.Total += int(protoSinkStats.GetTotal())
-	monitoredSinkStats.CompressedTimings = append(monitoredSinkStats.CompressedTimings, getCompressedTiming(protoSinkStats.Timings))
+	monitoredSinkStats.CompressedTimings = append(monitoredSinkStats.CompressedTimings, getCompressedTiming(protoSinkStats.GetCompressedTiming()))
+
+	globals.StatsData.MonitoredSinkStats[sink] = monitoredSinkStats
 }
 
 func getApiSpecData(apiSpec *protos.APISpec) (*protos.DataSchema, string, *protos.DataSchema, []*protos.APIAuthType) {

@@ -1,6 +1,6 @@
 #include "Includes.h"
 
-#define MIN_REPORT_STATS_INTERVAL 100
+#define MIN_REPORT_STATS_INTERVAL 50
 
 std::string GetEnvVariable(const std::string& env_key) {
     const char* env_value = getenv(env_key.c_str());
@@ -30,8 +30,8 @@ unsigned int GetEnvNumber(const std::string& env_key, unsigned int default_value
     if (!env_value.empty()) {
         try {
             unsigned int number = std::stoi(env_value);
-            if (number >= MIN_REPORT_STATS_INTERVAL) {
-                return number;
+            if (number <= MIN_REPORT_STATS_INTERVAL) {
+                return MIN_REPORT_STATS_INTERVAL;
             }
         }
         catch (...) {}

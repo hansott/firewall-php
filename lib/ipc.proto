@@ -37,6 +37,11 @@ message RequestMetadataShutdown {
   APISpec apiSpec = 6;
 }
 
+message CompressedTiming {
+  double averageInMs = 1;
+  map<string, double> percentiles = 2;
+}
+
 message MonitoredSinkStats {
   string sink = 1;
   int32 attacksDetected = 2;
@@ -44,7 +49,7 @@ message MonitoredSinkStats {
   int32 interceptorThrewError = 4;
   int32 withoutContext = 5;
   int32 total = 6;
-  repeated int64 timings = 7;
+  CompressedTiming compressedTiming = 7;
 }
 
 message RateLimiting {
