@@ -2,7 +2,7 @@
 
 std::unordered_map<std::string, SinkStats> stats;
 
-ScopedTimer::ScopedTimer() key("") {
+ScopedTimer::ScopedTimer() {
     this->Start();
 }
 
