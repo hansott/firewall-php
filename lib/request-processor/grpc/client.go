@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"main/globals"
 	"main/log"
-	"main/utils"
 	"time"
 
 	"main/ipc/protos"
@@ -149,7 +148,7 @@ func OnAttackDetected(attackDetected *protos.AttackDetected) {
 	log.Debugf("Attack detected event sent via socket")
 }
 
-func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total int32, timings []int64) {
+func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total int32, averageInMs float64, percentiles map[string]float64) {
 	if client == nil {
 		return
 	}
@@ -160,8 +159,8 @@ func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, intercep
 	_, err := client.OnMonitoredSinkStats(ctx, &protos.MonitoredSinkStats{Sink: sink, AttacksDetected: attacksDetected,
 		InterceptorThrewError: interceptorThrewError, WithoutContext: withoutContext, Total: total,
 		CompressedTiming: &protos.CompressedTiming{
-			AverageInMs: utils.ComputeAverage(timings),
-			Percentiles: utils.ComputePercentiles(timings),
+			AverageInMs: averageInMs,
+			Percentiles: percentiles,
 		}})
 	if err != nil {
 		log.Warnf("Could not send monitored sink stats event")
