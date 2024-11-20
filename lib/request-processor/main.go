@@ -114,6 +114,8 @@ func RequestProcessorGetBlockingMode() int {
 
 //export RequestProcessorReportStats
 func RequestProcessorReportStats(sink string, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total int32, timings []int64) {
+	log.Debugf("Got stats for sink \"%s\": %d, %d, %d, %d, %d, %v", sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, timings)
+
 	go grpc.OnMonitoredSinkStats(sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, timings)
 }
 

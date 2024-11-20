@@ -4,7 +4,7 @@ typedef GoUint8 (*RequestProcessorInitFn)(GoString initJson);
 typedef GoUint8 (*RequestProcessorContextInitFn)(ContextCallback);
 typedef char* (*RequestProcessorOnEventFn)(GoInt eventId);
 typedef int (*RequestProcessorGetBlockingModeFn)();
-typedef void (*RequestProcessorReportStats)(GoString, GoInt32, GoInt32, GoInt32, GoInt32, GoSlice);
+typedef void (*RequestProcessorReportStats)(GoString, GoInt32, GoInt32, GoInt32, GoInt32, GoInt32, GoSlice);
 typedef void (*RequestProcessorUninitFn)();
 
 class RequestProcessor {
