@@ -4,11 +4,14 @@ class ScopedTimer {
    private:
     std::string key;
     std::chrono::high_resolution_clock::time_point start;
+    uint64_t duration = 0;
     
    public:
     ScopedTimer();
     ScopedTimer(std::string key);
     void SetSink(std::string key);
+    void Start();
+    void Stop();
     ~ScopedTimer();
 };
 

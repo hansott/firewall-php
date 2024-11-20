@@ -91,7 +91,9 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
     }
 
     if (original_handler) {
+        scopedTimer.Stop();
         original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+        scopedTimer.Start();
 
         if (!caughtException && post_handler) {
             EVENT_ID eventId = NO_EVENT_ID;

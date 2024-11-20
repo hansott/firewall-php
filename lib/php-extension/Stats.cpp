@@ -2,21 +2,37 @@
 
 std::unordered_map<std::string, SinkStats> stats;
 
-ScopedTimer::ScopedTimer() : start(std::chrono::high_resolution_clock::now()) {}
+ScopedTimer::ScopedTimer() {
+    this->Start();
+}
 
-ScopedTimer::ScopedTimer(std::string key) : key(key), start(std::chrono::high_resolution_clock::now()) {}
+ScopedTimer::ScopedTimer(std::string key) : key(key) {
+    this->Start();
+}
 
 void ScopedTimer::SetSink(std::string key) {
     this->key = key;
 }
 
-ScopedTimer::~ScopedTimer() {
-    if (key.empty()) {
+void ScopedTimer::Start() {
+    this->start = std::chrono::high_resolution_clock::now();
+}
+
+void ScopedTimer::Stop() {
+    if (this->start == std::chrono::high_resolution_clock::time_point{}) {
         return;
     }
-    int64_t duration = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count();
-    SinkStats& sinkStats = stats[key];
-    sinkStats.timings.push_back(duration);
+    this->duration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - this->start).count();
+    this->start = std::chrono::high_resolution_clock::time_point{};
+}
+
+ScopedTimer::~ScopedTimer() {
+    if (this->key.empty()) {
+        return;
+    }
+    this->Stop();
+    SinkStats& sinkStats = stats[this->key];
+    sinkStats.timings.push_back(this->duration);
 }
 
 void SinkStats::IncrementAttacksDetected() {
