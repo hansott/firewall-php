@@ -74,11 +74,16 @@ bool RequestProcessor::IsBlockingEnabled() {
 }
 
 bool RequestProcessor::ReportStats() {
+    AIKIDO_LOG_INFO("Reporting stats to Aikido Request Processor (%d)...\n", this->numberOfRequests);
+
     if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) != 0) {
         return false;
     }
 
+    AIKIDO_LOG_INFO("Reporting stats to Aikido Request Processor...\n");
+
     for (const auto& [sink, sinkStats] : stats) {
+        AIKIDO_LOG_INFO("Reporting stats for sink \"%s\" to Aikido Request Processor...\n", sink.c_str());
         requestProcessorReportStatsFn(GoCreateString(sink), sinkStats.attacksDetected, sinkStats.interceptorThrewError, sinkStats.withoutContext, sinkStats.timings.size(), GoCreateSlice(sinkStats.timings));
     }
     stats.clear();
