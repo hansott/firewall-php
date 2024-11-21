@@ -215,12 +215,11 @@ jobs:
           rm -rf ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}
           rpmbuild -ba ~/rpmbuild/SPECS/aikido.spec
           ls -l ~/rpmbuild/RPMS/x86_64/
+          mv ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }} ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT_RELEASE }}
 
       - name: Check rpm dependencies
         run: |
-          yum deplist ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }} | grep -E "GLIBC_2.32|GLIBC_2.34|GLIBCXX_3.4.29" && exit 1 || exit 0
-          cp ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }} ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT_RELEASE }}
-          ls -l ~/rpmbuild/RPMS/x86_64/
+          yum deplist ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT_RELEASE }} | grep -E "GLIBC_2.32|GLIBC_2.34|GLIBCXX_3.4.29" && exit 1 || exit 0
       
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
