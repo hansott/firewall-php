@@ -204,6 +204,7 @@ jobs:
       - name: Setup RPM for prod
         run: |
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT_RELEASE=aikido-php-firewall.x86_64.rpm" >> $GITHUB_ENV
           sed -i "s/aikido.so/aikido-${{ env.AIKIDO_VERSION }}.so/" ~/rpmbuild/SOURCES/aikido-php-firewall-${{ env.AIKIDO_VERSION }}/opt/aikido-${{ env.AIKIDO_VERSION }}/aikido.ini
 
       - name: Build rpm package
@@ -221,7 +222,7 @@ jobs:
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.AIKIDO_ARTIFACT }}
+          name: ${{ env.AIKIDO_ARTIFACT_RELEASE }}
           if-no-files-found: error
           path: |
             ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
@@ -251,6 +252,7 @@ jobs:
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
           echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT_RELEASE=aikido-php-firewall.x86_64.deb" >> $GITHUB_ENV
       
       - name: Build deb
         run: |
@@ -261,7 +263,7 @@ jobs:
       - name: Archive deb package
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.AIKIDO_ARTIFACT }}
+          name: ${{ env.AIKIDO_ARTIFACT_RELEASE }}
           if-no-files-found: error
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
