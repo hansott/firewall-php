@@ -164,8 +164,7 @@ jobs:
           AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_INTERNALS_REPO=https://api.github.com/repos/AikidoSec/zen-internals" >> $GITHUB_ENV
-          echo "AIKIDO_INTERNALS_LIB=libzen_internals_x86_64-unknown-linux-gnu.so" >> $GITHUB_ENV
+          echo "AIKIDO_LIBZEN_VERSION=0.1.31" >> $GITHUB_ENV
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -187,7 +186,7 @@ jobs:
 
       - name: Download Aikido Zen Internals Lib
         run: |
-          curl -L -o ${{ env.AIKIDO_INTERNALS_LIB }} $(curl -s ${{ env.AIKIDO_INTERNALS_REPO }}/releases/latest | jq -r ".assets[] | select(.name == \"${{ env.AIKIDO_INTERNALS_LIB }}\") | .browser_download_url")
+          curl -L -O https://github.com/AikidoSec/zen-internals/releases/download/v${{ env.AIKIDO_LIBZEN_VERSION }}/libzen_internals_x86_64-unknown-linux-gnu.so
 
       - name: Prepare rpm package
         run: |
