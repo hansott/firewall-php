@@ -239,7 +239,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-php-firewall-*
+            aikido-php-firewall*
 
       - name: Install dependencies
         run: |
@@ -251,9 +251,8 @@ jobs:
           AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
-          echo "AIKIDO_ARTIFACT=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
-          echo "AIKIDO_ARTIFACT_RELEASE=aikido-php-firewall.x86_64.deb" >> $GITHUB_ENV
+          echo "AIKIDO_RPM=aikido-php-firewall.x86_64.rpm" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT=aikido-php-firewall.x86_64.deb" >> $GITHUB_ENV
       
       - name: Build deb
         run: |
@@ -264,7 +263,7 @@ jobs:
       - name: Archive deb package
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.AIKIDO_ARTIFACT_RELEASE }}
+          name: ${{ env.AIKIDO_ARTIFACT }}
           if-no-files-found: error
           path: |
             ${{ env.AIKIDO_ARTIFACT }}
@@ -314,13 +313,13 @@ jobs:
           AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_RPM=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.rpm" >> $GITHUB_ENV
+          echo "AIKIDO_RPM=aikido-php-firewall.x86_64.rpm" >> $GITHUB_ENV
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-php-firewall-*
+            aikido-php-firewall*
 
       - name: Install RPM
         run: |
@@ -354,14 +353,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-php-firewall-*
+            aikido-php-firewall*
 
       - name: Set env
         run: |
           AIKIDO_VERSION=$(grep '#define PHP_AIKIDO_VERSION' lib/php-extension/include/php_aikido.h | awk -F'"' '{print $2}')
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
-          echo "AIKIDO_DEB=aikido-php-firewall-$AIKIDO_VERSION-1.x86_64.deb" >> $GITHUB_ENV
+          echo "AIKIDO_DEB=aikido-php-firewall.x86_64.deb" >> $GITHUB_ENV
 
       - name: Setup nginx & php-fpm
         run: |
