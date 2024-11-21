@@ -219,6 +219,7 @@ jobs:
       - name: Check rpm dependencies
         run: |
           yum deplist ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }} | grep -E "GLIBC_2.32|GLIBC_2.34|GLIBCXX_3.4.29" && exit 1 || exit 0
+          mv ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }} ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT_RELEASE }}
       
       - name: Archive rpm package
         uses: actions/upload-artifact@v4
@@ -226,7 +227,7 @@ jobs:
           name: ${{ env.AIKIDO_ARTIFACT_RELEASE }}
           if-no-files-found: error
           path: |
-            ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT }}
+            ~/rpmbuild/RPMS/x86_64/${{ env.AIKIDO_ARTIFACT_RELEASE }}
 
   build_deb:
     runs-on: ubuntu-20.04
