@@ -256,8 +256,9 @@ jobs:
       
       - name: Build deb
         run: |
+          ls -R
           sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
-          ls -l
+          ls -R
           mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_amd64.deb ${{ env.AIKIDO_ARTIFACT }}
   
       - name: Archive deb package
