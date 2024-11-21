@@ -74,12 +74,6 @@ bool RequestProcessor::IsBlockingEnabled() {
 }
 
 bool RequestProcessor::ReportStats() {
-    AIKIDO_LOG_INFO("Reporting stats to Aikido Request Processor (%d)...\n", this->numberOfRequests);
-
-    if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) != 0) {
-        return false;
-    }
-
     AIKIDO_LOG_INFO("Reporting stats to Aikido Request Processor...\n");
 
     for (const auto& [sink, sinkStats] : stats) {
@@ -153,6 +147,10 @@ bool RequestProcessor::RequestInit() {
 
     ContextInit();
     SendPreRequestEvent();
+
+    if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) == 0) {
+        requestProcessor.ReportStats();
+    }
     return true;
 }
 
