@@ -1,7 +1,7 @@
 #include "Includes.h"
 
-void helper_handle_pre_shell_execution(char *filename, EVENT_ID &eventId) {
-    eventCache.cmd = ZSTR_VAL(cmd);
+void helper_handle_pre_shell_execution(std::string cmd, EVENT_ID &eventId) {
+    eventCache.cmd = cmd;
     eventId = EVENT_PRE_SHELL_EXECUTED;
 }
 
@@ -27,10 +27,10 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution_with_array) {
 
     ZEND_PARSE_PARAMETERS_START(0, -1)
     Z_PARAM_OPTIONAL
-    Z_PARAM_ARRAY_HT_OR_STR(command_ht, command_str)
+    Z_PARAM_ARRAY_HT_OR_STR(cmdHashTable, cmd)
     ZEND_PARSE_PARAMETERS_END();
 
-    if (cmd) {
+    if (!cmd) {
         return;
     }
 
