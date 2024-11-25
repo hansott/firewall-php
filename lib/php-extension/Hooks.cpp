@@ -2,15 +2,15 @@
 
 unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
     /* Outgoing request */
-    AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(curl_exec), // curl_exec(CurlHandle $handle): string|bool
+    AIKIDO_REGISTER_FUNCTION_HANDLER_WITH_POST(curl_exec),                                  // curl_exec(CurlHandle $handle): string|bool
 
     /* Shell execution */
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(exec, handle_shell_execution),       // exec(string $command, array &$output = null, int &$result_code = null): string|false
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(shell_exec, handle_shell_execution), // shell_exec(string $command): string|false|null
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(system, handle_shell_execution),     // system(string $command, int &$result_code = null): string|false
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(passthru, handle_shell_execution),   // passthru(string $command, int &$result_code = null): ?false
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(popen, handle_shell_execution),      // popen(string $command, string $mode): resource|false
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(proc_open, handle_shell_execution),  // proc_open(array|string $command, array $descriptor_spec, array &$pipes, ?string $cwd = null, ?array $env_vars = null, ?array $options = null): resource|false
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(exec, handle_shell_execution),                      // exec(string $command, array &$output = null, int &$result_code = null): string|false
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(shell_exec, handle_shell_execution),                // shell_exec(string $command): string|false|null
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(system, handle_shell_execution),                    // system(string $command, int &$result_code = null): string|false
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(passthru, handle_shell_execution),                  // passthru(string $command, int &$result_code = null): ?false
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(popen, handle_shell_execution),                     // popen(string $command, string $mode): resource|false
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(proc_open, handle_shell_execution_with_array),      // proc_open(array|string $command, array $descriptor_spec, array &$pipes, ?string $cwd = null, ?array $env_vars = null, ?array $options = null): resource|false
 
     /* Path access */
     AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chdir, handle_pre_file_path_access),                // chdir(string $directory): bool
