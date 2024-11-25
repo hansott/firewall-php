@@ -79,5 +79,6 @@ Hello from passthru!
 [AIKIDO][INFO] Got shell command: echo "Hello from popen!"
 Hello from popen!
 
+[AIKIDO][INFO] Got shell command: echo test 
 [AIKIDO][INFO] Got shell command: echo "Hello from proc_open!"
 Hello from proc_open!
