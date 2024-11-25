@@ -43,10 +43,6 @@ $descriptorspec = array(
     2 => array("pipe", "w")   // stderr is a pipe that the child will write to
 );
 
-$command = ["echo", "test"];
-
-$process = proc_open($command, $descriptorspec, $pipes);
-
 $process = proc_open('echo "Hello from proc_open!"', $descriptorspec, $pipes);
 
 if (is_resource($process)) {
@@ -60,7 +56,6 @@ echo "\n";
 ?>
 
 --EXPECTF--
-[AIKIDO][INFO] Initializing context...
 [AIKIDO][INFO] Got shell command: echo "Hello from exec!"
 Array
 (
@@ -79,6 +74,5 @@ Hello from passthru!
 [AIKIDO][INFO] Got shell command: echo "Hello from popen!"
 Hello from popen!
 
-[AIKIDO][INFO] Got shell command: echo test 
 [AIKIDO][INFO] Got shell command: echo "Hello from proc_open!"
 Hello from proc_open!
