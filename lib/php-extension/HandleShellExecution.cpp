@@ -51,6 +51,7 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution_with_array) {
         }
         helper_handle_pre_shell_execution(ZSTR_VAL(cmdStr), eventId);
     }
+#if PHP_VERSION_ID >= 70400
     else if (Z_TYPE_P(cmdVal) == IS_ARRAY) {
         HashTable* cmdTokens = Z_ARRVAL_P(cmdVal);
         if (!cmdTokens) {
@@ -62,4 +63,5 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution_with_array) {
         }
         helper_handle_pre_shell_execution(cmdString, eventId);    
     }
+#endif
 }
