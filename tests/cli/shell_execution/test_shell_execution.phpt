@@ -43,6 +43,10 @@ $descriptorspec = array(
     2 => array("pipe", "w")   // stderr is a pipe that the child will write to
 );
 
+$command = ["echo", "Hello from proc_open!"];
+
+$process = proc_open($command, $descriptorspec, $pipes);
+
 $process = proc_open('echo "Hello from proc_open!"', $descriptorspec, $pipes);
 
 if (is_resource($process)) {

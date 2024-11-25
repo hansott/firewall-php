@@ -34,3 +34,6 @@ RUN unzip -o $PROTOC_ZIP -d /usr/local include/*
 RUN rm -f $PROTOC_ZIP
 ENV PATH="$HOME/go/bin:${PATH}"
 RUN yum install -y rpmdevtools
+RUN yum install -y git
+RUN yum install -y python3-devel
+RUN pip3 install psutil flask requests --quiet --no-input
