@@ -22,4 +22,4 @@ $process = proc_open($command, $descriptorspec, $pipes);
 ?>
 
 --EXPECTF--
-[AIKIDO][INFO] Got shell command: echo test
+[AIKIDO][INFO] Got shell command: echo

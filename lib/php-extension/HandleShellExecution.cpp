@@ -5,16 +5,18 @@ void helper_handle_pre_shell_execution(std::string cmd, EVENT_ID &eventId) {
     eventId = EVENT_PRE_SHELL_EXECUTED;
 }
 
-std::string build_command_line_from_array(HashTable* cmdTokens) {
-    std::string cmd;
-    zval *cmdTokenVal;
-    ZEND_HASH_FOREACH_VAL(cmdTokens, cmdTokenVal) {
-        zend_string *cmdToken = zval_get_string(cmdTokenVal);
-        if (!cmdToken) return "";
-        cmd += ZSTR_VAL(cmdToken);
-        cmd += " ";
-	} ZEND_HASH_FOREACH_END();
-    return cmd;
+std::string get_command(HashTable* ht) {
+    if (!ht || zend_hash_num_elements(ht) == 0) {
+        return "";
+    }
+
+    zend_hash_internal_pointer_reset(ht);
+    
+    zval* command = zend_hash_get_current_data(ht);
+    if (Z_TYPE_P(command) != IS_STRING) {
+        return "";
+    }
+    return std::string(Z_STRVAL_P(command), Z_STRLEN_P(command));
 }
 
 AIKIDO_HANDLER_FUNCTION(handle_shell_execution) {
@@ -54,7 +56,7 @@ AIKIDO_HANDLER_FUNCTION(handle_shell_execution_with_array) {
         if (!cmdTokens) {
             return;
         }
-        std::string cmdString = build_command_line_from_array(cmdTokens);
+        std::string cmdString = get_command(cmdTokens);
         if (cmdString.empty()) {
             return;
         }
