@@ -51,7 +51,6 @@ curl_close($ch6);
 ?>
 
 --EXPECT--
-[AIKIDO][INFO] Initializing context...
 [AIKIDO][INFO] [BEFORE] Got domain: example.com
 [AIKIDO][INFO] [AFTER] Got domain: example.com port: 443
 [AIKIDO][INFO] [BEFORE] Got domain: httpbin.org

@@ -56,7 +56,6 @@ echo "\n";
 ?>
 
 --EXPECTF--
-[AIKIDO][INFO] Initializing context...
 [AIKIDO][INFO] Got shell command: echo "Hello from exec!"
 Array
 (

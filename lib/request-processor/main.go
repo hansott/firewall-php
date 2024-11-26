@@ -82,7 +82,7 @@ func RequestProcessorContextInit(contextCallback C.ContextCallback) (initOk bool
 		}
 	}()
 
-	log.Info("Initializing context...")
+	log.Debug("Initializing context...")
 	CContextCallback = contextCallback
 	return context.Init(GoContextCallback)
 }
