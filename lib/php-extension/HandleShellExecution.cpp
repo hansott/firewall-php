@@ -10,11 +10,8 @@ std::string build_command_line_from_array(HashTable* cmdTokens) {
     zval *cmdTokenVal;
     ZEND_HASH_FOREACH_VAL(cmdTokens, cmdTokenVal) {
         zend_string *cmdToken = zval_get_string(cmdTokenVal);
-        if (!cmdToken) {
-            return "";
-        }
-
-		cmd += ZSTR_VAL(cmdToken);
+        if (!cmdToken) return "";
+        cmd += ZSTR_VAL(cmdToken);
         cmd += " ";
 	} ZEND_HASH_FOREACH_END();
     return cmd;
