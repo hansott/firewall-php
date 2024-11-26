@@ -10,7 +10,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
     AIKIDO_REGISTER_FUNCTION_HANDLER_EX(system, handle_shell_execution),
     AIKIDO_REGISTER_FUNCTION_HANDLER_EX(passthru, handle_shell_execution),
     AIKIDO_REGISTER_FUNCTION_HANDLER_EX(popen, handle_shell_execution),
-    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(proc_open, handle_shell_execution),
+    AIKIDO_REGISTER_FUNCTION_HANDLER_EX(proc_open, handle_shell_execution_with_array),
 
     /* Path access */
     AIKIDO_REGISTER_FUNCTION_HANDLER_EX(chdir, handle_pre_file_path_access),
