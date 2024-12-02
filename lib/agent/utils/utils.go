@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	. "main/aikido_types"
+	"main/config"
 	"main/globals"
 	"net"
 	"time"
@@ -75,7 +76,7 @@ func IsBlockingEnabled() bool {
 	defer globals.CloudConfigMutex.Unlock()
 
 	if globals.CloudConfig.Block == nil {
-		return globals.EnvironmentConfig.Blocking
+		return config.GetBlocking()
 	}
 	return *globals.CloudConfig.Block
 }

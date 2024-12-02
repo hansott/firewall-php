@@ -3,9 +3,13 @@
 RequestProcessor requestProcessor;
 
 std::string RequestProcessor::GetInitData() {
+    LoadEnvironment();
+
     json initData = {
+        {"token", AIKIDO_GLOBAL(token)},
         {"log_level", AIKIDO_GLOBAL(log_level_str)},
         {"socket_path", AIKIDO_GLOBAL(socket_path)},
+        {"blocking", AIKIDO_GLOBAL(blocking)},
         {"trust_proxy", AIKIDO_GLOBAL(trust_proxy)},
         {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"main/globals"
+	"main/config"
 	"main/log"
 	"net/http"
 	"net/url"
@@ -36,7 +36,7 @@ func SendCloudRequest(endpoint string, route string, method string, payload inte
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
-	req.Header.Set("Authorization", globals.EnvironmentConfig.Token)
+	req.Header.Set("Authorization", config.GetToken())
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

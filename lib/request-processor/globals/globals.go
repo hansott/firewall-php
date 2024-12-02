@@ -7,6 +7,8 @@ import (
 
 var EnvironmentConfig EnvironmentConfigData
 
+var AikidoConfig AikidoConfigData
+
 var CloudConfig CloudConfigData
 var CloudConfigMutex sync.Mutex
 

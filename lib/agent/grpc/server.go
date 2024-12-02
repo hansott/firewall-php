@@ -18,6 +18,12 @@ type server struct {
 	protos.AikidoServer
 }
 
+func (s *server) OnConfig(ctx context.Context, req *protos.Config) (*emptypb.Empty, error) {
+	log.Debugf("Received config")
+	go storeConfig(req.GetToken(), req.GetLogLevel(), req.GetBlocking(), req.GetLocalhostAllowedByDefault(), req.GetCollectApiSchema())
+	return &emptypb.Empty{}, nil
+}
+
 func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
 	log.Debugf("Received domain: %s:%d", req.GetDomain(), req.GetPort())
 	storeDomain(req.GetDomain(), int(req.GetPort()))
