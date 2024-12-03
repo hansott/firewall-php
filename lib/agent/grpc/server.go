@@ -19,7 +19,6 @@ type server struct {
 }
 
 func (s *server) OnConfig(ctx context.Context, req *protos.Config) (*emptypb.Empty, error) {
-	log.Debugf("Received config")
 	go storeConfig(req.GetToken(), req.GetLogLevel(), req.GetBlocking(), req.GetLocalhostAllowedByDefault(), req.GetCollectApiSchema())
 	return &emptypb.Empty{}, nil
 }
