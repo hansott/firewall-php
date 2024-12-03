@@ -152,9 +152,7 @@ def php_fpm_create_conf_file(test_dir, test_name, user, env):
     )
 
     for e in env:
-        php_fpm_config += f"env[%s] = %s" % (e, test_data["env"])
-
-    print(f"Test: {php_fpm_config}")
+        php_fpm_config += f"env[%s] = %s\n" % (e, env[e])
         
     php_fpm_config_file_path = os.path.join(test_dir, f"{test_name}.conf")
     with open(php_fpm_config_file_path, "w") as fpm_file:
@@ -171,7 +169,7 @@ def nginx_php_fpm_init(tests_dir):
 
 def nginx_php_fpm_process_test(test_data):
     enable_config_line(nginx_global_conf, f"include {nginx_config_dir}/*.conf;", '#')
-    nginx_create_conf_file(test_data["test_name"], test_data["test_dir"], test_data["server_port"], test_data["env"])
+    nginx_create_conf_file(test_data["test_name"], test_data["test_dir"], test_data["server_port"])
 
     test_data["fpm_config"] = php_fpm_create_conf_file(test_data["test_dir"], test_data["test_name"], "root", test_data["env"])
     return test_data
