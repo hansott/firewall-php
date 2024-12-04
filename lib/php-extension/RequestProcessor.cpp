@@ -3,8 +3,6 @@
 RequestProcessor requestProcessor;
 
 std::string RequestProcessor::GetInitData() {
-    LoadEnvironment();
-
     json initData = {
         {"token", AIKIDO_GLOBAL(token)},
         {"log_level", AIKIDO_GLOBAL(log_level_str)},
