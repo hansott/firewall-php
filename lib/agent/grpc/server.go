@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"main/cloud"
+	"main/config"
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
@@ -19,7 +20,12 @@ type server struct {
 }
 
 func (s *server) OnConfig(ctx context.Context, req *protos.Config) (*emptypb.Empty, error) {
-	go storeConfig(req.GetToken(), req.GetLogLevel(), req.GetBlocking(), req.GetLocalhostAllowedByDefault(), req.GetCollectApiSchema())
+	previousToken := config.GetToken()
+	storeConfig(req.GetToken(), req.GetLogLevel(), req.GetBlocking(), req.GetLocalhostAllowedByDefault(), req.GetCollectApiSchema())
+	if previousToken == "" {
+		// First time the token is set -> we can start reporting things to cloud
+		cloud.SendStartEvent()
+	}
 	return &emptypb.Empty{}, nil
 }
 

@@ -31,6 +31,7 @@ func Init() {
 
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
+	sendAikidoConfig()
 	startCloudConfigRoutine()
 }
 
@@ -42,7 +43,7 @@ func Uninit() {
 }
 
 /* Send Aikido Config to Aikido Agent via gRPC */
-func OnConfig() {
+func sendAikidoConfig() {
 	if client == nil {
 		return
 	}

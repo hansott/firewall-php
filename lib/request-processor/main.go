@@ -42,7 +42,6 @@ func RequestProcessorInit(initJson string) (initOk bool) {
 
 	if globals.EnvironmentConfig.SAPI != "cli" {
 		grpc.Init()
-		grpc.OnConfig()
 	}
 	if !zen_internals.Init() {
 		log.Error("Error initializing zen-internals library!")
