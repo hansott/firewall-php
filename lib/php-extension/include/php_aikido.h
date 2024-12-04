@@ -3,13 +3,14 @@
 extern zend_module_entry aikido_module_entry;
 #define phpext_aikido_ptr &aikido_module_entry
 
-#define PHP_AIKIDO_VERSION "1.0.97"
+#define PHP_AIKIDO_VERSION "1.0.98"
 
 #if defined(ZTS) && defined(COMPILE_DL_AIKIDO)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
 
 ZEND_BEGIN_MODULE_GLOBALS(aikido)
+bool environment_loaded;
 long log_level;
 bool blocking;
 bool disable;

@@ -62,6 +62,7 @@ access.log = {log_dir}/php-fpm/access-{name}.log
 
 php_admin_value[error_log] = {log_dir}/php-fpm/error-{name}.log
 php_admin_flag[log_errors] = on
+
 """
 
 def create_folder(folder_path):
@@ -142,13 +143,16 @@ def select_nginx_user():
     print("Selected nginx user: ", nginx_user)
 
 
-def php_fpm_create_conf_file(test_dir, test_name, user):
+def php_fpm_create_conf_file(test_dir, test_name, user, env):
     php_fpm_config = php_fpm_conf_template.format(
         name = test_name,
         user = user,
         run_dir = php_fpm_run_dir,
         log_dir = log_dir
     )
+
+    for e in env:
+        php_fpm_config += f"env[%s] = %s\n" % (e, env[e])
         
     php_fpm_config_file_path = os.path.join(test_dir, f"{test_name}.conf")
     with open(php_fpm_config_file_path, "w") as fpm_file:
@@ -167,7 +171,7 @@ def nginx_php_fpm_process_test(test_data):
     enable_config_line(nginx_global_conf, f"include {nginx_config_dir}/*.conf;", '#')
     nginx_create_conf_file(test_data["test_name"], test_data["test_dir"], test_data["server_port"])
 
-    test_data["fpm_config"] = php_fpm_create_conf_file(test_data["test_dir"], test_data["test_name"], "root")
+    test_data["fpm_config"] = php_fpm_create_conf_file(test_data["test_dir"], test_data["test_name"], "root", test_data["env"])
     return test_data
 
 
@@ -188,7 +192,12 @@ def nginx_php_fpm_pre_tests():
 def nginx_php_fpm_start_server(test_data, test_lib_dir, valgrind):
     php_fpm_command = [php_fpm_bin, "--force-stderr", "--nodaemonize", "--allow-to-run-as-root", "--fpm-config", test_data["fpm_config"]]
     print("PHP-FPM command: ", php_fpm_command)
-    return subprocess.Popen(php_fpm_command, env=test_data["env"])
+
+    env_tmp = {}
+    for e in test_data["env"]:
+        if e in [ "AIKIDO_ENDPOINT", "AIKIDO_REALTIME_ENDPOINT" ]:
+            env_tmp[e] = test_data["env"][e]
+    return subprocess.Popen(php_fpm_command, env=env_tmp)
 
 
 def nginx_php_fpm_uninit():

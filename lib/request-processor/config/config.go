@@ -12,7 +12,12 @@ func Init(initJson string) {
 
 	err := json.Unmarshal([]byte(initJson), &globals.EnvironmentConfig)
 	if err != nil {
-		panic(fmt.Sprintf("Error parsing JSON: %s", err))
+		panic(fmt.Sprintf("Error parsing JSON to EnvironmentConfig: %s", err))
+	}
+
+	err = json.Unmarshal([]byte(initJson), &globals.AikidoConfig)
+	if err != nil {
+		panic(fmt.Sprintf("Error parsing JSON to AikidoConfig: %s", err))
 	}
 
 	if globals.EnvironmentConfig.SocketPath == "" {

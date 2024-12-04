@@ -31,6 +31,7 @@ func Init() {
 
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
+	sendAikidoConfig()
 	startCloudConfigRoutine()
 }
 
@@ -39,6 +40,26 @@ func Uninit() {
 	if conn != nil {
 		conn.Close()
 	}
+}
+
+/* Send Aikido Config to Aikido Agent via gRPC */
+func sendAikidoConfig() {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	_, err := client.OnConfig(ctx, &protos.Config{Token: globals.AikidoConfig.Token, LogLevel: globals.EnvironmentConfig.LogLevel,
+		Blocking: globals.AikidoConfig.Blocking, LocalhostAllowedByDefault: globals.AikidoConfig.LocalhostAllowedByDefault,
+		CollectApiSchema: globals.AikidoConfig.CollectApiSchema})
+	if err != nil {
+		log.Warnf("Could not send Aikido Config: %v", err)
+		return
+	}
+
+	log.Debugf("Aikido config sent via socket!")
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */

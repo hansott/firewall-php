@@ -5,8 +5,11 @@ import (
 	"sync"
 )
 
-// Local config loaded from EnvironmentConfigPath, that contains info about endpoint, log_level, token, ...
+// Local config that contains info about socket path, php platform, php version...
 var EnvironmentConfig EnvironmentConfigData
+
+// Aikido config that contains info about endpoint, log_level, token, ...
+var AikidoConfig AikidoConfigData
 
 // Cloud config that is obtain as a result from sending events to cloud or pulling the config when it changes
 var CloudConfig CloudConfigData
