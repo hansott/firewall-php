@@ -7,6 +7,10 @@ bool CallPhpEcho(std::string message) {
 }
 
 bool CallPhpFunction(std::string function_name, unsigned int params_number, zval* params, zval* return_value, zval* object) {
+    if (!zend_hash_str_exists(CG(function_table), function_name.c_str(), function_name.size())) {
+        return false;
+    }
+
     zval _function_name;
     zend_string* _function_name_str = zend_string_init(function_name.c_str(), function_name.length(), 0);
     if (!_function_name_str) {
