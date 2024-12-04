@@ -1,9 +1,30 @@
 #include "Includes.h"
 
-std::string GetEnvVariable(const std::string& env_key) {
+std::string GetLaravelEnvVariable(const std::string& env_key) {
+    zval env_value;
+    if (!CallPhpFunctionWithOneParam("env", env_key, &env_value) || Z_TYPE(env_value) != IS_STRING) {
+        return "";
+    }
+
+    std::string env_value_str = Z_STRVAL_P(&env_value);
+    zval_ptr_dtor(&env_value);
+
+    AIKIDO_LOG_DEBUG("laravel_env[%s] = %s\n", env_key.c_str(), env_value_str);
+    return env_value_str;
+} 
+
+std::string GetSystemEnvVariable(const std::string& env_key) {
     const char* env_value = getenv(env_key.c_str());
     if (!env_value) return "";
     AIKIDO_LOG_DEBUG("env[%s] = %s\n", env_key.c_str(), env_value);
+    return env_value;
+}
+
+std::string GetEnvVariable(const std::string& env_key) {
+    std::string env_value = GetSystemEnvVariable(env_key);
+    if (env_value.empty()) {
+        return GetLaravelEnvVariable(env_key);
+    }
     return env_value;
 }
 
