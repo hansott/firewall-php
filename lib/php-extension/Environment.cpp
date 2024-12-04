@@ -9,7 +9,7 @@ std::string GetLaravelEnvVariable(const std::string& env_key) {
     std::string env_value_str = Z_STRVAL_P(&env_value);
     zval_ptr_dtor(&env_value);
 
-    AIKIDO_LOG_DEBUG("laravel_env[%s] = %s\n", env_key.c_str(), env_value_str);
+    AIKIDO_LOG_DEBUG("laravel_env[%s] = %s\n", env_key.c_str(), env_value_str.c_str());
     return env_value_str;
 } 
 
@@ -29,7 +29,7 @@ std::string GetEnvVariable(const std::string& env_key) {
 }
 
 std::string GetEnvString(const std::string& env_key, const std::string default_value) {
-    std::string env_value = GetEnvVariable(env_key.c_str());
+    std::string env_value = GetEnvVariable(env_key);
     if (!env_value.empty()) {
         return env_value;
     }
@@ -37,7 +37,7 @@ std::string GetEnvString(const std::string& env_key, const std::string default_v
 }
 
 bool GetEnvBool(const std::string& env_key, bool default_value) {
-    std::string env_value = GetEnvVariable(env_key.c_str());
+    std::string env_value = GetEnvVariable(env_key);
     if (!env_value.empty()) {
         return (env_value == "1" || env_value == "true");
     }
