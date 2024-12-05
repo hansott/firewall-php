@@ -24,7 +24,7 @@ type AikidoConfigData struct {
 	LogLevel                  string `json:"log_level,omitempty"`                    // default: 'INFO'
 	Blocking                  bool   `json:"blocking,omitempty"`                     // default: false
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"` // default: true
-	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: false
+	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: true
 }
 
 type RateLimiting struct {

@@ -2,7 +2,7 @@
 
 std::string GetLaravelEnvVariable(const std::string& env_key) {
     zval env_value;
-    if (!CallPhpFunctionWithOneParam("env", env_key, &env_value) || Z_TYPE(env_value) != IS_STRING) {
+    if (!CallPhpFunctionWithOneParam("getenv", env_key, &env_value) || Z_TYPE(env_value) != IS_STRING) {
         return "";
     }
 

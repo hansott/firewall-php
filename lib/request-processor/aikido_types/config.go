@@ -2,19 +2,19 @@ package aikido_types
 
 type EnvironmentConfigData struct {
 	SocketPath                string `json:"socket_path"`                  // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
-	LogLevel                  string `json:"log_level"`                    // default: 'INFO'
 	SAPI                      string `json:"sapi"`                         // '{php-sapi}'
 	TrustProxy                bool   `json:"trust_proxy"`                  // default: true
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"` // default: true
-	CollectApiSchema          bool   `json:"collect_api_schema"`           // default: false
+	CollectApiSchema          bool   `json:"collect_api_schema"`           // default: true
 }
 
 type AikidoConfigData struct {
 	Token                     string `json:"token"`                        // default: ''
+	LogLevel                  string `json:"log_level"`                    // default: 'WARN'
 	Blocking                  bool   `json:"blocking"`                     // default: false
 	TrustProxy                bool   `json:"trust_proxy"`                  // default: true
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default"` // default: true
-	CollectApiSchema          bool   `json:"collect_api_schema"`           // default: false
+	CollectApiSchema          bool   `json:"collect_api_schema"`           // default: true
 }
 
 type RateLimiting struct {

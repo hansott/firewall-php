@@ -86,6 +86,21 @@ func RequestProcessorContextInit(contextCallback C.ContextCallback) (initOk bool
 	return context.Init(GoContextCallback)
 }
 
+//export RequestProcessorConfigUpdate
+func RequestProcessorConfigUpdate(configJson string) (initOk bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered from panic:", r)
+			initOk = false
+		}
+	}()
+
+	config.ReloadAikidoConfig(configJson)
+	log.Debugf("Reloading Aikido config with: %v", configJson)
+	grpc.SendAikidoConfig()
+	return true
+}
+
 //export RequestProcessorOnEvent
 func RequestProcessorOnEvent(eventId int) (outputJson *C.char) {
 	defer func() {

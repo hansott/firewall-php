@@ -54,11 +54,6 @@ PHP_MSHUTDOWN_FUNCTION(aikido) {
 
 PHP_RINIT_FUNCTION(aikido) {
     AIKIDO_LOG_DEBUG("RINIT started!\n");
-
-    if (!AIKIDO_GLOBAL(environment_loaded)) {
-        LoadEnvironment();
-        AIKIDO_GLOBAL(environment_loaded) = true;
-    }
     
     if (AIKIDO_GLOBAL(disable) == true) {
         AIKIDO_LOG_INFO("RINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
