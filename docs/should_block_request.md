@@ -2,60 +2,89 @@
 
 In order to enable the user blocking and rate limiting features, the protected app can call `\aikido\should_block_request` to obtain the blocking decision for the current request and act accordingly.
 
-## Vanilla PHP
+## No framework
 
 ```php
 <?php
 
-// Start the session (if needed) to track user login status
-session_start();
+namespace App\Middleware;
 
-// Example function to simulate user authentication
-function getAuthenticatedUserId()
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Laminas\Diactoros\Response; // Or use any other PSR-7 implementation
+
+class AikidoMiddleware implements MiddlewareInterface
 {
-    // Assume the user ID is stored in the session after login
-    return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-}
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        // Start the session (if needed) to track user login status
+        session_start();
 
-// Check if Aikido extension is loaded
-if (extension_loaded('aikido')) {
-    // Get the user ID (from session or other auth system)
-    $userId = getAuthenticatedUserId();
+        // Check if Aikido extension is loaded
+        if (!extension_loaded('aikido')) {
+            // Extension not loaded
+            // Pass the request to the next middleware or request handler
+            return $handler->handle($request);
+        }
 
-    // If the user is authenticated, set the user ID in Aikido Zen context
-    if ($userId) {
-        \aikido\set_user($userId);
-    }
+        // Get the user ID (from session or other auth system)
+        $userId = $this->getAuthenticatedUserId();
+        
+        // If the user is authenticated, set the user ID in Aikido Zen context
+        if ($userId) {
+            \aikido\set_user($userId);
+        }
 
-    // Check blocking decision from Aikido
-    $decision = \aikido\should_block_request();
+        // Check blocking decision from Aikido
+        $decision = \aikido\should_block_request();
 
-    if ($decision->block) {
+        if (!$decision->block) {
+            // Aikido decided not to block
+            // Pass the request to the next middleware or request handler
+            return $handler->handle($request);
+        }
+
         if ($decision->type == "blocked") {
             // If the user/ip is blocked, return a 403 status code
-            http_response_code(403);
+            $message = "";
             if ($decision->trigger == "user") {
-                echo "Your user is blocked!";
+                $message = "Your user is blocked!";
             }
             else if ($decision->trigger == "ip") {
-                echo "Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})";
+                $message = "Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})";
             }
+
+            return new Response([
+                'message' => $message,
+            ], 403);
         }
         else if ($decision->type == "ratelimited") {
             // If the rate limit is exceeded, return a 429 status code
-            http_response_code(429);
+            $message = "";
             if ($decision->trigger == "user") {
-                echo "Your user exceeded the rate limit for this endpoint!";
+                $message = "Your user exceeded the rate limit for this endpoint!";
             }
             else if ($decision->trigger == "ip") {
-                echo "Your IP ({$decision->ip}) exceeded the rate limit for this endpoint!";
+                $message = "Your IP ({$decision->ip}) exceeded the rate limit for this endpoint!";
             }
+            return new Response([
+                'message' => $message,
+            ], 429);
         }
-        exit();
+
+        // Aikido decided to block but decision type is not implemented
+        return new Response([
+            'message' => 'Something went wrong!',
+        ], 500);
     }
 
-    // Continue handling the request
-    echo "Request successful!";
+    // Example function to simulate user authentication
+    private function getAuthenticatedUserId(): ?int
+    {
+        return $_SESSION['user_id'] ?? null;
+    }
 }
 ```
 
