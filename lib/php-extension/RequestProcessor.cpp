@@ -142,17 +142,24 @@ bool RequestProcessor::RequestInit() {
     return true;
 }
 
+void RequestProcessor::ReloadConfig() {
+    if (this->configReloaded) {
+        return;
+    }
+    
+    AIKIDO_LOG_INFO("Reloading Aikido config...\n");
+    std::string initJson = this->GetInitData();
+    this->requestProcessorConfigUpdateFn(GoCreateString(initJson));
+    this->configReloaded = true;
+}
+
 void RequestProcessor::RequestShutdown() {
     if (!request.Init()) {
         AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
         return;
     }
-    if (!this->configReloaded) {
-        AIKIDO_LOG_INFO("Reloading Aikido config...\n");
-        std::string initJson = this->GetInitData();
-        this->requestProcessorConfigUpdateFn(GoCreateString(initJson));
-        this->configReloaded = true;
-    }
+    
+    ReloadConfig();
     SendPostRequestEvent();
     requestInitialized = false;
 }
