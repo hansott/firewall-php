@@ -10,6 +10,7 @@ import (
 	"main/log"
 	"net"
 	"os"
+	"path/filepath"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -84,6 +85,18 @@ func Init() bool {
 	// Remove the socket file if it already exists
 	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
 		os.RemoveAll(globals.EnvironmentConfig.SocketPath)
+	}
+
+	runDirectory := filepath.Dir(globals.EnvironmentConfig.SocketPath)
+	if _, err := os.Stat(runDirectory); os.IsNotExist(err) {
+		err := os.MkdirAll(runDirectory, 0777)
+		if err != nil {
+			log.Errorf("Error in creating run directory: %v\n", err)
+		} else {
+			log.Infof("Run directory %s created successfully.\n", runDirectory)
+		}
+	} else {
+		log.Infof("Run directory %s already exists.\n", runDirectory)
 	}
 
 	lis, err := net.Listen("unix", globals.EnvironmentConfig.SocketPath)
