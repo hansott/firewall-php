@@ -3,6 +3,8 @@
 RequestProcessor requestProcessor;
 
 std::string RequestProcessor::GetInitData() {
+    LoadEnvironment();
+
     json initData = {
         {"token", AIKIDO_GLOBAL(token)},
         {"log_level", AIKIDO_GLOBAL(log_level_str)},
@@ -96,11 +98,13 @@ bool RequestProcessor::Init() {
 
     RequestProcessorInitFn requestProcessorInitFn = (RequestProcessorInitFn)dlsym(libHandle, "RequestProcessorInit");
     this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
+    this->requestProcessorConfigUpdateFn = (RequestProcessorConfigUpdateFn)dlsym(libHandle, "RequestProcessorConfigUpdate");
     this->requestProcessorOnEventFn = (RequestProcessorOnEventFn)dlsym(libHandle, "RequestProcessorOnEvent");
     this->requestProcessorGetBlockingModeFn = (RequestProcessorGetBlockingModeFn)dlsym(libHandle, "RequestProcessorGetBlockingMode");
     this->requestProcessorUninitFn = (RequestProcessorUninitFn)dlsym(libHandle, "RequestProcessorUninit");
     if (!requestProcessorInitFn ||
         !this->requestProcessorContextInitFn ||
+        !this->requestProcessorConfigUpdateFn ||
         !this->requestProcessorOnEventFn ||
         !this->requestProcessorGetBlockingModeFn ||
         !this->requestProcessorUninitFn) {
@@ -138,11 +142,24 @@ bool RequestProcessor::RequestInit() {
     return true;
 }
 
+void RequestProcessor::LoadConfigOnce() {
+    if (this->configReloaded) {
+        return;
+    }
+    
+    AIKIDO_LOG_INFO("Reloading Aikido config...\n");
+    std::string initJson = this->GetInitData();
+    this->requestProcessorConfigUpdateFn(GoCreateString(initJson));
+    this->configReloaded = true;
+}
+
 void RequestProcessor::RequestShutdown() {
     if (!request.Init()) {
         AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
         return;
     }
+    
+    LoadConfigOnce();
     SendPostRequestEvent();
     requestInitialized = false;
 }

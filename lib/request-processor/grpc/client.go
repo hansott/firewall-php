@@ -31,7 +31,7 @@ func Init() {
 
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
-	sendAikidoConfig()
+	SendAikidoConfig()
 	startCloudConfigRoutine()
 }
 
@@ -43,7 +43,7 @@ func Uninit() {
 }
 
 /* Send Aikido Config to Aikido Agent via gRPC */
-func sendAikidoConfig() {
+func SendAikidoConfig() {
 	if client == nil {
 		return
 	}
@@ -51,7 +51,7 @@ func sendAikidoConfig() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	_, err := client.OnConfig(ctx, &protos.Config{Token: globals.AikidoConfig.Token, LogLevel: globals.EnvironmentConfig.LogLevel,
+	_, err := client.OnConfig(ctx, &protos.Config{Token: globals.AikidoConfig.Token, LogLevel: globals.AikidoConfig.LogLevel,
 		Blocking: globals.AikidoConfig.Blocking, LocalhostAllowedByDefault: globals.AikidoConfig.LocalhostAllowedByDefault,
 		CollectApiSchema: globals.AikidoConfig.CollectApiSchema})
 	if err != nil {
