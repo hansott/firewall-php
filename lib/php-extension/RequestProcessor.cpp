@@ -142,7 +142,7 @@ bool RequestProcessor::RequestInit() {
     return true;
 }
 
-void RequestProcessor::ReloadConfig() {
+void RequestProcessor::LoadConfigOnce() {
     if (this->configReloaded) {
         return;
     }
@@ -159,7 +159,7 @@ void RequestProcessor::RequestShutdown() {
         return;
     }
     
-    ReloadConfig();
+    LoadConfigOnce();
     SendPostRequestEvent();
     requestInitialized = false;
 }

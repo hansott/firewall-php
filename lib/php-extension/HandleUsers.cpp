@@ -23,7 +23,7 @@ ZEND_FUNCTION(set_user) {
         RETURN_BOOL(false);
     }
 
-    requestProcessor.ReloadConfig();
+    requestProcessor.LoadConfigOnce();
 
     char *id;
     size_t id_len;

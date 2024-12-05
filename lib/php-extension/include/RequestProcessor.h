@@ -32,7 +32,7 @@ class RequestProcessor {
     bool RequestInit();
     bool SendEvent(EVENT_ID eventId, std::string& output);
     bool IsBlockingEnabled();
-    void ReloadConfig();
+    void LoadConfigOnce();
     void RequestShutdown();
     void Uninit();
 

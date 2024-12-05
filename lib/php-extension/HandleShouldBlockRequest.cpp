@@ -23,7 +23,7 @@ ZEND_FUNCTION(should_block_request) {
         return;
     }
 
-    requestProcessor.ReloadConfig();
+    requestProcessor.LoadConfigOnce();
 
     if (!GetBlockingStatus()) {
         return;

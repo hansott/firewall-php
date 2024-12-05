@@ -81,12 +81,9 @@ func StartServer(lis net.Listener) {
 	lis.Close()
 }
 
-func Init() bool {
-	// Remove the socket file if it already exists
-	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
-		os.RemoveAll(globals.EnvironmentConfig.SocketPath)
-	}
-
+// Creates the /run/aikido-* folder if it does not exist, in order for the socket creation to succeed
+// For now, this folder has 777 permissions as we don't know under which user the php requests will run under (apache, nginx, www-data, forge, ...)
+func createRunDirFolderIfNotExists() {
 	runDirectory := filepath.Dir(globals.EnvironmentConfig.SocketPath)
 	if _, err := os.Stat(runDirectory); os.IsNotExist(err) {
 		err := os.MkdirAll(runDirectory, 0777)
@@ -98,6 +95,15 @@ func Init() bool {
 	} else {
 		log.Infof("Run directory %s already exists.\n", runDirectory)
 	}
+}
+
+func Init() bool {
+	// Remove the socket file if it already exists
+	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
+		os.RemoveAll(globals.EnvironmentConfig.SocketPath)
+	}
+
+	createRunDirFolderIfNotExists()
 
 	lis, err := net.Listen("unix", globals.EnvironmentConfig.SocketPath)
 	if err != nil {
@@ -105,6 +111,7 @@ func Init() bool {
 	}
 
 	// Change the permissions of the socket to make it accessible by non-root users
+	// For now, this socket has 777 permissions as we don't know under which user the php requests will run under (apache, nginx, www-data, forge, ...)
 	if err := os.Chmod(globals.EnvironmentConfig.SocketPath, 0777); err != nil {
 		panic(fmt.Sprintf("failed to change permissions of Unix socket: %v", err))
 	}
