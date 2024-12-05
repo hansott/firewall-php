@@ -86,8 +86,12 @@ func RequestProcessorContextInit(contextCallback C.ContextCallback) (initOk bool
 	return context.Init(GoContextCallback)
 }
 
+/*
+	RequestProcessorConfigUpdate is used to update the Aikido Config loaded from env variables and send this config via gRPC to the Aikido Agent.
+*/
 //export RequestProcessorConfigUpdate
 func RequestProcessorConfigUpdate(configJson string) (initOk bool) {
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Warn("Recovered from panic:", r)
