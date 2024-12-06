@@ -5,6 +5,7 @@ import (
 	"main/globals"
 	"main/log"
 	"main/utils"
+	"sync/atomic"
 )
 
 func GetHostnamesAndClear() []Hostname {
@@ -82,15 +83,20 @@ func GetStatsAndClear() Stats {
 	return stats
 }
 
+func GetMiddlewareInstalled() bool {
+	return atomic.LoadUint32(&globals.MiddlewareInstalled) == 1
+}
+
 func SendHeartbeatEvent() {
 	heartbeatEvent := Heartbeat{
-		Type:      "heartbeat",
-		Agent:     GetAgentInfo(),
-		Time:      utils.GetTime(),
-		Stats:     GetStatsAndClear(),
-		Hostnames: GetHostnamesAndClear(),
-		Routes:    GetRoutesAndClear(),
-		Users:     GetUsersAndClear(),
+		Type:                "heartbeat",
+		Agent:               GetAgentInfo(),
+		Time:                utils.GetTime(),
+		Stats:               GetStatsAndClear(),
+		Hostnames:           GetHostnamesAndClear(),
+		Routes:              GetRoutesAndClear(),
+		Users:               GetUsersAndClear(),
+		MiddlewareInstalled: GetMiddlewareInstalled(),
 	}
 
 	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.EventsAPI, globals.EventsAPIMethod, heartbeatEvent)

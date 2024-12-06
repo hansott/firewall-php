@@ -19,6 +19,7 @@ func Init() {
 	utils.StartPollingRoutine(ConfigPollingRoutineChannel, ConfigPollingTicker, CheckConfigUpdatedAt)
 
 	globals.StatsData.StartedAt = utils.GetTime()
+	globals.MiddlewareInstalled = 0
 }
 
 func Uninit() {

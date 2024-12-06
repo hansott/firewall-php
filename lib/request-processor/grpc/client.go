@@ -168,3 +168,19 @@ func OnAttackDetected(attackDetected *protos.AttackDetected) {
 	}
 	log.Debugf("Attack detected event sent via socket")
 }
+
+func OnMiddlewareInstalled() {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := client.OnMiddlewareInstalled(ctx, &emptypb.Empty{})
+	if err != nil {
+		log.Warnf("Could not call OnMiddlewareInstalled")
+		return
+	}
+	log.Debugf("OnMiddlewareInstalled sent via socket")
+}

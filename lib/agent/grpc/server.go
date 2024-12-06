@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -64,6 +65,12 @@ func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, 
 
 func (s *server) OnAttackDetected(ctx context.Context, req *protos.AttackDetected) (*emptypb.Empty, error) {
 	go cloud.SendAttackDetectedEvent(req)
+	return &emptypb.Empty{}, nil
+}
+
+func (s *server) OnMiddlewareInstalled(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
+	log.Debugf("Received MiddlewareInstalled")
+	atomic.StoreUint32(&globals.MiddlewareInstalled, 1)
 	return &emptypb.Empty{}, nil
 }
 

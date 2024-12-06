@@ -185,5 +185,6 @@
     "agent": {
         "dryMode": false,
         "library": "firewall-php"
-    }
+    },
+    "middlewareInstalled": true
 }
