@@ -73,7 +73,7 @@ files:
       /var/log/aikido-*/*.log
 ```
 
-2. Go to `AWS EB enviroment -> Configuration -> Updates, monitoring, and logging -> Edit` and add the desired environment variables like: AIKIDO_TOKEN, AIKIDO_BLOCK, ...
+2. Go to `AWS EB enviroment -> Configuration -> Updates, monitoring, and logging -> Edit` and add the desired environment variables like: AIKIDO_TOKEN
 
 #### Forge
 
