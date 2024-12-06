@@ -407,7 +407,7 @@ jobs:
 
       - name: Install DEB
         run: |
-          sudo dpkg -i ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
+          sudo dpkg -i -E ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
 
       - name: Run CLI tests
         if: matrix.os == 'ubuntu-latest'

@@ -35,20 +35,22 @@ Prerequisites:
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
-`rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.rpm`
+```
+rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.rpm
+```
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
 ```
 curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
-dpkg -i ./aikido-php-firewall.x86_64.deb
+dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ```
 
-### Cloud providers
+### Managed platforms
 
 #### AWS Elastic beanstalk
 
-Create a new file in `.ebextensions/01_aikido_php_firewall.config` with the following content:
+1. In your repo, create a new file in `.ebextensions/01_aikido_php_firewall.config` with the following content:
 ```
 commands:
   aikido-php-firewall:
@@ -71,6 +73,14 @@ files:
       /var/log/aikido-*/*.log
 ```
 
+2. Go to `AWS EB enviroment -> Configuration -> Updates, monitoring, and logging -> Edit` and add the desired environment variables like: AIKIDO_TOKEN
+
+#### Forge
+
+1. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual installation](#Manual-installation) section.
+2. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
+3. Deploy the site to apply the changes.
+
 ## Supported libraries and frameworks
 
 ### PHP versions
@@ -79,6 +89,7 @@ Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3.
 ### Web frameworks
 
 Zen for PHP is Web-framework agnostic, meaning that it will work on any PHP Web framework that you want to use.
+
 Zen for PHP can do this because the monitored functions are hooked at the PHP-core level.
 
 ### Database drivers
