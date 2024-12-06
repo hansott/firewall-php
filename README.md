@@ -35,7 +35,9 @@ Prerequisites:
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
-```rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.rpm```
+```
+rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.rpm
+```
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
