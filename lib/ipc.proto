@@ -14,6 +14,7 @@ service Aikido {
   rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
   rpc OnUser(User) returns (google.protobuf.Empty);
   rpc OnAttackDetected(AttackDetected) returns (google.protobuf.Empty);
+  rpc OnMiddlewareInstalled(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 message Config {

@@ -26,6 +26,8 @@ func GetStoreAction(actionType, trigger, ip string) string {
 }
 
 func OnGetBlockingStatus() string {
+	go grpc.OnMiddlewareInstalled()
+
 	userId := context.GetUserId()
 	if utils.IsUserBlocked(userId) {
 		return GetStoreAction("blocked", "user", "")
