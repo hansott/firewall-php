@@ -78,7 +78,7 @@ files:
 #### Forge
 
 1. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual installation](#Manual-installation) section.
-2. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN, AIKIDO_BLOCK, ...
+2. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
 3. Deploy the site to apply the changes.
 
 ## Supported libraries and frameworks
