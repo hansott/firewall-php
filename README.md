@@ -119,7 +119,7 @@ done
 
 #### Forge (ssh)
 1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
-2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, exxecute the install commands from the [Manual installation](#Manual-installation) section.
+2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual installation](#Manual-installation) section.
 3. Go to `[server_name] -> [site_name] -> Restart` and click `Restart PHP <version>`.
 
 ## Supported libraries and frameworks
