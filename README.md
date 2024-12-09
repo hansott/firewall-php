@@ -6,7 +6,7 @@ Zen, your in-app firewall for peace of mind – at runtime.
 
 Zen is an embedded Web Application Firewall that autonomously protects your PHP apps against common and critical attacks.
 
-Zen protects your PHP apps by preventing user input containing dangerous strings, thus protecting agains attacks like SQL injection. It runs on the same server as your PHP app for simple [installation](#Installation) and zero maintenance.
+Zen protects your PHP apps by preventing user input containing dangerous strings, thus protecting agains attacks like SQL injection. It runs on the same server as your PHP app for simple [install](#Install) and zero maintenance.
 
 ## Features
 
@@ -23,7 +23,7 @@ Zen operates autonomously on the same server as your PHP app to:
 * ✅ Rate limit specific API endpoints by IP or by user
 * ✅ Allow you to block specific users manually
 
-## Installation
+## Install
 
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
 Prerequisites:
@@ -31,7 +31,7 @@ Prerequisites:
 * Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.3).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
-### Manual installation
+### Manual install
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
@@ -44,20 +44,6 @@ rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/downloa
 ```
 curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
-```
-
-### Manual uninstallation
-
-#### For Red Hat-based Systems (RHEL, CentOS, Fedora)
-
-```
-rpm -e aikido-php-firewall
-```
-
-#### For Debian-based Systems (Debian, Ubuntu)
-
-```
-dpkg --purge aikido-php-firewall
 ```
 
 ### Managed platforms
@@ -92,11 +78,11 @@ files:
 #### Forge (recipe)
 1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
 2. Go to "Recipes".
-3. Based on the running OS, use the [Manual installation](#Manual-installation) commands to create a new recipe called "Install Aikido Firewall" and select "root" as user. Example for Debian-based systems:
+3. Based on the running OS, use the [Manual install](#Manual-install) commands to create a new recipe called "Install Aikido Firewall" and select "root" as user. Example for Debian-based systems:
 ```
 cd /tmp
 
-# Install commands from the "Manual installation" section below, based on your OS
+# Install commands from the "Manual install" section below, based on your OS
 curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
 
@@ -119,7 +105,7 @@ done
 
 #### Forge (ssh)
 1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
-2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual installation](#Manual-installation) section.
+2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual install](#Manual-install) section.
 3. Go to `[server_name] -> [site_name] -> Restart` and click `Restart PHP <version>`.
 
 ## Supported libraries and frameworks
@@ -211,6 +197,22 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 | Request With Rate Limiting Enabled | 1.2310 | 1.6480 | 0.4170 ms |
 | Request With User Setting | 1.2230 | 1.4430 | 0.2200 ms |
 | Request Simple | 1.2370 | 1.3730 | 0.1360 ms |
+
+## Uninstall
+
+### Manual uninstallation
+
+#### For Red Hat-based Systems (RHEL, CentOS, Fedora)
+
+```
+rpm -e aikido-php-firewall
+```
+
+#### For Debian-based Systems (Debian, Ubuntu)
+
+```
+dpkg --purge aikido-php-firewall
+```
 
 ## Bug bounty program
 
