@@ -108,6 +108,18 @@ done
 2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual install](#Manual-install) section.
 3. Go to `[server_name] -> [site_name] -> Restart` and click `Restart PHP <version>`.
 
+#### Fly.io (flyctl)
+1. In your repo, run `fly launch`.
+2. Add the desired environment variables, by running `fly secrets set AIKIDO_TOKEN=AIK_RUNTIME...`.
+3. Go to `./.fly/scripts` folder and create the `aikido.sh` file with the [Manual install](#Manual-install) commands:
+```
+#!/usr/bin/env bash
+cd /tmp
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+dpkg -i -E ./aikido-php-firewall.x86_64.deb
+```
+4. Run `fly deploy`.
+
 ## Supported libraries and frameworks
 
 ### PHP versions
