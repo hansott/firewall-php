@@ -91,9 +91,9 @@ for service in $(systemctl list-units | grep php | awk '{print $1}'); do
     sudo systemctl restart $service
 done
 ```
-4. Based on the running OS, use the [Manual uninstallation](#Manual-uninstallation) commands to create a new recipe called "Uninstall Aikido Firewall" and select "root" as user. Example for Debian-based systems:
+4. Based on the running OS, use the [Manual uninstall](#Manual-uninstall) commands to create a new recipe called "Uninstall Aikido Firewall" and select "root" as user. Example for Debian-based systems:
 ```
-# Install commands from the "Manual uninstallation" section below, based on your OS
+# Install commands from the "Manual uninstall" section below, based on your OS
 dpkg --purge aikido-php-firewall
 
 # Restarting the php services in order to load the Aikido PHP Firewall
@@ -200,7 +200,7 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 
 ## Uninstall
 
-### Manual uninstallation
+### Manual uninstall
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
