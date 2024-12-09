@@ -115,8 +115,7 @@ for service in $(systemctl list-units | grep php | awk '{print $1}'); do
     sudo systemctl restart $service
 done
 ```
-5. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN.
-6. Run the created recipes to install / uninstall the Aikido PHP Firewall.
+5. Run the created recipes to install / uninstall the Aikido PHP Firewall.
 
 #### Forge (ssh)
 1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
