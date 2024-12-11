@@ -37,10 +37,11 @@ type EndpointKey struct {
 }
 
 type CloudConfigData struct {
-	ConfigUpdatedAt   int64
-	Endpoints         map[EndpointKey]EndpointData
-	BlockedUserIds    map[string]bool
-	BypassedIps       map[string]bool
-	GeoBlockedIpsTrie *ipaddr.AddressTrie
-	Block             int
+	ConfigUpdatedAt     int64
+	Endpoints           map[EndpointKey]EndpointData
+	BlockedUserIds      map[string]bool
+	BypassedIps         map[string]bool
+	GeoBlockedIpsTrieV4 *ipaddr.IPv4AddressTrie
+	GeoBlockedIpsTrieV6 *ipaddr.IPv6AddressTrie
+	Block               int
 }

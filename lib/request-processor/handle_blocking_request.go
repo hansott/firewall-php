@@ -35,7 +35,7 @@ func OnGetBlockingStatus() string {
 
 	ip := context.GetIp()
 	if utils.IsIpGeoBlocked(ip) {
-		return GetStoreAction("blocked", "geo", ip)
+		return GetStoreAction("blocked", "geoip", ip)
 	}
 
 	method := context.GetMethod()
@@ -46,7 +46,7 @@ func OnGetBlockingStatus() string {
 
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
-		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
+		log.Debugf("Method+route is not configured in endpoints! Skipping checks...")
 		return ""
 	}
 

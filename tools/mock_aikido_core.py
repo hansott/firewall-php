@@ -9,12 +9,22 @@ app = Flask(__name__)
 responses = {
     "config": {},
     "configUpdatedAt": {},
+    "lists": {}
 }
 
 events = []
 server_down = False
 
 excluded_routes = ['mock_get_events', 'mock_tests_simple', 'mock_down', 'mock_up']
+
+def load_config(j):
+    configUpdatedAt = int(time.time())
+    responses["lists"] = { "success": True, "serviceId": j["serviceId"], "blockedIPAddresses": j["blockedIPAddresses"] }
+    del j["blockedIPAddresses"]
+    responses["config"] = j
+    responses["config"]["configUpdatedAt"] = configUpdatedAt
+    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
+    print(f"Loaded new runtime config!")
 
 @app.before_request
 def check_server_status():
@@ -33,6 +43,10 @@ def get_config():
 def get_runtime_config():
     return jsonify(responses["config"])
 
+@app.route('/api/runtime/firewall/lists', methods=['GET'])
+def get_lists_config():
+    return jsonify(responses["lists"])
+
 
 @app.route('/api/runtime/events', methods=['POST'])
 def post_events():
@@ -44,10 +58,7 @@ def post_events():
 
 @app.route('/mock/config', methods=['POST'])
 def mock_set_config():
-    configUpdatedAt = int(time.time())
-    responses["config"] = request.get_json()
-    responses["config"]["configUpdatedAt"] = configUpdatedAt
-    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
+    load_config(request.get_json())
     return jsonify({})
 
 @app.route('/mock/down', methods=['POST'])
@@ -83,11 +94,7 @@ if __name__ == '__main__':
         if os.path.exists(config_file):
             try:
                 with open(config_file, 'r') as file:
-                    configUpdatedAt = int(time.time())
-                    responses["config"] = json.load(file)
-                    responses["config"]["configUpdatedAt"] = configUpdatedAt
-                    responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
-                    print(f"Loaded runtime config from {config_file}")
+                    load_config(json.load(file))
             except json.JSONDecodeError:
                 print(f"Error: Could not decode JSON from {config_file}")
                 sys.exit(1)

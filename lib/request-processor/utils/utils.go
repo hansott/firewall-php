@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"main/globals"
+	"main/log"
 	"net"
 	"strings"
 
@@ -183,10 +184,21 @@ func IsIpGeoBlocked(ip string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	if globals.CloudConfig.GeoBlockedIpsTrie == nil {
+	ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
+	if err != nil {
+		log.Infof("Invalid ip address: %s\n", ip)
 		return false
 	}
-	return globals.CloudConfig.GeoBlockedIpsTrie.Contains(ipaddr.NewIPAddressString(ip).GetAddress().ToAddressBase())
+
+	if ipAddress.IsIPv4() && globals.CloudConfig.GeoBlockedIpsTrieV4 != nil {
+		log.Infof("Checking ipv4 address for geo-blocking: %v\n", ipAddress.ToIPv4())
+		return globals.CloudConfig.GeoBlockedIpsTrieV4.ElementContains(ipAddress.ToIPv4())
+	} else if ipAddress.IsIPv6() && globals.CloudConfig.GeoBlockedIpsTrieV6 != nil {
+		log.Infof("Checking ipv6 address for geo-blocking: %v\n", ipAddress.ToIPv6())
+		return globals.CloudConfig.GeoBlockedIpsTrieV6.ElementContains(ipAddress.ToIPv6())
+	}
+
+	return false
 }
 
 type DatabaseType int
