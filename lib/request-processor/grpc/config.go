@@ -37,8 +37,8 @@ func buildGeoBlockedIpsTrie(geoBlockedIps []string) {
 		}
 	}
 
-	log.Debugf("GeoBlockedIpsTrieV4: \n%v", globals.CloudConfig.GeoBlockedIpsTrieV4)
-	log.Debugf("GeoBlockedIpsTrieV6: \n%v", globals.CloudConfig.GeoBlockedIpsTrieV6)
+	log.Debugf("GeoBlockedIpsTrieV4: %v", globals.CloudConfig.GeoBlockedIpsTrieV4)
+	log.Debugf("GeoBlockedIpsTrieV6: %v", globals.CloudConfig.GeoBlockedIpsTrieV6)
 }
 
 func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {

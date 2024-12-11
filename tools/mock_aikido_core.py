@@ -19,8 +19,10 @@ excluded_routes = ['mock_get_events', 'mock_tests_simple', 'mock_down', 'mock_up
 
 def load_config(j):
     configUpdatedAt = int(time.time())
-    responses["lists"] = { "success": True, "serviceId": j["serviceId"], "blockedIPAddresses": j["blockedIPAddresses"] }
-    del j["blockedIPAddresses"]
+    responses["lists"] = { "success": True, "serviceId": j["serviceId"] }
+    if "blockedIPAddresses" in j:
+        responses["lists"]["blockedIPAddresses"] = j["blockedIPAddresses"]
+        del j["blockedIPAddresses"]
     responses["config"] = j
     responses["config"]["configUpdatedAt"] = configUpdatedAt
     responses["configUpdatedAt"] = { "serviceId": 1, "configUpdatedAt": configUpdatedAt }
