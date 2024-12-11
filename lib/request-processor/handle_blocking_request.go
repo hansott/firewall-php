@@ -33,6 +33,11 @@ func OnGetBlockingStatus() string {
 		return GetStoreAction("blocked", "user", "")
 	}
 
+	ip := context.GetIp()
+	if utils.IsIpGeoBlocked(ip) {
+		return GetStoreAction("blocked", "geo", ip)
+	}
+
 	method := context.GetMethod()
 	route := context.GetParsedRoute()
 	if method == "" || route == "" {
@@ -44,8 +49,6 @@ func OnGetBlockingStatus() string {
 		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
 		return ""
 	}
-
-	ip := context.GetIp()
 
 	if endpointData.RateLimiting.Enabled {
 		if !context.IsIpBypassed() {

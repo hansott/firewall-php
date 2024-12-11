@@ -6,6 +6,8 @@ import (
 	"main/globals"
 	"net"
 	"strings"
+
+	"github.com/seancfoley/ipaddress-go/ipaddr"
 )
 
 func KeyExists[K comparable, V any](m map[K]V, key K) bool {
@@ -175,6 +177,16 @@ func IsUserBlocked(userID string) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 	return KeyExists(globals.CloudConfig.BlockedUserIds, userID)
+}
+
+func IsIpGeoBlocked(ip string) bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	if globals.CloudConfig.GeoBlockedIpsTrie == nil {
+		return false
+	}
+	return globals.CloudConfig.GeoBlockedIpsTrie.Contains(ipaddr.NewIPAddressString(ip).GetAddress().ToAddressBase())
 }
 
 type DatabaseType int

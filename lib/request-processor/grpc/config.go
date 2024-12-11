@@ -5,6 +5,8 @@ import (
 	"main/globals"
 	"main/ipc/protos"
 	"time"
+
+	"github.com/seancfoley/ipaddress-go/ipaddr"
 )
 
 var (
@@ -12,7 +14,23 @@ var (
 	cloudConfigTicker = time.NewTicker(1 * time.Minute)
 )
 
+func buildGeoBlockedIpsTrie(geoBlockedIps []string) {
+	if len(geoBlockedIps) == 0 {
+		globals.CloudConfig.GeoBlockedIpsTrie = nil
+		return
+	}
+
+	globals.CloudConfig.GeoBlockedIpsTrie = &ipaddr.AddressTrie{}
+	for _, ip := range geoBlockedIps {
+		globals.CloudConfig.GeoBlockedIpsTrie.Add(ipaddr.NewIPAddressString(ip).GetAddress().ToAddressBase())
+	}
+}
+
 func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
+	if cloudConfigFromAgent == nil {
+		return
+	}
+
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
@@ -43,13 +61,13 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		globals.CloudConfig.BypassedIps[ip] = true
 	}
 
-	globals.CloudConfig.GeoBlockedIps = cloudConfigFromAgent.GeoBlockedIps
-
 	if cloudConfigFromAgent.Block {
 		globals.CloudConfig.Block = 1
 	} else {
 		globals.CloudConfig.Block = 0
 	}
+
+	buildGeoBlockedIpsTrie(cloudConfigFromAgent.GeoBlockedIps)
 }
 
 func startCloudConfigRoutine() {
