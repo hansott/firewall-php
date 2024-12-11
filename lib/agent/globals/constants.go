@@ -6,6 +6,8 @@ const (
 	ConfigUpdatedAtAPI                 = "/config"
 	ConfigAPIMethod                    = "GET"
 	ConfigAPI                          = "/api/runtime/config"
+	ListsAPIMethod                     = "GET"
+	ListsAPI                           = "api/runtime/firewall/lists"
 	EventsAPIMethod                    = "POST"
 	EventsAPI                          = "/api/runtime/events"
 	MinHeartbeatIntervalInMS           = 120000

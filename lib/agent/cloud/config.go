@@ -24,10 +24,11 @@ func CheckConfigUpdatedAt() {
 		return
 	}
 
-	response, err = SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.ConfigAPI, globals.ConfigAPIMethod, nil)
+	configResponse, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.ConfigAPI, globals.ConfigAPIMethod, nil)
 	if err != nil {
 		log.Warn("Error in sending config request: ", err)
 		return
 	}
-	StoreCloudConfig(response)
+
+	StoreCloudConfig(configResponse)
 }

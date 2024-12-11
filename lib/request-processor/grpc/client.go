@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 
 	"main/ipc/protos"
@@ -123,10 +124,10 @@ func GetCloudConfig() {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cloudConfig, err := client.GetCloudConfig(ctx, &emptypb.Empty{})
+	cloudConfig, err := client.GetCloudConfig(ctx, &protos.CloudConfigUpdatedAt{ConfigUpdatedAt: utils.GetCloudConfigUpdatedAt()})
 	if err != nil {
 		log.Warnf("Could not get cloud config: %v", err)
 		return

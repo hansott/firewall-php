@@ -16,6 +16,8 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
+	globals.CloudConfig.ConfigUpdatedAt = cloudConfigFromAgent.ConfigUpdatedAt
+
 	globals.CloudConfig.Endpoints = map[EndpointKey]EndpointData{}
 	for _, ep := range cloudConfigFromAgent.Endpoints {
 		endpointData := EndpointData{
@@ -40,6 +42,8 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	for _, ip := range cloudConfigFromAgent.BypassedIps {
 		globals.CloudConfig.BypassedIps[ip] = true
 	}
+
+	globals.CloudConfig.GeoBlockedIps = cloudConfigFromAgent.GeoBlockedIps
 
 	if cloudConfigFromAgent.Block {
 		globals.CloudConfig.Block = 1

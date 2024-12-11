@@ -53,8 +53,8 @@ func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetad
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*protos.CloudConfig, error) {
-	return getCloudConfig(), nil
+func (s *server) GetCloudConfig(ctx context.Context, req *protos.CloudConfigUpdatedAt) (*protos.CloudConfig, error) {
+	return getCloudConfig(req.ConfigUpdatedAt), nil
 }
 
 func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
