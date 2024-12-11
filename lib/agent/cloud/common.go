@@ -114,6 +114,7 @@ func UpdateListsConfig() bool {
 		return false
 	}
 
+	CloudConfig.GeoBlockedIps = []string{}
 	for _, blockedIpsGroup := range tempListsConfig.BlockedIpAddresses {
 		switch blockedIpsGroup.Source {
 		case "geoip":
