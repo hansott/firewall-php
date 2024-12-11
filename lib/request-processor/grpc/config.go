@@ -19,27 +19,26 @@ func buildGeoBlockedIpsTrie(geoBlockedIps []string) {
 	if len(geoBlockedIps) == 0 {
 		globals.CloudConfig.GeoBlockedIpsTrieV4 = nil
 		globals.CloudConfig.GeoBlockedIpsTrieV6 = nil
-		return
+	} else {
+		globals.CloudConfig.GeoBlockedIpsTrieV4 = &ipaddr.IPv4AddressTrie{}
+		globals.CloudConfig.GeoBlockedIpsTrieV6 = &ipaddr.IPv6AddressTrie{}
+		for _, ip := range geoBlockedIps {
+			ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
+			if err != nil {
+				log.Infof("Invalid geoip address: %s\n", ip)
+				continue
+			}
+
+			if ipAddress.IsIPv4() {
+				globals.CloudConfig.GeoBlockedIpsTrieV4.Add(ipAddress.ToIPv4())
+			} else if ipAddress.IsIPv6() {
+				globals.CloudConfig.GeoBlockedIpsTrieV6.Add(ipAddress.ToIPv6())
+			}
+		}
 	}
 
-	globals.CloudConfig.GeoBlockedIpsTrieV4 = &ipaddr.IPv4AddressTrie{}
-	globals.CloudConfig.GeoBlockedIpsTrieV6 = &ipaddr.IPv6AddressTrie{}
-	for _, ip := range geoBlockedIps {
-		ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
-		if err != nil {
-			log.Infof("Invalid geoip address: %s\n", ip)
-			continue
-		}
-
-		if ipAddress.IsIPv4() {
-			globals.CloudConfig.GeoBlockedIpsTrieV4.Add(ipAddress.ToIPv4())
-		} else if ipAddress.IsIPv6() {
-			globals.CloudConfig.GeoBlockedIpsTrieV6.Add(ipAddress.ToIPv6())
-		}
-	}
-
-	log.Debugf("Built GeoBlockedIpsTrieV4: %d\n%v", globals.CloudConfig.GeoBlockedIpsTrieV4.Size(), globals.CloudConfig.GeoBlockedIpsTrieV4)
-	log.Debugf("Built GeoBlockedIpsTrieV6: %d\n%v", globals.CloudConfig.GeoBlockedIpsTrieV6.Size(), globals.CloudConfig.GeoBlockedIpsTrieV6)
+	log.Debugf("GeoBlockedIpsTrieV4: \n%v", globals.CloudConfig.GeoBlockedIpsTrieV4)
+	log.Debugf("GeoBlockedIpsTrieV6: \n%v", globals.CloudConfig.GeoBlockedIpsTrieV6)
 }
 
 func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {

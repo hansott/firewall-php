@@ -14,6 +14,8 @@ import (
 	"sync/atomic"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -54,7 +56,11 @@ func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetad
 }
 
 func (s *server) GetCloudConfig(ctx context.Context, req *protos.CloudConfigUpdatedAt) (*protos.CloudConfig, error) {
-	return getCloudConfig(req.ConfigUpdatedAt), nil
+	cloudConfig := getCloudConfig(req.ConfigUpdatedAt)
+	if cloudConfig == nil {
+		return nil, status.Errorf(codes.Unavailable, "CloudConfig was not updated")
+	}
+	return cloudConfig, nil
 }
 
 func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
