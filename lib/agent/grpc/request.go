@@ -144,16 +144,23 @@ func getRateLimitingStatus(method string, route string, user string, ip string) 
 	return &protos.RateLimitingStatus{Block: false}
 }
 
-func getCloudConfig() *protos.CloudConfig {
+func getCloudConfig(configUpdatedAt int64) *protos.CloudConfig {
 	isBlockingEnabled := utils.IsBlockingEnabled()
 
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
+	if globals.CloudConfig.ConfigUpdatedAt <= configUpdatedAt {
+		log.Debugf("CloudConfig.ConfigUpdatedAt was not updated... Returning nil!")
+		return nil
+	}
+
 	cloudConfig := &protos.CloudConfig{
-		BlockedUserIds: globals.CloudConfig.BlockedUserIds,
-		BypassedIps:    globals.CloudConfig.BypassedIps,
-		Block:          isBlockingEnabled,
+		ConfigUpdatedAt: globals.CloudConfig.ConfigUpdatedAt,
+		BlockedUserIds:  globals.CloudConfig.BlockedUserIds,
+		BypassedIps:     globals.CloudConfig.BypassedIps,
+		GeoBlockedIps:   globals.CloudConfig.GeoBlockedIps,
+		Block:           isBlockingEnabled,
 	}
 
 	for _, endpoint := range globals.CloudConfig.Endpoints {

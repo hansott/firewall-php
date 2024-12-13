@@ -52,6 +52,19 @@ type CloudConfigData struct {
 	BypassedIps           []string   `json:"allowedIPAddresses"`
 	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
 	Block                 *bool      `json:"block,omitempty"`
+	GeoBlockedIps         []string
+}
+
+type BlockedIpsData struct {
+	Source      string   `json:"source"`
+	Description string   `json:"description"`
+	Ips         []string `json:"ips"`
+}
+
+type ListsConfigData struct {
+	Success            bool             `json:"success"`
+	ServiceId          int              `json:"serviceId"`
+	BlockedIpAddresses []BlockedIpsData `json:"blockedIPAddresses"`
 }
 
 type CloudConfigUpdatedAt struct {

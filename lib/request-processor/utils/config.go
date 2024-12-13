@@ -17,3 +17,10 @@ func GetEndpointConfig(method string, route string) (EndpointData, error) {
 
 	return endpointData, nil
 }
+
+func GetCloudConfigUpdatedAt() int64 {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	return globals.CloudConfig.ConfigUpdatedAt
+}

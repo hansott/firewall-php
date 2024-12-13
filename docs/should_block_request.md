@@ -1,6 +1,7 @@
 # Should block request
 
 In order to enable the user blocking and rate limiting features, the protected app can call `\aikido\should_block_request` to obtain the blocking decision for the current request and act accordingly.
+We provide middleware examples that can be used in different scenarious.
 
 ## No framework
 
@@ -54,6 +55,9 @@ class AikidoMiddleware implements MiddlewareInterface
             }
             else if ($decision->trigger == "ip") {
                 $message = "Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})";
+            }
+            else if ($decision->trigger == "geoip") {
+                $message = "Your IP address is blocked due to geo restrictions! (Your IP: {$decision->ip})";
             }
 
             return new Response([
@@ -125,6 +129,9 @@ class ZenBlockDecision
                 }
                 else if ($decision->trigger == "ip") {
                     return response("Your IP address is not allowed to access this endpoint! (Your IP: {$decision->ip})", 403);
+                }
+                else if ($decision->trigger == "geoip") {
+                    return response("Your IP address is blocked due to geo restrictions! (Your IP: {$decision->ip})", 403);
                 }
             }
             else if ($decision->type == "ratelimited") {

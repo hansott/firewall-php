@@ -4,7 +4,10 @@ import (
 	. "main/aikido_types"
 	"main/globals"
 	"main/ipc/protos"
+	"main/log"
 	"time"
+
+	"github.com/seancfoley/ipaddress-go/ipaddr"
 )
 
 var (
@@ -12,9 +15,41 @@ var (
 	cloudConfigTicker = time.NewTicker(1 * time.Minute)
 )
 
+func buildGeoBlockedIpsTrie(geoBlockedIps []string) {
+	if len(geoBlockedIps) == 0 {
+		globals.CloudConfig.GeoBlockedIpsTrieV4 = nil
+		globals.CloudConfig.GeoBlockedIpsTrieV6 = nil
+	} else {
+		globals.CloudConfig.GeoBlockedIpsTrieV4 = &ipaddr.IPv4AddressTrie{}
+		globals.CloudConfig.GeoBlockedIpsTrieV6 = &ipaddr.IPv6AddressTrie{}
+		for _, ip := range geoBlockedIps {
+			ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
+			if err != nil {
+				log.Infof("Invalid geoip address: %s\n", ip)
+				continue
+			}
+
+			if ipAddress.IsIPv4() {
+				globals.CloudConfig.GeoBlockedIpsTrieV4.Add(ipAddress.ToIPv4())
+			} else if ipAddress.IsIPv6() {
+				globals.CloudConfig.GeoBlockedIpsTrieV6.Add(ipAddress.ToIPv6())
+			}
+		}
+	}
+
+	log.Debugf("GeoBlockedIpsTrieV4: %v", globals.CloudConfig.GeoBlockedIpsTrieV4)
+	log.Debugf("GeoBlockedIpsTrieV6: %v", globals.CloudConfig.GeoBlockedIpsTrieV6)
+}
+
 func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
+	if cloudConfigFromAgent == nil {
+		return
+	}
+
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
+
+	globals.CloudConfig.ConfigUpdatedAt = cloudConfigFromAgent.ConfigUpdatedAt
 
 	globals.CloudConfig.Endpoints = map[EndpointKey]EndpointData{}
 	for _, ep := range cloudConfigFromAgent.Endpoints {
@@ -46,6 +81,8 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 	} else {
 		globals.CloudConfig.Block = 0
 	}
+
+	buildGeoBlockedIpsTrie(cloudConfigFromAgent.GeoBlockedIps)
 }
 
 func startCloudConfigRoutine() {

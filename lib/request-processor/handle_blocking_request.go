@@ -30,7 +30,14 @@ func OnGetBlockingStatus() string {
 
 	userId := context.GetUserId()
 	if utils.IsUserBlocked(userId) {
+		log.Infof("User \"%s\" is blocked!", userId)
 		return GetStoreAction("blocked", "user", "")
+	}
+
+	ip := context.GetIp()
+	if utils.IsIpGeoBlocked(ip) {
+		log.Infof("IP \"%s\" is blocked by geolocation!", ip)
+		return GetStoreAction("blocked", "geoip", ip)
 	}
 
 	method := context.GetMethod()
@@ -41,11 +48,9 @@ func OnGetBlockingStatus() string {
 
 	endpointData, err := utils.GetEndpointConfig(method, route)
 	if err != nil {
-		log.Debugf("Method+route in not configured in endpoints! Skipping checks...")
+		log.Debugf("Method+route is not configured in endpoints! Skipping checks...")
 		return ""
 	}
-
-	ip := context.GetIp()
 
 	if endpointData.RateLimiting.Enabled {
 		if !context.IsIpBypassed() {
@@ -53,6 +58,7 @@ func OnGetBlockingStatus() string {
 			// do a sync call via gRPC to see if the request should be blocked or not
 			rateLimitingStatus := grpc.GetRateLimitingStatus(method, route, userId, ip, 10*time.Millisecond)
 			if rateLimitingStatus != nil && rateLimitingStatus.Block {
+				log.Infof("Request made from IP \"%s\" is ratelimited by \"%s\"!", ip, rateLimitingStatus.Trigger)
 				return GetStoreAction("ratelimited", rateLimitingStatus.Trigger, ip)
 			}
 		} else {
@@ -61,6 +67,7 @@ func OnGetBlockingStatus() string {
 	}
 
 	if !utils.IsIpAllowed(endpointData.AllowedIPAddresses, ip) {
+		log.Infof("IP \"%s\" is not allowd to access this endpoint!", ip)
 		return GetStoreAction("blocked", "ip", ip)
 	}
 	return ""

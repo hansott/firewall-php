@@ -1,5 +1,7 @@
 package aikido_types
 
+import "github.com/seancfoley/ipaddress-go/ipaddr"
+
 type EnvironmentConfigData struct {
 	SocketPath                string `json:"socket_path"`                  // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
 	SAPI                      string `json:"sapi"`                         // '{php-sapi}'
@@ -35,8 +37,11 @@ type EndpointKey struct {
 }
 
 type CloudConfigData struct {
-	Endpoints      map[EndpointKey]EndpointData
-	BlockedUserIds map[string]bool
-	BypassedIps    map[string]bool
-	Block          int
+	ConfigUpdatedAt     int64
+	Endpoints           map[EndpointKey]EndpointData
+	BlockedUserIds      map[string]bool
+	BypassedIps         map[string]bool
+	GeoBlockedIpsTrieV4 *ipaddr.IPv4AddressTrie
+	GeoBlockedIpsTrieV6 *ipaddr.IPv6AddressTrie
+	Block               int
 }
