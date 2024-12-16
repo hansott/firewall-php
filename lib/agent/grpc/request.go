@@ -160,6 +160,7 @@ func getCloudConfig(configUpdatedAt int64) *protos.CloudConfig {
 		BlockedUserIds:  globals.CloudConfig.BlockedUserIds,
 		BypassedIps:     globals.CloudConfig.BypassedIps,
 		GeoBlockedIps:   globals.CloudConfig.GeoBlockedIps,
+		TorBlockedIps:   globals.CloudConfig.TorBlockedIps,
 		Block:           isBlockingEnabled,
 	}
 

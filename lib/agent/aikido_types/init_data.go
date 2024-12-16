@@ -53,6 +53,7 @@ type CloudConfigData struct {
 	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
 	Block                 *bool      `json:"block,omitempty"`
 	GeoBlockedIps         []string
+	TorBlockedIps         []string
 }
 
 type BlockedIpsData struct {

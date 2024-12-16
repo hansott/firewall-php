@@ -201,6 +201,43 @@ func IsIpGeoBlocked(ip string) bool {
 	return false
 }
 
+func IsIpTorBlocked(ip string) bool {
+	globals.CloudConfigMutex.Lock()
+	defer globals.CloudConfigMutex.Unlock()
+
+	ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
+	if err != nil {
+		log.Infof("Invalid ip address: %s\n", ip)
+		return false
+	}
+
+	if ipAddress.IsIPv4() && globals.CloudConfig.TorBlockedIpsTrieV4 != nil {
+		log.Infof("Checking ipv4 address for tor-blocking: %v\n", ipAddress.ToIPv4())
+		return globals.CloudConfig.TorBlockedIpsTrieV4.ElementContains(ipAddress.ToIPv4())
+	} else if ipAddress.IsIPv6() && globals.CloudConfig.TorBlockedIpsTrieV6 != nil {
+		log.Infof("Checking ipv6 address for tor-blocking: %v\n", ipAddress.ToIPv6())
+		return globals.CloudConfig.TorBlockedIpsTrieV6.ElementContains(ipAddress.ToIPv6())
+	}
+
+	return false
+}
+
+type IpBlockingCheckFunction func(string) bool
+
+var IpBlockingChecks = map[string]IpBlockingCheckFunction{
+	"geoip": IsIpGeoBlocked,
+	"torip": IsIpTorBlocked,
+}
+
+func GetIpBlockingStatus(ip string) string {
+	for ipBlockingType, ipBlockingFunction := range IpBlockingChecks {
+		if ipBlockingFunction(ip) == true {
+			return ipBlockingType
+		}
+	}
+	return ""
+}
+
 type DatabaseType int
 
 const (

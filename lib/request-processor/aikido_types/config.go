@@ -43,5 +43,7 @@ type CloudConfigData struct {
 	BypassedIps         map[string]bool
 	GeoBlockedIpsTrieV4 *ipaddr.IPv4AddressTrie
 	GeoBlockedIpsTrieV6 *ipaddr.IPv6AddressTrie
+	TorBlockedIpsTrieV4 *ipaddr.IPv4AddressTrie
+	TorBlockedIpsTrieV6 *ipaddr.IPv6AddressTrie
 	Block               int
 }

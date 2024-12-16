@@ -35,9 +35,9 @@ func OnGetBlockingStatus() string {
 	}
 
 	ip := context.GetIp()
-	if utils.IsIpGeoBlocked(ip) {
-		log.Infof("IP \"%s\" is blocked by geolocation!", ip)
-		return GetStoreAction("blocked", "geoip", ip)
+	if ipBlockingStatus := utils.GetIpBlockingStatus(ip); ipBlockingStatus != "" {
+		log.Infof("IP \"%s\" is blocked by %s!", ip, ipBlockingStatus)
+		return GetStoreAction("blocked", ipBlockingStatus, ip)
 	}
 
 	method := context.GetMethod()

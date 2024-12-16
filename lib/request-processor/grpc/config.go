@@ -15,30 +15,31 @@ var (
 	cloudConfigTicker = time.NewTicker(1 * time.Minute)
 )
 
-func buildGeoBlockedIpsTrie(geoBlockedIps []string) {
-	if len(geoBlockedIps) == 0 {
-		globals.CloudConfig.GeoBlockedIpsTrieV4 = nil
-		globals.CloudConfig.GeoBlockedIpsTrieV6 = nil
+func buildBlockedIpsTrie(name string, ipsList []string) (trieV4 *ipaddr.IPv4AddressTrie, trieV6 *ipaddr.IPv6AddressTrie) {
+	if len(ipsList) == 0 {
+		log.Debugf("%s -> Empty blocked IPs list!", name)
+		return nil, nil
 	} else {
-		globals.CloudConfig.GeoBlockedIpsTrieV4 = &ipaddr.IPv4AddressTrie{}
-		globals.CloudConfig.GeoBlockedIpsTrieV6 = &ipaddr.IPv6AddressTrie{}
-		for _, ip := range geoBlockedIps {
+		trieV4 = &ipaddr.IPv4AddressTrie{}
+		trieV6 = &ipaddr.IPv6AddressTrie{}
+		for _, ip := range ipsList {
 			ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
 			if err != nil {
-				log.Infof("Invalid geoip address: %s\n", ip)
+				log.Infof("Invalid address: %s\n", ip)
 				continue
 			}
 
 			if ipAddress.IsIPv4() {
-				globals.CloudConfig.GeoBlockedIpsTrieV4.Add(ipAddress.ToIPv4())
+				trieV4.Add(ipAddress.ToIPv4())
 			} else if ipAddress.IsIPv6() {
-				globals.CloudConfig.GeoBlockedIpsTrieV6.Add(ipAddress.ToIPv6())
+				trieV6.Add(ipAddress.ToIPv6())
 			}
 		}
 	}
 
-	log.Debugf("GeoBlockedIpsTrieV4: %v", globals.CloudConfig.GeoBlockedIpsTrieV4)
-	log.Debugf("GeoBlockedIpsTrieV6: %v", globals.CloudConfig.GeoBlockedIpsTrieV6)
+	log.Debugf("%s (v4): %v", name, trieV4)
+	log.Debugf("%s (v6): %v", name, trieV6)
+	return trieV4, trieV6
 }
 
 func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
@@ -82,7 +83,8 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		globals.CloudConfig.Block = 0
 	}
 
-	buildGeoBlockedIpsTrie(cloudConfigFromAgent.GeoBlockedIps)
+	globals.CloudConfig.GeoBlockedIpsTrieV4, globals.CloudConfig.GeoBlockedIpsTrieV6 = buildBlockedIpsTrie("geoip", cloudConfigFromAgent.GeoBlockedIps)
+	globals.CloudConfig.TorBlockedIpsTrieV4, globals.CloudConfig.TorBlockedIpsTrieV6 = buildBlockedIpsTrie("tor", cloudConfigFromAgent.TorBlockedIps)
 }
 
 func startCloudConfigRoutine() {

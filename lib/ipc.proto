@@ -68,7 +68,8 @@ message CloudConfig {
   repeated string blockedUserIds = 3;
   repeated string bypassedIps = 4;
   repeated string geoBlockedIps = 5;
-  bool block = 6;
+  repeated string torBlockedIps = 6;
+  bool block = 7;
 }
 
 message RateLimitingStatus {
