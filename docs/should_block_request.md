@@ -54,7 +54,7 @@ class AikidoMiddleware implements MiddlewareInterface
                 $message = "Your user is blocked!";
             }
             else if ($decision->trigger == "ip") {
-                $message = "Your IP ({$decision->ip}) is blocked due to: ${$decision->description}!";
+                $message = "Your IP ({$decision->ip}) is blocked due to: {$decision->description}!";
             }
 
             return new Response([
@@ -125,7 +125,7 @@ class ZenBlockDecision
                     return response('Your user is blocked!', 403);
                 }
                 else if ($decision->trigger == "ip") {
-                    return response("Your IP ({$decision->ip}) is blocked due to: ${$decision->description}!", 403);
+                    return response("Your IP ({$decision->ip}) is blocked due to: {$decision->description}!", 403);
                 }
             }
             else if ($decision->type == "ratelimited") {
