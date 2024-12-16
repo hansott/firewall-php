@@ -6,6 +6,7 @@ import (
 	"main/grpc"
 	"main/log"
 	"main/utils"
+	"strings"
 	"time"
 )
 
@@ -15,7 +16,7 @@ func GetStoreAction(actionType, trigger, ip string) string {
 		"type":    actionType,
 		"trigger": trigger,
 	}
-	if trigger == "ip" {
+	if strings.Contains(trigger, "ip") {
 		actionMap["ip"] = ip
 	}
 	actionJson, err := json.Marshal(actionMap)
