@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"html"
 	"main/context"
 	"main/grpc"
 	"main/log"
@@ -14,7 +15,7 @@ func GetStoreAction(actionType, trigger, description, ip string) string {
 		"action":      "store",
 		"type":        actionType,
 		"trigger":     trigger,
-		"description": description,
+		"description": html.EscapeString(description),
 	}
 	if trigger == ip {
 		actionMap["ip"] = ip
