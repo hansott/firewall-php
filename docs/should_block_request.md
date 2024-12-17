@@ -32,11 +32,11 @@ class AikidoMiddleware implements MiddlewareInterface
 
         // Get the user ID / name (from session or other auth system)
         $userId = $this->getAuthenticatedUserId();
-        $userName = $this->getAuthenticatedUserName();
-        
+
         // If the user is authenticated, set the user ID in Aikido Zen context
-        if ($userId && $userName) {
+        if ($userId) {
             // Username is optional: \aikido\set_user can be called only with user ID
+            $userName = $this->getAuthenticatedUserName();
             \aikido\set_user(strval($userId), $userName);
         }
 
