@@ -119,7 +119,7 @@ class ZenBlockDecision
 
 		// If a user is authenticated, set the user in Aikido's firewall context
 		if ($userId) {
-            // If username is available, you can set it as the second parameter in the \aikido\set_user function call
+			// If username is available, you can set it as the second parameter in the \aikido\set_user function call
 			\aikido\set_user(strval($userId));
 		}
 
