@@ -13,7 +13,7 @@ Zen protects your PHP apps by preventing user input containing dangerous strings
 Zen will autonomously protect your PHP applications from the inside against:
 
 * 🛡️ [SQL injection attacks](https://www.aikido.dev/blog/the-state-of-sql-injections)
-* 🛡️ [Command injection attacks](https://owasp.org/www-community/attacks/Command_Injection)
+* 🛡️ [Command injection attacks](https://www.aikido.dev/blog/command-injection-in-2024-unpacked)
 * 🛡️ [Path traversal attacks](https://owasp.org/www-community/attacks/Path_Traversal)
 * 🛡️ [Server-side request forgery (SSRF)](./docs/ssrf.md)
 
