@@ -5,13 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"main/globals"
+	"main/config"
 	"main/log"
 	"net/http"
 	"net/url"
 )
 
 func SendCloudRequest(endpoint string, route string, method string, payload interface{}) ([]byte, error) {
+	token := config.GetToken()
+	if token == "" {
+		return nil, fmt.Errorf("no token set")
+	}
+
 	apiEndpoint, err := url.JoinPath(endpoint, route)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build API endpoint: %v", err)
@@ -36,7 +41,7 @@ func SendCloudRequest(endpoint string, route string, method string, payload inte
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
-	req.Header.Set("Authorization", globals.EnvironmentConfig.Token)
+	req.Header.Set("Authorization", token)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

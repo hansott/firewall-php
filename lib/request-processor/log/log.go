@@ -116,10 +116,6 @@ func SetLogLevel(level string) error {
 }
 
 func Init() {
-	if err := SetLogLevel(globals.EnvironmentConfig.LogLevel); err != nil {
-		panic(fmt.Sprintf("Error setting log level: %s", err))
-	}
-
 	if globals.EnvironmentConfig.SAPI == "cli" {
 		cliLogging = true
 		return

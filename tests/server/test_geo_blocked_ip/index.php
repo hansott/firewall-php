@@ -1,5 +1,7 @@
 <?php
 
+$_SERVER['REMOTE_ADDR'] = '5.8.19.22';
+
 if (extension_loaded('aikido')) {
     $decision = \aikido\should_block_request();
 

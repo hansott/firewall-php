@@ -2,15 +2,36 @@
 
 #define MIN_REPORT_STATS_INTERVAL 50
 
-std::string GetEnvVariable(const std::string& env_key) {
+std::string GetLaravelEnvVariable(const std::string& env_key) {
+    zval env_value;
+    if (!CallPhpFunctionWithOneParam("getenv", env_key, &env_value) || Z_TYPE(env_value) != IS_STRING) {
+        return "";
+    }
+
+    std::string env_value_str = Z_STRVAL_P(&env_value);
+    zval_ptr_dtor(&env_value);
+
+    AIKIDO_LOG_DEBUG("laravel_env[%s] = %s\n", env_key.c_str(), env_value_str.c_str());
+    return env_value_str;
+} 
+
+std::string GetSystemEnvVariable(const std::string& env_key) {
     const char* env_value = getenv(env_key.c_str());
     if (!env_value) return "";
     AIKIDO_LOG_DEBUG("env[%s] = %s\n", env_key.c_str(), env_value);
     return env_value;
 }
 
+std::string GetEnvVariable(const std::string& env_key) {
+    std::string env_value = GetSystemEnvVariable(env_key);
+    if (env_value.empty()) {
+        return GetLaravelEnvVariable(env_key);
+    }
+    return env_value;
+}
+
 std::string GetEnvString(const std::string& env_key, const std::string default_value) {
-    std::string env_value = GetEnvVariable(env_key.c_str());
+    std::string env_value = GetEnvVariable(env_key);
     if (!env_value.empty()) {
         return env_value;
     }
@@ -18,7 +39,7 @@ std::string GetEnvString(const std::string& env_key, const std::string default_v
 }
 
 bool GetEnvBool(const std::string& env_key, bool default_value) {
-    std::string env_value = GetEnvVariable(env_key.c_str());
+    std::string env_value = GetEnvVariable(env_key);
     if (!env_value.empty()) {
         return (env_value == "1" || env_value == "true");
     }
@@ -53,7 +74,6 @@ void LoadEnvironment() {
     AIKIDO_GLOBAL(collect_api_schema) = GetEnvBool("AIKIDO_FEATURE_COLLECT_API_SCHEMA", true);
     AIKIDO_GLOBAL(localhost_allowed_by_default) = GetEnvBool("AIKIDO_LOCALHOST_ALLOWED_BY_DEFAULT", true);
     AIKIDO_GLOBAL(trust_proxy) = GetEnvBool("AIKIDO_TRUST_PROXY", true);
-    AIKIDO_GLOBAL(socket_path) = GenerateSocketPath();
     AIKIDO_GLOBAL(sapi_name) = sapi_module.name;
     AIKIDO_GLOBAL(token) = GetEnvString("AIKIDO_TOKEN", "");
     AIKIDO_GLOBAL(endpoint) = GetEnvString("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");

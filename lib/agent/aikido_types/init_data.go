@@ -1,5 +1,7 @@
 package aikido_types
 
+import "sync"
+
 type MachineData struct {
 	HostName   string `json:"hostname"`
 	DomainName string `json:"domainname"`
@@ -9,16 +11,20 @@ type MachineData struct {
 }
 
 type EnvironmentConfigData struct {
-	SocketPath                string `json:"socket_path"`                            // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
-	PlatformName              string `json:"platform_name"`                          // PHP platform name (fpm-fcgi, cli-server, ...)
-	PlatformVersion           string `json:"platform_version"`                       // PHP version
+	SocketPath      string `json:"socket_path"`               // '/run/aikido-{version}/aikido-{datetime}-{randint}.sock'
+	PlatformName    string `json:"platform_name"`             // PHP platform name (fpm-fcgi, cli-server, ...)
+	PlatformVersion string `json:"platform_version"`          // PHP version
+	Endpoint        string `json:"endpoint,omitempty"`        // default: 'https://guard.aikido.dev/'
+	ConfigEndpoint  string `json:"config_endpoint,omitempty"` // default: 'https://runtime.aikido.dev/'
+}
+
+type AikidoConfigData struct {
+	ConfigMutex               sync.Mutex
 	Token                     string `json:"token,omitempty"`                        // default: ''
 	LogLevel                  string `json:"log_level,omitempty"`                    // default: 'INFO'
-	Endpoint                  string `json:"endpoint,omitempty"`                     // default: 'https://guard.aikido.dev/'
-	ConfigEndpoint            string `json:"config_endpoint,omitempty"`              // default: 'https://runtime.aikido.dev/'
 	Blocking                  bool   `json:"blocking,omitempty"`                     // default: false
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"` // default: true
-	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: false
+	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: true
 }
 
 type RateLimiting struct {
@@ -36,6 +42,11 @@ type Endpoint struct {
 	RateLimiting       RateLimiting `json:"rateLimiting"`
 }
 
+type IpBlocklist struct {
+	Description string
+	Ips         []string
+}
+
 type CloudConfigData struct {
 	Success               bool       `json:"success"`
 	ServiceId             int        `json:"serviceId"`
@@ -46,6 +57,19 @@ type CloudConfigData struct {
 	BypassedIps           []string   `json:"allowedIPAddresses"`
 	ReceivedAnyStats      bool       `json:"receivedAnyStats"`
 	Block                 *bool      `json:"block,omitempty"`
+	BlockedIpsList        map[string]IpBlocklist
+}
+
+type BlockedIpsData struct {
+	Source      string   `json:"source"`
+	Description string   `json:"description"`
+	Ips         []string `json:"ips"`
+}
+
+type ListsConfigData struct {
+	Success            bool             `json:"success"`
+	ServiceId          int              `json:"serviceId"`
+	BlockedIpAddresses []BlockedIpsData `json:"blockedIPAddresses"`
 }
 
 type CloudConfigUpdatedAt struct {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"main/globals"
 	"main/log"
+	"main/utils"
 	"time"
 
 	"main/ipc/protos"
@@ -31,6 +32,7 @@ func Init() {
 
 	log.Debugf("Current connection state: %s\n", conn.GetState().String())
 
+	SendAikidoConfig()
 	startCloudConfigRoutine()
 }
 
@@ -39,6 +41,26 @@ func Uninit() {
 	if conn != nil {
 		conn.Close()
 	}
+}
+
+/* Send Aikido Config to Aikido Agent via gRPC */
+func SendAikidoConfig() {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	_, err := client.OnConfig(ctx, &protos.Config{Token: globals.AikidoConfig.Token, LogLevel: globals.AikidoConfig.LogLevel,
+		Blocking: globals.AikidoConfig.Blocking, LocalhostAllowedByDefault: globals.AikidoConfig.LocalhostAllowedByDefault,
+		CollectApiSchema: globals.AikidoConfig.CollectApiSchema})
+	if err != nil {
+		log.Warnf("Could not send Aikido Config: %v", err)
+		return
+	}
+
+	log.Debugf("Aikido config sent via socket!")
 }
 
 /* Send outgoing domain to Aikido Agent via gRPC */
@@ -102,12 +124,12 @@ func GetCloudConfig() {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cloudConfig, err := client.GetCloudConfig(ctx, &emptypb.Empty{})
+	cloudConfig, err := client.GetCloudConfig(ctx, &protos.CloudConfigUpdatedAt{ConfigUpdatedAt: utils.GetCloudConfigUpdatedAt()})
 	if err != nil {
-		log.Warnf("Could not get cloud config: %v", err)
+		log.Infof("Could not get cloud config: %v", err)
 		return
 	}
 
@@ -167,4 +189,20 @@ func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, intercep
 		return
 	}
 	log.Debugf("Monitored sink stats for sink \"%s\" sent via socket", sink)
+}
+
+func OnMiddlewareInstalled() {
+	if client == nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := client.OnMiddlewareInstalled(ctx, &emptypb.Empty{})
+	if err != nil {
+		log.Warnf("Could not call OnMiddlewareInstalled")
+		return
+	}
+	log.Debugf("OnMiddlewareInstalled sent via socket")
 }

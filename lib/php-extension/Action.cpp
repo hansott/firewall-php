@@ -26,6 +26,7 @@ ACTION_STATUS Action::executeStore(json &event) {
     block = true;
     type = event["type"];
     trigger = event["trigger"];
+    description = event["description"];
     if (event.contains("ip")) {
         ip = event["ip"];
     }
@@ -62,6 +63,7 @@ void Action::Reset() {
     block = false;
     type = "";
     trigger = "";
+    description = "";
     ip = "";
 }
 
@@ -79,6 +81,10 @@ char *Action::Type() {
 
 char *Action::Trigger() {
     return (char *)trigger.c_str();
+}
+
+char *Action::Description() {
+    return (char *)description.c_str();
 }
 
 char *Action::Ip() {

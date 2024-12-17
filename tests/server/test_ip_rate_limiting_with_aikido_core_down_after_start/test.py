@@ -12,6 +12,9 @@ from testlib import *
 '''
 
 def run_test():
+    response = php_server_get("/test")
+    time.sleep(5)
+
     mock_server_down()
 
     for _ in range(5):

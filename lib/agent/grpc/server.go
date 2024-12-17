@@ -4,18 +4,33 @@ import (
 	"context"
 	"fmt"
 	"main/cloud"
+	"main/config"
 	"main/globals"
 	"main/ipc/protos"
 	"main/log"
 	"net"
 	"os"
+	"path/filepath"
+	"sync/atomic"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
 	protos.AikidoServer
+}
+
+func (s *server) OnConfig(ctx context.Context, req *protos.Config) (*emptypb.Empty, error) {
+	previousToken := config.GetToken()
+	storeConfig(req.GetToken(), req.GetLogLevel(), req.GetBlocking(), req.GetLocalhostAllowedByDefault(), req.GetCollectApiSchema())
+	if previousToken == "" {
+		// First time the token is set -> we can start reporting things to cloud
+		cloud.SendStartEvent()
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (s *server) OnDomain(ctx context.Context, req *protos.Domain) (*emptypb.Empty, error) {
@@ -40,8 +55,12 @@ func (s *server) OnRequestShutdown(ctx context.Context, req *protos.RequestMetad
 	return &emptypb.Empty{}, nil
 }
 
-func (s *server) GetCloudConfig(ctx context.Context, req *emptypb.Empty) (*protos.CloudConfig, error) {
-	return getCloudConfig(), nil
+func (s *server) GetCloudConfig(ctx context.Context, req *protos.CloudConfigUpdatedAt) (*protos.CloudConfig, error) {
+	cloudConfig := getCloudConfig(req.ConfigUpdatedAt)
+	if cloudConfig == nil {
+		return nil, status.Errorf(codes.Canceled, "CloudConfig was not updated")
+	}
+	return cloudConfig, nil
 }
 
 func (s *server) OnUser(ctx context.Context, req *protos.User) (*emptypb.Empty, error) {
@@ -61,6 +80,12 @@ func (s *server) OnMonitoredSinkStats(ctx context.Context, req *protos.Monitored
 	return &emptypb.Empty{}, nil
 }
 
+func (s *server) OnMiddlewareInstalled(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
+	log.Debugf("Received MiddlewareInstalled")
+	atomic.StoreUint32(&globals.MiddlewareInstalled, 1)
+	return &emptypb.Empty{}, nil
+}
+
 var grpcServer *grpc.Server
 
 func StartServer(lis net.Listener) {
@@ -75,11 +100,29 @@ func StartServer(lis net.Listener) {
 	lis.Close()
 }
 
+// Creates the /run/aikido-* folder if it does not exist, in order for the socket creation to succeed
+// For now, this folder has 777 permissions as we don't know under which user the php requests will run under (apache, nginx, www-data, forge, ...)
+func createRunDirFolderIfNotExists() {
+	runDirectory := filepath.Dir(globals.EnvironmentConfig.SocketPath)
+	if _, err := os.Stat(runDirectory); os.IsNotExist(err) {
+		err := os.MkdirAll(runDirectory, 0777)
+		if err != nil {
+			log.Errorf("Error in creating run directory: %v\n", err)
+		} else {
+			log.Infof("Run directory %s created successfully.\n", runDirectory)
+		}
+	} else {
+		log.Infof("Run directory %s already exists.\n", runDirectory)
+	}
+}
+
 func Init() bool {
 	// Remove the socket file if it already exists
 	if _, err := os.Stat(globals.EnvironmentConfig.SocketPath); err == nil {
 		os.RemoveAll(globals.EnvironmentConfig.SocketPath)
 	}
+
+	createRunDirFolderIfNotExists()
 
 	lis, err := net.Listen("unix", globals.EnvironmentConfig.SocketPath)
 	if err != nil {
@@ -87,6 +130,7 @@ func Init() bool {
 	}
 
 	// Change the permissions of the socket to make it accessible by non-root users
+	// For now, this socket has 777 permissions as we don't know under which user the php requests will run under (apache, nginx, www-data, forge, ...)
 	if err := os.Chmod(globals.EnvironmentConfig.SocketPath, 0777); err != nil {
 		panic(fmt.Sprintf("failed to change permissions of Unix socket: %v", err))
 	}

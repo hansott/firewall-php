@@ -3,9 +3,13 @@
 RequestProcessor requestProcessor;
 
 std::string RequestProcessor::GetInitData() {
+    LoadEnvironment();
+
     json initData = {
+        {"token", AIKIDO_GLOBAL(token)},
         {"log_level", AIKIDO_GLOBAL(log_level_str)},
         {"socket_path", AIKIDO_GLOBAL(socket_path)},
+        {"blocking", AIKIDO_GLOBAL(blocking)},
         {"trust_proxy", AIKIDO_GLOBAL(trust_proxy)},
         {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
@@ -105,12 +109,14 @@ bool RequestProcessor::Init() {
 
     RequestProcessorInitFn requestProcessorInitFn = (RequestProcessorInitFn)dlsym(libHandle, "RequestProcessorInit");
     this->requestProcessorContextInitFn = (RequestProcessorContextInitFn)dlsym(libHandle, "RequestProcessorContextInit");
+    this->requestProcessorConfigUpdateFn = (RequestProcessorConfigUpdateFn)dlsym(libHandle, "RequestProcessorConfigUpdate");
     this->requestProcessorOnEventFn = (RequestProcessorOnEventFn)dlsym(libHandle, "RequestProcessorOnEvent");
     this->requestProcessorGetBlockingModeFn = (RequestProcessorGetBlockingModeFn)dlsym(libHandle, "RequestProcessorGetBlockingMode");
     this->requestProcessorReportStatsFn = (RequestProcessorReportStats)dlsym(libHandle, "RequestProcessorReportStats");
     this->requestProcessorUninitFn = (RequestProcessorUninitFn)dlsym(libHandle, "RequestProcessorUninit");
     if (!requestProcessorInitFn ||
         !this->requestProcessorContextInitFn ||
+        !this->requestProcessorConfigUpdateFn ||
         !this->requestProcessorOnEventFn ||
         !this->requestProcessorGetBlockingModeFn ||
         !this->requestProcessorReportStatsFn ||
@@ -154,11 +160,24 @@ bool RequestProcessor::RequestInit() {
     return true;
 }
 
+void RequestProcessor::LoadConfigOnce() {
+    if (this->configReloaded) {
+        return;
+    }
+    
+    AIKIDO_LOG_INFO("Reloading Aikido config...\n");
+    std::string initJson = this->GetInitData();
+    this->requestProcessorConfigUpdateFn(GoCreateString(initJson));
+    this->configReloaded = true;
+}
+
 void RequestProcessor::RequestShutdown() {
     if (!request.Init()) {
         AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
         return;
     }
+    
+    LoadConfigOnce();
     SendPostRequestEvent();
     this->requestInitialized = false;
 }

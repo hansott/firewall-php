@@ -5,6 +5,7 @@ ZEND_DECLARE_MODULE_GLOBALS(aikido)
 
 PHP_MINIT_FUNCTION(aikido) {
     LoadEnvironment();
+    AIKIDO_GLOBAL(socket_path) = GenerateSocketPath();
     AIKIDO_GLOBAL(logger).Init();
 
     AIKIDO_LOG_INFO("MINIT started!\n");
@@ -55,7 +56,7 @@ PHP_RINIT_FUNCTION(aikido) {
     ScopedTimer scopedTimer("request_init");
 
     AIKIDO_LOG_DEBUG("RINIT started!\n");
-
+    
     if (AIKIDO_GLOBAL(disable) == true) {
         AIKIDO_LOG_INFO("RINIT finished earlier because AIKIDO_DISABLE is set to 1!\n");
         return SUCCESS;

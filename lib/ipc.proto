@@ -7,13 +7,23 @@ package ipc;
 option go_package = "ipc/protos;protos";
 
 service Aikido {
+  rpc OnConfig (Config) returns (google.protobuf.Empty);
   rpc OnDomain (Domain) returns (google.protobuf.Empty);
   rpc GetRateLimitingStatus (RateLimitingInfo) returns (RateLimitingStatus);
   rpc OnRequestShutdown (RequestMetadataShutdown) returns (google.protobuf.Empty);
-  rpc GetCloudConfig(google.protobuf.Empty) returns (CloudConfig);
+  rpc GetCloudConfig(CloudConfigUpdatedAt) returns (CloudConfig);
   rpc OnUser(User) returns (google.protobuf.Empty);
   rpc OnAttackDetected(AttackDetected) returns (google.protobuf.Empty);
   rpc OnMonitoredSinkStats(MonitoredSinkStats) returns (google.protobuf.Empty);
+  rpc OnMiddlewareInstalled(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message Config {
+	string token = 1;
+  string log_level = 2;
+  bool blocking = 3;
+  bool localhost_allowed_by_default = 4;
+  bool collect_api_schema = 5;
 }
 
 message Domain {
@@ -64,11 +74,22 @@ message Endpoint {
   repeated string allowedIPAddresses = 5;
 }
 
+message CloudConfigUpdatedAt {
+  int64 configUpdatedAt = 1;
+}
+
+message IpBlockList {
+  string description = 1;
+  repeated string ips = 2;
+}
+
 message CloudConfig {
-  repeated Endpoint endpoints = 1;
-  repeated string blockedUserIds = 2;
-  repeated string bypassedIps = 3;
-  bool block = 4;
+  int64 configUpdatedAt = 1;
+  repeated Endpoint endpoints = 2;
+  repeated string blockedUserIds = 3;
+  repeated string bypassedIps = 4;
+  map<string, IpBlockList> blockedIps = 5;
+  bool block = 6;
 }
 
 message RateLimitingStatus {

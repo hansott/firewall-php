@@ -10,7 +10,6 @@ Here's an example:
 if (extension_loaded('aikido')) {
     \aikido\set_user("123", "John Doe");
 }
-});
 ```
 
 Using `\aikido\set_user` has the following benefits:

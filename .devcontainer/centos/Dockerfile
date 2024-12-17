@@ -36,4 +36,5 @@ ENV PATH="$HOME/go/bin:${PATH}"
 RUN yum install -y rpmdevtools
 RUN yum install -y git
 RUN yum install -y python3-devel
+RUN yum install -y nginx
 RUN pip3 install psutil flask requests --quiet --no-input

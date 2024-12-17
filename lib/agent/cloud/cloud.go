@@ -21,6 +21,7 @@ func Init() {
 
 	globals.StatsData.StartedAt = utils.GetTime()
 	globals.StatsData.MonitoredSinkStats = make(map[string]MonitoredSinkStats)
+	globals.MiddlewareInstalled = 0
 }
 
 func Uninit() {

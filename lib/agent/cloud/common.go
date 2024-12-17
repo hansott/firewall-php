@@ -100,12 +100,33 @@ func ApplyCloudConfig() {
 	UpdateRateLimitingConfig()
 }
 
-func StoreCloudConfig(response []byte) bool {
+func UpdateListsConfig() bool {
+	response, err := SendCloudRequest(globals.EnvironmentConfig.Endpoint, globals.ListsAPI, globals.ListsAPIMethod, nil)
+	if err != nil {
+		log.Warn("Error in sending lists request: ", err)
+		return false
+	}
+
+	tempListsConfig := ListsConfigData{}
+	err = json.Unmarshal(response, &tempListsConfig)
+	if err != nil {
+		log.Warnf("Failed to unmarshal lists config!")
+		return false
+	}
+
+	CloudConfig.BlockedIpsList = make(map[string]IpBlocklist)
+	for _, blockedIpsGroup := range tempListsConfig.BlockedIpAddresses {
+		CloudConfig.BlockedIpsList[blockedIpsGroup.Source] = IpBlocklist{Description: blockedIpsGroup.Description, Ips: blockedIpsGroup.Ips}
+	}
+	return true
+}
+
+func StoreCloudConfig(configReponse []byte) bool {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
 	tempCloudConfig := CloudConfigData{}
-	err := json.Unmarshal(response, &tempCloudConfig)
+	err := json.Unmarshal(configReponse, &tempCloudConfig)
 	if err != nil {
 		log.Warnf("Failed to unmarshal cloud config!")
 		return false
@@ -115,6 +136,7 @@ func StoreCloudConfig(response []byte) bool {
 		return true
 	}
 	globals.CloudConfig = tempCloudConfig
+	UpdateListsConfig()
 	ApplyCloudConfig()
 	return true
 }

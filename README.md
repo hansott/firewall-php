@@ -6,14 +6,14 @@ Zen, your in-app firewall for peace of mind – at runtime.
 
 Zen is an embedded Web Application Firewall that autonomously protects your PHP apps against common and critical attacks.
 
-Zen protects your PHP apps by preventing user input containing dangerous strings, thus protecting agains attacks like SQL injection. It runs on the same server as your PHP app for simple [installation](#Installation) and zero maintenance.
+Zen protects your PHP apps by preventing user input containing dangerous strings, thus protecting agains attacks like SQL injection. It runs on the same server as your PHP app for simple [install](#Install) and zero maintenance.
 
 ## Features
 
 Zen will autonomously protect your PHP applications from the inside against:
 
 * 🛡️ [SQL injection attacks](https://www.aikido.dev/blog/the-state-of-sql-injections)
-* 🛡️ [Command injection attacks](https://owasp.org/www-community/attacks/Command_Injection)
+* 🛡️ [Command injection attacks](https://www.aikido.dev/blog/command-injection-in-2024-unpacked)
 * 🛡️ [Path traversal attacks](https://owasp.org/www-community/attacks/Path_Traversal)
 * 🛡️ [Server-side request forgery (SSRF)](./docs/ssrf.md)
 
@@ -23,7 +23,7 @@ Zen operates autonomously on the same server as your PHP app to:
 * ✅ Rate limit specific API endpoints by IP or by user
 * ✅ Allow you to block specific users manually
 
-## Installation
+## Install
 
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
 Prerequisites:
@@ -31,28 +31,30 @@ Prerequisites:
 * Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.3).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
-### Manual installation
+### Manual install
 
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
-`rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.97/aikido-php-firewall.x86_64.rpm`
+```
+rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.rpm
+```
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
 ```
-curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.97/aikido-php-firewall.x86_64.deb
-dpkg -i ./aikido-php-firewall.x86_64.deb
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.deb
+dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ```
 
-### Cloud providers
+### Managed platforms
 
 #### AWS Elastic beanstalk
 
-Create a new file in `.ebextensions/01_aikido_php_firewall.config` with the following content:
+1. In your repo, create a new file in `.ebextensions/01_aikido_php_firewall.config` with the following content:
 ```
 commands:
   aikido-php-firewall:
-    command: "rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.97/aikido-php-firewall.x86_64.rpm"
+    command: "rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.rpm"
     ignoreErrors: true
 
 files: 
@@ -71,6 +73,53 @@ files:
       /var/log/aikido-*/*.log
 ```
 
+2. Go to `AWS EB enviroment -> Configuration -> Updates, monitoring, and logging -> Edit` and add the desired environment variables like: AIKIDO_TOKEN
+
+#### Forge (recipe)
+1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
+2. Go to "Recipes".
+3. Based on the running OS, use the [Manual install](#Manual-install) commands to create a new recipe called "Install Aikido Firewall" and select "root" as user. Example for Debian-based systems:
+```
+cd /tmp
+
+# Install commands from the "Manual install" section below, based on your OS
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+dpkg -i -E ./aikido-php-firewall.x86_64.deb
+
+# Restarting the php services in order to load the Aikido PHP Firewall
+for service in $(systemctl list-units | grep php | awk '{print $1}'); do
+    sudo systemctl restart $service
+done
+```
+4. Based on the running OS, use the [Manual uninstall](#Manual-uninstall) commands to create a new recipe called "Uninstall Aikido Firewall" and select "root" as user. Example for Debian-based systems:
+```
+# Install commands from the "Manual uninstall" section below, based on your OS
+dpkg --purge aikido-php-firewall
+
+# Restarting the php services in order to load the Aikido PHP Firewall
+for service in $(systemctl list-units | grep php | awk '{print $1}'); do
+    sudo systemctl restart $service
+done
+```
+5. Run the created recipes to install / uninstall the Aikido PHP Firewall.
+
+#### Forge (ssh)
+1. Go to `[server_name] -> [site_name] -> Enviroment` and add the desired environment variables like: AIKIDO_TOKEN
+2. Use ssh to connect to the Forge server that you want to be protected by Aikido and, based on the running OS, execute the install commands from the [Manual install](#Manual-install) section.
+3. Go to `[server_name] -> [site_name] -> Restart` and click `Restart PHP <version>`.
+
+#### Fly.io (flyctl)
+1. In your repo, run `fly launch`.
+2. Add the desired environment variables, by running `fly secrets set AIKIDO_TOKEN=AIK_RUNTIME...`.
+3. Go to `./.fly/scripts` folder and create the `aikido.sh` file with the [Manual install](#Manual-install) commands:
+```
+#!/usr/bin/env bash
+cd /tmp
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+dpkg -i -E ./aikido-php-firewall.x86_64.deb
+```
+4. Run `fly deploy`.
+
 ## Supported libraries and frameworks
 
 ### PHP versions
@@ -79,6 +128,7 @@ Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3.
 ### Web frameworks
 
 Zen for PHP is Web-framework agnostic, meaning that it will work on any PHP Web framework that you want to use.
+
 Zen for PHP can do this because the monitored functions are hooked at the PHP-core level.
 
 ### Database drivers
@@ -159,6 +209,22 @@ The benchmarking times displayed in this readme are computed with PHP 8.1 on the
 | Request With Rate Limiting Enabled | 1.2310 | 1.6480 | 0.4170 ms |
 | Request With User Setting | 1.2230 | 1.4430 | 0.2200 ms |
 | Request Simple | 1.2370 | 1.3730 | 0.1360 ms |
+
+## Uninstall
+
+### Manual uninstall
+
+#### For Red Hat-based Systems (RHEL, CentOS, Fedora)
+
+```
+rpm -e aikido-php-firewall
+```
+
+#### For Debian-based Systems (Debian, Ubuntu)
+
+```
+dpkg --purge aikido-php-firewall
+```
 
 ## Bug bounty program
 

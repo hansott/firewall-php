@@ -6,27 +6,26 @@ import (
 	"log"
 	"main/globals"
 	"os"
+	"sync/atomic"
 	"time"
 )
 
-type LogLevel int
-
 const (
-	DebugLevel LogLevel = iota
-	InfoLevel
-	WarnLevel
-	ErrorLevel
+	DebugLevel int32 = 0
+	InfoLevel  int32 = 1
+	WarnLevel  int32 = 2
+	ErrorLevel int32 = 3
 )
 
 var (
-	currentLogLevel = ErrorLevel
-	logger          = log.New(os.Stdout, "", 0)
+	currentLogLevel int32 = ErrorLevel
+	logger                = log.New(os.Stdout, "", 0)
 	logFile         *os.File
 )
 
 type AikidoFormatter struct{}
 
-func (f *AikidoFormatter) Format(level LogLevel, message string) string {
+func (f *AikidoFormatter) Format(level int32, message string) string {
 	var levelStr string
 	switch level {
 	case DebugLevel:
@@ -45,8 +44,8 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 	return logMessage
 }
 
-func logMessage(level LogLevel, args ...interface{}) {
-	if level >= currentLogLevel {
+func logMessage(level int32, args ...interface{}) {
+	if level >= atomic.LoadInt32(&currentLogLevel) {
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprint(args...)
 		formattedMessage := formatter.Format(level, message)
@@ -54,8 +53,8 @@ func logMessage(level LogLevel, args ...interface{}) {
 	}
 }
 
-func logMessagef(level LogLevel, format string, args ...interface{}) {
-	if level >= currentLogLevel {
+func logMessagef(level int32, format string, args ...interface{}) {
+	if level >= atomic.LoadInt32(&currentLogLevel) {
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprintf(format, args...)
 		formattedMessage := formatter.Format(level, message)
@@ -97,18 +96,20 @@ func Errorf(format string, args ...interface{}) {
 }
 
 func SetLogLevel(level string) error {
+	levelInt := ErrorLevel
 	switch level {
 	case "DEBUG":
-		currentLogLevel = DebugLevel
+		levelInt = DebugLevel
 	case "INFO":
-		currentLogLevel = InfoLevel
+		levelInt = InfoLevel
 	case "WARN":
-		currentLogLevel = WarnLevel
+		levelInt = WarnLevel
 	case "ERROR":
-		currentLogLevel = ErrorLevel
+		levelInt = ErrorLevel
 	default:
 		return errors.New("invalid log level")
 	}
+	atomic.StoreInt32(&currentLogLevel, levelInt)
 	return nil
 }
 

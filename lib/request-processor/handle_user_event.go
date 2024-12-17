@@ -7,6 +7,8 @@ import (
 )
 
 func OnUserEvent() string {
+	go grpc.OnMiddlewareInstalled()
+
 	id := context.GetUserId()
 	username := context.GetUserName()
 	ip := context.GetIp()

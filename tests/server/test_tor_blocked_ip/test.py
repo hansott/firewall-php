@@ -11,23 +11,23 @@ from testlib import *
 
 
 def run_test():
-    response = php_server_get("/somethingVerySpecific")
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
-    assert_response_body_contains(response, "is blocked due to: not allowed by config to access this endpoint!")
+    assert_response_body_contains(response, "Your IP (192.42.116.197) is blocked due to: tor usage!")
 
-    apply_config("change_config_remove_allowed_ip.json")
+    apply_config("change_config_remove_tor_blocked_ips.json")
         
-    response = php_server_get("/somethingVerySpecific")
+    response = php_server_get("/test")
     assert_response_code_is(response, 200)
     assert_response_body_contains(response, "Something")
     
     apply_config("start_config.json")
         
-    response = php_server_get("/somethingVerySpecific")
+    response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
-    assert_response_body_contains(response, "is blocked due to: not allowed by config to access this endpoint!")
+    assert_response_body_contains(response, "Your IP (192.42.116.197) is blocked due to: tor usage!")
     
     
 if __name__ == "__main__":
