@@ -16,7 +16,7 @@ bool SendUserEvent(std::string id, std::string username) {
 }
 
 // Exports the "\aikido\set_user" function, to be called from PHP user code.
-// Receives two parameters: id and name (both strings).
+// Receives two parameters: "id" (string) and "name" (string, optional).
 // Returns true if the setting of the user succeeded, false otherwise.
 ZEND_FUNCTION(set_user) {
     if (AIKIDO_GLOBAL(disable) == true) {
@@ -25,15 +25,22 @@ ZEND_FUNCTION(set_user) {
 
     requestProcessor.LoadConfigOnce();
 
-    char *id;
-    size_t id_len;
-    char *name;
-    size_t name_len;
+    char* id = nullptr;
+    size_t idLength = 0;
+    char* name = nullptr;
+    size_t nameLength = 0;
 
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_STRING(id, id_len)
-    Z_PARAM_STRING(name, name_len)
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_STRING(id, idLength)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_STRING(name, nameLength)
     ZEND_PARSE_PARAMETERS_END();
 
-    RETURN_BOOL(SendUserEvent(std::string(id, id_len), std::string(name, name_len)));
+    std::string idString = std::string(id, idLength);
+    std::string nameString = "";
+    if (name && nameLength) {
+        nameString = std::string(name, nameLength);
+    }
+
+    RETURN_BOOL(SendUserEvent(idString, nameString));
 }

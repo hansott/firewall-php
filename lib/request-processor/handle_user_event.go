@@ -13,9 +13,9 @@ func OnUserEvent() string {
 	username := context.GetUserName()
 	ip := context.GetIp()
 
-	log.Infof("[UEVENT] Got user event: %s %s %s", id, username, ip)
+	log.Infof("[UEVENT] Got user event: \"%s\" \"%s\" \"%s\"", id, username, ip)
 
-	if id == "" || username == "" || ip == "" {
+	if id == "" || ip == "" {
 		return ""
 	}
 
