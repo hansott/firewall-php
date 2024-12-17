@@ -20,5 +20,5 @@ if ($a == true) {
 ?>
 
 --EXPECTF--
-[AIKIDO][INFO] [UEVENT] Got user event!
+[AIKIDO][INFO] Got user event!
 User set successfully
