@@ -37,7 +37,7 @@ class AikidoMiddleware implements MiddlewareInterface
         if ($userId) {
             // Username is optional: \aikido\set_user can be called only with user ID
             $userName = $this->getAuthenticatedUserName();
-            \aikido\set_user(strval($userId), $userName);
+            \aikido\set_user($userId, $userName);
         }
 
         // Check blocking decision from Aikido
@@ -120,8 +120,8 @@ class ZenBlockDecision
 
 		// If a user is authenticated, set the user in Aikido's firewall context
 		if ($userId) {
-                    // If username is available, you can set it as the second parameter in the \aikido\set_user function call
-                    \aikido\set_user(strval($userId));
+			// If username is available, you can set it as the second parameter in the \aikido\set_user function call
+			\aikido\set_user($userId);
 		}
 
         // Check blocking decision from Aikido
