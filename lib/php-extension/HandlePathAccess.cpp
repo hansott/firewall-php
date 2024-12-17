@@ -2,10 +2,8 @@
 
 /* Helper for handle pre file path access */
 void helper_handle_pre_file_path_access(char *filename, EVENT_ID &eventId) {
-    if (strncmp(filename, "php://", 6) == 0 && 
-        strncmp(filename, "php://filter", 12) != 0) {
-        // Whitelist all php:// streams apart from php://filter, for performance reasons (some PHP frameworks do 1000+ calls / request with these streams as param)
-        // php://filter can be used to open arbitrary files, so we still monitor this
+    if (strncmp(filename, "php://", 6) == 0) {
+        // Whitelist php:// streams as they are often used by PHP frameworks a lot
         return;
     }
 
