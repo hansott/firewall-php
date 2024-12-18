@@ -1,13 +1,38 @@
 #include "Includes.h"
 
 zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) {
-    AIKIDO_LOG_DEBUG("\"zend_compile_file\" called for \"%s\"!\n", file_handle->filename);
+    //if (file_handle->primary_script) {
+    //    return original_file_compilation_handler(file_handle, type);
+    //}
 
     eventCache.Reset();
-    eventCache.functionName = "zend_compile_file";
+    switch (type) {
+        case ZEND_INCLUDE:
+            eventCache.functionName = "include";
+            break;
+        case ZEND_INCLUDE_ONCE:
+            eventCache.functionName = "include_once";
+            break;
+        case ZEND_REQUIRE:
+            eventCache.functionName = "require";
+            break;
+        case ZEND_REQUIRE_ONCE:
+            eventCache.functionName = "require_once";
+            break;
+        default:
+            return original_file_compilation_handler(file_handle, type);
+    }
+
+    #if PHP_VERSION_ID >= 80000
+    char* fileName = ZSTR_VAL(file_handle->filename);
+    #else
+    char* fileName = file_handle->filename;
+    #endif
+    
+    AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName, fileName);
 
     EVENT_ID eventId = NO_EVENT_ID;
-    helper_handle_pre_file_path_access((char*)file_handle->filename, eventId);
+    helper_handle_pre_file_path_access(filename, eventId);
 
     if (aikido_process_event(eventId) == BLOCK) {
         // exit zend_compile_file handler and do not call the original handler, thus blocking the script file compilation
