@@ -8,9 +8,11 @@ AIKIDO_BLOCK=1
 --FILE--
 <?php
 
-$_SERVER['HTTP_USER'] = '../file';
+$file = '../../bait_file.txt';
 
-$file = '../file/test.txt';
+$_SERVER['HTTP_USER'] = $file;
+
+symlink("./test/cli/bait_file.txt", $file);
     
 include_once($file);
 
