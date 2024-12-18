@@ -42,7 +42,7 @@ unordered_map<std::string, PHP_HANDLERS> HOOKED_FUNCTIONS = {
 unordered_map<AIKIDO_METHOD_KEY, PHP_HANDLERS, AIKIDO_METHOD_KEY_HASH> HOOKED_METHODS = {
     AIKIDO_REGISTER_METHOD_HANDLER(pdo, query)};
 
-aikido_file_compilation_handler original_file_compilation_handler = nullptr;
+aikido_file_compilation_handler original_file_compilation = nullptr;
 
 void HookFunctions() {
     for (auto &it : HOOKED_FUNCTIONS) {
