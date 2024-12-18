@@ -30,12 +30,14 @@ class AikidoMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        // Get the user ID (from session or other auth system)
+        // Get the user ID / name (from session or other auth system)
         $userId = $this->getAuthenticatedUserId();
-        
+
         // If the user is authenticated, set the user ID in Aikido Zen context
         if ($userId) {
-            \aikido\set_user($userId);
+            // Username is optional: \aikido\set_user can be called only with user ID
+            $userName = $this->getAuthenticatedUserName();
+            \aikido\set_user($userId, $userName);
         }
 
         // Check blocking decision from Aikido
@@ -86,6 +88,11 @@ class AikidoMiddleware implements MiddlewareInterface
     {
         return $_SESSION['user_id'] ?? null;
     }
+    // Example function to simulate user authentication
+    private function getAuthenticatedUserName(): ?string
+    {
+        return $_SESSION['user_name'] ?? null;
+    }
 }
 ```
 
@@ -113,6 +120,7 @@ class ZenBlockDecision
 
 		// If a user is authenticated, set the user in Aikido's firewall context
 		if ($userId) {
+			// If username is available, you can set it as the second parameter in the \aikido\set_user function call
 			\aikido\set_user($userId);
 		}
 

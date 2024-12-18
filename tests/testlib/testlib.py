@@ -112,7 +112,7 @@ def assert_event_contains_subset(event, event_subset, dry_mode=False):
     
     print(f"Searching {event_subset} in {event} (dry_mode = {dry_mode})...")
 
-    if not event:
+    if event is None:
         print(f"Event is None!")
         return False
         
