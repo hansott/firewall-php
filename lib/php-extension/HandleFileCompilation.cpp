@@ -37,7 +37,9 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
         return nullptr;
     }
 
+    scopedTimer.Stop();
     zend_op_array* op_array = original_file_compilation_handler(file_handle, type);
+    scopedTimer.Start();
 
     eventId = NO_EVENT_ID;
     helper_handle_post_file_path_access(eventId);
