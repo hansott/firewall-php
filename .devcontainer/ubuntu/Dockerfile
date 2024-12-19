@@ -9,8 +9,8 @@ RUN apt-get update
 RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:ondrej/php -y
 RUN apt update
-RUN apt install php8.1 php8.1-cli php8.1-fpm php8.1-dev php8.1-xml php8.1-curl php8.1-mbstring php8.1-zip php8.1-gd php8.1-mysql php8.1-soap php8.1-intl -y
-RUN apt-get install -y wget autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc git
+RUN apt install php${PHP_VERSION} php${PHP_VERSION}-cli php${PHP_VERSION}-cgi php${PHP_VERSION}-fpm php${PHP_VERSION}-dev php${PHP_VERSION}-curl php${PHP_VERSION}-sqlite3 -y
+RUN apt-get install -y wget autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev protobuf-compiler protobuf-compiler-grpc git alien
 RUN wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 RUN tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:${PATH}"

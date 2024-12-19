@@ -1,10 +1,6 @@
 #include "Includes.h"
 
 zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) {
-    //if (file_handle->primary_script) {
-    //    return original_file_compilation_handler(file_handle, type);
-    //}
-
     eventCache.Reset();
     switch (type) {
         case ZEND_INCLUDE:
@@ -29,7 +25,7 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
     char* filename = (char*)file_handle->filename;
     #endif
     
-    AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName, filename);
+    AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName.c_str(), filename);
 
     EVENT_ID eventId = NO_EVENT_ID;
     helper_handle_pre_file_path_access(filename, eventId);
