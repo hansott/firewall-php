@@ -1,4 +1,5 @@
 #include "Includes.h"
+#include "include/Stats.h"
 
 ACTION_STATUS aikido_process_event(EVENT_ID& eventId) {
     if (eventId == NO_EVENT_ID) {
@@ -14,11 +15,14 @@ ACTION_STATUS aikido_process_event(EVENT_ID& eventId) {
 }
 
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
+    ScopedTimer scopedTimer;
+
     AIKIDO_LOG_DEBUG("Aikido generic handler started!\n");
 
     zif_handler original_handler = nullptr;
     aikido_handler post_handler = nullptr;
 
+    std::string sink;
     std::string outputEvent;
     bool caughtException = false;
 
@@ -66,6 +70,9 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
             return;
         }
 
+        sink = scope_name;
+        scopedTimer.SetSink(sink);
+
         AIKIDO_LOG_DEBUG("Calling handler for \"%s\"!\n", scope_name.c_str());
 
         EVENT_ID eventId = NO_EVENT_ID;
@@ -89,7 +96,9 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
     }
 
     if (original_handler) {
+        scopedTimer.Stop();
         original_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+        scopedTimer.Start();
 
         if (!caughtException && post_handler) {
             EVENT_ID eventId = NO_EVENT_ID;
