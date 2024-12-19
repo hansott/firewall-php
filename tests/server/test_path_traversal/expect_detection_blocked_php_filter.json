@@ -7,21 +7,21 @@
             ]
         },
         "method": "POST",
-        "body": "{\"file\": \"../../../../file\"}",
+        "body": "{\"file\": \"php://filter/convert.base64-encode/resource=../../../../file\"}",
         "route": "/testDetection"
     },
     "attack": {
         "kind": "path_traversal",
         "operation": "fopen",
-        "blocked": false,
+        "blocked": true,
         "source": "body",
         "path": ".file",
-        "payload": "../../../../file",
+        "payload": "php://filter/convert.base64-encode/resource=../../../../file",
         "metadata": {
-            "filename": "../../../../file"
+            "filename": "php://filter/convert.base64-encode/resource=../../../../file"
         }
     },
     "agent": {
-        "dryMode": true
+        "dryMode": false
     }
 }
