@@ -12,7 +12,7 @@
     },
     "attack": {
         "kind": "path_traversal",
-        "operation": "zend_compile_file",
+        "operation": "include",
         "blocked": true,
         "source": "body",
         "path": ".file",
