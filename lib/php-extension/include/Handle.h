@@ -53,4 +53,5 @@
 
 ZEND_NAMED_FUNCTION(aikido_generic_handler);
 
-ACTION_STATUS aikido_process_event(EVENT_ID& eventId);
+ACTION_STATUS aikido_process_event(EVENT_ID& eventId, std::string& sink);
+

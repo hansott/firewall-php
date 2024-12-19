@@ -1,15 +1,25 @@
 #include "Includes.h"
 #include "include/Stats.h"
 
-ACTION_STATUS aikido_process_event(EVENT_ID& eventId) {
+ACTION_STATUS aikido_process_event(EVENT_ID& eventId, std::string& sink) {
     if (eventId == NO_EVENT_ID) {
         return CONTINUE;
     }
 
     std::string outputEvent;
     requestProcessor.SendEvent(eventId, outputEvent);
+
+    if (action.IsDetection(outputEvent)) {
+        stats[sink].IncrementAttacksDetected();
+    }
+
     if (!requestProcessor.IsBlockingEnabled()) {
         return CONTINUE;
+    }
+
+    ACTION_STATUS action_status = action.Execute(outputEvent)
+    if (action_status == BLOCK) {
+        stats[sink].IncrementAttacksBlocked();
     }
     return action.Execute(outputEvent);
 }
@@ -85,7 +95,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
         */
         handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
 
-        if (aikido_process_event(eventId) == BLOCK) {
+        if (aikido_process_event(eventId, sink) == BLOCK) {
             // exit generic handler and do not call the original handler, thus blocking the execution
             AIKIDO_LOG_DEBUG("Aikido generic handler ended (block)!\n");
             return;
@@ -110,7 +120,7 @@ ZEND_NAMED_FUNCTION(aikido_generic_handler) {
                     for the currently hooked function sets it.
             */
             post_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, eventId);
-            aikido_process_event(eventId);
+            aikido_process_event(eventId, sink);
         }
     }
 
