@@ -17,11 +17,11 @@ ACTION_STATUS aikido_process_event(EVENT_ID& eventId, std::string& sink) {
         return CONTINUE;
     }
 
-    ACTION_STATUS action_status = action.Execute(outputEvent)
+    ACTION_STATUS action_status = action.Execute(outputEvent);
     if (action_status == BLOCK) {
         stats[sink].IncrementAttacksBlocked();
     }
-    return action.Execute(outputEvent);
+    return action_status;
 }
 
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
