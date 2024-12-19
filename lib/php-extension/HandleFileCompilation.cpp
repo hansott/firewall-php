@@ -23,13 +23,13 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
             return original_file_compilation_handler(file_handle, type);
     }
 
-    #if PHP_VERSION_ID >= 80000
-    char* fileName = ZSTR_VAL(file_handle->filename);
+    #if PHP_VERSION_ID >= 80100
+    char* filename = ZSTR_VAL(file_handle->filename);
     #else
-    char* fileName = file_handle->filename;
+    char* filename = (char*)file_handle->filename;
     #endif
     
-    AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName, fileName);
+    AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName, filename);
 
     EVENT_ID eventId = NO_EVENT_ID;
     helper_handle_pre_file_path_access(filename, eventId);
