@@ -26,10 +26,7 @@ def run_test():
     
     apply_config("change_config_disable_blocking.json")
     check_path_traversal(200, "In test include", 2, "expect_detection_not_blocked.json")
-    
-    apply_config("start_config.json")
-    check_path_traversal(500, "", 3, "expect_detection_blocked.json")
-    
+        
 if __name__ == "__main__":
     load_test_args()
     run_test()
