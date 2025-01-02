@@ -26,6 +26,7 @@ Zen operates autonomously on the same server as your PHP app to:
 ## Install
 
 Zen for PHP comes as a single package that needs to be installed on the system to be protected.
+
 Prerequisites:
 * Ensure you have sudo privileges on your system.
 * Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.3).
@@ -83,7 +84,7 @@ files:
 cd /tmp
 
 # Install commands from the "Manual install" section below, based on your OS
-curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
 
 # Restarting the php services in order to load the Aikido PHP Firewall
@@ -115,7 +116,7 @@ done
 ```
 #!/usr/bin/env bash
 cd /tmp
-curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ```
 4. Run `fly deploy`.
