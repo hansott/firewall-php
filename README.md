@@ -116,7 +116,7 @@ done
 ```
 #!/usr/bin/env bash
 cd /tmp
-curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.99/aikido-php-firewall.x86_64.deb
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.102/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ```
 4. Run `fly deploy`.
