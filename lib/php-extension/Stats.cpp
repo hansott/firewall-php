@@ -8,10 +8,7 @@ inline void AddToStats(std::string& key, uint64_t duration) {
     sinkStats.timings.push_back(duration);
 }
 
-inline void AddRequestTotalToStats(std::string& key) {
-    if (key != "request_shutdown") {
-        return;
-    }
+inline void AddRequestTotalToStats() {
     AddToStats("request_total", requestTotal);
     requestTotal = 0;
 }
@@ -46,7 +43,9 @@ ScopedTimer::~ScopedTimer() {
     }
     this->Stop();
     requestTotal += this->duration;
-    AddRequestTotalToStats();
+    if (key == "request_shutdown") {
+        AddRequestTotalToStats();
+    }
     AddToStats(this->key, this->duration);
 }
 
