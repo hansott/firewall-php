@@ -3,7 +3,7 @@
 std::unordered_map<std::string, SinkStats> stats;
 static uint64_t requestTotal = 0;
 
-inline void AddToStats(std::string& key, uint64_t duration) {
+inline void AddToStats(const std::string& key, uint64_t duration) {
     SinkStats& sinkStats = stats[key];
     sinkStats.timings.push_back(duration);
 }
