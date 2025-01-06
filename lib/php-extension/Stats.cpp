@@ -3,17 +3,17 @@
 std::unordered_map<std::string, SinkStats> stats;
 static uint64_t requestTotal = 0;
 
-inline void AddRequestTotalToStats() {
-    if (this->key != "request_shutdown") {
+inline void AddToStats(std::string& key, uint64_t duration) {
+    SinkStats& sinkStats = stats[key];
+    sinkStats.timings.push_back(duration);
+}
+
+inline void AddRequestTotalToStats(std::string& key) {
+    if (key != "request_shutdown") {
         return;
     }
     AddToStats("request_total", requestTotal);
     requestTotal = 0;
-}
-
-inline void AddToStats(std::string key, uint64_t duration) {
-    SinkStats& sinkStats = stats[this->key];
-    sinkStats.timings.push_back(this->duration);
 }
 
 ScopedTimer::ScopedTimer() {
