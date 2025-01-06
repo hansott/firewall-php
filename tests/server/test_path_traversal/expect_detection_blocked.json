@@ -7,7 +7,7 @@
             ]
         },
         "method": "POST",
-        "body": "{\"folder\": \"../../../..\"}",
+        "body": "{\"file\": \"../../../../file\"}",
         "route": "/testDetection"
     },
     "attack": {
@@ -15,8 +15,8 @@
         "operation": "fopen",
         "blocked": true,
         "source": "body",
-        "path": ".folder",
-        "payload": "../../../..",
+        "path": ".file",
+        "payload": "../../../../file",
         "metadata": {
             "filename": "../../../../file"
         }
