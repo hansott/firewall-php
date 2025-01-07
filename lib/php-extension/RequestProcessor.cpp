@@ -154,7 +154,7 @@ bool RequestProcessor::RequestInit() {
     ContextInit();
     SendPreRequestEvent();
 
-    if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval)) == 0) {
+    if ((this->numberOfRequests % AIKIDO_GLOBAL(report_stats_interval_to_agent)) == 0) {
         requestProcessor.ReportStats();
     }
     return true;
