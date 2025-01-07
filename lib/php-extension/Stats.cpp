@@ -1,6 +1,17 @@
 #include "Includes.h"
 
 std::unordered_map<std::string, SinkStats> stats;
+static uint64_t requestTotal = 0;
+
+inline void AddToStats(const std::string& key, uint64_t duration) {
+    SinkStats& sinkStats = stats[key];
+    sinkStats.timings.push_back(duration);
+}
+
+inline void AddRequestTotalToStats() {
+    AddToStats("request_total", requestTotal);
+    requestTotal = 0;
+}
 
 ScopedTimer::ScopedTimer() {
     this->Start();
@@ -31,8 +42,11 @@ ScopedTimer::~ScopedTimer() {
         return;
     }
     this->Stop();
-    SinkStats& sinkStats = stats[this->key];
-    sinkStats.timings.push_back(this->duration);
+    requestTotal += this->duration;
+    if (key == "request_shutdown") {
+        AddRequestTotalToStats();
+    }
+    AddToStats(this->key, this->duration);
 }
 
 void SinkStats::IncrementAttacksDetected() {
