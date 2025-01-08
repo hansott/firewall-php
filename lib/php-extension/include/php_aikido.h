@@ -17,6 +17,7 @@ bool disable;
 bool collect_api_schema;
 bool trust_proxy;
 bool localhost_allowed_by_default;
+unsigned int report_stats_interval_to_agent; // Report once every X requests the collected stats to Agent
 std::string socket_path;
 std::string log_level_str;
 std::string sapi_name;
