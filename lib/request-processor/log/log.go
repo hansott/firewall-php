@@ -49,15 +49,21 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 	return fmt.Sprintf("[AIKIDO][%s][%s] %s\n", levelStr, time.Now().Format("15:04:05"), message)
 }
 
-func logMessage(level LogLevel, args ...interface{}) {
-	if LogFile == nil {
-		var err error
-		LogFile, err = os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
-		if err == nil {
-			Logger.SetOutput(LogFile)
-		}
+func initLogFile() {
+	if LogFile != nil {
+		return
 	}
+	var err error
+	LogFile, err = os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return
+	}
+	Logger.SetOutput(LogFile)
+}
+
+func logMessage(level LogLevel, args ...interface{}) {
 	if level >= currentLogLevel {
+		initLogFile()
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprint(args...)
 		formattedMessage := formatter.Format(level, message)
