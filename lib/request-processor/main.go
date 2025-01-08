@@ -134,12 +134,9 @@ func RequestProcessorGetBlockingMode() int {
 
 //export RequestProcessorReportStats
 func RequestProcessorReportStats(sink string, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total int32, timings []int64) {
-	averageInMs := utils.ComputeAverage(timings)
-	percentiles := utils.ComputePercentiles(timings)
-
-	log.Debugf("Got stats for sink \"%s\": attacksDetected = %d, attacksBlocked = %d, interceptorThrewError = %d, withoutContext = %d, total = %d, averageInMs = %f, percentiles = %v", sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, averageInMs, percentiles)
-
-	go grpc.OnMonitoredSinkStats(strings.Clone(sink), attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, averageInMs, percentiles)
+	clonedTimings := make([]int64, len(timings))
+	copy(clonedTimings, timings)
+	go grpc.OnMonitoredSinkStats(strings.Clone(sink), attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, clonedTimings)
 }
 
 //export RequestProcessorUninit

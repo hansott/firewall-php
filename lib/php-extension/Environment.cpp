@@ -1,6 +1,8 @@
 #include "Includes.h"
 
-#define MIN_REPORT_STATS_INTERVAL 50
+// Minimum value to use for reporting once every X requests the collected stats to Agent
+// As the report_stats_interval_to_agent is configurable, this define is used to ensure that the configured interval is NEVER less that 50 requests
+#define MIN_REPORT_STATS_INTERVAL_TO_AGENT 50
 
 std::string GetLaravelEnvVariable(const std::string& env_key) {
     zval env_value;
@@ -51,8 +53,8 @@ unsigned int GetEnvNumber(const std::string& env_key, unsigned int default_value
     if (!env_value.empty()) {
         try {
             unsigned int number = std::stoi(env_value);
-            if (number <= MIN_REPORT_STATS_INTERVAL) {
-                return MIN_REPORT_STATS_INTERVAL;
+            if (number <= MIN_REPORT_STATS_INTERVAL_TO_AGENT) {
+                return MIN_REPORT_STATS_INTERVAL_TO_AGENT;
             }
         }
         catch (...) {}
@@ -78,5 +80,5 @@ void LoadEnvironment() {
     AIKIDO_GLOBAL(token) = GetEnvString("AIKIDO_TOKEN", "");
     AIKIDO_GLOBAL(endpoint) = GetEnvString("AIKIDO_ENDPOINT", "https://guard.aikido.dev/");
     AIKIDO_GLOBAL(config_endpoint) = GetEnvString("AIKIDO_REALTIME_ENDPOINT", "https://runtime.aikido.dev/");
-    AIKIDO_GLOBAL(report_stats_interval) = GetEnvNumber("AIKIDO_REPORT_STATS_INTERVAL", 10000);
+    AIKIDO_GLOBAL(report_stats_interval_to_agent) = GetEnvNumber("AIKIDO_REPORT_STATS_INTERVAL", 10000);
 }
