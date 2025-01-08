@@ -9,8 +9,8 @@ from testlib import *
 3. Checks that the detection event was submitted and is valid.
 '''
 
-def check_path_traversal(response_code, response_body, event_id, expected_json):
-    response = php_server_post("/testDetection", {"folder": "../../../.."})
+def check_path_traversal(exploit_path, response_code, response_body, event_id, expected_json):
+    response = php_server_post("/testDetection", {"file": exploit_path})
     assert_response_code_is(response, response_code)
     assert_response_body_contains(response, response_body)
     
@@ -22,13 +22,16 @@ def check_path_traversal(response_code, response_body, event_id, expected_json):
     assert_event_contains_subset_file(events[event_id], expected_json)
 
 def run_test():
-    check_path_traversal(500, "", 1, "expect_detection_blocked.json")
+    exploit_path = "../../../../file"
+
+    check_path_traversal(exploit_path, 500, "", 1, "expect_detection_blocked.json")
+    check_path_traversal(f"php://filter/convert.base64-encode/resource={exploit_path}", 500, "", 2, "expect_detection_blocked_php_filter.json")
     
     apply_config("change_config_disable_blocking.json")
-    check_path_traversal(200, "File opened!", 2, "expect_detection_not_blocked.json")
+    check_path_traversal(exploit_path, 200, "File opened!", 3, "expect_detection_not_blocked.json")
     
     apply_config("start_config.json")
-    check_path_traversal(500, "", 3, "expect_detection_blocked.json")
+    check_path_traversal(exploit_path, 500, "", 4, "expect_detection_blocked.json")
     
 if __name__ == "__main__":
     load_test_args()
