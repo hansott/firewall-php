@@ -22,6 +22,7 @@ var (
 	currentLogLevel = ErrorLevel
 	Logger          = log.New(os.Stdout, "", 0)
 	cliLogging      = false
+	logFilePath     = ""
 )
 var LogFile *os.File
 
@@ -49,6 +50,13 @@ func (f *AikidoFormatter) Format(level LogLevel, message string) string {
 }
 
 func logMessage(level LogLevel, args ...interface{}) {
+	if LogFile == nil {
+		var err error
+		LogFile, err = os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
+		if err == nil {
+			Logger.SetOutput(LogFile)
+		}
+	}
 	if level >= currentLogLevel {
 		formatter := &AikidoFormatter{}
 		message := fmt.Sprint(args...)
@@ -122,14 +130,7 @@ func Init() {
 	}
 	currentTime := time.Now()
 	timeStr := currentTime.Format("20060102150405")
-	logFilePath := fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%s-%d.log", timeStr, os.Getpid())
-
-	LogFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatalf("Failed to open log file: %v", err)
-	}
-
-	Logger.SetOutput(LogFile)
+	logFilePath = fmt.Sprintf("/var/log/aikido-"+globals.Version+"/aikido-request-processor-%s-%d.log", timeStr, os.Getpid())
 }
 
 func Uninit() {
