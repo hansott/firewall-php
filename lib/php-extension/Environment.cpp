@@ -1,6 +1,7 @@
 #include "Includes.h"
 
-// Report once every X requests the collected stats to Agent
+// Minimum value to use for reporting once every X requests the collected stats to Agent
+// As the report_stats_interval_to_agent is configurable, this define is used to ensure that the configured interval is NEVER less that 50 requests
 #define MIN_REPORT_STATS_INTERVAL_TO_AGENT 50
 
 std::string GetLaravelEnvVariable(const std::string& env_key) {
