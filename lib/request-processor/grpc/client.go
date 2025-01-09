@@ -178,17 +178,17 @@ func OnMonitoredSinkStats(sink string, attacksDetected, attacksBlocked, intercep
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	averageInMs := utils.ComputeAverage(timings)
-	percentiles := utils.ComputePercentiles(timings)
+	log.Debugf("Got stats for sink \"%s\": attacksDetected = %d, attacksBlocked = %d, interceptorThrewError = %d, withoutContext = %d, total = %d", sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total)
 
-	log.Debugf("Got stats for sink \"%s\": attacksDetected = %d, attacksBlocked = %d, interceptorThrewError = %d, withoutContext = %d, total = %d, averageInMs = %f, percentiles = %v", sink, attacksDetected, attacksBlocked, interceptorThrewError, withoutContext, total, averageInMs, percentiles)
-
-	_, err := client.OnMonitoredSinkStats(ctx, &protos.MonitoredSinkStats{Sink: sink, AttacksDetected: attacksDetected,
-		InterceptorThrewError: interceptorThrewError, WithoutContext: withoutContext, Total: total,
-		CompressedTiming: &protos.CompressedTiming{
-			AverageInMs: averageInMs,
-			Percentiles: percentiles,
-		}})
+	_, err := client.OnMonitoredSinkStats(ctx, &protos.MonitoredSinkStats{
+		Sink:                  sink,
+		AttacksDetected:       attacksDetected,
+		AttacksBlocked:        attacksBlocked,
+		InterceptorThrewError: interceptorThrewError,
+		WithoutContext:        withoutContext,
+		Total:                 total,
+		Timings:               timings,
+	})
 	if err != nil {
 		log.Warnf("Could not send monitored sink stats event")
 		return

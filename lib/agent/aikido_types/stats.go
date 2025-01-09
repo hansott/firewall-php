@@ -2,6 +2,14 @@ package aikido_types
 
 import "sync"
 
+type MonitoredSinkTimings struct {
+	AttacksDetected       AttacksDetected
+	InterceptorThrewError int
+	WithoutContext        int
+	Total                 int
+	Timings               []int64
+}
+
 type StatsDataType struct {
 	StatsMutex sync.Mutex
 
@@ -11,7 +19,7 @@ type StatsDataType struct {
 	Attacks         int
 	AttacksBlocked  int
 
-	MonitoredSinkStats map[string]MonitoredSinkStats
+	MonitoredSinkTimings map[string]MonitoredSinkTimings
 }
 
 type RateLimitingConfig struct {
