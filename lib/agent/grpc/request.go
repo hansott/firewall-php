@@ -26,32 +26,24 @@ func storeAttackStats(req *protos.AttackDetected) {
 	}
 }
 
-func getCompressedTiming(protoCompressedTiming *protos.CompressedTiming) CompressedTiming {
-	return CompressedTiming{
-		AverageInMS:  protoCompressedTiming.GetAverageInMs(),
-		Percentiles:  protoCompressedTiming.GetPercentiles(),
-		CompressedAt: utils.GetTime(),
-	}
-}
-
 func storeSinkStats(protoSinkStats *protos.MonitoredSinkStats) {
 	globals.StatsData.StatsMutex.Lock()
 	defer globals.StatsData.StatsMutex.Unlock()
 
 	sink := protoSinkStats.GetSink()
-	monitoredSinkStats, found := globals.StatsData.MonitoredSinkStats[sink]
+	monitoredSinkTimings, found := globals.StatsData.MonitoredSinkTimings[sink]
 	if !found {
-		monitoredSinkStats = MonitoredSinkStats{}
+		monitoredSinkTimings = MonitoredSinkTimings{}
 	}
 
-	monitoredSinkStats.AttacksDetected.Total += int(protoSinkStats.GetAttacksDetected())
-	monitoredSinkStats.AttacksDetected.Blocked += int(protoSinkStats.GetAttacksBlocked())
-	monitoredSinkStats.InterceptorThrewError += int(protoSinkStats.GetInterceptorThrewError())
-	monitoredSinkStats.WithoutContext += int(protoSinkStats.GetWithoutContext())
-	monitoredSinkStats.Total += int(protoSinkStats.GetTotal())
-	monitoredSinkStats.CompressedTimings = append(monitoredSinkStats.CompressedTimings, getCompressedTiming(protoSinkStats.GetCompressedTiming()))
+	monitoredSinkTimings.AttacksDetected.Total += int(protoSinkStats.GetAttacksDetected())
+	monitoredSinkTimings.AttacksDetected.Blocked += int(protoSinkStats.GetAttacksBlocked())
+	monitoredSinkTimings.InterceptorThrewError += int(protoSinkStats.GetInterceptorThrewError())
+	monitoredSinkTimings.WithoutContext += int(protoSinkStats.GetWithoutContext())
+	monitoredSinkTimings.Total += int(protoSinkStats.GetTotal())
+	monitoredSinkTimings.Timings = append(monitoredSinkTimings.Timings, protoSinkStats.GetTimings()...)
 
-	globals.StatsData.MonitoredSinkStats[sink] = monitoredSinkStats
+	globals.StatsData.MonitoredSinkTimings[sink] = monitoredSinkTimings
 }
 
 func getApiSpecData(apiSpec *protos.APISpec) (*protos.DataSchema, string, *protos.DataSchema, []*protos.APIAuthType) {
