@@ -56,9 +56,13 @@ func GetUsersAndClear() []User {
 	return users
 }
 
-func GetMonitoredSinkStats() map[string]MonitoredSinkStats {
+func GetMonitoredSinkStatsAndClear() map[string]MonitoredSinkStats {
 	monitoredSinkStats := make(map[string]MonitoredSinkStats)
 	for sink, stats := range globals.StatsData.MonitoredSinkTimings {
+		if stats.Total <= globals.MinStatsCollectedForRelevantMetrics {
+			continue
+		}
+
 		monitoredSinkStats[sink] = MonitoredSinkStats{
 			AttacksDetected:       stats.AttacksDetected,
 			InterceptorThrewError: stats.InterceptorThrewError,
@@ -72,6 +76,8 @@ func GetMonitoredSinkStats() map[string]MonitoredSinkStats {
 				},
 			},
 		}
+
+		delete(globals.StatsData.MonitoredSinkTimings, sink)
 	}
 	return monitoredSinkStats
 }
@@ -81,7 +87,7 @@ func GetStatsAndClear() Stats {
 	defer globals.StatsData.StatsMutex.Unlock()
 
 	stats := Stats{
-		Sinks:     GetMonitoredSinkStats(),
+		Sinks:     GetMonitoredSinkStatsAndClear(),
 		StartedAt: globals.StatsData.StartedAt,
 		EndedAt:   utils.GetTime(),
 		Requests: Requests{
@@ -99,7 +105,6 @@ func GetStatsAndClear() Stats {
 	globals.StatsData.RequestsAborted = 0
 	globals.StatsData.Attacks = 0
 	globals.StatsData.AttacksBlocked = 0
-	globals.StatsData.MonitoredSinkTimings = make(map[string]MonitoredSinkTimings)
 
 	return stats
 }
