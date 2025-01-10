@@ -20,7 +20,7 @@ func Init() {
 	utils.StartPollingRoutine(ConfigPollingRoutineChannel, ConfigPollingTicker, CheckConfigUpdatedAt)
 
 	globals.StatsData.StartedAt = utils.GetTime()
-	globals.StatsData.MonitoredSinkStats = make(map[string]MonitoredSinkStats)
+	globals.StatsData.MonitoredSinkTimings = make(map[string]MonitoredSinkTimings)
 	globals.MiddlewareInstalled = 0
 }
 
