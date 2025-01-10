@@ -16,7 +16,7 @@ inline void AddRequestTotalToStats() {
         return;
     }
     uint64_t totalOverhead = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - currentRequestStart).count();
-    AddToStats("request_total_overhead", totalOverhead);
+    AddToStats("request_total", totalOverhead);
     currentRequestStart = std::chrono::high_resolution_clock::time_point{};
 }
 
