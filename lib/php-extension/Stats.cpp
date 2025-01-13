@@ -1,7 +1,10 @@
 #include "Includes.h"
 
 std::unordered_map<std::string, SinkStats> stats;
-static uint64_t requestTotal = 0;
+
+std::chrono::high_resolution_clock::time_point currentRequestStart = std::chrono::high_resolution_clock::time_point{};
+
+uint64_t totalOverheadForCurrentRequest = 0;
 
 inline void AddToStats(const std::string& key, uint64_t duration) {
     SinkStats& sinkStats = stats[key];
@@ -9,8 +12,17 @@ inline void AddToStats(const std::string& key, uint64_t duration) {
 }
 
 inline void AddRequestTotalToStats() {
-    AddToStats("request_total", requestTotal);
-    requestTotal = 0;
+    if (currentRequestStart == std::chrono::high_resolution_clock::time_point{}) {
+        return;
+    }
+    uint64_t totalOverhead = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - currentRequestStart).count();
+    AddToStats("request_total", totalOverhead);
+    currentRequestStart = std::chrono::high_resolution_clock::time_point{};
+}
+
+inline void AddRequestTotalOverheadToStats() {
+    AddToStats("request_total_overhead", totalOverheadForCurrentRequest);
+    totalOverheadForCurrentRequest = 0;
 }
 
 ScopedTimer::ScopedTimer() {
@@ -27,6 +39,9 @@ void ScopedTimer::SetSink(std::string key) {
 
 void ScopedTimer::Start() {
     this->start = std::chrono::high_resolution_clock::now();
+    if (this->key == "request_init") {
+        currentRequestStart = this->start;
+    }
 }
 
 void ScopedTimer::Stop() {
@@ -42,8 +57,9 @@ ScopedTimer::~ScopedTimer() {
         return;
     }
     this->Stop();
-    requestTotal += this->duration;
+    totalOverheadForCurrentRequest += this->duration;
     if (key == "request_shutdown") {
+        AddRequestTotalOverheadToStats();
         AddRequestTotalToStats();
     }
     AddToStats(this->key, this->duration);
