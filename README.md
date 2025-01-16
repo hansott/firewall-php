@@ -29,7 +29,7 @@ Zen for PHP comes as a single package that needs to be installed on the system t
 
 Prerequisites:
 * Ensure you have sudo privileges on your system.
-* Check that you have a supported PHP version installed (PHP version >= 7.3 and test up to 8.3).
+* Check that you have a supported PHP version installed (PHP version >= 7.3 and tested up to 8.4).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
 ### Manual install
@@ -65,7 +65,7 @@ dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ## Supported libraries and frameworks
 
 ### PHP versions
-Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3.
+Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4.
 
 ### Web frameworks
 
