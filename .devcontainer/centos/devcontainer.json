@@ -5,7 +5,7 @@
     "source=${localWorkspaceFolder}/.devcontainer/shared,target=/shared,type=bind"
   ],
   "build": {
-    "platform": "linux/amd64",
+    "platform": "linux/arm64",
     "dockerfile": "Dockerfile",
     "args": {
       "PHP_VERSION": "8.1"

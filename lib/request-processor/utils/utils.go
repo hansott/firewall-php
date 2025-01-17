@@ -6,6 +6,7 @@ import (
 	"main/globals"
 	"main/log"
 	"net"
+	"runtime"
 	"strings"
 
 	"github.com/seancfoley/ipaddress-go/ipaddr"
@@ -248,4 +249,14 @@ func ArrayContains(array []string, search string) bool {
 		}
 	}
 	return false
+}
+
+func GetArch() string {
+	switch runtime.GOARCH {
+	case "amd64":
+		return "x86_64"
+	case "arm64":
+		return "aarch64"
+	}
+	panic(fmt.Sprintf("Running on unsupported architecture \"%s\"!", runtime.GOARCH))
 }
