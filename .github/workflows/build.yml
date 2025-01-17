@@ -20,6 +20,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Get Arch
+      run: echo "ARCH=$(uname -m)" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -69,7 +72,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: aikido-agent
+        name: aikido-agent-${{ env.ARCH }}
         if-no-files-found: error
         path: |
           ${{ github.workspace }}/build/aikido-agent.so
@@ -78,7 +81,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: aikido-request-processor
+        name: aikido-request-processor-${{ env.ARCH }}
         if-no-files-found: error
         path: |
           ${{ github.workspace }}/build/aikido-request-processor.so
@@ -99,6 +102,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y autoconf bison re2c libxml2-dev libssl-dev libcurl4-gnutls-dev
+
+    - name: Get Arch
+      run: echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
     - name: Get Aikido version
       run: |
@@ -140,7 +146,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{ env.AIKIDO_ARTIFACT }}
+        name: ${{ env.AIKIDO_ARTIFACT }}-${{ env.ARCH }}
         if-no-files-found: error
         path: |
           ${{ github.workspace }}/build/modules/${{ env.AIKIDO_ARTIFACT }}.so
@@ -182,19 +188,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-extension-php-*
+            aikido-extension-php-*-${{ env.ARCH }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-agent*
+            aikido-agent-${{ env.ARCH }}
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: |
-            aikido-request-processor*
+            aikido-request-processor-${{ env.ARCH }}
 
       - name: Download Aikido Zen Internals Lib
         run: |
