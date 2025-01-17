@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
       fail-fast: false
 
     steps:
@@ -166,8 +166,8 @@ jobs:
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_LIBZEN=libzen_internals_x86_64-unknown-linux-gnu.so" >> $GITHUB_ENV
-          echo "AIKIDO_LIBZEN_VERSION=0.1.31" >> $GITHUB_ENV
-      
+          echo "AIKIDO_LIBZEN_VERSION=0.1.35" >> $GITHUB_ENV
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -278,7 +278,7 @@ jobs:
     needs: [ build_rpm ]
     strategy:
       matrix:
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
     steps:
@@ -345,7 +345,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'ubuntu-20.04']
-        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
+        php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
     steps:

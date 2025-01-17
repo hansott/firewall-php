@@ -1,0 +1,27 @@
+{
+    "type": "detected_attack",
+    "request": {
+        "headers": {
+            "content_type": [
+                "application/json"
+            ]
+        },
+        "method": "POST",
+        "body": "{\"file\": \"php://filter/convert.base64-encode/resource=../../../../file\"}",
+        "route": "/testDetection"
+    },
+    "attack": {
+        "kind": "path_traversal",
+        "operation": "fopen",
+        "blocked": true,
+        "source": "body",
+        "path": ".file",
+        "payload": "php://filter/convert.base64-encode/resource=../../../../file",
+        "metadata": {
+            "filename": "php://filter/convert.base64-encode/resource=../../../../file"
+        }
+    },
+    "agent": {
+        "dryMode": false
+    }
+}
