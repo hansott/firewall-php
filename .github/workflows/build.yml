@@ -260,6 +260,14 @@ jobs:
       - name: Get Arch
         run: echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
+      - name: Get deb arch
+        run: |
+          if "${{ env.ARCH }}" = "x86_64"; then
+            echo "DEB_ARCH=amd64" >> $GITHUB_ENV
+          else
+            echo "DEB_ARCH=${{ env.ARCH }}" >> $GITHUB_ENV
+          fi
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -277,14 +285,12 @@ jobs:
           echo $AIKIDO_VERSION
           echo "AIKIDO_VERSION=$AIKIDO_VERSION" >> $GITHUB_ENV
           echo "AIKIDO_RPM=aikido-php-firewall.${{ env.ARCH }}.rpm" >> $GITHUB_ENV
-          echo "AIKIDO_ARTIFACT=aikido-php-firewall.${{ env.ARCH }}.deb" >> $GITHUB_ENV
+          echo "AIKIDO_ARTIFACT=aikido-php-firewall.${{ env.ARCH }}.deb" >> $GITHUB_ENV    
       
       - name: Build deb
         run: |
-          ls -R
           sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
-          ls -R
-          mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.ARCH }}.deb ${{ env.AIKIDO_ARTIFACT }}
+          mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.DEB_ARCH }}.deb ${{ env.AIKIDO_ARTIFACT }}
   
       - name: Archive deb package
         uses: actions/upload-artifact@v4
