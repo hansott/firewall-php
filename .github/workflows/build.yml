@@ -160,7 +160,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-22.04', 'ubuntu-24.04-arm']
-        fail-fast: true
+      fail-fast: true
     needs: [ build_libs, build_php_extension ]
     steps:
       - name: Checkout repository
