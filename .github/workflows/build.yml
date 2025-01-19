@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [	ubuntu-20.04, ubuntu-22.04-arm ]
+        os: [	ubuntu-20.04, ubuntu-24.04-arm ]
       fail-fast: true
 
     steps:
@@ -27,12 +27,10 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install golang
         sudo apt-get install -y protobuf-compiler protobuf-compiler-grpc
 
     - name: GO setup
       run: |
-        go version
         go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
         go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
         echo "$HOME/go/bin" >> $GITHUB_PATH
@@ -94,8 +92,8 @@ jobs:
     strategy:
       matrix:
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
-        os: [	ubuntu-20.04, ubuntu-22.04-arm ]
-      fail-fast: false
+        os: [	ubuntu-20.04, ubuntu-24.04-arm ]
+      fail-fast: true
 
     steps:
     - name: Checkout repository
@@ -161,7 +159,8 @@ jobs:
       image: centos:latest
     strategy:
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-22.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-24.04-arm']
+        fail-fast: true
     needs: [ build_libs, build_php_extension ]
     steps:
       - name: Checkout repository
@@ -254,7 +253,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-22.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-24.04-arm']
+      fail-fast: true
     needs: [ build_rpm ]
     steps:
       - name: Checkout repository
@@ -315,7 +315,7 @@ jobs:
       matrix:
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
-        os: ['ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-22.04-arm', 'ubuntu-24.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-24.04-arm']
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -384,7 +384,7 @@ jobs:
     needs: [ build_deb ]
     strategy:
       matrix:
-        os: ['ubuntu-24.04', 'ubuntu-22.04', 'ubuntu-20.04', 'ubuntu-24.04-arm', 'ubuntu-22.04-arm']
+        os: ['ubuntu-24.04', 'ubuntu-22.04', 'ubuntu-20.04', 'ubuntu-24.04-arm']
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
