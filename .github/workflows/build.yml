@@ -158,7 +158,7 @@ jobs:
       image: centos:latest
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-24.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-22.04-arm']
     needs: [ build_libs, build_php_extension ]
     steps:
       - name: Checkout repository
@@ -235,7 +235,6 @@ jobs:
           mv ~/rpmbuild/RPMS/${{ env.ARCH }}/${{ env.AIKIDO_ARTIFACT }} ~/rpmbuild/RPMS/${{ env.ARCH }}/${{ env.AIKIDO_ARTIFACT_RELEASE }}
 
       - name: Check rpm dependencies
-        if: matrix.os == 'ubuntu-latest'
         run: |
           yum deplist ~/rpmbuild/RPMS/${{ env.ARCH }}/${{ env.AIKIDO_ARTIFACT_RELEASE }} | grep -E "GLIBC_2.32|GLIBC_2.34|GLIBCXX_3.4.29" && exit 1 || exit 0
       
@@ -251,7 +250,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-24.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-22.04-arm']
     needs: [ build_rpm ]
     steps:
       - name: Checkout repository
@@ -312,7 +311,7 @@ jobs:
       matrix:
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
-        os: ['ubuntu-latest', 'ubuntu-24.04-arm']
+        os: ['ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-22.04-arm', 'ubuntu-24.04-arm']
       fail-fast: false
     steps:
       - name: Checkout repository
@@ -381,7 +380,7 @@ jobs:
     needs: [ build_deb ]
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'ubuntu-20.04', 'ubuntu-24.04-arm', 'ubuntu-22.04-arm']
+        os: ['ubuntu-24.04', 'ubuntu-22.04', 'ubuntu-20.04', 'ubuntu-24.04-arm', 'ubuntu-22.04-arm']
         php_version: ['7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         server: ['nginx-php-fpm', 'apache-mod-php', 'php-built-in']
       fail-fast: false
@@ -451,7 +450,7 @@ jobs:
           sudo dpkg -i -E ${{ env.AIKIDO_DEB }}/${{ env.AIKIDO_DEB }}
 
       - name: Run CLI tests
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-22.04-arm'
+        if: matrix.os == 'ubuntu-24.04' || matrix.os == 'ubuntu-24.04-arm'
         run: |
           cd ${{ github.workspace }}
           php lib/php-extension/run-tests.php ./tests/cli
