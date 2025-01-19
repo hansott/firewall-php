@@ -327,7 +327,8 @@ jobs:
           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
           yum install -y yum-utils
           yum install -y https://rpms.remirepo.net/enterprise/remi-release-8.4.rpm
-          yum -y install gcc python3-devel
+          yum install -y gcc
+          yum install -y python3-devel
           pip3 install flask
           pip3 install requests
           pip3 install pandas
