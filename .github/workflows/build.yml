@@ -320,6 +320,7 @@ jobs:
 
       - name: Setup
         run: |
+          uname -a
           cat /etc/centos-release
           cd /etc/yum.repos.d/
           sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
@@ -344,6 +345,7 @@ jobs:
 
       - name: Check PHP setup
         run: |
+          uname -m
           php -v
           php -i
 
