@@ -264,6 +264,8 @@ jobs:
         run: |
           if [ "${{ env.ARCH }}" = "x86_64" ]; then
             echo "DEB_ARCH=amd64" >> $GITHUB_ENV
+          elif [ "$ARCH" = "aarch64" ]; then
+            echo "DEB_ARCH=arm64" >> $GITHUB_ENV
           else
             echo "DEB_ARCH=${{ env.ARCH }}" >> $GITHUB_ENV
           fi
@@ -290,6 +292,7 @@ jobs:
       - name: Build deb
         run: |
           sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
+          ls -R
           mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.DEB_ARCH }}.deb ${{ env.AIKIDO_ARTIFACT }}
   
       - name: Archive deb package
