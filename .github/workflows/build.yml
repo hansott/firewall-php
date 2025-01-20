@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
     - name: Get Arch
       run: echo "ARCH=$(uname -m)" >> $GITHUB_ENV
@@ -116,7 +116,7 @@ jobs:
         echo "AIKIDO_ARTIFACT=aikido-extension-php-${{ matrix.php_version }}" >> $GITHUB_ENV
 
     - name: Setup PHP
-      uses: AikidoSec/setup-php@v2
+      uses: AikidoSec/setup-php@fc14643b0a99ee9db10a3c025a33d76544fa3761 # v2
       with:
         php-version: ${{ matrix.php_version }}
         extensions: curl
@@ -423,7 +423,7 @@ jobs:
           sudo a2enmod rewrite
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2
         with:
           php-version: ${{ matrix.php_version }}
           extensions: curl
