@@ -15,7 +15,7 @@ def run_test():
     assert_response_code_is(response, 200)
     assert_response_body_contains(response, "Something")
 
-    apply_config("change_config_remove_allowed_ip.json")
+    apply_config("change_config_remove_bypassed_ip.json")
         
     response = php_server_get("/somethingVerySpecific")
     assert_response_code_is(response, 403)
