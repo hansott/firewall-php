@@ -14,7 +14,7 @@ type PlatformInfo struct {
 
 type Hostname struct {
 	URL  string `json:"hostname"`
-	Port int64  `json:"port,omitempty"`
+	Port uint32 `json:"port,omitempty"`
 }
 
 type Route struct {

@@ -21,7 +21,7 @@ var CloudConfigMutex sync.Mutex
 var Machine MachineData
 
 // List of outgoing hostnames and their ports collected from the extensions
-var Hostnames = make(map[string]map[int]bool)
+var Hostnames = make(map[string]map[uint32]bool)
 
 // Hostnames mutex used to sync access to hostnames data across the go routines
 var HostnamesMutex sync.Mutex
