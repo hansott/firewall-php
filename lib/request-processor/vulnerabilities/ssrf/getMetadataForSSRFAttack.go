@@ -8,7 +8,7 @@ func getMetadataForSSRFAttack(hostname string, port uint32) map[string]string {
 	}
 
 	if port != 0 {
-		metadata["port"] = fmt.Sprintf("%u", port)
+		metadata["port"] = fmt.Sprintf("%d", port)
 	}
 
 	return metadata
