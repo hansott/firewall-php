@@ -13,8 +13,8 @@ func storeDomain(domain string, port uint32) {
 	defer globals.HostnamesMutex.Unlock()
 
 	if _, ok := globals.Hostnames[domain]; !ok {
-		globals.Hostnames[domain] = make(map[uint32]bool)
+		globals.Hostnames[domain] = make(map[uint32]uint64)
 	}
 
-	globals.Hostnames[domain][port] = true
+	globals.Hostnames[domain][port]++
 }
