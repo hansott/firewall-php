@@ -10,23 +10,11 @@ from testlib import *
 '''
 
 
-def run_test():
-    response = php_server_get("/somethingVerySpecific")
-    assert_response_code_is(response, 200)
-    assert_response_body_contains(response, "Something")
-
-    apply_config("change_config_remove_bypassed_ip.json")
-        
+def run_test():        
     response = php_server_get("/somethingVerySpecific")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
     assert_response_body_contains(response, "is blocked due to: not allowed by config to access this endpoint!")
-    
-    apply_config("start_config.json")
-        
-    response = php_server_get("/somethingVerySpecific")
-    assert_response_code_is(response, 200)
-    assert_response_body_contains(response, "Something")
     
     
 if __name__ == "__main__":
