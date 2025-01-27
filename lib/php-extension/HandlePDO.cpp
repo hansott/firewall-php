@@ -45,7 +45,7 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdostatement_execute) {
     eventId = EVENT_PRE_SQL_QUERY_EXECUTED;
     eventCache.moduleName = "PDOStatement"; 
     eventCache.sqlDialect = "unknown";
-    eventCache.sqlQuery = ZSTR_VAL(stmt->query_string);    
+    eventCache.sqlQuery = PHP_GET_CHAR_PTR(stmt->query_string);    
 
     zval *pdo_object = &stmt->database_object_handle;
     zval retval;
