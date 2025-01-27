@@ -13,8 +13,8 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
     }
 
     /*
-            Get the current pdo object for which the query function was called, using the "getThis" PHP helper function.
-            https://github.com/php/php-src/blob/5dd8bb0fa884efba40117a83d198f3847922c0a3/Zend/zend_API.h#L526
+        Get the current pdo object for which the query function was called, using the "getThis" PHP helper function.
+        https://github.com/php/php-src/blob/5dd8bb0fa884efba40117a83d198f3847922c0a3/Zend/zend_API.h#L526
     */
     zval *pdo_object = getThis();
     if (!pdo_object) {
@@ -37,7 +37,12 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 }
 
 AIKIDO_HANDLER_FUNCTION(handle_pre_pdostatement_execute) {
-    pdo_stmt_t *stmt = Z_PDO_STMT_P(ZEND_THIS);
+    zval *pdo_statement_object = getThis();
+    if (!pdo_statement_object) {
+        return;
+    }
+
+    pdo_stmt_t *stmt = Z_PDO_STMT_P(pdo_statement_object);
     if (!stmt->dbh) { // object is not initialized 
         return;
     }
