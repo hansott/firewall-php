@@ -21,7 +21,7 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
 
     ScopedTimer scopedTimer(eventCache.functionName);
 
-    char* filename = PHP_GET_CHAR_PTR(file_handle->filename)
+    char* filename = PHP_GET_CHAR_PTR(file_handle->filename);
     
     AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName.c_str(), filename);
 
