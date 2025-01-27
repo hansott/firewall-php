@@ -35,3 +35,23 @@ AIKIDO_HANDLER_FUNCTION(handle_pre_pdo_query) {
 
     zval_ptr_dtor(&retval);
 }
+
+AIKIDO_HANDLER_FUNCTION(handle_pre_pdostatement_execute) {
+    pdo_stmt_t *stmt = Z_PDO_STMT_P(ZEND_THIS);
+    if (!stmt->dbh) { // object is not initialized 
+        return;
+    }
+
+    eventId = EVENT_PRE_SQL_QUERY_EXECUTED;
+    eventCache.moduleName = "PDOStatement"; 
+    eventCache.sqlDialect = "unknown";
+    eventCache.sqlQuery = ZSTR_VAL(stmt->query_string);    
+
+    zval *pdo_object = &stmt->database_object_handle;
+    zval retval;
+    if (CallPhpFunctionWithOneParam("getAttribute", PDO_ATTR_DRIVER_NAME, &retval, pdo_object)) {
+        if (Z_TYPE(retval) == IS_STRING) {
+            eventCache.sqlDialect = Z_STRVAL(retval);
+        }
+    }
+}

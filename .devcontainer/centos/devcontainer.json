@@ -10,5 +10,12 @@
     "args": {
       "PHP_VERSION": "8.1"
     }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go"
+      ]
+    }
   }
 }
