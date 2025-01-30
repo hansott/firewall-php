@@ -82,6 +82,9 @@ std::string Request::GetBody() {
  * This function retrieves the query parameters from the `_GET` global array in PHP 
  * and constructs a JSON object representation of the parameters. It supports both 
  * scalar values (e.g., "key=value") and array values (e.g., "key[]=value1&key[]=value2").
+ * This function is implemented by just accessing the query that is already parsed by PHP.
+ * In this way, we interpret the query in the exact same way that the PHP app receives 
+ * the query params.
 */
 std::string Request::GetQuery() {
   
