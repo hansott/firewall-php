@@ -61,6 +61,6 @@ phpenmod aikido
 ldconfig
 
 mkdir -p /var/log/aikido-$AIKIDO_VERSION
-chmod 777 /var/log/aikido-$AIKIDO_VERSION
+chmod 644 /var/log/aikido-$AIKIDO_VERSION
 
 php -m | grep aikido || echo "Aikido extension not loaded!"
