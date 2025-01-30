@@ -22,5 +22,5 @@ WORKDIR /firewall-php
 
 COPY . /firewall-php
 
-RUN chmod +x /firewall-php/tools/sample_apps_build.sh && /firewall-php/tools/build.sh
+RUN chmod +x /firewall-php/tools/sample_apps_build.sh && /firewall-php/tools/sample_apps_build.sh
 
