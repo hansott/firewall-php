@@ -10,5 +10,13 @@
     "args": {
       "PHP_VERSION": "8.1"
     }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "github.vscode-github-actions"
+      ]
+    }
   }
 }

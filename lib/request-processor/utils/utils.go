@@ -6,6 +6,7 @@ import (
 	"main/globals"
 	"main/log"
 	"net"
+	"net/url"
 	"runtime"
 	"strings"
 
@@ -52,6 +53,10 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 			continue
 		}
 		result[keyValue[0]] = keyValue[1]
+		decodedValue, err := url.QueryUnescape(keyValue[1])
+		if err == nil && decodedValue != keyValue[1] {
+			result[keyValue[0]] = decodedValue
+		}
 	}
 	return result
 }
@@ -72,6 +77,11 @@ func ParseBody(body string) map[string]interface{} {
 }
 
 func ParseQuery(query string) map[string]interface{} {
+	jsonQuery := map[string]interface{}{}
+	err := json.Unmarshal([]byte(query), &jsonQuery)
+	if err == nil {
+		return jsonQuery
+	}
 	return ParseFormData(query, "&")
 }
 

@@ -21,11 +21,7 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
 
     ScopedTimer scopedTimer(eventCache.functionName);
 
-    #if PHP_VERSION_ID >= 80100
-    char* filename = ZSTR_VAL(file_handle->filename);
-    #else
-    char* filename = (char*)file_handle->filename;
-    #endif
+    char* filename = PHP_GET_CHAR_PTR(file_handle->filename);
     
     AIKIDO_LOG_DEBUG("\"%s\" called for \"%s\"!\n", eventCache.functionName.c_str(), filename);
 
