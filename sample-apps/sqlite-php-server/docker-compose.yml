@@ -12,4 +12,5 @@ services:
     environment: 
       - AIKIDO_BLOCKING=1
       - AIKIDO_DEBUG=1
+      - AIKIDO_BLOCK=1
     command: php -S 0.0.0.0:1337
