@@ -15,7 +15,7 @@ std::string RequestProcessor::GetInitData() {
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
         {"sapi", AIKIDO_GLOBAL(sapi_name)}};
 
-    return initData.dump();
+    return initData.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 
 bool RequestProcessor::ContextInit() {

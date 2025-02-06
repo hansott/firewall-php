@@ -117,8 +117,8 @@ std::string Request::GetQuery() {
         }
     }
     ZEND_HASH_FOREACH_END();
-    
-    return query_json.dump();
+
+    return query_json.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 
 std::string Request::GetHeaders() {
@@ -152,7 +152,7 @@ std::string Request::GetHeaders() {
     for (auto const& [key, val] : headers) {
         headers_json[key] = val;
     }
-    return headers_json.dump();
+    return headers_json.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 
 bool Request::IsHttps() {
