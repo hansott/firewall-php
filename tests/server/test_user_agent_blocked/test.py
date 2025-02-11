@@ -27,7 +27,7 @@ def run_test():
     response = php_server_get("/test")
     assert_response_code_is(response, 403)
     assert_response_header_contains(response, "Content-Type", "text")
-    assert_response_body_contains(response, "Your user agent (1234Googlebot1234) is blocked due to: bot detection!")
+    assert_response_body_contains(response, "Your user agent (1234googlebot1234) is blocked due to: bot detection!")
     
     
 if __name__ == "__main__":
