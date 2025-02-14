@@ -5,13 +5,15 @@ if (isset($_GET['phpinfo'])) {
     exit();
 }
 
-$db = new SQLite3("cats.db");
+$db = new PDO('sqlite::memory:');
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $db->exec("CREATE TABLE IF NOT EXISTS cats (petname TEXT)");
 
 if (isset($_GET['petname'])) {
     $petname = $_GET['petname'];
-    $db->exec("INSERT INTO cats (petname) VALUES ('$petname')");
+
+    $db->query("INSERT INTO cats (petname) VALUES ('$petname')");
 }
 
 if (isset($_GET['clear'])) {
@@ -30,7 +32,7 @@ if (isset($_GET['file'])) {
 
 $result = $db->query("SELECT petname FROM cats");
 $cats = [];
-while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
     $cats[] = $row['petname'];
 }
 ?>
