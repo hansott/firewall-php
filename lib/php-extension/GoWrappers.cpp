@@ -122,7 +122,7 @@ char* GoContextCallback(int callbackId) {
                 break;
         }
     } catch (std::exception& e) {
-        AIKIDO_LOG_ERROR("Exception in GoContextCallback: %s\n", e.what());
+        AIKIDO_LOG_DEBUG("Exception in GoContextCallback: %s\n", e.what());
     }
 
     if (!ret.length()) {
