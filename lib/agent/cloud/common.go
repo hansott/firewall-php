@@ -148,6 +148,7 @@ func LogCloudRequestError(text string, err error) {
 	}
 	if err.Error() == "no token set" {
 		if atomic.LoadUint32(&globals.LoggedTokenError) != 0 {
+			// Only report the "no token set" once, so we don't pollute the logs
 			return
 		}
 		atomic.StoreUint32(&globals.LoggedTokenError, 1)
