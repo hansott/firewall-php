@@ -7,7 +7,7 @@ if (extension_loaded('aikido')) {
 
     if ($decision->block && $decision->type == "blocked" && $decision->trigger == "user-agent") {
         http_response_code(403);
-        echo "Your user agent ({$decision->data}) is blocked due to: {$decision->description}!";
+        echo "Your user agent ({$decision->user_agent}) is blocked due to: {$decision->description}!";
         exit();
     }
 }

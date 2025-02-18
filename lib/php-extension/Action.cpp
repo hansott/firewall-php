@@ -27,8 +27,11 @@ ACTION_STATUS Action::executeStore(json &event) {
     type = event["type"];
     trigger = event["trigger"];
     description = event["description"];
-    if (event.contains("data")) {
-        data = event["data"];
+    if (event.contains("ip")) {
+        ip = event["ip"];
+    }
+    if (event.contains("user-agent")) {
+        userAgent = event["user-agent"];
     }
     return CONTINUE;
 }
@@ -87,6 +90,10 @@ char *Action::Description() {
     return (char *)description.c_str();
 }
 
-char *Action::Data() {
-    return (char *)data.c_str();
+char *Action::Ip() {
+    return (char *)ip.c_str();
+}
+
+char *Action::UserAgent() {
+    return (char *)userAgent.c_str();
 }
