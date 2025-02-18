@@ -14,8 +14,7 @@ std::string RequestProcessor::GetInitData() {
         {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
         {"sapi", AIKIDO_GLOBAL(sapi_name)}};
-
-    return initData.dump();
+    return NormalizeAndDumpJson(initData);
 }
 
 bool RequestProcessor::ContextInit() {
