@@ -67,7 +67,8 @@ void Action::Reset() {
     type = "";
     trigger = "";
     description = "";
-    data = "";
+    ip = "";
+    userAgent = "";
 }
 
 bool Action::Exit() {
