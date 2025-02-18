@@ -14,4 +14,4 @@ std::string GenerateSocketPath();
 
 const char* GetEventName(EVENT_ID event);
 
-std::string NormalizeJson(const std::string& jsonStr);
+std::string NormalizeAndDumpJson(const std::string& jsonStr);

@@ -118,7 +118,7 @@ std::string Request::GetQuery() {
     }
     ZEND_HASH_FOREACH_END();
 
-    return NormalizeJson(query_json);
+    return NormalizeAndDumpJson(query_json);
 }
 
 std::string Request::GetHeaders() {
@@ -152,7 +152,7 @@ std::string Request::GetHeaders() {
     for (auto const& [key, val] : headers) {
         headers_json[key] = val;
     }
-    return NormalizeJson(headers_json);
+    return NormalizeAndDumpJson(headers_json);
 }
 
 bool Request::IsHttps() {
