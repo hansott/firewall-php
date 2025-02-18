@@ -13,3 +13,5 @@ std::string GetDateTime();
 std::string GenerateSocketPath();
 
 const char* GetEventName(EVENT_ID event);
+
+std::string NormalizeJson(const std::string& jsonStr);
