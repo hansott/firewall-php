@@ -16,7 +16,7 @@ func GetStoreAction(actionType, trigger, description, data string) string {
 		"type":        actionType,
 		"trigger":     trigger,
 		"description": html.EscapeString(description),
-		"data":        data,
+		trigger:       data,
 	}
 	actionJson, err := json.Marshal(actionMap)
 	if err != nil {
@@ -31,7 +31,7 @@ func OnGetBlockingStatus() string {
 	userId := context.GetUserId()
 	if utils.IsUserBlocked(userId) {
 		log.Infof("User \"%s\" is blocked!", userId)
-		return GetStoreAction("blocked", "user", "user blocked from config", "")
+		return GetStoreAction("blocked", "user", "user blocked from config", userId)
 	}
 
 	method := context.GetMethod()
