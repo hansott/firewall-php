@@ -119,6 +119,7 @@ std::string Request::GetQuery() {
     ZEND_HASH_FOREACH_END();
 
     // Remove invalid UTF8 characters (normalize)
+    https://json.nlohmann.me/api/basic_json/dump/
     return query_json.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 
@@ -154,6 +155,7 @@ std::string Request::GetHeaders() {
         headers_json[key] = val;
     }
     // Remove invalid UTF8 characters (normalize)
+    
     return headers_json.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 

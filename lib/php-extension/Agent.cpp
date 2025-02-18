@@ -12,6 +12,7 @@ std::string Agent::GetInitData() {
                      {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
                      {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)}};
     // Remove invalid UTF8 characters (normalize)
+    // https://json.nlohmann.me/api/basic_json/dump/
     return initData.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 

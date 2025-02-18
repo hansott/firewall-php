@@ -15,6 +15,7 @@ std::string RequestProcessor::GetInitData() {
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
         {"sapi", AIKIDO_GLOBAL(sapi_name)}};
     // Remove invalid UTF8 characters (normalize)
+    
     return initData.dump(-1, ' ', false, json::error_handler_t::ignore);
 }
 
