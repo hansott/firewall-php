@@ -16,7 +16,7 @@ const (
 )
 
 var EXCLUDED_METHODS = []string{"OPTIONS", "HEAD"}
-var IGNORE_EXTENSIONS = []string{"properties", "asp", "aspx", "jsp", "config", "webmanifest"}
+var IGNORE_EXTENSIONS = []string{"properties", "config", "webmanifest"}
 var ALLOW_EXTENSIONS = []string{"html", "php"}
 var IGNORE_STRINGS = []string{"cgi-bin"}
 
