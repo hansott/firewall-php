@@ -55,8 +55,8 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 
 		// See: https://github.com/php/php-src/blob/master/main/php_variables.c#L313. PHP ignores duplicate cookie names per rfc2965
 		// If the user supplies 2 cookies with the same key, we should not overwrite it to ensure our parsing is similar to PHP
-		// Although form and query parameters could potentially support ; as a separator, we assume that the user of this function
-		// wants to parse a cookie.
+		// Form and query parameters could potentially support ; as a separator (via PHP config `arg_separator.input`).
+		// We assume that the user of this function wants to parse a cookie however.
 		if separator == ";" && KeyExists(result, keyValue[0]) {
 			continue
 		}
