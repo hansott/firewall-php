@@ -73,10 +73,7 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 func ParseBody(body string) map[string]interface{} {
 	// first we check if the body is a string, and if it is, we try to parse it as JSON
 	// if it fails, we parse it as form data
-	fmt.Println("IS THIS JSON???")
-	fmt.Println(body)
 	if strings.HasPrefix(body, "{") && strings.HasSuffix(body, "}") {
-		fmt.Println("IS JSON???")
 		// if the body is a JSON object, we parse it as JSON
 		jsonBody := map[string]interface{}{}
 		err := json.Unmarshal([]byte(body), &jsonBody)
