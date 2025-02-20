@@ -296,8 +296,11 @@ jobs:
       - name: Build deb
         run: |
           sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
-          ls -R
-          mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.DEB_ARCH }}.deb ${{ env.AIKIDO_ARTIFACT }}
+          mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.DEB_ARCH }}.deb temp-${{ env.AIKIDO_ARTIFACT }}
+          mkdir deb-temp
+          dpkg-deb -R temp-${{ env.AIKIDO_ARTIFACT }} deb-temp/
+          dpkg-deb -Zgzip -b deb-temp ${{ env.AIKIDO_ARTIFACT }}
+          rm -rf deb-temp
   
       - name: Archive deb package
         uses: actions/upload-artifact@v4
