@@ -52,6 +52,15 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 		if len(keyValue) != 2 {
 			continue
 		}
+
+		// As seen on https://github.com/php/php-src/blob/master/main/php_variables.c#L313, PHP ignores duplicate cookie names per rfc2965
+		// If the user supplies 2 cookies with the same key, we should not overwrite it to ensure our parsing is similar to PHP
+		// Although form and query parameters could potentially support ; as a separator, we assume that the user wants to parse a cookie
+		// when passing ;
+		if separator == ";" && KeyExists(result, keyValue[0]) {
+			continue
+		}
+
 		result[keyValue[0]] = keyValue[1]
 		decodedValue, err := url.QueryUnescape(keyValue[1])
 		if err == nil && decodedValue != keyValue[1] {
@@ -64,8 +73,10 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 func ParseBody(body string) map[string]interface{} {
 	// first we check if the body is a string, and if it is, we try to parse it as JSON
 	// if it fails, we parse it as form data
-
+	fmt.Println("IS THIS JSON???")
+	fmt.Println(body)
 	if strings.HasPrefix(body, "{") && strings.HasSuffix(body, "}") {
+		fmt.Println("IS JSON???")
 		// if the body is a JSON object, we parse it as JSON
 		jsonBody := map[string]interface{}{}
 		err := json.Unmarshal([]byte(body), &jsonBody)
