@@ -7,9 +7,9 @@ class Request {
    public:
     Request() = default;
 
-    bool Init();
+    bool LoadServerVar();
 
-    bool Ok();
+    void UnloadServerVar();
 
     std::string GetVar(const char* var);
 

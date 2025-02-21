@@ -11,10 +11,6 @@ GoSlice GoCreateSlice(const std::vector<int64_t>& v) {
     Callback wrapper called by the RequestProcessor (GO) whenever it needs data from PHP (C++ extension).
 */
 char* GoContextCallback(int callbackId) {
-    if (!request.Ok()) {
-        AIKIDO_LOG_WARN("Request is not ok!\n");
-        return nullptr;
-    }
     std::string ctx;
     std::string ret;
 
