@@ -35,7 +35,7 @@ bool Request::LoadServerVar() {
     return this->server != NULL;
 }
 
-bool Request::UnloadServerVar() {
+void Request::UnloadServerVar() {
     this->server = NULL;
 }
 
