@@ -2,11 +2,6 @@
 
 Request request;
 
-bool Request::Init() {
-    this->UnloadServerVar();
-    return true;
-}
-
 bool Request::LoadServerVar() {
     if (this->server != NULL) {
         return true;

@@ -7,8 +7,6 @@ class Request {
    public:
     Request() = default;
 
-    bool Init();
-
     bool LoadServerVar();
 
     void UnloadServerVar();

@@ -142,10 +142,7 @@ bool RequestProcessor::RequestInit() {
         return false;
     }
 
-    if (!request.Init()) {
-        AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
-        return false;
-    }
+    request.UnloadServerVar();
 
     this->requestInitialized = true;
     this->numberOfRequests++;
@@ -171,11 +168,7 @@ void RequestProcessor::LoadConfigOnce() {
 }
 
 void RequestProcessor::RequestShutdown() {
-    if (!request.Init()) {
-        AIKIDO_LOG_WARN("Failed to initialize the current request!\n");
-        return;
-    }
-    
+    request.UnloadServerVar();
     LoadConfigOnce();
     SendPostRequestEvent();
     this->requestInitialized = false;
