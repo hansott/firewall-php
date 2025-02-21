@@ -3,6 +3,14 @@
 Request request;
 
 bool Request::Init() {
+    return true;
+}
+
+bool Request::LoadServerVar() {
+    if (this->server != NULL) {
+        return true;
+    }
+
     zend_string* serverString = zend_string_init("_SERVER", sizeof("_SERVER") - 1, 0);
     if (!serverString) {
         AIKIDO_LOG_WARN("Error allocating the '_SERVER' zend string!");
@@ -24,15 +32,15 @@ bool Request::Init() {
         AIKIDO_LOG_WARN("'_SERVER' was not found in the global symbol table!");
         return false;
     }
-    return true;
-}
-
-bool Request::Ok() {
     return this->server != NULL;
 }
 
+bool Request::UnloadServerVar() {
+    this->server = NULL;
+}
+
 std::string Request::GetVar(const char* var) {
-    if (!this->server) {
+    if (!this->LoadServerVar()) {
         return "";
     }
     zval* data = zend_hash_str_find(Z_ARRVAL_P(this->server), var, strlen(var));
@@ -43,9 +51,6 @@ std::string Request::GetVar(const char* var) {
 }
 
 std::string Request::GetRoute() {
-    if (!this->server) {
-        return "";
-    }
     std::string route = GetVar("REQUEST_URI");
     size_t pos = route.find("?");
     if (pos != std::string::npos) {
@@ -122,7 +127,7 @@ std::string Request::GetQuery() {
 }
 
 std::string Request::GetHeaders() {
-    if (!this->server) {
+    if (!this->LoadServerVar()) {
         return "";
     }
     std::map<std::string, std::string> headers;
