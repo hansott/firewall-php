@@ -297,6 +297,8 @@ jobs:
         run: |
           sudo alien --to-deb --scripts --keep-version ${{ env.AIKIDO_RPM }}/${{ env.AIKIDO_RPM }}
           mv aikido-php-firewall_${{ env.AIKIDO_VERSION }}-1_${{ env.DEB_ARCH }}.deb temp-${{ env.AIKIDO_ARTIFACT }}
+          
+          # Package contents into deb with gzip compression (because default zstd compression is not supported by older versions of dpkg)
           mkdir deb-temp
           dpkg-deb -R temp-${{ env.AIKIDO_ARTIFACT }} deb-temp/
           dpkg-deb -Zgzip -b deb-temp ${{ env.AIKIDO_ARTIFACT }}

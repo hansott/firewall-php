@@ -178,7 +178,6 @@ void RequestProcessor::RequestShutdown() {
     
     LoadConfigOnce();
     SendPostRequestEvent();
-    request.UnloadServerVar();
     this->requestInitialized = false;
 }
 

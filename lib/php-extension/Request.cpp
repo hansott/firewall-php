@@ -3,6 +3,7 @@
 Request request;
 
 bool Request::Init() {
+    this->UnloadServerVar();
     return true;
 }
 
