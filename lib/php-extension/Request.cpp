@@ -32,7 +32,7 @@ bool Request::LoadServerVar() {
         AIKIDO_LOG_WARN("'_SERVER' was not found in the global symbol table!");
         return false;
     }
-    return this->server != NULL;
+    return true;
 }
 
 void Request::UnloadServerVar() {
