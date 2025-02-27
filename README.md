@@ -50,6 +50,7 @@ dpkg -i -E ./aikido-php-firewall.x86_64.deb
 We support Debian >= 11 and Ubuntu >= 20.04.
 You can run on Debian 10, by doing this setup before install: [Debian10 setup](./docs/debian10.md)
 
+#### Deployment setup
 - [Caddy & PHP-FPM](./docs/caddy.md)
 - [Apache mod_php](./docs/apache-mod-php.md)
 
