@@ -92,8 +92,9 @@ var wellKnown = map[string]struct{}{
 	"/.well-known/wot":                            {},
 }
 
-// IsWellKnownURI checks if a given path is a well-known URI.
-// See https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml
+// Check if a path is a well-known URI
+// e.g. /.well-known/acme-challenge
+// https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml
 func IsWellKnownURI(path string) bool {
 	_, exists := wellKnown[path]
 
