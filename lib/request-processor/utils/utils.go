@@ -61,15 +61,21 @@ func ParseFormData(data string, separator string) map[string]interface{} {
 	return result
 }
 
-func ParseBody(body string) interface{} {
+func ParseBody(body string) map[string]interface{} {
 	// first we check if the body is a string, and if it is, we try to parse it as JSON
 	// if it fails, we parse it as form data
 	trimmedBody := strings.TrimSpace(body)
 	if strings.HasPrefix(trimmedBody, "[") || strings.HasPrefix(trimmedBody, "{") {
-		var jsonBody interface{} 
+		var jsonBody interface{}
 		err := json.Unmarshal([]byte(trimmedBody), &jsonBody)
 		if err == nil {
-			return jsonBody
+			if array, ok := jsonBody.([]interface{}); ok {
+				return map[string]interface{}{"array": array}
+			}
+
+			if jsonObject, ok := jsonBody.(map[string]interface{}); ok {
+				return jsonObject
+			}
 		}
 	}
 

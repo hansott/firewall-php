@@ -244,7 +244,7 @@ func TestParseBodyJSON(t *testing.T) {
 
 func TestParseBodyJSONArray(t *testing.T) {
 	data := `["asd",  "asd"]`
-	expected := `["asd","asd"]`
+	expected := `{"array":["asd","asd"]}`
 
 	result := ParseBody(data)
 	resultJSON, err := json.Marshal(result)
