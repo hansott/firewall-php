@@ -31,16 +31,18 @@ func ShouldDiscoverRoute(statusCode int, route, method string) bool {
 
 	segments := strings.Split(route, "/")
 
+	isWellKnownURI := IsWellKnownURI(route)
+
 	// e.g. /path/to/.file or /.directory/file
 	for _, segment := range segments {
-		if isDotFile(segment) {
+		if !isWellKnownURI && isDotFile(segment) {
 			return false
 		}
 
 		if containsIgnoredString(segment) {
 			return false
 		}
-		
+
 		if !isAllowedExtension(segment) {
 			return false
 		}

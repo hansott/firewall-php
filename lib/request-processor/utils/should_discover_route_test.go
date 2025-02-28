@@ -138,8 +138,11 @@ func TestShouldDiscoverRoute(t *testing.T) {
 	// })
 
 	t.Run("it allows .well-known directory", func(t *testing.T) {
-		if ShouldDiscoverRoute(200, "/.well-known", "GET") != true {
-			t.Errorf("Expected true, got false")
+		if ShouldDiscoverRoute(200, "/.well-known", "GET") != false {
+			t.Errorf("Expected false, got true")
+		}
+		if ShouldDiscoverRoute(200, "/.well-known/html/admin.php", "GET") != false {
+			t.Errorf("Expected false, got true")
 		}
 		if ShouldDiscoverRoute(200, "/.well-known/change-password", "GET") != true {
 			t.Errorf("Expected true, got false")
