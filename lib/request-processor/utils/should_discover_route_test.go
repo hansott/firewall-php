@@ -141,7 +141,7 @@ func TestShouldDiscoverRoute(t *testing.T) {
 	t.Run("it allows .well-known directory", func(t *testing.T) {
 		assert.Equal(t, false, ShouldDiscoverRoute(200, "/.well-known", "GET"))
 		assert.Equal(t, false, ShouldDiscoverRoute(200, "/.well-known/html/admin.php", "GET"))
-		assert.Equal(t ,true, ShouldDiscoverRoute(200, "/.well-known/change-password", "GET"))
+		assert.Equal(t, true, ShouldDiscoverRoute(200, "/.well-known/change-password", "GET"))
 		assert.Equal(t, false, ShouldDiscoverRoute(200, "/.well-known/security.txt", "GET"))
 	})
 
