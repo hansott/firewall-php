@@ -254,6 +254,14 @@ func TestParseBodyJSONArray(t *testing.T) {
 
 	if string(resultJSON) != expected {
 		t.Errorf("Expected JSON string %q, got %q", expected, string(resultJSON))
+  }
+}
+
+func TestParseCookie(t *testing.T) {
+	data := "exploit=/etc/passwd;exploit=safevalue;"
+	result := ParseFormData(data, ";")
+	if result["exploit"] != "/etc/passwd" {
+		t.Errorf("Expected /etc/passwd, got %v", result["exploit"])
 	}
 }
 

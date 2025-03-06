@@ -29,7 +29,7 @@ Zen for PHP comes as a single package that needs to be installed on the system t
 
 Prerequisites:
 * Ensure you have sudo privileges on your system.
-* Check that you have a supported PHP version installed (PHP version >= 7.3 and tested up to 8.4).
+* Check that you have a supported PHP version installed (PHP version >= 7.2 and tested up to 8.4).
 * Make sure to use the appropriate commands for your system or cloud provider.
 
 ### Manual install
@@ -37,16 +37,20 @@ Prerequisites:
 #### For Red Hat-based Systems (RHEL, CentOS, Fedora)
 
 ```
-rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.111/aikido-php-firewall.x86_64.rpm
+rpm -Uvh --oldpackage https://github.com/AikidoSec/firewall-php/releases/download/v1.0.112/aikido-php-firewall.x86_64.rpm
 ```
 
 #### For Debian-based Systems (Debian, Ubuntu)
 
 ```
-curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.111/aikido-php-firewall.x86_64.deb
+curl -L -O https://github.com/AikidoSec/firewall-php/releases/download/v1.0.112/aikido-php-firewall.x86_64.deb
 dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ```
 
+We support Debian >= 11 and Ubuntu >= 20.04.
+You can run on Debian 10, by doing this setup before install: [Debian10 setup](./docs/debian10.md)
+
+#### Deployment setup
 - [Caddy & PHP-FPM](./docs/caddy.md)
 - [Apache mod_php](./docs/apache-mod-php.md)
 
@@ -63,7 +67,7 @@ dpkg -i -E ./aikido-php-firewall.x86_64.deb
 ## Supported libraries and frameworks
 
 ### PHP versions
-Zen for PHP supports the following PHP versions: 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4.
+Zen for PHP supports the following PHP versions: 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4.
 
 ### Web frameworks
 
