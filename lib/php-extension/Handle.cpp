@@ -24,6 +24,12 @@ ACTION_STATUS aikido_process_event(EVENT_ID& eventId, std::string& sink) {
     return action_status;
 }
 
+bool perform_ip_blocking_check() {
+    // Implement the IP blocking check logic here
+    // This is a placeholder function, you need to implement the actual logic
+    return false;
+}
+
 ZEND_NAMED_FUNCTION(aikido_generic_handler) {
     ScopedTimer scopedTimer;
 

@@ -1,5 +1,16 @@
 #include "Includes.h"
 
+void inject_ip_blocking_check(zend_op_array* op_array) {
+    zend_op* opline = zend_arena_alloc(&CG(arena), sizeof(zend_op));
+    memset(opline, 0, sizeof(zend_op));
+    opline->opcode = ZEND_DO_FCALL;
+    opline->op1_type = IS_CONST;
+    opline->op1.constant = zend_add_literal(op_array, zend_string_init("aikido_ip_blocking_check", sizeof("aikido_ip_blocking_check") - 1, 0));
+    opline->result_type = IS_UNUSED;
+    opline->result.var = 0;
+    zend_llist_add_element(&op_array->opcodes, opline);
+}
+
 zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) {
     eventCache.Reset();
     switch (type) {
@@ -36,6 +47,8 @@ zend_op_array* handle_file_compilation(zend_file_handle* file_handle, int type) 
     scopedTimer.Stop();
     zend_op_array* op_array = original_file_compilation_handler(file_handle, type);
     scopedTimer.Start();
+
+    inject_ip_blocking_check(op_array);
 
     eventId = NO_EVENT_ID;
     helper_handle_post_file_path_access(eventId);
