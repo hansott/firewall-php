@@ -22,9 +22,12 @@ func AgentInit(initJson string) (initOk bool) {
 		}
 	}()
 
+	if !config.Init(initJson) {
+		return false
+	}
 	log.Init()
 	machine.Init()
-	if !config.Init(initJson) || !grpc.Init() {
+	if !grpc.Init() {
 		return false
 	}
 
