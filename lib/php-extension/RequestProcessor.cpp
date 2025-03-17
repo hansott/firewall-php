@@ -11,6 +11,7 @@ std::string RequestProcessor::GetInitData() {
         {"socket_path", AIKIDO_GLOBAL(socket_path)},
         {"blocking", AIKIDO_GLOBAL(blocking)},
         {"trust_proxy", AIKIDO_GLOBAL(trust_proxy)},
+        {"disk_logs", AIKIDO_GLOBAL(disk_logs)},
         {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
         {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)},
         {"sapi", AIKIDO_GLOBAL(sapi_name)}};

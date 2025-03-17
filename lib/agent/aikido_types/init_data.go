@@ -25,6 +25,7 @@ type AikidoConfigData struct {
 	Blocking                  bool   `json:"blocking,omitempty"`                     // default: false
 	LocalhostAllowedByDefault bool   `json:"localhost_allowed_by_default,omitempty"` // default: true
 	CollectApiSchema          bool   `json:"collect_api_schema,omitempty"`           // default: true
+	DiskLogs                  bool   `json:"disk_logs,omitempty"`                    // default: false
 }
 
 type RateLimiting struct {

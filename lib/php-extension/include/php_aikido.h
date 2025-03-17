@@ -14,6 +14,7 @@ bool environment_loaded;
 long log_level;
 bool blocking;
 bool disable;
+bool disk_logs;
 bool collect_api_schema;
 bool trust_proxy;
 bool localhost_allowed_by_default;

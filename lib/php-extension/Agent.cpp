@@ -8,6 +8,7 @@ std::string Agent::GetInitData() {
                      {"endpoint", AIKIDO_GLOBAL(endpoint)},
                      {"config_endpoint", AIKIDO_GLOBAL(config_endpoint)},
                      {"log_level", AIKIDO_GLOBAL(log_level_str)},
+                     {"disk_logs", AIKIDO_GLOBAL(disk_logs)},
                      {"blocking", AIKIDO_GLOBAL(blocking)},
                      {"localhost_allowed_by_default", AIKIDO_GLOBAL(localhost_allowed_by_default)},
                      {"collect_api_schema", AIKIDO_GLOBAL(collect_api_schema)}};
