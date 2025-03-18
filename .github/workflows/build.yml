@@ -157,7 +157,7 @@ jobs:
   build_rpm:
     runs-on: ${{ matrix.os }}
     container:
-      image: centos:latest
+      image: centos:8
     strategy:
       matrix:
         os: ['ubuntu-22.04', 'ubuntu-24.04-arm']
@@ -315,7 +315,7 @@ jobs:
   test_php_centos:
     runs-on: ${{ matrix.os }}
     container:
-      image: centos:latest
+      image: centos:8
     needs: [ build_rpm ]
     strategy:
       matrix:
