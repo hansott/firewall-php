@@ -52,7 +52,7 @@ jobs:
         go get google.golang.org/grpc
         go get github.com/stretchr/testify/assert
         go test ./...
-        go build -ldflags "-s -w" ../../build/aikido-agent
+        go build -ldflags "-s -w" -o ../../build/aikido-agent
         ls -l ../../build
 
     - name: Build Aikido Request Processor
