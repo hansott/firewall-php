@@ -18,6 +18,7 @@
 #include <ctime>
 #include <unordered_map>
 #include <chrono>
+#include <spawn.h>
 
 #include "3rdparty/json.hpp"
 using namespace std;

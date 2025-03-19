@@ -14,6 +14,7 @@ bool environment_loaded;
 long log_level;
 bool blocking;
 bool disable;
+bool disk_logs; // When enabled, it writes logs to disk instead of stdout. It's usefull when debugging to have the logs grouped by PHP process.
 bool collect_api_schema;
 bool trust_proxy;
 bool localhost_allowed_by_default;

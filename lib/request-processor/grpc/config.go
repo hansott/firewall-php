@@ -37,8 +37,6 @@ func buildIpBlocklist(name, description string, ipsList []string) IpBlockList {
 		}
 	}
 
-	log.Debugf("%s (v4): %v", name, ipBlocklist.TrieV4)
-	log.Debugf("%s (v6): %v", name, ipBlocklist.TrieV6)
 	return ipBlocklist
 }
 

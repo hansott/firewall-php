@@ -61,6 +61,5 @@ func SendCloudRequest(endpoint string, route string, method string, payload inte
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	log.Info("Got response: ", string(body))
 	return body, nil
 }
