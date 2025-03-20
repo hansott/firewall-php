@@ -64,7 +64,8 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGINT)
 
-	<-sigChan
+	signal := <-sigChan
+	log.Infof("Received signal: %s", signal)
 	AgentUninit()
 	os.Exit(0)
 }

@@ -6,11 +6,10 @@ import (
 	"main/globals"
 	"main/log"
 	"net"
+	"net/netip"
 	"net/url"
 	"runtime"
 	"strings"
-
-	"github.com/seancfoley/ipaddress-go/ipaddr"
 )
 
 func KeyExists[K comparable, V any](m map[K]V, key K) bool {
@@ -210,15 +209,14 @@ func IsIpBlocked(ip string) (bool, string) {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	ipAddress, err := ipaddr.NewIPAddressString(ip).ToAddress()
+	ipAddress, err := netip.ParseAddr(ip)
 	if err != nil {
 		log.Infof("Invalid ip address: %s\n", ip)
 		return false, ""
 	}
 
 	for _, ipBlocklist := range globals.CloudConfig.BlockedIps {
-		if (ipAddress.IsIPv4() && ipBlocklist.TrieV4.ElementContains(ipAddress.ToIPv4())) ||
-			(ipAddress.IsIPv6() && ipBlocklist.TrieV6.ElementContains(ipAddress.ToIPv6())) {
+		if ipBlocklist.IpSet.Contains(ipAddress) {
 			return true, ipBlocklist.Description
 		}
 	}
