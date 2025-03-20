@@ -7,6 +7,7 @@ import (
 	"main/log"
 	"main/utils"
 	"regexp"
+	"runtime"
 	"time"
 )
 
@@ -72,6 +73,8 @@ func setCloudConfig(cloudConfigFromAgent *protos.CloudConfig) {
 		globals.CloudConfig.BlockedUserAgents = nil
 	}
 
+	// Force garbage collection to ensure that the IP blocklists temporary memory is released ASAP
+	runtime.GC()
 }
 
 func startCloudConfigRoutine() {
