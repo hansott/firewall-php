@@ -3,19 +3,20 @@ package utils
 import (
 	"main/aikido_types"
 	"main/log"
+	"net/netip"
 
-	"inet.af/netaddr"
+	"go4.org/netipx"
 )
 
 func BuildIpBlocklist(name, description string, ipsList []string) (*aikido_types.IpBlockList, error) {
-	trieBuilder := netaddr.IPSetBuilder{}
+	trieBuilder := netipx.IPSetBuilder{}
 
 	for _, ip := range ipsList {
-		prefix, err := netaddr.ParseIPPrefix(ip)
+		prefix, err := netip.ParsePrefix(ip)
 		if err == nil {
 			trieBuilder.AddPrefix(prefix)
 		} else {
-			parsedIP, err := netaddr.ParseIP(ip)
+			parsedIP, err := netip.ParseAddr(ip)
 			if err == nil {
 				trieBuilder.Add(parsedIP)
 			} else {

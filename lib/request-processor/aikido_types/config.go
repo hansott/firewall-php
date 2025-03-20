@@ -3,7 +3,7 @@ package aikido_types
 import (
 	"regexp"
 
-	"inet.af/netaddr"
+	"go4.org/netipx"
 )
 
 type EnvironmentConfigData struct {
@@ -43,7 +43,7 @@ type EndpointKey struct {
 
 type IpBlockList struct {
 	Description string
-	IpSet       netaddr.IPSet
+	IpSet       netipx.IPSet
 }
 
 type CloudConfigData struct {

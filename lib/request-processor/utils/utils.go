@@ -6,11 +6,10 @@ import (
 	"main/globals"
 	"main/log"
 	"net"
+	"net/netip"
 	"net/url"
 	"runtime"
 	"strings"
-
-	"inet.af/netaddr"
 )
 
 func KeyExists[K comparable, V any](m map[K]V, key K) bool {
@@ -204,7 +203,7 @@ func IsIpBlocked(ip string) (bool, string) {
 	globals.CloudConfigMutex.Lock()
 	defer globals.CloudConfigMutex.Unlock()
 
-	ipAddress, err := netaddr.ParseIP(ip)
+	ipAddress, err := netip.ParseAddr(ip)
 	if err != nil {
 		log.Infof("Invalid ip address: %s\n", ip)
 		return false, ""
