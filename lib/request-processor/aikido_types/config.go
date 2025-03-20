@@ -3,7 +3,7 @@ package aikido_types
 import (
 	"regexp"
 
-	"github.com/seancfoley/ipaddress-go/ipaddr"
+	"inet.af/netaddr"
 )
 
 type EnvironmentConfigData struct {
@@ -43,8 +43,7 @@ type EndpointKey struct {
 
 type IpBlockList struct {
 	Description string
-	TrieV4      *ipaddr.IPv4AddressTrie
-	TrieV6      *ipaddr.IPv6AddressTrie
+	IpSet       netaddr.IPSet
 }
 
 type CloudConfigData struct {
